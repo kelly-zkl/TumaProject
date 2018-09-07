@@ -1,0 +1,364 @@
+<template>
+  <div>
+    <el-container class="main-container">
+      <el-header style="background: #060450;color:#fff">
+        <div style="display: flex;flex-direction: row;height: 60px;width: 100%">
+          <div align="left" style="display: flex;height: 60px;align-items: center">
+            <img src="../assets/img/404_cloud.png" style="display:inline-block;height: 34px">
+            <div style="display:inline-block;font-size: 16px;;margin-left: 10px">
+              图码联侦实战布控平台
+            </div>
+          </div>
+          <div align="center" style="flex: 1;height: 60px;align-items: center;justify-content: center">
+            <!--fa-th-large fa-tachometer-->
+            <el-button v-bind:class="indx==1?'item active':'item'" @click="handleSelectItem(1)">
+              <i class="fa fa-th-large fa-2x" style="font-size: 1.9em"></i>
+              <span class="title" style="margin-top: 5px">概览</span>
+            </el-button>
+            <el-button v-bind:class="indx==2?'item active':'item'" @click="handleSelectItem(2)">
+              <i class="fa  fa-warning fa-2x" style="font-size: 1.9em"></i>
+              <span class="title" style="margin-top: 5px">告警</span>
+            </el-button>
+            <el-button v-bind:class="indx==3?'item active':'item'" @click="handleSelectItem(3)">
+              <i class="fa fa-users fa-2x" style="font-size: 1.9em"></i>
+              <span class="title" style="margin-top: 5px">档案</span>
+            </el-button>
+            <el-button v-bind:class="indx==4?'item active':'item'" @click="handleSelectItem(4)">
+              <i class="fa fa-binoculars fa-2x" style="font-size: 1.9em"></i>
+              <span class="title" style="margin-top: 5px">侦查</span>
+            </el-button>
+            <el-button v-bind:class="indx==5?'item active':'item'" @click="handleSelectItem(5)">
+              <i class="fa fa-briefcase fa-2x" style="font-size: 2.3em"></i><span class="title">审批</span>
+            </el-button>
+            <el-button v-bind:class="indx==6?'item active':'item'" @click="handleSelectItem(6)">
+              <i class="fa fa-hdd-o fa-2x" style="font-size: 2.3em"></i><span class="title">设备</span>
+            </el-button>
+            <el-button v-bind:class="indx==7?'item active':'item'" @click="handleSelectItem(7)">
+              <i class="fa fa-cog fa-2x" style="font-size: 2.3em"></i><span class="title">系统</span>
+            </el-button>
+          </div>
+          <div align="right" style="height: 60px">
+            <div class="item" style="text-align: center" @click="runMsg = true">
+              <i class="fa fa-bell-o fa-2x" style="padding-top: 15px;font-size: 1.8em"></i>
+            </div>
+            <el-popover ref="modifyPsw" placement="bottom" width="200" trigger="click">
+              <el-col :span="24">
+                <el-button
+                  style="width: 100%;border-radius: 0 0 0 4px;border: none;height: 45px"
+                  type="text" @click="runModifyPsw = true;psw={}">修改密码
+                </el-button>
+              </el-col>
+            </el-popover>
+            <el-button class="item" style="text-align: center;width: 120px" v-popover:modifyPsw>
+              <i class="fa fa-user fa-2x" style="display: inline-block;padding-top: 13px"></i>
+              <span style="display: inline-block;padding-left: 5px;height:60px;line-height: 60px">用户名</span>
+            </el-button>
+            <div class="item" style="text-align: center" @click="$router.push({path: '/platforms'})">
+              <i class="fa fa-retweet fa-2x" style="padding-top: 13px"></i>
+            </div>
+            <div class="item" style="text-align: center" @click="loginOut">
+              <i class="fa fa-sign-out fa-2x" style="padding-top: 13px"></i>
+            </div>
+          </div>
+        </div>
+      </el-header>
+      <el-main style="background: #060450;border-top: 3px #02023F solid">
+        <el-col :span="24">
+          <transition name="fade" mode="out-in">
+            <router-view @handleSelectItem="handleSelectItem"></router-view>
+          </transition>
+        </el-col>
+      </el-main>
+    </el-container>
+    <!--告警通知-->
+    <div class="view-msg">
+      <transition name="fade" mode="out-in" appear>
+        <el-dialog fullscreen width="430px" :visible.sync="runMsg" :show-close="false">
+          <div class="block">
+            <div class="msg-title">
+              <span>告警通知</span>
+              <el-button class="btn" round plain size="small" @click="clearAll()">清空</el-button>
+            </div>
+            <div class="msg-item" v-for="item in [1,1,1,1,2]" @click="deleteMsg()">
+              <span>嫌疑告警  08:23</span>
+            </div>
+          </div>
+        </el-dialog>
+      </transition>
+    </div>
+    <!--IMSI告警-->
+    <div class="warning">
+      <transition name="fade" mode="out-in" appear>
+        <el-dialog width="500px" :visible.sync="runImsiWarning" :close-on-click-modal="false"
+                   style="border-radius: 6px" top="70px" title="嫌疑告警">
+          <el-form :model="imsiWarning" align="left" style="padding: 10px 50px;border-top: 1px #f2f2f2 solid"
+                   label-width="100px" label-position="left">
+            <el-form-item label="抓取IMSI" style="margin:0">
+              <span style="font-size: 15px;color:#000">6515646</span>
+            </el-form-item>
+            <el-form-item label="运营商" style="margin:0">
+              <span style="font-size: 15px;color:#000">移动</span>
+            </el-form-item>
+            <el-form-item label="告警时间" style="margin:0">
+              <span style="font-size: 15px;color:#000">2018-07-23 12:32:23</span>
+            </el-form-item>
+            <el-form-item label="告警场所" style="margin:0">
+              <span style="font-size: 15px;color:#000">256</span>
+            </el-form-item>
+            <el-form-item label="设备标识" style="margin:0">
+              <span style="font-size: 15px;color:#000">15615</span>
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer" align="center">
+            <el-button type="warning" size="medium" @click="runFaceWarning=true">处理告警</el-button>
+            <el-button type="primary" size="medium" @click="">查看人员信息</el-button>
+          </div>
+        </el-dialog>
+      </transition>
+    </div>
+    <!--头像告警-->
+    <div class="warning">
+      <transition name="fade" mode="out-in" appear>
+        <el-dialog width="500px" :visible.sync="runFaceWarning" :close-on-click-modal="false"
+                   style="border-radius: 6px" top="70px" title="嫌疑告警">
+          <div style="padding: 20px 20px 10px;text-align: left;position: relative;border-top: 1px #f2f2f2 solid">
+            <img src="../assets/img/icon_people.png">
+            <el-form :model="imsiWarning" align="left" label-width="80px" label-position="left"
+                     style="display:inline-block;position: absolute;top: 20px">
+              <el-form-item label="年龄" style="margin:0">
+                <span style="font-size: 15px;color:#000">23-36</span>
+              </el-form-item>
+              <el-form-item label="性别" style="margin:0">
+                <span style="font-size: 15px;color:#000">男</span>
+              </el-form-item>
+              <el-form-item label="告警时间" style="margin:0">
+                <span style="font-size: 15px;color:#000">2018-07-23 12:32:23</span>
+              </el-form-item>
+              <el-form-item label="告警场所" style="margin:0">
+                <span style="font-size: 15px;color:#000">256</span>
+              </el-form-item>
+              <el-form-item label="设备标识" style="margin:0">
+                <span style="font-size: 15px;color:#000">15615</span>
+              </el-form-item>
+            </el-form>
+          </div>
+          <div slot="footer" class="dialog-footer" align="center">
+            <el-button type="warning" size="medium" @click="runImsiWarning=true">处理告警</el-button>
+            <el-button type="primary" size="medium" @click="">查看人员信息</el-button>
+          </div>
+        </el-dialog>
+      </transition>
+    </div>
+    <!--修改密码-->
+    <el-dialog title="修改密码" width="500px" :visible.sync="runModifyPsw">
+      <div class="block">
+        <el-form label-width="100px" :rules="rules" ref="psw" :model="psw">
+          <el-form-item label="当前密码" prop="password">
+            <el-input type="password" :maxlength="18" :minlength="6" placeholder="输入密码"
+                      v-model="psw.password"></el-input>
+          </el-form-item>
+          <el-form-item label="新密码" prop="password1">
+            <el-input type="password" v-model="psw.password1"
+                      placeholder="请输入6-16位密码" :maxlength="18" :minlength="6"></el-input>
+          </el-form-item>
+          <el-form-item label="密码确认" prop="password2">
+            <el-input type="password" v-model="psw.password2"
+                      placeholder="请再次输入新密码" :maxlength="18" :minlength="6"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer" align="center">
+          <el-button @click="runModifyPsw = false">取消</el-button>
+          <el-button type="primary" @click="modifyPsw('psw')">确定</el-button>
+        </div>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+  import md5 from 'js-md5';
+  import {pswValidator} from '../assets/js/api';
+
+  export default {
+    data() {
+      let pswValidate = (rule, value, callback) => {
+        if (value.length < 6) {
+          callback(new Error('密码不能小于6位'));
+        } else if (value.length > 18) {
+          callback(new Error('密码不能大于18位'));
+        } else if (!pswValidator(value)) {
+          callback(new Error("密码由英文字母、数字以及~!@#$%^&*=+/-组成"));
+        } else {
+          callback();
+        }
+      };
+      return {
+        indx: 1,
+        runMsg: false,
+        runImsiWarning: true,
+        runFaceWarning: false,
+        runModifyPsw: false,
+        psw: {password: '', password1: '', password2: ''},
+        imsiWarning: {},
+        rules: {
+          password1: [
+            {required: true, message: '请输入新密码', trigger: 'blur'},
+            {validator: pswValidate, trigger: "change,blur"}
+          ], password2: [
+            {required: true, message: '请再次输入新密码', trigger: 'blur'},
+            {validator: pswValidate, trigger: "change,blur"}
+          ], password: [
+            {required: true, message: '请输入密码', trigger: 'blur'},
+          ]
+        }
+      }
+    },
+    methods: {
+      handleSelectItem(val) {
+        this.indx = val;
+        if (val === 1) {
+          this.$router.push('/dataOverview');
+        } else if (val === 2) {
+          this.$router.push('/imsiWarnings');
+        } else if (val === 3) {
+          this.$router.push('/imsiRecords');
+        } else if (val === 4) {
+          this.$router.push('/caseList');
+        } else if (val === 5) {
+          this.$router.push('/imsiCover');
+        } else if (val === 6) {
+          this.$router.push('/deviceMap');
+        } else if (val === 7) {
+          this.$router.push('/userList');
+        }
+      },
+      //退出
+      loginOut() {
+        this.$confirm('确认退出系统吗?', '提示', {type: 'info'}).then(() => {
+          sessionStorage.removeItem("user");
+          sessionStorage.removeItem("button");
+          sessionStorage.removeItem("menu");
+          sessionStorage.removeItem("deviceTab");
+          sessionStorage.removeItem("query");
+          sessionStorage.removeItem("activeName");
+          sessionStorage.removeItem("cTime");
+          sessionStorage.removeItem("index");
+          this.$router.push("/login");
+        }).catch(() => {
+        });
+      },
+      //修改密码
+      modifyPsw(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.$post('/manager/user/updatePwdByOldPwd', {
+              userId: this.userId,
+              oldPwd: md5(this.psw.password),
+              newPwd: md5(this.psw.password2)
+            }, '修改成功');
+            this.runModifyPsw = false;
+          }
+        });
+      },
+      /**删除告警通知*/
+      deleteMsg() {
+        this.$confirm('确定要删除该条告警通知?', '提示', {type: 'info'}).then(() => {
+        }).catch(() => {
+        });
+      },
+      /**
+       * 清空告警通知
+       */
+      clearAll() {
+        this.$confirm('确定要清除所有的告警通知?', '提示', {type: 'info'}).then(() => {
+        }).catch(() => {
+        });
+      }
+    },
+    mounted() {
+      this.indx = sessionStorage.getItem("index") ? sessionStorage.getItem("index") : 1;
+    }
+  }
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+  .warning img {
+    height: 200px;
+    width: 200px;
+    display: inline-block;
+    margin-right: 20px;
+    border: 1px #ccc dashed;
+    border-radius: 6px;
+  }
+
+  .msg-title {
+    height: 60px;
+    border-bottom: 1px #ddd solid;
+    margin-bottom: 15px;
+    background: #fff;
+  }
+
+  .msg-title span {
+    height: 60px;
+    line-height: 60px;
+    font-size: 18px;
+    color: #000;
+  }
+
+  .msg-title .btn {
+    position: absolute;
+    height: 30px;
+    top: 15px;
+    right: 20px;
+    padding: 0 20px;
+  }
+
+  .msg-item {
+    background: #fff;
+    border-radius: 4px;
+    padding: 20px 30px;
+    margin: 0 15px 15px 15px;
+  }
+
+  .main-container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    min-width: 1280px;
+    margin-left: -8px;
+  }
+
+  .item {
+    display: inline-block;
+    cursor: pointer;
+    width: 80px;
+    height: 60px;
+    padding: 0;
+    margin: 0;
+    color: #fff;
+    background: transparent;
+    font-size: 14px;
+    vertical-align: middle;
+    border: none;
+    border-radius: 0;
+  }
+
+  .item.active {
+    background: #46467C;
+  }
+
+  .item:hover, .item:active {
+    background: #181663;
+  }
+
+  .title {
+    display: block;
+  }
+
+  i {
+    display: block;
+    margin-top: 3px;
+  }
+</style>

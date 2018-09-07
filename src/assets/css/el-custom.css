@@ -1,0 +1,366 @@
+.el-input.is-disabled .el-input__inner {
+  background-color: #f5f7fa;
+  border-color: #e4e7ed;
+  color: #888888;
+  cursor: not-allowed
+}
+
+.el-input.is-disabled .el-input__inner::-webkit-input-placeholder {
+  color: #C1C1C1
+}
+
+.el-input.is-disabled .el-input__inner:-ms-input-placeholder {
+  color: #C1C1C1
+}
+
+.el-input.is-disabled .el-input__inner::placeholder {
+  color: #C1C1C1
+}
+
+.login-box .el-input__inner {
+  background: rgba(0, 0, 0, 0);
+  border-color: #7d7d7d;
+  color: #fff;
+}
+
+.login-box .el-input__inner:-ms-input-placeholder {
+  color: #999
+}
+
+.login-box .el-input__inner::placeholder {
+  color: #999
+}
+
+.login-box .el-input__inner:focus {
+  border-color: #6699FF;
+}
+
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+
+.el-menu {
+  border-right: none;
+}
+
+.el-menu--popup {
+  min-width: 170px
+}
+
+.button-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.input-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
+}
+
+/** 表格样式开始*/
+.el-table {
+  font-size: 14px;
+  color: #666
+}
+
+.el-table thead {
+  color: #333;
+  font-weight: 500
+}
+
+.el-table--striped .el-table__body tr.el-table__row--striped td {
+  background: #dfdfdf;
+  background-clip: padding-box;
+}
+
+.el-table--striped .el-table__body tr.el-table__row--striped.current-row td {
+  background: #edf7ff;
+}
+
+/**表格样式结束*/
+/**首页的表格样式----开始*/
+.overview .el-table {
+  position: absolute;
+  top: 61px;
+  bottom: 6px;
+  overflow-y: scroll;
+  font-size: 14px;
+  color: #fff;
+  background: #21206C;
+}
+
+.overview .el-table th, .overview .el-table tr {
+  background-color: #2E2D78;
+}
+
+.overview .el-table thead {
+  color: #6D6C98;
+  font-weight: 500;
+}
+
+.overview .el-table__empty-text {
+  color: #6D6C98;
+}
+
+.overview .el-table--striped .el-table__body tr.el-table__row--striped td {
+  background: #21206C;
+  background-clip: padding-box;
+}
+
+.overview .el-table--striped .el-table__body tr.el-table__row--striped.current-row td, .overview .el-table__body tr.current-row > td, .overview .el-table__body tr.hover-row.current-row > td, .overview .el-table__body tr.hover-row.el-table__row--striped.current-row > td, .overview .el-table__body tr.hover-row.el-table__row--striped > td, .overview .el-table__body tr.hover-row > td {
+  background: #2E2D78;
+}
+
+/*表格获取焦点事件*/
+.overview .el-table--enable-row-hover .el-table__body tr:hover > td {
+  background-color: #3A3195
+}
+
+/*删除表格的线*/
+.overview .el-table td, .overview .el-table th.is-leaf {
+  border-bottom: none;
+}
+
+/*删除表格底部的线*/
+.overview .el-table::before {
+  background-color: transparent;
+}
+
+/**首页的表格样式----结束*/
+.el-popover {
+  padding: 0;
+  -moz-box-shadow: -6px 6px 12px rgba(40, 40, 40, .5); /*firefox*/
+  -webkit-box-shadow: -6px 6px 12px rgba(40, 40, 40, .5); /*webkit*/
+  box-shadow: -6px 6px 12px rgba(40, 40, 40, .5); /*opera或ie9*/
+}
+
+.el-input-group__append, .el-input-group__prepend {
+  background-color: #6699FF;
+  color: #fff;
+  border: 1px solid #6699FF;
+}
+
+/** 定制版dialog*/
+.popu .el-dialog {
+  border-radius: 4px;
+  height: 186px;
+  margin: 0;
+}
+
+.popu .el-dialog__body {
+  padding: 0;
+  color: #606266;
+  line-height: 24px;
+  font-size: 14px
+}
+
+.popu .el-dialog__headerbtn .el-dialog__close {
+  display: none;
+  color: #909399
+}
+
+.popu .el-dialog__body .el-button {
+  width: 100%;
+  border-top: 1px solid #6699FF;
+  padding: 20px 0;
+}
+
+.popu .el-dialog__body .el-button.left {
+  border-radius: 0 0 0 4px;
+  border-right: 1px solid #6699FF;
+}
+
+.popu .el-dialog__body .el-button.right {
+  border-radius: 0 0 4px 0;
+}
+
+/** 定制版dialog*/
+
+.add-appdiv {
+  border: 1px #D0CACF solid;
+  border-radius: 4px;
+  padding: 30px;
+  margin-bottom: 30px;
+  background: #fff;
+}
+
+/*标签页*/
+.tab-card .el-tabs--border-card {
+  background: #fff;
+  border: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tab-card .el-tabs--border-card > .el-tabs__content {
+  padding: 0
+}
+
+.tab-card .el-tabs--border-card > .el-tabs__header {
+  background-color: #fff;
+  border-bottom: none;
+  margin: 0;
+  padding: 0;
+}
+
+.el-tabs--border-card > .el-tabs__header .el-tabs__item {
+  border: 1px solid transparent;
+}
+
+.tab-card .el-tabs__item {
+  background-color: #F2F2F2;
+  border-top: 4px #F2F2F2 solid;
+}
+
+.tab-card .el-tabs__item.is-active {
+  color: #6699FF;
+  border-top: 4px #6699FF solid;
+}
+
+.tab-card .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
+  color: #6699FF;
+  background-color: #fff;
+  border-right-color: transparent;
+  border-left-color: transparent
+}
+
+.tab-card .el-tabs__item:hover {
+  color: #6699FF;
+  cursor: pointer
+}
+
+/**form的label变灰色*/
+.gray-form .el-form-item__label {
+  color: #999;
+  padding: 0 30px 0 0;
+}
+
+.gray-form .el-form-item__content {
+  color: #333;
+}
+
+/*告警通知的弹框*/
+.view-msg .el-dialog {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 430px;
+  border-radius: 0;
+  background: #f2f2f2;
+}
+
+.view-msg .el-dialog__header, .view-msg .el-dialog__body, .warning .el-dialog__body {
+  padding: 0;
+}
+
+.warning .el-dialog {
+  position: absolute;
+  right: 10px;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.warning .el-dialog__header {
+  text-align: left;
+  padding-bottom: 15px;
+}
+
+/**对比工具的头像*/
+.avatar-uploader .el-upload {
+  border: 1px dashed #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: 222px;
+  height: 222px;
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: #6699FF;
+}
+
+/**添加页面的标签*/
+.add-label {
+  border-left: 3px #6699FF solid;
+  text-align: left;
+  font-size: 16px;
+  padding-left: 10px;
+  color: #343434;
+}
+
+/**dialog中的form表单标签和内容的距离*/
+.dialog .el-form-item__label {
+  padding: 0 30px 0 0;
+  color: #999;
+}
+
+@media screen and (min-width: 320px) and (max-width: 799px) {
+  .el-message {
+    min-width: 300px;
+  }
+
+  .el-message-box {
+    width: 300px;
+  }
+
+  .popu .el-dialog {
+    position: absolute;
+    left: 50%;
+    top: 18%;
+    margin-top: -81px;
+    margin-left: -150px;
+  }
+}
+
+@media screen and (min-width: 800px) {
+  .el-message {
+    min-width: 380px;
+  }
+
+  .el-message-box {
+    width: 420px;
+  }
+
+  .popu .el-dialog {
+    position: absolute;
+    left: 50%;
+    top: 26%;
+    margin-top: -81px;
+    margin-left: -210px;
+  }
+}
+
+/*所有Home界面公共css*/
+.bread-bar {
+  width: 50%;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.content-aside-close {
+  flex: 0 0 60px;
+  width: 60px;
+  background-color: #333;
+}
+
+.content-aside {
+  flex: 0 0 200px;
+  width: 200px;
+  background-color: #333;
+}
+
+.content-main {
+  padding-right: 5%;
+  background-color: #fff;
+  flex: 1;
+  overflow-y: scroll;
+  padding-top: 10px;
+}
