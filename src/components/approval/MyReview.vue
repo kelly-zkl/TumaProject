@@ -84,6 +84,7 @@
   </div>
 </template>
 <script>
+  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
   export default {
     data() {
       return {
@@ -106,6 +107,9 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       //全选  ==>  删除/结案
       selsChange(sels) {
         this.sels = sels;

@@ -30,7 +30,11 @@ axios.get("serverconfig.json").then((result) => {
   localStorage.setItem("ApiUrl", result.data.ApiUrl);
   localStorage.setItem("UserUrl", result.data.UserUrl);
   localStorage.setItem("faceUrl", result.data.faceUrl);
-  sessionStorage.setItem("user", JSON.stringify(result.data.user));
+
+  let user = JSON.parse(sessionStorage.getItem('user'));
+  if (!user) {
+    sessionStorage.setItem("user", JSON.stringify(result.data.user));
+  }
 
   Vue.prototype.$User_Url = result.data.UserUrl;
   axios.defaults.baseURL = result.data.ApiUrl;
@@ -46,7 +50,7 @@ Vue.prototype.faceUrl = "http://192.168.31.245/";
 
 axios.defaults.baseURL = "http://192.168.31.244:8090/meerkat-web/";
 
-Vue.prototype.$User_Url = "http://192.168.31.246:19191/manager-api";
+Vue.prototype.$User_Url = "http://192.168.31.244:8090/manager-api";
 
 Vue.prototype.$post = function (path, param, successMsg, failMsg, isLogin) {
   let config;

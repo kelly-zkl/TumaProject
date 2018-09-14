@@ -65,6 +65,8 @@
   </div>
 </template>
 <script>
+  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+
   export default {
     data() {
       return {
@@ -74,6 +76,9 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       addApproval() {
       },
       //格式化内容   有数据就展示，没有数据就显示--

@@ -98,8 +98,6 @@
             }
           }
         });
-        localStorage.setItem("user", JSON.stringify({save: this.savePsw, acc: '', psw: ''}));
-        sessionStorage.setItem("user", JSON.stringify({save: this.savePsw, acc: '', psw: ''}));
         this.$router.push('/dataOverview');
       },
       //获取验证码图片

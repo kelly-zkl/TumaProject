@@ -67,23 +67,27 @@
       </el-row>
       <el-table :data="normalList" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="人员编号" prop="caseName" min-width="150"
+        <el-table-column align="left" label="人员编号" prop="personCode" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="人员图像" prop="taskName" min-width="150"
+        <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="150"
+                         max-width="250" :formatter="formatterAddress">
+          <template slot-scope="scope">
+            <img v-bind:src="scope.row.faceUrl?faceUrl+scope.row.faceUrl:imgPath" style="width: 90px;height:90px"/>
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="年龄" prop="age" width="120"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="性别" prop="sex" width="120"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="IMSI" prop="imsiList" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="年龄" prop="followType" width="120"
+        <el-table-column align="left" label="手机号" prop="phone" width="150"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="性别" prop="followTarget" width="120"
+        <el-table-column align="left" label="身份证" prop="idCard" width="170"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="IMSI" prop="taskStatus" min-width="150"
+        <el-table-column align="left" label="姓名" prop="name" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="手机号" prop="caseName" width="150"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="身份证" prop="caseName" width="170"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="姓名" prop="caseName" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="所属名单" prop="caseName" width="150"
+        <el-table-column align="left" label="所属名单" prop="blackPersonType" width="150"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
@@ -153,10 +157,10 @@
   export default {
     data() {
       return {
-        query: {status: '', page: 1, size: 10},
+        query: {page: 1, size: 10},
         provinceList: json,
+        imgPath: require('../../assets/img/icon_people.png'),
         props: {value: 'o', label: 'n', children: 'c'},
-        caseTime: '',
         statuses: [{label: '全部', value: ''}, {label: '待处理', value: '1'}, {label: '处理中', value: '2'},
           {label: '已处理', value: '3'}, {label: '误报', value: '4'}],
         sexs: [{value: '0', label: '男'}, {value: '2', label: '女'}],
@@ -252,12 +256,22 @@
       },
       //获取IMSI告警列表
       getData() {
-
+        this.listLoading = true;
+        this.$post('archives/listPerson', this.query).then((data) => {
+          this.normalList = data.data.list;
+          this.count = data.data.count;
+          setTimeout(() => {
+            this.listLoading = false;
+          }, 500);
+        }).catch((err) => {
+          this.listLoading = false;
+          this.normalList = [];
+          this.$message.error(err);
+        });
       },
       //清除查询条件
       clearData() {
         this.query = {page: 1, size: 10};
-        this.caseTime = '';
         this.getData();
       },
       pageChange(index) {
@@ -270,20 +284,21 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'taskStatus') {
-          return row.taskStatus === "WAIT" ? '等待中' : row.taskStatus === "FINISH" ? '已完成' : row.taskStatus === "FAILE" ? '失败' : row.taskStatus === "EXECUTION" ? '进行中' : '--';
-        } else if (column.property === 'followType') {
-          return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '图像' : row.followType === "MAC" ? 'MAC' : '--';
-        } else if (column.property === 'status') {
-          return row.status === 'UNHANDLED' ? '未处理' : row.status === 'EXECUTION' ? '进行中' : row.status === 'HANDLED' ? '已结案' : '--';
-        } else if (column.property === 'followCount') {
-          return row.followCount === 0 ? 0 : row.followCount;
+        if (column.property === 'sex') {
+          return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
+        } else if (column.property === 'imsiList') {
+          let imsi = [];
+          row.imsiList.forEach((item) => {
+            imsi.push(item.imsi)
+          });
+          return imsi.join("，");
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
       }
     },
     mounted() {
+      this.getData();
       this.normalList = [{}, {}];
     }
   }

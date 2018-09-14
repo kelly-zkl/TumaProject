@@ -10,7 +10,7 @@
         </el-col>
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
-        <el-form-item style="margin-bottom: 10px">
+        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-input v-model="query.similarThreshold" placeholder="输入相似度阈值" size="medium" style="width: 260px">
             <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
                        :on-success="handleSuccess" :on-change="handleChange" size="medium"
@@ -32,7 +32,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
+        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
           <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable>
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
@@ -46,7 +46,7 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.belongsNumber" placeholder="人员名单" size="medium" style="width: 150px">
+          <el-select v-model="query.blackClassId" placeholder="人员名单" size="medium" style="width: 150px">
             <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -66,13 +66,17 @@
       </el-form>
       <el-table :data="imgList" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="现场图像" prop="spotFileUrl" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150"
+                         max-width="250" :formatter="formatterAddress">
+          <template slot-scope="scope">
+            <img v-bind:src="scope.row.sceneUrl?faceUrl+scope.row.sceneUrl:imgPath" style="width: 90px;height:90px"/>
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="年龄" prop="age" width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="告警场所" prop="place" min-width="150"
+        <el-table-column align="left" label="告警场所" prop="placeName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -80,15 +84,21 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警状态" prop="status" width="150"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="布控人员图像" prop="fileUrl" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="布控人员图像" prop="faceUrl" min-width="150"
+                         max-width="250" :formatter="formatterAddress">
+          <template slot-scope="scope">
+            <img v-bind:src="scope.row.faceUrl?faceUrl+scope.row.faceUrl:imgPath" style="width: 90px;height:90px"/>
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="所属名单" prop="belongsNumber" min-width="150"
+        <el-table-column align="left" label="所属名单" prop="blackClass" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoDetail(scope.row)">查看告警</el-button>
+            <el-button type="text" @click="gotoDetail(scope.row)"
+                       v-show="getButtonVial('warning:getFaceWarning')">查看告警
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -101,20 +111,22 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC} from "../../assets/js/util";
+  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
   import {globalValidImg, noSValidator, noValidator} from "../../assets/js/api";
 
   export default {
     data() {
       return {
         activeItem: 'T',
-        query: {status: '', page: 1, size: 10},
+        imgPath: require('../../assets/img/icon_people.png'),
+        query: {page: 1, size: 10},
         caseTime: '',
-        statuses: [{label: '全部', value: ''}, {label: '待处理', value: '1'}, {label: '处理中', value: '2'},
-          {label: '已处理', value: '3'}, {label: '误报', value: '4'}],
+        statuses: [{label: '待处理', value: 0}, {label: '处理中', value: 1},
+          {label: '已处理', value: 2}, {label: '误报', value: 3}],
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         count: 0,
         listLoading: false,
+        exportKey: 'warning:get:listFaceToday',
         imgList: [],
         places: [],
         uploadUrl: '',
@@ -130,8 +142,15 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       handleType(val, ev) {
         this.clearData();
+        this.exportKey = 'warning:get:listFaceToday';
+        if (this.activeItem === 'H') {
+          this.exportKey = 'warning:get:listFaceHistory';
+        }
       },
       //批量导入设备的文件格式验证
       handleChange(file, fileList) {
@@ -153,9 +172,9 @@
         }
       },
       gotoDetail(row) {
-        this.$router.push({path: '/faceWarningDetail', query: {id: row.id, faceId: row.faceId}});
+        this.$router.push({path: '/faceWarningDetail', query: {id: row.id}});
       },
-      //获取IMSI告警列表
+      //获取图像告警列表
       getData() {
         let url = 'warning/get/listFaceToday';
         if (this.activeItem === 'H') {
@@ -195,14 +214,12 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'taskStatus') {
-          return row.taskStatus === "WAIT" ? '等待中' : row.taskStatus === "FINISH" ? '已完成' : row.taskStatus === "FAILE" ? '失败' : row.taskStatus === "EXECUTION" ? '进行中' : '--';
+        if (column.property === 'status') {
+          return row.status === 0 ? '待处理' : row.taskStatus === 1 ? '处理中' : row.taskStatus === 2 ? '已处理' : row.taskStatus === 3 ? '误报' : '--';
         } else if (column.property === 'sex') {
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-        } else if (column.property === 'followCount') {
-          return row.followCount === 0 ? 0 : row.followCount;
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

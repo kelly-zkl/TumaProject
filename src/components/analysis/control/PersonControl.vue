@@ -9,19 +9,25 @@
           </el-tabs>
         </el-col>
         <el-col :span="8" align="right">
-          <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="deleteTask()">删除</el-button>
-          <el-button type="primary" size="medium" v-show="activeItem == 'EXECUTION'" :disabled="sels.length == 0"
-                     @click="finishTask()">结束布控
+          <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="deleteTask()"
+                     v-show="getButtonVial('disposition:delete')">删除
           </el-button>
-          <el-button type="primary" size="medium" @click="$router.push('/addControl')">添加布控</el-button>
+          <el-button type="primary" size="medium"
+                     v-show="activeItem == 'EXECUTION' && getButtonVial('disposition:batchUpdateStatus')"
+                     :disabled="sels.length == 0" @click="finishTask()">结束布控
+          </el-button>
+          <el-button type="primary" size="medium" @click="$router.push('/addControl')"
+                     v-show="getButtonVial('disposition:add')">添加布控
+          </el-button>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px"
+               v-show="getButtonVial('disposition:query')">
         <el-form-item style="margin-bottom: 10px">
           <el-input v-model="query.caseName" placeholder="输入案件名称" size="medium" style="width: 160px"
                     :maxlength=30></el-input>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
+        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
           <el-select v-model="query.placeId" placeholder="布控场所" size="medium" filterable clearable>
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
@@ -48,10 +54,13 @@
         <el-table-column align="left" label="操作" width="230">
           <template slot-scope="scope">
             <el-button type="text" @click="sels = [];sels.push(scope.row);finishTask()"
-                       v-show="activeItem== 'EXECUTION'">结束布控
+                       v-show="activeItem== 'EXECUTION' && getButtonVial('disposition:batchUpdateStatus')">结束布控
             </el-button>
-            <el-button type="text" @click="gotoDetail(scope.row)">查看告警</el-button>
-            <el-button type="text" @click="sels = [];sels.push(scope.row);deleteCase()">删除</el-button>
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('disposition:get')">查看告警
+            </el-button>
+            <el-button type="text" @click="sels = [];sels.push(scope.row);deleteCase()"
+                       v-show="getButtonVial('disposition:delete')">删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -64,7 +73,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC} from "../../../assets/js/util";
+  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -89,6 +98,9 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       //全选  ==>  删除/结案
       selsChange(sels) {
         this.sels = sels;

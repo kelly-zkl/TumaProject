@@ -10,7 +10,7 @@
         </el-col>
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
-        <el-form-item style="margin-bottom: 10px">
+        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-input placeholder="设备ID" v-model="query.deviceName" :maxlength="30" size="medium"
                     style="width: 160px"></el-input>
         </el-form-item>
@@ -22,8 +22,8 @@
           <el-input v-model="query.regional" placeholder="输入归属地" size="medium" style="width: 160px"
                     :maxlength=20></el-input>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable>
+        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:queryg')">
+          <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
           </el-select>
@@ -35,7 +35,7 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-button type="primary" icon="search" @click="isSearch = true;getData();getCouple()" size="medium">搜索
+          <el-button type="primary" icon="search" @click="getData()" size="medium">搜索
           </el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
@@ -64,7 +64,9 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoDetail(scope.row)">查看详情</el-button>
+            <el-button type="text" @click="gotoDetail(scope.row)"
+                       v-show="getButtonVial('archives:getImsiRecordById')">查看详情
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -90,6 +92,7 @@
         count: 0,
         list: [],
         places: [],
+        exportKey: 'archives:get:listImsiToday',
         listLoading: false,
         query: {page: 1, size: 10},
         pickerBeginDate: {
@@ -104,11 +107,14 @@
     },
     methods: {
       getButtonVial(msg) {
-//        return buttonValidator(msg);
-        return true;
+        return buttonValidator(msg);
       },
       handleClick(tab, event) {
         this.clearData();
+        this.exportKey = 'archives:get:listImsiToday';
+        if (this.activeName === 'second') {
+          this.exportKey = 'archives:get:listImsiHistory';
+        }
       },
       //查看IMSI详情
       gotoDetail(row) {
@@ -117,7 +123,7 @@
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'catchTime') {
-          return row.catchTime ? formatDate(new Date(row.catchTime), 'yyyy-MM-dd hh:mm:ss') : '--';
+          return row.catchTime ? formatDate(new Date(row.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'isp') {
           return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '未知';
         } else {
@@ -146,6 +152,7 @@
           this.query.startTime = this.cTime[0];
           this.query.endTime = this.cTime[1];
         }
+        this.listLoading = true;
         this.$post(url, this.query).then((data) => {
           this.list = data.data.list;
           this.count = data.data.count;
@@ -196,6 +203,7 @@
       if (time1) {
         this.cTime = time1.split(',');
       }
+      this.getPlaces();
       this.getData();
     }
   }

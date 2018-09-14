@@ -3,7 +3,7 @@
     <section class="content">
       <el-row>
         <el-col :span="18" align="left">
-          <el-form :inline="true" :model="query" align="left">
+          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('place:query')">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.placeName" placeholder="输入场所编码/名称" size="medium" :maxlength=30></el-input>
             </el-form-item>
@@ -27,8 +27,12 @@
           </el-form>
         </el-col>
         <el-col :span="6" align="right">
-          <el-button type="primary" size="medium" @click="deletePlace()" :disabled="sels.length==0">删除</el-button>
-          <el-button type="primary" size="medium" @click="addInfo()">添加场所</el-button>
+          <el-button type="primary" size="medium" @click="deletePlace()" :disabled="sels.length==0"
+                     v-show="getButtonVial('place:delete')">删除
+          </el-button>
+          <el-button type="primary" size="medium" @click="addInfo()"
+                     v-show="getButtonVial('place:add')">添加场所
+          </el-button>
         </el-col>
       </el-row>
       <el-table :data="placeList" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
@@ -40,6 +44,8 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="场所类型" prop="placeType" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="所属组织" prop="groupName" min-width="150"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="地区" prop="areaCode" min-width="180"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="详细地址" prop="detailAddress" min-width="180"
@@ -48,8 +54,12 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
-            <el-button type="text" @click="sels = [];sels.push(scope.row);deletePlace()">删除</el-button>
-            <el-button type="text" @click="updateInfo(scope.row)">修改</el-button>
+            <el-button type="text" @click="sels = [];sels.push(scope.row);deletePlace()"
+                       v-show="getButtonVial('place:delete')">删除
+            </el-button>
+            <el-button type="text" @click="updateInfo(scope.row)"
+                       v-show="getButtonVial('place:update')">修改
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -85,6 +95,13 @@
                 </el-option>
               </el-select>
             </el-form-item>
+            <el-form-item label="所属组织" align="left" prop="groupId">
+              <el-select v-model="addPlace.groupId" placeholder="请选择组织" filterable style="width: 100%">
+                <el-option v-for="item in organizations" :key="item.groupId" :label="item.groupName"
+                           :value="item.groupId">
+                </el-option>
+              </el-select>
+            </el-form-item>
             <el-form-item label="所属地区" required>
               <el-cascader :options="provinceList" :props="props" change-on-select filterable @change="placeChange"
                            v-model="selectedOptions2" placeholder="省市县区" clearable style="width: 100%">
@@ -111,7 +128,7 @@
               </el-row>
             </el-form-item>
           </el-form>
-          <div slot="footer" class="dialog-footer" align="center" v-show="getButtonVial('device:add')">
+          <div slot="footer" class="dialog-footer" align="center">
             <el-button @click="cancelSubmit()">取消</el-button>
             <el-button type="primary" @click="placeAdd(addTitle)">确定</el-button>
           </div>
@@ -130,7 +147,7 @@
 </template>
 <script>
   import json from '../../assets/city.json';
-  import {formatDate, isPC} from "../../assets/js/util";
+  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
   import MapView from './deviceSet/map';
   import {numValid} from "../../assets/js/api";
 
@@ -162,6 +179,7 @@
           {value: '8', label: '金融服务场所'}, {value: 'A', label: '购物场所'}, {value: 'B', label: '公共服务场所'},
           {value: 'C', label: '文化服务场所'}, {value: 'D', label: '公共休闲场所'}, {value: '9', label: '其他'}],
         areaList: [],
+        organizations: [],
         count: 0,
         listLoading: false,
         placeList: [],
@@ -186,6 +204,9 @@
             {required: true, message: '请输入场所编码', trigger: 'blur', maxlength: 30},
             {validator: idValidator, trigger: "change,blur"}
           ],
+          groupId: [
+            {required: true, message: '请选择所属组织', trigger: 'blur'}
+          ],
           placeType: [
             {required: true, message: '请选择场所类型', trigger: 'blur'}
           ],
@@ -197,8 +218,7 @@
     },
     methods: {
       getButtonVial(msg) {
-//        return buttonValidator(msg);
-        return true;
+        return buttonValidator(msg);
       },
       //删除场所
       deletePlace() {
@@ -264,6 +284,7 @@
         }
         this.$refs['addPlace'].validate((valid) => {
           if (valid) {
+            this.addPlace.groupName = this.getGroupName(this.addPlace.groupId);
             this.$post(url, this.addPlace, msg).then((data) => {
               this.runAddPlace = false;
               this.addPlace = {};
@@ -458,8 +479,24 @@
         });
         return lable;
       },
+      //获取组织列表
+      getOrganizations() {
+        this.$post('/manager/group/query', {
+          page: 1, size: 9999, userId: JSON.parse(sessionStorage.getItem("user")).userId
+        }).then((data) => {
+          this.organizations = data.data.content;
+        });
+      },
+      getGroupName(val) {
+        for (let item of this.groups) {
+          if (item.groupId === val) {
+            return item.groupName;
+          }
+        }
+      }
     },
     mounted() {
+      this.getOrganizations();
       this.getData();
     },
     components: {

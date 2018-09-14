@@ -3,7 +3,7 @@
     <section class="content">
       <el-row>
         <el-col :span="24" align="left">
-          <el-form :inline="true" :model="query" align="left">
+          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('camera:query')">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.cameraCode" placeholder="输入相机编码" size="medium" :maxlength=30></el-input>
             </el-form-item>
@@ -12,7 +12,7 @@
                            v-model="areaList" placeholder="全部地区" size="medium" filterable clearable>
               </el-cascader>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
+            <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
               <el-input placeholder="安装场所" v-model="query.placeName" :maxlength="30" size="medium"></el-input>
               <!--<el-select v-model="query.placeId" placeholder="安装场所" size="medium">-->
               <!--<el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">-->
@@ -44,7 +44,9 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
-            <el-button type="text" @click="runningSetPlace=true;addPlace=scope.row">设置场所</el-button>
+            <el-button type="text" @click="runningSetPlace=true;addPlace=scope.row"
+                       v-show="getButtonVial('camera:set:place')">设置场所
+            </el-button>
             <!--<el-button type="text" @click="gotoDetail(scope.row)">查看设备</el-button>-->
           </template>
         </el-table-column>
@@ -71,7 +73,7 @@
               </el-select>
             </el-form-item>
           </el-form>
-          <div slot="footer" class="dialog-footer" align="center" v-show="getButtonVial('device:add')">
+          <div slot="footer" class="dialog-footer" align="center">
             <el-button @click="runningSetPlace = false">取消</el-button>
             <el-button type="primary" @click="placeAdd()">确定</el-button>
           </div>
@@ -83,7 +85,7 @@
 <script>
   import json from '../../assets/city.json';
   import {globalValidExcel, noSValidator, noValidator} from "../../assets/js/api";
-  import {formatDate, isPC} from "../../assets/js/util";
+  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
 
   export default {
     data() {
@@ -108,8 +110,7 @@
     },
     methods: {
       getButtonVial(msg) {
-//        return buttonValidator(msg);
-        return true;
+        return buttonValidator(msg);
       },
       //设置场所
       placeAdd() {

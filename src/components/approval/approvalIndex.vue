@@ -4,10 +4,9 @@
     <el-aside :width="collapseWidth" v-bind:class="isCollapse ? 'content-aside-close' : 'content-aside'">
       <el-menu :default-active="$route.path" :collapse="isCollapse" unique-opened router mode="vertical"
                background-color="#333" text-color="#ccc" active-text-color="#59aaf4" @select="handleActive">
-        <el-menu-item index="/myApply">我申请的</el-menu-item>
-        <el-menu-item index="/myApproval">我审批的</el-menu-item>
-        <el-menu-item index="/myReview">我审阅的</el-menu-item>
-        <el-menu-item index="/imsiConver">翻码返回</el-menu-item>
+        <el-menu-item v-for="item in menu" :index="item.permissionUrl">
+          {{item.name}}
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <!--main-->
@@ -36,6 +35,7 @@
       return {
         isCollapse: false,
         collapseWidth: '200px',
+        menu: []
       }
     },
     methods: {
@@ -59,6 +59,14 @@
     },
     mounted() {
       sessionStorage.setItem("index", 5);
+      let val = JSON.parse(sessionStorage.getItem("menu")) || [];
+      if (val.length > 0) {
+        val.forEach((item) => {
+          if (item.orders == 5) {
+            this.menu = item.childs;
+          }
+        });
+      }
     }
   }
 </script>

@@ -23,7 +23,7 @@
                 </span>
               </el-form-item>
               <el-form-item label="归属地" align="left" style="margin: 0">
-                {<span style="font-size: 15px;color:#000">{{imsiDetail.regional ? imsiDetail.regional : '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{imsiDetail.regional ? imsiDetail.regional : '--'}}</span>
               </el-form-item>
             </el-col>
             <el-col :span="8">
@@ -34,12 +34,13 @@
                 <span style="font-size: 15px;color:#000">{{imsiDetail.area ? imsiDetail.area : '--'}}</span>
               </el-form-item>
               <el-form-item label="告警地点" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.location ? imsiDetail.location : '--'}}</span>
+                <span
+                  style="font-size: 15px;color:#000">{{imsiDetail.detailAddress ? imsiDetail.detailAddress : '--'}}</span>
               </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label="告警场所" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.place ? imsiDetail.place : '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{imsiDetail.placeName ? imsiDetail.placeName : '--'}}</span>
               </el-form-item>
               <el-form-item label="设备标识" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{imsiDetail.deviceName ? imsiDetail.deviceName : '--'}}</span>
@@ -61,8 +62,8 @@
       </el-row>
       <div v-show="activeItem=='person'" style="padding: 20px">
         <div class="face-main">
-          <div class="face-item" v-for="item in persons" :key="item.id">
-            <img :src="item.fileUrl?faceUrl+item.fileUrl:'../../assets/img/icon_people.png'"/>
+          <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
+            <img :src="item.fileUrl?faceUrl+item.fileUrl:imgPath"/>
             <el-form :model="item" align="left" label-width="60px" label-position="right"
                      style="position: absolute;top: 25px;left:180px">
               <el-form-item label="档案ID" style="margin:0">
@@ -77,12 +78,14 @@
               </el-form-item>
             </el-form>
           </div>
+          <span v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px">暂无数据</span>
         </div>
       </div>
       <div v-show="activeItem=='list'">
         <el-row style="margin-top: 15px">
           <el-col :span="18" align="left">
-            <el-form :inline="true" :model="query" align="left">
+            <el-form :inline="true" :model="query" align="left"
+                     v-show="getButtonVial('common:imsi:listImsiRecordBySpecialImsi')">
               <el-form-item style="margin-bottom: 10px">
                 <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable>
                   <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
@@ -105,7 +108,9 @@
             </el-form>
           </el-col>
           <el-col :span="6" align="right">
-            <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="gotoPath()">查看轨迹</el-button>
+            <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="gotoPath()"
+                       v-show="getButtonVial('warning:getImsiWarning')">查看轨迹
+            </el-button>
           </el-col>
         </el-row>
         <el-table :data="imsiList" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
@@ -113,7 +118,7 @@
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="抓取时间" prop="catchTime" width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="告警场所" prop="place" min-width="150"
+          <el-table-column align="left" label="告警场所" prop="placeName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -132,13 +137,16 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC} from "../../assets/js/util";
+  import json from '../../assets/city.json';
+  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
 
   export default {
     data() {
       return {
         listLoading: false,
         activeItem: 'person',
+        provinceList: json,
+        imgPath: require('../../assets/img/icon_people.png'),
         id: this.$route.query.id || '',
         imsi: this.$route.query.imsi || '',
         caseTime: '',
@@ -162,6 +170,9 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       handleType(val, event) {
         if (this.activeItem === 'person') {
           this.getPersons();
@@ -171,9 +182,13 @@
       },
       //获取imsi详情
       getImsiDetail() {
-        this.$post('warning/getWarning/' + this.id, {}).then((data) => {
+        this.$post('warning/getImsiWarning/' + this.id, {}).then((data) => {
           this.imsiDetail = data.data;
-          this.imsiDetail.timeStr = formatDate(new Date(this.imsiDetail.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+          this.imsiDetail.timeStr = formatDate(new Date(this.imsiDetail.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+          let code = (this.imsiDetail.areaCode ? this.imsiDetail.areaCode : this.imsiDetail.cityCode ? this.imsiDetail.cityCode : this.imsiDetail.provinceCode ? this.imsiDetail.provinceCode : 0);
+          if (code != 0) {
+            this.imsiDetail.area = this.getAreaLable(code);
+          }
         }).catch((err) => {
           this.$message.error(err);
         });
@@ -230,14 +245,10 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'taskStatus') {
-          return row.taskStatus === "WAIT" ? '等待中' : row.taskStatus === "FINISH" ? '已完成' : row.taskStatus === "FAILE" ? '失败' : row.taskStatus === "EXECUTION" ? '进行中' : '--';
-        } else if (column.property === 'followType') {
-          return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '图像' : row.followType === "MAC" ? 'MAC' : '--';
+        if (column.property === 'status') {
+          return row.status === 0 ? '待处理' : row.taskStatus === 1 ? '处理中' : row.taskStatus === 2 ? '已处理' : row.taskStatus === 3 ? '误报' : '--';
         } else if (column.property === 'catchTime') {
           return row.catchTime ? formatDate(new Date(row.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-        } else if (column.property === 'followCount') {
-          return row.followCount === 0 ? 0 : row.followCount;
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
@@ -249,6 +260,32 @@
         }).catch((err) => {
           this.places = [];
         });
+      },
+      //获得省市县
+      getAreaLable(code) {
+        let lable = '';
+        this.provinceList.forEach((province) => {
+          if (province.c) {
+            province.c.forEach((city) => {
+              if (city.c) {//省级+市级+县级
+                city.c.forEach((country) => {
+                  if (code === country.o) {
+                    lable = province.n + city.n + country.n;
+                  }
+                })
+              } else {//省级+市级
+                if (code === city.o) {
+                  lable = province.n + city.n;
+                }
+              }
+            })
+          } else {//只包含省级
+            if (code === province.o) {
+              lable = province.n;
+            }
+          }
+        });
+        return lable;
       }
     },
     mounted() {
@@ -256,9 +293,6 @@
       this.getPlaces();
       this.getImsiDetail();
       this.getPersons();
-      this.persons = [{id: '2312', imsi: '156456', phone: '12345678901'},
-        {id: '956', imsi: '156456', phone: '12345678901'},
-        {id: '565', imsi: '2656', phone: '12345678901'}, {id: '26546', imsi: '156456', phone: '12345678901'}]
     }
   }
 </script>

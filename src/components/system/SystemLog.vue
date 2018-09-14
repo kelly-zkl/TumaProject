@@ -23,8 +23,8 @@
           </el-col>
           <el-col :span="4" align="right">
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" icon="el-icon-plus" @click="importFile"
-                         v-show="getButtonVial('manager:group:create')" size="medium">导出
+              <el-button type="primary" @click="importFile" size="medium"
+                         v-show="getButtonVial('manager:group:create')">导出
               </el-button>
             </el-form-item>
           </el-col>

@@ -3,7 +3,7 @@
     <section class="content">
       <el-form :inline="true" :model="query" align="left" style="margin-top: 0">
         <el-row>
-          <el-col :span="20" align="left">
+          <el-col :span="20" align="left" v-show="getButtonVial('manager:user:query')">
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="账号/用户名/手机号" v-model="query.keyword" :maxlength="30"
                         style="width: 200px" size="medium"></el-input>
@@ -237,12 +237,11 @@
         resetPswVisible: false,
         addUserTitle: '添加成员',
         dialogWidth: isPC() ? '35%' : '90%',
-        userId: '',
+        userId: JSON.parse(sessionStorage.getItem("user")).userId,
         admin: {
           account: '', realName: '', password: '12345678', roleList: [],
-          groupId: ''
+          groupId: JSON.parse(sessionStorage.getItem("user")).groupId
         },
-//        admin1: {},
         rules: {
           account: [
             {required: true, message: '请输入账号', trigger: 'blur'}, {validator: nameValidate, trigger: "change,blur"}],
@@ -267,7 +266,7 @@
           ]
         },
         count: 0,
-        query: {page: 1, size: 10, myGroupId: ''},
+        query: {page: 1, size: 10, myGroupId: JSON.parse(sessionStorage.getItem("user")).groupId},
         users: [],
         setPsw: 'defaultPsw',
         role: '',
@@ -279,8 +278,7 @@
     },
     methods: {
       getButtonVial(msg) {
-//        return buttonValidator(msg);
-        return true;
+        return buttonValidator(msg);
       },
       //是否默认密码
       changePsw(val) {
@@ -293,12 +291,8 @@
       addInfo() {
         this.admin = {
           account: '', realName: '', password: '12345678', roleList: [],
-          groupId: ''
+          groupId: JSON.parse(sessionStorage.getItem("user")).groupId
         };
-//        this.admin1 = {
-//          account: '', realName: '', password: '12345678', roleList: [],
-//          groupId: ''
-//        };
         this.setPsw = 'defaultPsw';
         this.role = '';
         this.addUserVisible = true;
@@ -306,9 +300,6 @@
       },
       updateInfo(row) {
         this.admin = Object.assign({}, row);
-//        this.admin1.realName = row.realName;
-//        this.admin1.groupId = row.groupId;
-//        this.admin1.roleId = row.roleId;
         this.modifyUserVisible = true;
         this.addUserTitle = '修改成员';
         this.role = this.admin.roleList[0];
@@ -317,13 +308,6 @@
         this.role = '';
         this.addUserVisible = false;
         this.modifyUserVisible = false;
-//        if (title === '修改成员') {
-//          this.admin.realName = this.admin1.realName;
-//          this.admin.groupId = this.admin1.groupId;
-//          this.admin.roleId = this.admin1.roleId;
-//        } else {
-//          this.admin = this.admin1;
-//        }
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column, cellValue) {
@@ -410,7 +394,7 @@
         this.getUserList();
       },
       clearData() {
-        this.query = {page: 1, size: 10, myGroupId: ''};
+        this.query = {page: 1, size: 10, myGroupId: JSON.parse(sessionStorage.getItem("user")).groupId};
         this.getUserList();
       },
       onSubmit(formName, title) {
@@ -446,7 +430,7 @@
       //获取角色列表
       getRoles() {
         this.$post('/manager/role/query', {
-          page: 1, size: 9999, state: 0, creatorGroupId: ''
+          page: 1, size: 9999, state: 0, creatorGroupId: JSON.parse(sessionStorage.getItem("user")).groupId
         }).then((data) => {
           this.roles = data.data.content;
         })
@@ -459,9 +443,9 @@
       }
     },
     mounted() {
-      this.getUserList();
       this.getOrganizations();
       this.getRoles();
+      this.getUserList();
     }
   }
 </script>

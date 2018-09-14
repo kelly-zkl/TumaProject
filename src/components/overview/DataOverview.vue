@@ -128,10 +128,27 @@
         collCount: 0,
         catchData: {},
         warning: {},
-        hotSpots: []
+        hotSpots: [],
+        intervalid: null,
       }
     },
+    //页面关闭时停止更新设备在线状态
+    beforeDestroy() {
+      clearInterval(this.intervalid);
+    },
     methods: {
+      //定时刷新设备的在线状态
+      statusTask() {
+        if (!this.intervalid) {
+          this.intervalid = setInterval(() => {
+            this.getHotSpot();
+            this.getMapData();
+            this.getWarningCount();
+            this.getImsiList();
+            this.getLineData();
+          }, 5000);
+        }
+      },
       handleType(val) {
         this.activeItem = val;
         if (val === 'device') {//设备地图
@@ -293,7 +310,7 @@
       },
       getDeviceMap() {
         let myChart = echarts.init(document.getElementById('devicemap'));
-        myChart.clear();
+        // myChart.clear();
         let option = {
           backgroundColor: "#21206C",
           tooltip: {
@@ -370,7 +387,7 @@
       //相机--饼状图
       getCamera() {
         let myChart = echarts.init(document.getElementById('camera'));
-        myChart.clear();
+        // myChart.clear();
         let option = {
           color: ['#2CA85C', '#F04864'],
           title: {
@@ -400,7 +417,7 @@
       //侦码设备--饼状图
       getDevice() {
         let myChart = echarts.init(document.getElementById('device'));
-        myChart.clear();
+        // myChart.clear();
         let option = {
           color: ['#2CA85C', '#F04864'],
           title: {
@@ -455,7 +472,7 @@
       getImsiFace() {
         // 基于准备好的dom，初始化echarts实例
         let myChart = echarts.init(document.getElementById('imsi'));
-        myChart.clear();
+        // myChart.clear();
         // 指定图表的配置项和数据
         let option = {
           textStyle: {color: '#6D6C98'},
@@ -492,7 +509,7 @@
       getWarning() {
         // 基于准备好的dom，初始化echarts实例
         let myChart = echarts.init(document.getElementById('warning'));
-        myChart.clear();
+        // myChart.clear();
         // 指定图表的配置项和数据
         let option = {
           textStyle: {color: '#6D6C98'},
@@ -553,6 +570,7 @@
       this.getWarningCount();
       this.getImsiList();
       this.getLineData();
+      // this.statusTask();
     }
   }
 </script>

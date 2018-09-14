@@ -1,7 +1,7 @@
 <template>
   <div>
     <section class="content">
-      <el-form :inline="true" :model="query" align="left">
+      <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryRecord')">
         <el-form-item style="margin-bottom: 10px">
           <el-input v-model="query.imsi" placeholder="请输入IMSI" size="medium" style="width: 160px"
                     :maxlength=50></el-input>
@@ -51,7 +51,9 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="130">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoImsi(scope.row.imsi)">查看详情</el-button>
+            <el-button type="text" @click="gotoImsi(scope.row.imsi)"
+                       v-show="getButtonVial('collision:queryRecord')">查看详情
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -64,7 +66,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC} from "../../../assets/js/util";
+  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -80,10 +82,13 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       //跳转IMSI记录
       gotoImsi(imsi) {
         this.$router.push({
-          path: '/imsiRecords', query: {
+          path: '/collisionImsiRecords', query: {
             taskId: this.taskId,
             collisionType: this.collisionType, imsi: imsi
           }

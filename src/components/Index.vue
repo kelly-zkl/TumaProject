@@ -11,30 +11,12 @@
           </div>
           <div align="center" style="flex: 1;height: 60px;align-items: center;justify-content: center">
             <!--fa-th-large fa-tachometer-->
-            <el-button v-bind:class="indx==1?'item active':'item'" @click="handleSelectItem(1)">
-              <i class="fa fa-th-large fa-2x" style="font-size: 1.9em"></i>
-              <span class="title" style="margin-top: 5px">概览</span>
-            </el-button>
-            <el-button v-bind:class="indx==2?'item active':'item'" @click="handleSelectItem(2)">
-              <i class="fa  fa-warning fa-2x" style="font-size: 1.9em"></i>
-              <span class="title" style="margin-top: 5px">告警</span>
-            </el-button>
-            <el-button v-bind:class="indx==3?'item active':'item'" @click="handleSelectItem(3)">
-              <i class="fa fa-users fa-2x" style="font-size: 1.9em"></i>
-              <span class="title" style="margin-top: 5px">档案</span>
-            </el-button>
-            <el-button v-bind:class="indx==4?'item active':'item'" @click="handleSelectItem(4)">
-              <i class="fa fa-binoculars fa-2x" style="font-size: 1.9em"></i>
-              <span class="title" style="margin-top: 5px">侦查</span>
-            </el-button>
-            <el-button v-bind:class="indx==5?'item active':'item'" @click="handleSelectItem(5)">
-              <i class="fa fa-briefcase fa-2x" style="font-size: 2.3em"></i><span class="title">审批</span>
-            </el-button>
-            <el-button v-bind:class="indx==6?'item active':'item'" @click="handleSelectItem(6)">
-              <i class="fa fa-hdd-o fa-2x" style="font-size: 2.3em"></i><span class="title">设备</span>
-            </el-button>
-            <el-button v-bind:class="indx==7?'item active':'item'" @click="handleSelectItem(7)">
-              <i class="fa fa-cog fa-2x" style="font-size: 2.3em"></i><span class="title">系统</span>
+            <el-button v-for="item in menu" :key="item.permissionUrl"
+                       v-bind:class="indx==item.orders?'item active':'item'"
+                       @click="handleSelectItem(item)">
+              <i :class="item.icon"
+                 v-bind:style="item.orders<6?'font-size: 1.9em':item.orders>5?'font-size: 2.3em':'font-size: 2.1em'"></i>
+              <span class="title" v-bind:style="item.orders<6?'margin-top: 5px':''">{{item.name}}</span>
             </el-button>
           </div>
           <div align="right" style="height: 60px">
@@ -51,7 +33,7 @@
             </el-popover>
             <el-button class="item" style="text-align: center;width: 120px" v-popover:modifyPsw>
               <i class="fa fa-user fa-2x" style="display: inline-block;padding-top: 13px"></i>
-              <span style="display: inline-block;padding-left: 5px;height:60px;line-height: 60px">用户名</span>
+              <span style="display: inline-block;padding-left: 5px;height:60px;line-height: 60px">{{userName}}</span>
             </el-button>
             <div class="item" style="text-align: center" @click="$router.push({path: '/platforms'})">
               <i class="fa fa-retweet fa-2x" style="padding-top: 13px"></i>
@@ -198,8 +180,11 @@
         runImsiWarning: true,
         runFaceWarning: false,
         runModifyPsw: false,
+        userName: JSON.parse(sessionStorage.getItem("user")).realName || '',
+        userId: JSON.parse(sessionStorage.getItem("user")).userId,
         psw: {password: '', password1: '', password2: ''},
         imsiWarning: {},
+        menu: [],
         rules: {
           password1: [
             {required: true, message: '请输入新密码', trigger: 'blur'},
@@ -214,23 +199,9 @@
       }
     },
     methods: {
-      handleSelectItem(val) {
-        this.indx = val;
-        if (val === 1) {
-          this.$router.push('/dataOverview');
-        } else if (val === 2) {
-          this.$router.push('/imsiWarnings');
-        } else if (val === 3) {
-          this.$router.push('/imsiRecords');
-        } else if (val === 4) {
-          this.$router.push('/caseList');
-        } else if (val === 5) {
-          this.$router.push('/imsiCover');
-        } else if (val === 6) {
-          this.$router.push('/deviceMap');
-        } else if (val === 7) {
-          this.$router.push('/userList');
-        }
+      handleSelectItem(item) {
+        this.indx = item.orders;
+        this.$router.push(item.permissionUrl);
       },
       //退出
       loginOut() {
@@ -273,10 +244,23 @@
         this.$confirm('确定要清除所有的告警通知?', '提示', {type: 'info'}).then(() => {
         }).catch(() => {
         });
+      },
+      //获取用户按钮权限
+      getButton() {
+        //菜单类型(1:目录,2:菜单,3:按钮)
+        this.$post('/manager/permission/listByType/' + JSON.parse(sessionStorage.getItem("user")).userId + '/3', {}).then((data) => {
+          sessionStorage.setItem("button", JSON.stringify(data.data));
+        });
       }
     },
     mounted() {
+      this.getButton();
+
       this.indx = sessionStorage.getItem("index") ? sessionStorage.getItem("index") : 1;
+      this.userName = JSON.parse(sessionStorage.getItem("user")).realName || '';
+
+      this.userId = JSON.parse(sessionStorage.getItem("user")).userId;
+      this.menu = JSON.parse(sessionStorage.getItem("menu")) || [];
     }
   }
 </script>

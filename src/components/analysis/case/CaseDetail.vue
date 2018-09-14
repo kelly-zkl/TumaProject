@@ -16,7 +16,9 @@
             <span>{{caseDetail.timeStr}}</span>
           </el-col>
           <el-col :span="3">
-            <el-button type="text" @click="deleteCase()" size="medium">删除案件</el-button>
+            <el-button type="text" @click="deleteCase()" size="medium"
+                       v-show="getButtonVial('case:delete')">删除案件
+            </el-button>
           </el-col>
         </el-row>
         <el-row style="margin-bottom: 10px">
@@ -62,7 +64,7 @@
       </el-row>
       <div class="content" v-show="activeItem == 'collision'">
         <el-row>
-          <el-col :span="18">
+          <el-col :span="18" v-show="getButtonVial('collision:query')">
             <el-form :inline="true" :model="queryCollision" align="left">
               <el-form-item style="margin-bottom: 10px">
                 <el-input v-model="queryCollision.taskName" placeholder="任务名称" size="medium" style="width: 160px"
@@ -97,9 +99,11 @@
             </el-form>
           </el-col>
           <el-col :span="6">
-            <el-button type="primary" size="medium" @click="cancelCollis()" :disabled="selsColl.length == 0">取消关联
+            <el-button type="primary" size="medium" @click="cancelCollis()" :disabled="selsColl.length == 0"
+                       v-show="getButtonVial('collision:cancelCase')">取消关联
             </el-button>
-            <el-button type="primary" size="medium" @click="deleteCoTask()" :disabled="selsColl.length == 0">删除任务
+            <el-button type="primary" size="medium" @click="deleteCoTask()" :disabled="selsColl.length == 0"
+                       v-show="getButtonVial('collision:delete')">删除任务
             </el-button>
           </el-col>
         </el-row>
@@ -117,8 +121,12 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" min-width="125" max-width="250">
             <template slot-scope="scope">
-              <el-button type="text" @click="gotoCoDetail(scope.row.id,scope.row.collisionType)">查看</el-button>
-              <el-button type="text" @click="selsColl = [];selsColl.push(scope.row.id);deleteCoTask()">删除</el-button>
+              <el-button type="text" @click="gotoCoDetail(scope.row.id,scope.row.collisionType)"
+                         v-show="getButtonVial('collision:get')">查看
+              </el-button>
+              <el-button type="text" @click="selsColl = [];selsColl.push(scope.row.id);deleteCoTask()"
+                         v-show="getButtonVial('collision:delete')">删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -131,7 +139,7 @@
       </div>
       <div class="content" v-show="activeItem == 'follow'">
         <el-row>
-          <el-col :span="18">
+          <el-col :span="18" v-show="getButtonVial('follow:query')">
             <el-form :inline="true" :model="queryFollow" align="left">
               <el-form-item>
                 <el-input v-model="queryFollow.taskName" placeholder="任务名称" size="medium" style="width: 160px"
@@ -157,9 +165,11 @@
             </el-form>
           </el-col>
           <el-col :span="6">
-            <el-button type="primary" size="medium" @click="cancelFollow()" :disabled="selsFoll.length == 0">取消关联
+            <el-button type="primary" size="medium" @click="cancelFollow()" :disabled="selsFoll.length == 0"
+                       v-show="getButtonVial('follow:cancelCase')">取消关联
             </el-button>
-            <el-button type="primary" size="medium" @click="deleteFoTask()" :disabled="selsFoll.length == 0">删除任务
+            <el-button type="primary" size="medium" @click="deleteFoTask()" :disabled="selsFoll.length == 0"
+                       v-show="getButtonVial('follow:delete')">删除任务
             </el-button>
           </el-col>
         </el-row>
@@ -180,8 +190,11 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="160">
             <template slot-scope="scope">
-              <el-button type="text" @click="gotoFoDetail(scope.row)">查看</el-button>
-              <el-button type="text" @click="selsFoll = [];selsFoll.push(scope.row.id);deleteFoTask()">删除</el-button>
+              <el-button type="text" @click="gotoFoDetail(scope.row)" v-show="getButtonVial('follow:get')">查看
+              </el-button>
+              <el-button type="text" @click="selsFoll = [];selsFoll.push(scope.row.id);deleteFoTask()"
+                         v-show="getButtonVial('follow:delete')">删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -195,7 +208,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC} from "../../../assets/js/util";
+  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -223,6 +236,9 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       handleType(val) {
         if (this.activeItem === "collision") {//碰撞任务
           this.getCollisions();

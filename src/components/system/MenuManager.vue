@@ -3,14 +3,14 @@
     <section class="content">
       <el-form :inline="true" :model="query" align="left" style="margin-top: 0">
         <el-row>
-          <el-col :span="20" align="left">
+          <el-col :span="20" align="left" v-show="getButtonVial('manager:permission:query')">
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="菜单名称" v-model="query.name" :maxlength="30" size="medium"
                         style="width: 200px"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.type" placeholder="类型" size="medium" filterable
-                         style="width: 160px" clearable>
+              <el-select v-model="query.type" placeholder="全部类型" size="medium" filterable
+                         style="width: 160px" clearable @change="menuChange">
                 <el-option v-for="item in menuTypes" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
@@ -89,7 +89,7 @@
                          placeholder="请选择父级菜单" @change="handleChange" v-model="menu.pidArray"></el-cascader>
           </el-form-item>
           <el-form-item label="菜单图标">
-            <el-input v-model="menu.icon" placeholder="请输入菜单图标" :maxlength="20"></el-input>
+            <el-input v-model="menu.icon" placeholder="请输入菜单图标" :maxlength="30"></el-input>
           </el-form-item>
           <el-form-item label="菜单URL" v-show="menu.type != '3'" prop="permissionUrl">
             <el-input v-model="menu.permissionUrl" placeholder="请输入菜单URL" :maxlength="20"></el-input>
@@ -127,12 +127,10 @@
         addMenuVisible: false,
         dialogWidth: isPC() ? '35%' : '90%',
         menus: [],
-        query: {page: 1, size: 10, name: '', type: ''},
+        query: {page: 1, size: 10},
         count: 0,
-        menuTypes: [{value: '', label: '全部类型'}, {value: '1', label: '目录'}, {value: '2', label: '菜单'},
-          {value: '3', label: '按钮'}],
+        menuTypes: [{value: 1, label: '目录'}, {value: 2, label: '菜单'}, {value: 3, label: '按钮'}],
         menu: {type: 1},
-        menu1: {},
         addMenuTitle: '创建菜单',
         rules: {
           name: [
@@ -154,8 +152,11 @@
     },
     methods: {
       getButtonVial(msg) {
-//        return buttonValidator(msg);
-        return true;
+        return buttonValidator(msg);
+      },
+      menuChange(val) {
+        this.query.page = 1;
+        this.getMenus();
       },
       //父菜单
       handleChange(value) {
@@ -164,15 +165,6 @@
       //取消
       cancelSubmit(title) {
         this.addMenuVisible = false;
-        if (title === '修改菜单') {
-          this.menu.name = this.menu1.name;
-          this.menu.type = this.menu1.type;
-          this.menu.pidArray = this.menu1.pidArray;
-          this.menu.permissionUrl = this.menu1.permissionUrl;
-          this.menu.permissionValue = this.menu1.permissionValue;
-        } else {
-          this.menu = this.menu1;
-        }
       },
       //确认提交
       onSubmit(formName, title) {
@@ -207,19 +199,13 @@
       },
       //创建菜单
       addMenu() {
-        this.menu = {type: 1, pid: ''};
-        this.menu1 = {type: 1, pid: ''};
+        this.menu = {type: 1};
         this.addMenuTitle = '创建菜单';
         this.addMenuVisible = true;
       },
       //修改菜单
       modifyMenu(row) {
-        this.menu = row;
-        this.menu1.name = row.name;
-        this.menu1.type = row.type;
-        this.menu1.pidArray = row.pidArray;
-        this.menu1.permissionUrl = row.permissionUrl;
-        this.menu1.permissionValue = row.permissionValue;
+        this.menu = Object.assign({}, row);
         this.addMenuTitle = '修改菜单';
         this.addMenuVisible = true;
       },
@@ -291,14 +277,14 @@
       },
       //获取菜单树
       getMenuTree() {
-        this.$post('/manager/permission/menuTree/' + '' + '/2', {}).then((data) => {
+        this.$post('/manager/permission/menuTree/' + JSON.parse(sessionStorage.getItem("user")).userId + '/2', {}).then((data) => {
           this.menuTree = data.data;
         });
       }
     },
     mounted() {
-      this.getMenus();
       this.getMenuTree();
+      this.getMenus();
     }
   }
 </script>

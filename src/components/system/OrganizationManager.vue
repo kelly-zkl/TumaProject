@@ -3,7 +3,7 @@
     <section class="content">
       <el-form :inline="true" :model="query" align="left" style="margin-top: 0">
         <el-row>
-          <el-col :span="20" align="left">
+          <el-col :span="20" align="left" v-show="getButtonVial('manager:group:query')">
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="组织名称" v-model="query.groupName" :maxlength="20" size="medium"></el-input>
             </el-form-item>
@@ -114,7 +114,6 @@
         query: {page: 1, size: 10, groupName: '', userId: JSON.parse(sessionStorage.getItem("user")).userId},
         count: 0,
         group: {},
-        group1: {},
         addOrganizationTitle: '创建组织',
         addOrganizationVisible: false,
         rules: {
@@ -135,12 +134,6 @@
       //取消
       cancelSubmit(title) {
         this.addOrganizationVisible = false;
-        if (title === '修改组织') {
-          this.group.groupName = this.group1.groupName;
-          this.group.remark = this.group1.remark;
-        } else {
-          this.group = this.group1;
-        }
       },
       //确认提交
       onSubmit(formName, title) {
@@ -176,16 +169,13 @@
       //创建组织
       addOrganization() {
         this.group = {};
-        this.group1 = {};
         this.addOrganizationTitle = '创建组织';
         this.isShow = true;
         this.addOrganizationVisible = true;
       },
       //修改组织
       modifyOrganization(row) {
-        this.group = row;
-        this.group1.groupName = row.groupName;
-        this.group1.remark = row.remark;
+        this.group = Object.assign({}, row);
         this.addOrganizationTitle = '修改组织';
         this.isShow = false;
         this.addOrganizationVisible = true;
@@ -262,9 +252,9 @@
       },
     },
     mounted() {
-      this.getOrganizations();
       this.getAllGroups();
       this.getUserList();
+      this.getOrganizations();
     }
   }
 </script>

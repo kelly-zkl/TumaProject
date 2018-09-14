@@ -23,17 +23,25 @@
         </div>
         <h5 class="add-label">设置布控人员</h5>
         <div class="add-appdiv">
-          <el-form-item label="录入人员特征" align="left" prop="imsiList">
-            <el-tag :key="tag" v-for="tag in controlTask.imsiList" closable hit
-                    :disable-transitions="false" @close="handleClose(tag)">{{tag}}
-            </el-tag>
-            <el-input class="input-tag" v-show="inputVisible && controlTask.imsiList.length<20" v-model="inputValue"
-                      ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm"
-                      @blur="handleInputConfirm">
-            </el-input>
-            <el-button v-show="!inputVisible && controlTask.imsiList.length<20" class="button-tag" size="small"
-                       @click="showInput" type="primary" icon="el-icon-plus">IMSI
-            </el-button>
+          <el-form-item label="特征布控" align="left" style="margin: 0">
+            <el-upload :action="uploadUrl" list-type="picture-card" :before-remove="beforeRemove"
+                       :on-change="handleChange" :limit="20">
+              <i class="el-icon-plus"></i>
+            </el-upload>
+            <el-row style="margin-top: 15px">
+              <el-col :span="24">
+                <el-tag :key="tag" v-for="tag in controlTask.imsiList" closable hit
+                        :disable-transitions="false" @close="handleClose(tag)">{{tag}}
+                </el-tag>
+                <el-input class="input-tag" v-show="inputVisible && controlTask.imsiList.length<20" v-model="inputValue"
+                          ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm"
+                          @blur="handleInputConfirm">
+                </el-input>
+                <el-button v-show="!inputVisible && controlTask.imsiList.length<20" class="button-tag" size="small"
+                           @click="showInput" type="primary" icon="el-icon-plus">IMSI
+                </el-button>
+              </el-col>
+            </el-row>
           </el-form-item>
         </div>
         <h5 class="add-label">设置布控周期</h5>
@@ -95,11 +103,12 @@
         }
       };
       return {
-        controlTask: {cycleType: 'EVERYDAY', intervalType: 'ALLDAY', week: [], imsiList: []},
+        controlTask: {cycleType: 'EVERYDAY', intervalType: 'ALLDAY', week: [], imsiList: [], featureList: []},
         cases: [],
         places: [],
         inputVisible: false,
         inputValue: '',
+        uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         weeks: [{label: '周一', value: 0}, {label: '周二', value: 1}, {label: '周三', value: 2}, {label: '周四', value: 3},
           {label: '周五', value: 4}, {label: '周六', value: 5}, {label: '周日', value: 6}],
         rules: {
@@ -109,9 +118,6 @@
           placeList: [
             {required: true, message: '请选择布控场所', trigger: 'blur'}
           ],
-          imsiList: [
-            {required: true, message: '请录入人员特征', trigger: 'blur'}
-          ],
           startDate: [
             {required: true, message: '请选择布控有效期', trigger: 'blur'}
           ]
@@ -119,6 +125,25 @@
       }
     },
     methods: {
+      //图像个数变化
+      handleChange(file, fileList) {
+        this.controlTask.featureList = [];
+        console.log(fileList);
+        fileList.forEach((item) => {
+          if (item.status === 'success') {
+            let data = item.response;
+            if ('000000' === data.code) {
+              let img = {};
+              img.imageUrl = data.data.fileUrl;
+              this.controlTask.featureList.push(img);
+            }
+          }
+        });
+        console.log(this.controlTask.featureList);
+      },
+      beforeRemove(file, fileList) {
+        return this.$confirm(`确定移除 ${ file.name }？`);
+      },
       //删除标签
       handleClose(tag) {
         this.controlTask.imsiList.splice(this.controlTask.imsiList.indexOf(tag), 1);
@@ -139,7 +164,7 @@
         this.inputVisible = false;
         this.inputValue = '';
       },
-      //创建伴随任务
+      //创建布控任务
       createControlTask() {
         this.$refs['controlTask'].validate((valid) => {
           if (valid) {
@@ -159,6 +184,10 @@
               }
               this.controlTask.startTimeInterval = this.controlTask.timerange[0];
               this.controlTask.endTimeInterval = this.controlTask.timerange[1];
+            }
+            if (this.controlTask.featureList === 0 && this.controlTask.imsiList.length === 0) {
+              this.$message.error('请设置布控人员特征');
+              return;
             }
 
             this.controlTask.caseName = this.getCaseName();

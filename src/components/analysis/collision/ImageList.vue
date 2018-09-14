@@ -1,7 +1,7 @@
 <template>
   <div>
     <section class="content">
-      <el-form :inline="true" :model="query" align="left">
+      <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryRecord')">
         <el-form-item label="设备ID" style="margin-bottom: 10px">
           <el-input v-model="query.deviceId" placeholder="请输入设备ID" style="width: 160px" size="medium"
                     :maxlength=30></el-input>
@@ -55,7 +55,8 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="125" max-width="250">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoImage(faceUrl+scope.row.scensePicURL,scope.row.personID)">查看详情
+            <el-button type="text" @click="gotoImage(faceUrl+scope.row.scensePicURL,scope.row.personID)"
+                       v-show="getButtonVial('collision:queryRecord')">查看详情
             </el-button>
           </template>
         </el-table-column>
@@ -69,7 +70,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC} from "../../../assets/js/util";
+  import {formatDate, isPC,buttonValidator} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -88,6 +89,9 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       //任务类型-->IMSI、图像、疑似人员
       handleType(tab, event) {
 
@@ -113,7 +117,7 @@
       //跳转图像记录页面
       gotoImage(pic, personID) {
         this.$router.push({
-          path: '/imageRecords', query: {
+          path: '/collisionImageRecords', query: {
             taskId: this.taskId, personID: personID,
             collisionType: this.collisionType, picUrl: pic
           }

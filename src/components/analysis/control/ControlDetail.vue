@@ -19,7 +19,7 @@
           </el-col>
           <el-col :span="6" align="right">
             <el-button type="text" @click="runTaskDetail = true">查看任务</el-button>
-            <el-button type="text" @click="deleteTask()">删除任务</el-button>
+            <el-button type="text" @click="deleteTask()" v-show="getButtonVial('disposition:delete')">删除任务</el-button>
           </el-col>
         </el-row>
       </div>
@@ -199,7 +199,18 @@
       <div class="block gray-form">
         <el-form label-width="100px" :model="task" label-position="right" style="margin-right: 20px">
           <el-form-item label="布控编号" align="left" style="margin: 0">{{task.taskName}}</el-form-item>
-          <el-form-item label="布控人员" align="left" style="margin: 0">{{task.imsi}}</el-form-item>
+          <el-form-item label="布控人员" align="left" style="margin: 0">
+            <el-row :gutter="10">
+              <el-col :span="6" v-for="item in task.featureList" :key="item.imageId">
+                <img :src="item.imageUrl" style="width: 100%">
+              </el-col>
+            </el-row>
+            <el-row style="margin-top: 15px" v-show="task.imsiList.length >0">
+              <el-col :span="24">
+                {{task.imsi}}
+              </el-col>
+            </el-row>
+          </el-form-item>
           <el-form-item label="关联案件" align="left" style="margin: 0">{{task.caseName}}</el-form-item>
           <el-form-item label="创建时间" align="left" style="margin: 0">{{task.timeStr}}</el-form-item>
           <el-form-item label="布控状态" align="left" style="margin: 0">
@@ -221,7 +232,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC} from "../../../assets/js/util";
+  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
   import {globalValidImg, noSValidator, noValidator} from "../../../assets/js/api";
 
   export default {
@@ -261,6 +272,9 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       handleType(val) {
       },
       getTaskDetail() {
@@ -404,7 +418,6 @@
         this.query1.size = val;
         this.getImgData();
       },
-
       //场所
       getPlaces() {
         this.$post("place/query", {page: 1, size: 999999}).then((data) => {

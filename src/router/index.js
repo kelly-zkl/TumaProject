@@ -76,7 +76,7 @@ export default new Router({
       children: [
         {path: '/dataOverview', component: DataOverview, name: '概览'},
         {
-          path: '/warningHome',
+          path: '/imsiWarnings',
           component: WarningHome,
           name: '告警',
           children: [
@@ -87,7 +87,7 @@ export default new Router({
           ]
         },
         {
-          path: '/fileHome',
+          path: '/imsiRecords',
           component: FileHome,
           name: '档案',
           children: [
@@ -104,7 +104,7 @@ export default new Router({
           ]
         },
         {
-          path: '/analysisHome',
+          path: '/caseList',
           component: AnalysisHome,
           name: '侦查',
           children: [
@@ -127,7 +127,7 @@ export default new Router({
           ]
         },
         {
-          path: '/approvalIndex',
+          path: '/myApply',
           component: ApprovalIndex,
           name: '审批',
           children: [
@@ -140,7 +140,7 @@ export default new Router({
           ]
         },
         {
-          path: '/deviceHome',
+          path: '/deviceMap',
           component: DeviceHome,
           name: '设备',
           children: [
@@ -152,7 +152,7 @@ export default new Router({
           ]
         },
         {
-          path: '/systemHome',
+          path: '/systemLog',
           component: SystemHome,
           name: '系统',
           children: [

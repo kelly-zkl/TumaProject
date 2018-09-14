@@ -11,40 +11,41 @@
         </el-col>
       </el-row>
       <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px">
-        <el-form :model="imsiDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
+        <el-form :model="faceDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8" align="center">
-              <img :src="imsiDetail.spotFileUrl?faceUrl+imsiDetail.spotFileUrl:'../../assets/img/icon_people.png'"
+              <img :src="faceDetail.sceneUrl?faceUrl+faceDetail.sceneUrl:imgPath"
                    style="height: 240px;width: 240px;border: 1px #D7D7D7 dashed"/>
             </el-col>
             <el-col :span="8" align="left">
-              <img :src="imsiDetail.fileUrl?faceUrl+imsiDetail.fileUrl:'../../assets/img/icon_people.png'"
+              <img :src="faceDetail.faceUrl?faceUrl+faceDetail.faceUrl:imgPath"
                    style="height: 160px;width: 160px;border: 1px #D7D7D7 dashed"/>
               <el-form-item label="年龄" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.age ? imsiDetail.age : '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{faceDetail.age ? faceDetail.age : '--'}}</span>
               </el-form-item>
               <el-form-item label="性别" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.sex == 0 ? '男' : imsiDetail.sex == 1 ? '女' : '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{faceDetail.sex == 0 ? '男' : faceDetail.sex == 1 ? '女' : '--'}}</span>
               </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label="告警时间" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.timeStr ? imsiDetail.timeStr : '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{faceDetail.timeStr ? faceDetail.timeStr : '--'}}</span>
               </el-form-item>
               <el-form-item label="告警地区" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.area ? imsiDetail.area : '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{faceDetail.area ? faceDetail.area : '--'}}</span>
               </el-form-item>
               <el-form-item label="告警地点" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.location ? imsiDetail.location : '--'}}</span>
+                <span
+                  style="font-size: 15px;color:#000">{{faceDetail.detailAddress ? faceDetail.detailAddress : '--'}}</span>
               </el-form-item>
               <el-form-item label="告警场所" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.place ? imsiDetail.place : '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{faceDetail.placeName ? faceDetail.placeName : '--'}}</span>
               </el-form-item>
               <el-form-item label="设备标识" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.deviceName ? imsiDetail.deviceName : '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{faceDetail.deviceName ? faceDetail.deviceName : '--'}}</span>
               </el-form-item>
               <el-form-item label="设备ID" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.deviceId ? imsiDetail.deviceId : '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{faceDetail.deviceId ? faceDetail.deviceId : '--'}}</span>
               </el-form-item>
             </el-col>
           </el-row>
@@ -60,8 +61,8 @@
       </el-row>
       <div v-show="activeItem=='person'" style="padding: 20px">
         <div class="face-main">
-          <div class="face-item" v-for="item in persons" :key="item.id">
-            <img :src="item.fileUrl?faceUrl+item.fileUrl:'../../assets/img/icon_people.png'"/>
+          <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
+            <img :src="item.fileUrl?faceUrl+item.fileUrl:imgPath"/>
             <el-form :model="item" align="left" label-width="60px" label-position="right"
                      style="position: absolute;top: 25px;left:180px">
               <el-form-item label="档案ID" style="margin:0">
@@ -76,6 +77,7 @@
               </el-form-item>
             </el-form>
           </div>
+          <span v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px">暂无数据</span>
         </div>
       </div>
       <div v-show="activeItem=='list'">
@@ -122,7 +124,7 @@
           <el-table-column align="left" label="现场图像" prop="fileUrl" min-width="125"
                            max-width="250">
             <template slot-scope="scope">
-              <img v-bind:src="faceUrl+scope.row.fileUrl" style="width: 90px;height:90px"/>
+              <img v-bind:src="scope.row.fileUrl?faceUrl+scope.row.fileUrl:imgPath" style="width: 90px;height:90px"/>
             </template>
           </el-table-column>
           <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="150"
@@ -155,17 +157,19 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC} from "../../assets/js/util";
+  import json from '../../assets/city.json';
+  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
 
   export default {
     data() {
       return {
         listLoading: false,
         activeItem: 'person',
+        provinceList: json,
+        imgPath: require('../../assets/img/icon_people.png'),
         id: this.$route.query.id || '',
-        faceId: this.$route.query.faceId || '',
         caseTime: '',
-        imsiDetail: {},
+        faceDetail: {},
         faceList: [],
         persons: [],
         places: [],
@@ -185,6 +189,9 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       handleType(val, eve) {
         if (this.activeItem === 'person') {
           this.getPersons();
@@ -192,11 +199,15 @@
           this.getData();
         }
       },
-      //获取imsi详情
+      //获取图像告警详情
       getFaceDetail() {
-        this.$post('warning/getWarning/' + this.id, {}).then((data) => {
-          this.imsiDetail = data.data;
-          this.imsiDetail.timeStr = formatDate(new Date(this.imsiDetail.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+        this.$post('warning/getFaceWarning/' + this.id, {}).then((data) => {
+          this.faceDetail = data.data;
+          this.faceDetail.timeStr = formatDate(new Date(this.faceDetail.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+          let code = (this.faceDetail.areaCode ? this.faceDetail.areaCode : this.faceDetail.cityCode ? this.faceDetail.cityCode : this.faceDetail.provinceCode ? this.faceDetail.provinceCode : 0);
+          if (code != 0) {
+            this.faceDetail.area = this.getAreaLable(code);
+          }
         }).catch((err) => {
           this.$message.error(err);
         });
@@ -211,7 +222,7 @@
       },
       //根据imsi查找指定的对应人员
       getPersons() {
-        this.$post('common/face/listFaceByFaceId/' + this.faceId, {}).then((data) => {
+        this.$post('common/face/listFaceByFaceId/' + this.id, {}).then((data) => {
           this.persons = data.data;
         }).catch((err) => {
           this.$message.error(err);
@@ -272,18 +283,38 @@
         }).catch((err) => {
           this.places = [];
         });
+      },
+      //获得省市县
+      getAreaLable(code) {
+        let lable = '';
+        this.provinceList.forEach((province) => {
+          if (province.c) {
+            province.c.forEach((city) => {
+              if (city.c) {//省级+市级+县级
+                city.c.forEach((country) => {
+                  if (code === country.o) {
+                    lable = province.n + city.n + country.n;
+                  }
+                })
+              } else {//省级+市级
+                if (code === city.o) {
+                  lable = province.n + city.n;
+                }
+              }
+            })
+          } else {//只包含省级
+            if (code === province.o) {
+              lable = province.n;
+            }
+          }
+        });
+        return lable;
       }
     },
     mounted() {
       this.getPlaces();
       this.getFaceDetail();
       this.getPersons();
-      this.persons = [{id: '2312', imsi: '156456', phone: '12345678901'}, {
-        id: '956',
-        imsi: '156456',
-        phone: '12345678901'
-      },
-        {id: '565', imsi: '2656', phone: '12345678901'}, {id: '26546', imsi: '156456', phone: '12345678901'}]
     }
   }
 </script>

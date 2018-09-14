@@ -8,13 +8,13 @@
             <el-tab-pane label="已结案" name="HANDLED"></el-tab-pane>
           </el-tabs>
         </el-col>
-        <el-col :span="8" align="right">
+        <el-col :span="8" align="right" v-show="getButtonVial('case:add')">
           <el-button type="primary" size="medium" @click="showCreate()">创建新案件</el-button>
         </el-col>
       </el-row>
       <el-row style="padding-top: 15px">
         <el-col :span="18" align="left">
-          <el-form :inline="true" :model="query" align="left">
+          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('case:query')">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.caseName" placeholder="案件名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
@@ -45,10 +45,13 @@
           </el-form>
         </el-col>
         <el-col :span="6" align="right">
-          <el-button type="primary" size="medium" v-show="query.status == 'EXECUTION'" :disabled="sels.length == 0"
-                     @click="finishCase()">结案
+          <el-button type="primary" size="medium"
+                     v-show="query.status == 'EXECUTION' && getButtonVial('case:batchUpdateStatus')"
+                     :disabled="sels.length == 0" @click="finishCase()">结案
           </el-button>
-          <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="deleteCase()">删除</el-button>
+          <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="deleteCase()"
+                     v-show="getButtonVial('case:delete')">删除
+          </el-button>
         </el-col>
       </el-row>
       <el-table :data="caseList" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
@@ -60,10 +63,12 @@
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
             <el-button type="text" @click="sels = [];sels.push(scope.row);finishCase()"
-                       v-show="scope.row.status=='EXECUTION'">结案
+                       v-show="scope.row.status=='EXECUTION' && getButtonVial('case:batchUpdateStatus')">结案
             </el-button>
-            <el-button type="text" @click="gotoDetail(scope.row)">查看</el-button>
-            <el-button type="text" @click="sels = [];sels.push(scope.row);deleteCase()">删除</el-button>
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('case:get')">查看</el-button>
+            <el-button type="text" @click="sels = [];sels.push(scope.row);deleteCase()"
+                       v-show="getButtonVial('case:delete')">删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -117,7 +122,7 @@
 <script>
   import json from '../../../assets/city.json';
   import {noSValidator, noValidator} from "../../../assets/js/api";
-  import {formatDate, isPC} from "../../../assets/js/util";
+  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -192,6 +197,9 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       //全选  ==>  删除/结案
       selsChange(sels) {
         this.sels = sels;
@@ -349,7 +357,6 @@
     },
     mounted() {
       this.getData();
-//      this.$router.push({path: 'caseDetail'})
     }
   }
 </script>

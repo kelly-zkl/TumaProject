@@ -19,7 +19,7 @@
           </el-col>
           <el-col :span="6" align="right">
             <el-button type="text" @click="runTaskDetail = true">查看任务</el-button>
-            <el-button type="text" @click="deleteTask()">删除任务</el-button>
+            <el-button type="text" @click="deleteTask()" v-show="getButtonVial('collision:delete')">删除任务</el-button>
           </el-col>
         </el-row>
       </div>
@@ -33,7 +33,8 @@
           </el-tabs>
         </el-col>
         <el-col :span="8" align="right">
-          <el-button type="primary" size="medium" @click="exportData()">导出数据</el-button>
+          <el-button type="primary" size="medium" @click="exportData()" v-show="getButtonVial(exportKey)">导出数据
+          </el-button>
         </el-col>
       </el-row>
       <div v-show="activeType == 'IMSI'&&activeItem=='second'">
@@ -46,7 +47,7 @@
         <imsiList ref="imsiList"></imsiList>
       </div>
       <div class="content" style="margin-left: 10px" v-show="activeType == 'IMSI'&&activeItem=='first'">
-        <el-form :inline="true" :model="query" align="left">
+        <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryResult')">
           <el-form-item style="margin-bottom: 10px">
             <el-input v-model="query.imsi" placeholder="请输入IMSI" size="medium" style="width: 160px"
                       :maxlength=20></el-input>
@@ -90,7 +91,9 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="130">
             <template slot-scope="scope">
-              <el-button type="text" @click="gotoImsi(scope.row.imsi)">查看IMSI</el-button>
+              <el-button type="text" @click="gotoImsi(scope.row.imsi)"
+                         v-show="getButtonVial('collision:queryRecord')">查看IMSI
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -108,14 +111,15 @@
           </el-tabs>
         </el-col>
         <el-col :span="8" align="right">
-          <el-button type="primary" size="medium" @click="exportData()">导出数据</el-button>
+          <el-button type="primary" size="medium" @click="exportData()" v-show="getButtonVial(exportKey)">导出数据
+          </el-button>
         </el-col>
       </el-row>
       <div v-show="activeType == 'FACE'&&imageItem=='list'">
         <imageList ref="imageList"></imageList>
       </div>
       <div class="content" style="margin-left: 10px" v-show="activeType == 'FACE'&&imageItem=='image'">
-        <el-form :inline="true" :model="query" align="left">
+        <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryResult')">
           <el-form-item label="年龄">
             <el-row>
               <el-input v-model="query.age1" type="number" size="medium" style="width: 80px" :maxlength=3></el-input>
@@ -160,7 +164,8 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" min-width="125" max-width="250">
             <template slot-scope="scope">
-              <el-button type="text" @click="gotoImage(faceUrl+scope.row.scensePicURL,scope.row.personID)">查看图像
+              <el-button type="text" @click="gotoImage(faceUrl+scope.row.scensePicURL,scope.row.personID)"
+                         v-show="getButtonVial('collision:queryRecord')">查看图像
               </el-button>
             </template>
           </el-table-column>
@@ -205,7 +210,7 @@
 
 <script>
   import {isNull} from "../../../assets/js/api";
-  import {formatDate, isPC} from "../../../assets/js/util";
+  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
   import areaCount from '../collision/AreaCount.vue';
   import regionalCount from '../collision/RegionalCount.vue';
   import imsiList from '../collision/ImsiList.vue';
@@ -220,6 +225,7 @@
         activeType: "IMSI",
         activeItem: 'first',
         imageItem: 'image',
+        exportKey: 'collision:export:analyze',
         records: [],
         listLoading: false,
         runTaskDetail: false,
@@ -232,9 +238,18 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       //任务类型-->IMSI、图像、疑似人员
       handleType(tab, event) {
-
+        if (tab.name == 'image' || tab.name == 'first') {
+          this.exportKey = 'collision:export:analyze';
+        } else if (tab.name == 'fourth' || tab.name == 'list') {
+          this.exportKey = 'collision:export:record';
+        } else {
+          this.exportKey = 'collision:export:regional';
+        }
       },
       //碰撞结果导出
       exportData() {
@@ -376,8 +391,7 @@
         }).catch((err) => {
         });
       }
-    }
-    ,
+    },
     mounted() {
       this.taskId = this.$route.query.taskId || '';
       this.collisionType = this.$route.query.collisionType || '';

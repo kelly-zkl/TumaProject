@@ -1,7 +1,7 @@
 <template>
   <div>
     <section class="content">
-      <el-form :inline="true" :model="query" align="left">
+      <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:regional:count')">
         <el-form-item label="数量">
           <el-input v-model.number="query.count1" type="number" size="medium" style="width: 80px"
                     :maxlength=5></el-input>
@@ -32,7 +32,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC} from "../../../assets/js/util";
+  import {formatDate, isPC,buttonValidator} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -45,6 +45,9 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       //清除查询条件
       clearData() {
         this.query = {page: 1, size: 10};

@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="18" align="left">
+        <el-col :span="18" align="left" v-show="getButtonVial('collision:query')">
           <el-form :inline="true" :model="query" align="left">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.taskName" placeholder="任务名称" size="medium" style="width: 160px"
@@ -37,8 +37,12 @@
           </el-form>
         </el-col>
         <el-col :span="6" align="right">
-          <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="deleteTask()">删除</el-button>
-          <el-button type="primary" size="medium" @click="gotoAdd()">新建碰撞任务</el-button>
+          <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="deleteTask()"
+                     v-show="getButtonVial('collision:delete')">删除
+          </el-button>
+          <el-button type="primary" size="medium" @click="gotoAdd()"
+                     v-show="getButtonVial('collision:add')">新建碰撞任务
+          </el-button>
         </el-col>
       </el-row>
       <el-table :data="records" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
@@ -63,8 +67,12 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="125" max-width="250">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoDetail(scope.row.id,scope.row.collisionType)">查看</el-button>
-            <el-button type="text" @click="sels = [];sels.push(scope.row);deleteTask()">删除</el-button>
+            <el-button type="text" @click="gotoDetail(scope.row.id,scope.row.collisionType)"
+                       v-show="getButtonVial('collision:get')">查看
+            </el-button>
+            <el-button type="text" @click="sels = [];sels.push(scope.row);deleteTask()"
+                       v-show="getButtonVial('collision:delete')">删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -78,7 +86,7 @@
 </template>
 
 <script>
-  import {formatDate, isPC} from "../../../assets/js/util";
+  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -95,6 +103,9 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       //全选
       selsChange(sels) {
         this.sels = sels;

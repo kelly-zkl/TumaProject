@@ -3,7 +3,7 @@
     <section class="content">
       <el-form :inline="true" :model="query" align="left" style="margin-top: 0">
         <el-row>
-          <el-col :span="20" align="left">
+          <el-col :span="20" align="left" v-show="getButtonVial('manager:role:query')">
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="角色名称" v-model="query.roleName" :maxlength="30" size="medium"
                         style="width: 200px"></el-input>
@@ -50,7 +50,8 @@
             <el-button type="text" @click="roleInfo(scope.row)"
                        v-show="getButtonVial('manager:role:detail:*') && scope.row.roleType==0">查看
             </el-button>
-            <el-button v-show="getButtonVial('manager:role:update')" type="text" @click="modifyrole(scope.row)">修改
+            <el-button v-show="getButtonVial('manager:role:update') && scope.row.roleId!=1"
+                       type="text" @click="modifyrole(scope.row)">修改
             </el-button>
             <el-button @click="deleterole(scope.row.roleId)" type="text"
                        v-show="getButtonVial('manager:role:delete:*') && scope.row.roleType==1">删除
@@ -64,7 +65,7 @@
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
       <!--添加/修改角色-->
-      <el-dialog :title="addroleTitle" :visible.sync="addroleVisible" :width="dialogWidth" :before-close="handleClose">
+      <el-dialog :title="addroleTitle" :visible.sync="addroleVisible" :width="dialogWidth">
         <el-form ref="role" :model="role" :label-width="labelWidth" :rules="rules" labelPosition="right">
           <el-form-item label="角色名称" prop="roleName" align="left">
             <el-input v-model="role.roleName" placeholder="请输入角色名称" v-if="isShow" :maxlength="16"></el-input>
@@ -108,14 +109,13 @@
         labelWidth: isPC() ? '120px' : '80px',
         query: {
           page: 1, size: 10, roleName: '', roleType: '', lastNode: true,
-          creatorGroupId: ''
+          creatorGroupId: JSON.parse(sessionStorage.getItem("user")).groupId
         },
         count: 0,
         roleTypes: [{value: '', label: '全部类型'}, {value: 0, label: '通用'}, {value: 1, label: '自定义'}],
         roles: [],
         addroleTitle: '创建角色',
         role: {},
-        role1: {},
         rules: {
           roleName: [
             {required: true, message: '请输入角色名称', trigger: 'blur'}, {validator: nickValidator, trigger: "change,blur"}
@@ -127,8 +127,7 @@
     },
     methods: {
       getButtonVial(msg) {
-//        return buttonValidator(msg);
-        return true;
+        return buttonValidator(msg);
       },
       //创建角色
       addrole() {
@@ -140,10 +139,7 @@
       },
       //修改角色
       modifyrole(row) {
-        this.role = row;
-        this.role1.roleName = row.roleName;
-        this.role1.remark = row.remark;
-        this.role1.permissions = row.permissions;
+        this.role = Object.assign({}, row);
         this.addroleTitle = '修改角色';
         this.isShow = true;
         this.addroleVisible = true;
@@ -151,10 +147,7 @@
       },
       //查看角色
       roleInfo(row) {
-        this.role = row;
-        this.role1.roleName = row.roleName;
-        this.role1.remark = row.remark;
-        this.role1.permissions = row.permissions;
+        this.role = Object.assign({}, row);
         this.addroleTitle = '角色信息';
         this.isShow = false;
         this.addroleVisible = true;
@@ -163,23 +156,6 @@
       //取消
       cancelSubmit(title) {
         this.addroleVisible = false;
-        if (title === '修改角色' || title === '角色信息') {
-          this.role.roleName = this.role1.roleName;
-          this.role.remark = this.role1.remark;
-          this.role.permissions = this.role1.permissions;
-        } else {
-          this.role = this.role1;
-        }
-      },
-      handleClose(done) {
-        done();
-        if (this.addroleTitle === '修改角色' || this.addroleTitle === '角色信息') {
-          this.role.roleName = this.role1.roleName;
-          this.role.remark = this.role1.remark;
-          this.role.permissions = this.role1.permissions;
-        } else {
-          this.role = this.role1;
-        }
       },
       //确认提交
       onSubmit(formName, title) {
@@ -285,14 +261,14 @@
       },
       //获取菜单树
       getMenuTree() {
-        this.$post('/manager/permission/menuTree/' + '' + '/3', {}).then((data) => {
+        this.$post('/manager/permission/menuTree/' + JSON.parse(sessionStorage.getItem("user")).userId + '/3', {}).then((data) => {
           this.permissions = data.data;
         });
       }
     },
     mounted() {
-      this.getRoles();
       this.getMenuTree();
+      this.getRoles();
     }
   }
 </script>

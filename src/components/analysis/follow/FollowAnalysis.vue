@@ -3,7 +3,7 @@
     <section class="content">
       <el-row>
         <el-col :span="18" align="left">
-          <el-form :inline="true" :model="query" align="left">
+          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('follow:query')">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.taskName" placeholder="任务名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
@@ -37,8 +37,12 @@
           </el-form>
         </el-col>
         <el-col :span="6" align="right">
-          <el-button type="primary" size="medium" @click="deleteTask()" :disabled="sels.length == 0">删除任务</el-button>
-          <el-button type="primary" size="medium" @click="addFollowTask()">新建伴随任务</el-button>
+          <el-button type="primary" size="medium" @click="deleteTask()" :disabled="sels.length == 0"
+                     v-show="getButtonVial('follow:delete')">删除任务
+          </el-button>
+          <el-button type="primary" size="medium" @click="addFollowTask()"
+                     v-show="getButtonVial('follow:add')">新建伴随任务
+          </el-button>
         </el-col>
       </el-row>
       <el-table :data="tasks" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
@@ -56,8 +60,10 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoDetail(scope.row)">查看</el-button>
-            <el-button type="text" @click="sels = [];sels.push(scope.row);deleteTask()">删除</el-button>
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('follow:get')">查看</el-button>
+            <el-button type="text" @click="sels = [];sels.push(scope.row);deleteTask()"
+                       v-show="getButtonVial('follow:delete')">删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -70,6 +76,8 @@
   </div>
 </template>
 <script>
+  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
+
   export default {
     data() {
       return {
@@ -85,6 +93,9 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       //删除伴随任务
       deleteTask() {
         let arr = [];

@@ -26,7 +26,7 @@
         </el-col>
       </el-row>
       <div class="content" v-show="activeItem == 'record'">
-        <el-form :inline="true" :model="query" align="left">
+        <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('follow:queryRecord')">
           <el-form-item style="margin-bottom: 10px">
             <el-date-picker v-model="caseTime" type="datetimerange" range-separator="至"
                             start-placeholder="抓取时间" size="medium" end-placeholder="结束日期" clearable
@@ -95,7 +95,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC} from "../../../assets/js/util";
+  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -118,6 +118,9 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       handleType(val) {
         if (this.activeItem === 'record') {//所有imsi记录
           this.getList();

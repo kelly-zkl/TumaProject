@@ -6,8 +6,7 @@
           <el-col :span="8" align="right">
             <el-upload class="avatar-uploader" :action="uploadUrl" :show-file-list="false"
                        :on-success="handleAvatarSuccess1" :before-upload="beforeAvatarUpload1">
-              <img v-if="imageUrl1" :src="imageUrl1" class="avatar">
-              <img src="../../assets/img/icon_people.png" class="avatar" v-else>
+              <img :src="imageUrl1" class="avatar">
             </el-upload>
           </el-col>
           <el-col :span="8" align="center">
@@ -17,8 +16,7 @@
             <el-upload
               class="avatar-uploader" :action="uploadUrl" :show-file-list="false"
               :on-success="handleAvatarSuccess2" :before-upload="beforeAvatarUpload2">
-              <img v-if="imageUrl2" :src="imageUrl2" class="avatar">
-              <img src="../../assets/img/icon_people.png" class="avatar" v-else>
+              <img :src="imageUrl2" class="avatar">
             </el-upload>
           </el-col>
         </el-row>
@@ -33,8 +31,8 @@
     data() {
       return {
         uploadUrl: '',
-        imageUrl1: '',
-        imageUrl2: ''
+        imageUrl1: require('../../assets/img/icon_people.png'),
+        imageUrl2: require('../../assets/img/icon_people.png')
       }
     },
     methods: {

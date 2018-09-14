@@ -5,7 +5,7 @@
         <el-form :inline="true" :model="query" align="left">
           <el-row>
             <el-col :span="24" align="left">
-              <el-form-item style="margin-bottom: 10px">
+              <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('device:query')">
                 <el-input placeholder="设备名称/ID" v-model="query.deviceName" :maxlength="30"
                           @change="changeDevice" size="medium"></el-input>
               </el-form-item>
@@ -26,7 +26,7 @@
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item style="margin-bottom: 10px">
+              <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
                 <el-input placeholder="安装场所" v-model="query.placeName" :maxlength="30" size="medium"></el-input>
                 <!--<el-select v-model="query.placeId" placeholder="安装场所" size="medium" filterable clearable>-->
                 <!--<el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">-->
@@ -65,8 +65,8 @@
                            max-width="120"></el-table-column>
           <el-table-column align="left" label="操作" width="150">
             <template slot-scope="scope">
-              <el-button type="text" v-show="getButtonVial('set:restart')"
-                         @click.stop="runningSetPlace=true;addPlace=scope.row">设置场所
+              <el-button type="text" @click.stop="runningSetPlace=true;addPlace=scope.row"
+                         v-show="getButtonVial('device:set:place')">设置场所
               </el-button>
             </template>
           </el-table-column>
@@ -95,7 +95,7 @@
               </el-select>
             </el-form-item>
           </el-form>
-          <div slot="footer" class="dialog-footer" align="center" v-show="getButtonVial('device:add')">
+          <div slot="footer" class="dialog-footer" align="center">
             <el-button @click="runningSetPlace = false">取消</el-button>
             <el-button type="primary" @click="placeAdd()">确定</el-button>
           </div>
@@ -145,7 +145,6 @@
         sels: [],
         deviceForms: [],
         deviceTypes: [],
-        groups: [],
         intervalid: null,
       }
     },
@@ -155,8 +154,7 @@
     },
     methods: {
       getButtonVial(msg) {
-//        return buttonValidator(msg);
-        return true;
+        return buttonValidator(msg);
       },
       //省市县变化
       areaChange(value) {
@@ -309,12 +307,6 @@
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
       },
-      //获取组织列表
-      getOrganizations() {
-        this.$post('/manager/group/query', {page: 1, size: 9999, userId: this.userId}).then((data) => {
-          this.groups = data.data.content;
-        });
-      },
       //获取场所列表
       getPlaceName(id) {
         for (let item of this.places) {
@@ -334,7 +326,6 @@
     mounted() {
       sessionStorage.removeItem("deviceTab");
       this.getPlaces();
-//      this.getOrganizations();
       this.getData();
       this.getDeviceTypeAndForm();
       this.statusTask();

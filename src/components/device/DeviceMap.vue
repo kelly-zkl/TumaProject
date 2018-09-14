@@ -31,9 +31,22 @@
         deviceImsi: {},
         camera: {},
         mapData: [],
+        intervalid: null,
       }
     },
+    //页面关闭时停止更新设备在线状态
+    beforeDestroy() {
+      clearInterval(this.intervalid);
+    },
     methods: {
+      //定时刷新设备的在线状态
+      statusTask() {
+        if (!this.intervalid) {
+          this.intervalid = setInterval(() => {
+            this.getMapData();
+          }, 10000);
+        }
+      },
       //侦码设备
       codeChange(val) {
         this.getMapData();
@@ -167,8 +180,8 @@
       }
     },
     mounted() {
-      this.deviceMap();
       this.getMapData();
+      this.statusTask();
     }
   }
 </script>

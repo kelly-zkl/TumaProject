@@ -18,7 +18,7 @@
           </el-col>
           <el-col :span="6" align="right">
             <el-button type="text" @click="runTaskDetail = true">查看任务</el-button>
-            <el-button type="text" @click="deleteTask()">删除任务</el-button>
+            <el-button type="text" @click="deleteTask()" v-show="getButtonVial('follow:delete')">删除任务</el-button>
           </el-col>
         </el-row>
       </div>
@@ -30,11 +30,12 @@
           </el-tabs>
         </el-col>
         <el-col :span="8" align="right">
-          <el-button type="primary" size="medium" @click="exportData()">导出数据</el-button>
+          <el-button type="primary" size="medium" @click="exportData()" v-show="getButtonVial(exportKey)">导出数据
+          </el-button>
         </el-col>
       </el-row>
       <div class="content" v-show="activeItem == 'result'">
-        <el-form :inline="true" :model="queryResult" align="left">
+        <el-form :inline="true" :model="queryResult" align="left" v-show="getButtonVial('follow:queryResult')">
           <el-form-item style="margin-bottom: 10px">
             <el-input v-model="queryResult.imsi" placeholder="输入IMSI" size="medium" style="width: 160px"
                       :maxlength=20></el-input>
@@ -76,7 +77,8 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="130">
             <template slot-scope="scope">
-              <el-button type="text" @click="gotoImsi(scope.row)">查看IMSI</el-button>
+              <el-button type="text" @click="gotoImsi(scope.row)" v-show="getButtonVial('follow:queryRecord')">查看IMSI
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -87,7 +89,7 @@
         </div>
       </div>
       <div class="content" style="margin-left: 10px" v-show="activeItem == 'list'">
-        <el-form :inline="true" :model="queryRecord" align="left">
+        <el-form :inline="true" :model="queryRecord" align="left" v-show="getButtonVial('follow:queryRecord')">
           <el-form-item style="margin-bottom: 10px">
             <el-input v-model="queryRecord.imsi" placeholder="输入IMSI" size="medium" style="width: 160px"
                       :maxlength=20></el-input>
@@ -137,7 +139,8 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" min-width="125" max-width="250">
             <template slot-scope="scope">
-              <el-button type="text" @click="gotoImsi(scope.row)">查看IMSI</el-button>
+              <el-button type="text" @click="gotoImsi(scope.row)" v-show="getButtonVial('follow:queryRecord')">查看IMSI
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -170,7 +173,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC} from "../../../assets/js/util";
+  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -183,6 +186,7 @@
         activeItem: 'result',
         caseTime: "",
         results: [],
+        exportKey: 'follow:export:analyze',
         queryResult: {page: 1, size: 10},
         listLoading1: false,
         count1: 0,
@@ -194,11 +198,16 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       handleType(val) {
         if (this.activeItem === 'result') {//分析结果
           this.getResult();
+          this.exportKey = 'follow:export:analyze';
         } else {//所有记录
           this.getList();
+          this.exportKey = 'follow:export:record';
         }
       },
       //伴随结果导出
