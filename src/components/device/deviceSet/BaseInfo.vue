@@ -226,7 +226,7 @@
 </template>
 <script>
   import json from '../../../assets/city.json';
-  import MapView from './map';
+  import MapView from './BMap';
   import axios from "axios";
   import {ipValid, numValid, mobileValidator, noSValidator} from '../../../assets/js/api'
   import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
@@ -365,18 +365,18 @@
       },
       //地图选址，显示dialog
       selectAdd() {
-        if (!this.code) {
-          this.$message.error('请选择省市区');
-          return;
-        }
-        if (this.code) {
-          if (this.deviceMonitor.detailAddress) {
-            this.getAddress = this.getAreaLable(this.code) + this.deviceMonitor.detailAddress;
-          } else {
-            this.getAddress = this.getAreaLable(this.code);
-          }
-        }
-//        console.log(this.getAddress);
+        // if (!this.code) {
+        //   this.$message.error('请选择省市区');
+        //   return;
+        // }
+        // if (this.code) {
+        //   if (this.deviceMonitor.detailAddress) {
+        //     this.getAddress = this.getAreaLable(this.code) + this.deviceMonitor.detailAddress;
+        //   } else {
+        //     this.getAddress = this.getAreaLable(this.code);
+        //   }
+        // }
+        this.getAddress = this.selectedOptions2;
         this.mapVisible = true;
       },
       //地图选址完成设置经纬度

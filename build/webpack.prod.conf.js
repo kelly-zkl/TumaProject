@@ -13,6 +13,16 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const env = require('../config/prod.env')
 
+//让打包的时候输出可配置的文件
+var GenerateAssetPlugin = require('generate-asset-webpack-plugin');
+var createServerConfig = function (compilation) {
+  let cfgJson = {
+    ApiUrl: "http://192.168.31.244:8090/meerkat-web/",
+    UserUrl: "http://192.168.31.244:8090/manager-api"
+  };
+  return JSON.stringify(cfgJson);
+}
+
 const webpackConfig = merge(baseWebpackConfig, {
   module: {
     rules: utils.styleLoaders({
@@ -33,13 +43,17 @@ const webpackConfig = merge(baseWebpackConfig, {
       'process.env': env
     }),
     new UglifyJsPlugin({
+      parallel: 4,
       uglifyOptions: {
+        output: {
+          comments: false,
+          beautify: false,
+        },
         compress: {
           warnings: false
-        }
+        },
       },
-      sourceMap: config.build.productionSourceMap,
-      parallel: true
+      cache: true
     }),
     // extract css into its own file
     new ExtractTextPlugin({
@@ -54,8 +68,8 @@ const webpackConfig = merge(baseWebpackConfig, {
     // duplicated CSS from different components can be deduped.
     new OptimizeCSSPlugin({
       cssProcessorOptions: config.build.productionSourceMap
-        ? { safe: true, map: { inline: false } }
-        : { safe: true }
+        ? {safe: true, map: {inline: false}}
+        : {safe: true}
     }),
     // generate dist index.html with correct asset hash for caching.
     // you can customize output by editing /index.html
@@ -65,6 +79,14 @@ const webpackConfig = merge(baseWebpackConfig, {
       template: 'index.html',
       inject: true,
       minify: {
+        removeRedundantAttributes: true,
+        useShortDoctype: true,
+        removeEmptyAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        keepClosingSlash: true,
+        minifyJS: true,
+        minifyCSS: true,
+        minifyURLs: true,
         removeComments: true,
         collapseWhitespace: true,
         removeAttributeQuotes: true
@@ -81,7 +103,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     // split vendor js into its own file
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
-      minChunks (module) {
+      minChunks(module) {
         // any required modules inside node_modules are extracted to vendor
         return (
           module.resource &&
@@ -115,7 +137,15 @@ const webpackConfig = merge(baseWebpackConfig, {
         to: config.build.assetsSubDirectory,
         ignore: ['.*']
       }
-    ])
+    ]),
+    //让打包的时候输入可配置的文件
+    new GenerateAssetPlugin({
+      filename: 'serverconfig.json',
+      fn: (compilation, cb) => {
+        cb(null, createServerConfig(compilation));
+      },
+      extraFiles: []
+    })
   ]
 })
 
@@ -124,15 +154,14 @@ if (config.build.productionGzip) {
 
   webpackConfig.plugins.push(
     new CompressionWebpackPlugin({
-      asset: '[path].gz[query]',
-      algorithm: 'gzip',
+      asset: '[path].gz[query]',//目标资源名称。 [file] 会被替换成原始资源。[path] 会被替换成原始资源的路径， [query] 会被替换成查询字符串。默认值是 "[path].gz[query]"
+      algorithm: 'gzip',//可以是 function(buf, callback) 或者字符串。对于字符串来说依照 zlib 的算法(或者 zopfli 的算法)。默认值是 "gzip"
       test: new RegExp(
-        '\\.(' +
-        config.build.productionGzipExtensions.join('|') +
-        ')$'
+        '\\.(js|css)$'    //压缩 js 与 css
       ),
-      threshold: 10240,
-      minRatio: 0.8
+      threshold: 1024,//只有大小大于该值的资源会被处理。单位是 bytes。默认值是 0
+      minRatio: 0.8,//只有压缩率小于这个值的资源才会被处理。默认值是 0.8
+      deleteOriginalAssets: true//是否删除源文件（最好删除）
     })
   )
 }

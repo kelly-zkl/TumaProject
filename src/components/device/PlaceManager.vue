@@ -111,13 +111,13 @@
               <el-input v-model="addPlace.detailAddress" auto-complete="off" :maxlength="30"></el-input>
             </el-form-item>
             <el-form-item label="经纬度" required>
-              <el-row>
-                <el-col :span="10" style="margin-right: 15px">
+              <el-row :gutter="15" style="text-align: left">
+                <el-col :span="9">
                   <el-input v-model="addPlace.longitude" readonly>
                     <template slot="prepend">经度</template>
                   </el-input>
                 </el-col>
-                <el-col :span="10" style="margin-right: 15px">
+                <el-col :span="9">
                   <el-input v-model="addPlace.latitude" readonly>
                     <template slot="prepend">纬度</template>
                   </el-input>
@@ -148,7 +148,7 @@
 <script>
   import json from '../../assets/city.json';
   import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
-  import MapView from './deviceSet/map';
+  import MapView from './deviceSet/BMap';
   import {numValid} from "../../assets/js/api";
 
   export default {
@@ -338,13 +338,7 @@
       },
       //地图选址，显示dialog
       selectAdd() {
-        if (this.code) {
-          if (this.addPlace.detailAddress) {
-            this.getAddress = this.getAreaLable(this.code) + this.addPlace.detailAddress;
-          } else {
-            this.getAddress = this.getAreaLable(this.code);
-          }
-        }
+        this.getAddress = this.selectedOptions2;
         this.mapVisible = true;
       },
       //地图选址完成设置经纬度
@@ -427,7 +421,7 @@
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
       },
-      //根据区域码找到对应的省市县
+      //根据区域码找到对应的省市县编码
       getCode(code) {
         let arr = [];
         json.forEach((province) => {
@@ -488,7 +482,7 @@
         });
       },
       getGroupName(val) {
-        for (let item of this.groups) {
+        for (let item of this.organizations) {
           if (item.groupId === val) {
             return item.groupName;
           }

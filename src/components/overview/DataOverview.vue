@@ -92,7 +92,7 @@
           <el-table :data="imgList" :header-cell-style="{background:'#100E5A'}" stripe>
             <el-table-column align="left" label="图像">
               <template slot-scope="scope">
-                <img v-bind:src="faceUrl+scope.row.faceUrl" class="user-img"/>
+                <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" class="user-img"/>
               </template>
             </el-table-column>
             <el-table-column align="left" label="IMSI" prop="imsiList"
@@ -130,6 +130,7 @@
         warning: {},
         hotSpots: [],
         intervalid: null,
+        imgPath: require('../../assets/img/icon_people.png')
       }
     },
     //页面关闭时停止更新设备在线状态

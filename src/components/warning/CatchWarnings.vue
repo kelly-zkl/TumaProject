@@ -2,14 +2,14 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="16" align="left" class="tab-card">
+        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="今日告警" name="T"></el-tab-pane>
             <el-tab-pane label="历史告警" name="H"></el-tab-pane>
           </el-tabs>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-input v-model="query.similarThreshold" placeholder="输入相似度阈值" size="medium" style="width: 260px">
             <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
@@ -69,7 +69,8 @@
         <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150"
                          max-width="250" :formatter="formatterAddress">
           <template slot-scope="scope">
-            <img v-bind:src="scope.row.sceneUrl?faceUrl+scope.row.sceneUrl:imgPath" style="width: 90px;height:90px"/>
+            <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath"
+                 style="width: 90px;height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
         <el-table-column align="left" label="年龄" prop="age" width="120"
@@ -87,7 +88,8 @@
         <el-table-column align="left" label="布控人员图像" prop="faceUrl" min-width="150"
                          max-width="250" :formatter="formatterAddress">
           <template slot-scope="scope">
-            <img v-bind:src="scope.row.faceUrl?faceUrl+scope.row.faceUrl:imgPath" style="width: 90px;height:90px"/>
+            <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
+                 style="width: 90px;height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
         <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="150"
@@ -181,8 +183,8 @@
           url = 'warning/get/listFaceHistory';
         }
         if (!!this.caseTime) {
-          this.query.startTime = this.caseTime[1];
-          this.query.endTime = this.caseTime[0];
+          this.query.startTime = this.caseTime[1] / 1000;
+          this.query.endTime = this.caseTime[0] / 1000;
         }
 
         this.listLoading = true;
@@ -202,6 +204,7 @@
       clearData() {
         this.query = {page: 1, size: 10};
         this.caseTime = '';
+        this.count = 0;
         this.getData();
       },
       pageChange(index) {
@@ -236,7 +239,6 @@
     mounted() {
       this.getPlaces();
       this.getData();
-      this.imgList = [{}, {}];
     }
   }
 </script>

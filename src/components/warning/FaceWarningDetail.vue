@@ -2,10 +2,10 @@
   <div>
     <section class="content">
       <el-row style="background: #F2F2F2">
-        <el-col :span="8" align="left">
+        <el-col :span="8" align="left" style="text-align: left">
           <div style="font-size:14px;padding:10px 20px">当前状态：待处理</div>
         </el-col>
-        <el-col :span="8" :offset="8" align="right">
+        <el-col :span="8" :offset="8" align="right" style="text-align: right">
           <el-button type="text">查看处理记录</el-button>
           <el-button type="primary" size="medium">处理告警</el-button>
         </el-col>
@@ -14,37 +14,37 @@
         <el-form :model="faceDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8" align="center">
-              <img :src="faceDetail.sceneUrl?faceUrl+faceDetail.sceneUrl:imgPath"
-                   style="height: 240px;width: 240px;border: 1px #D7D7D7 dashed"/>
+              <img :src="faceDetail.sceneUrl?faceDetail.sceneUrl:imgPath"
+                   style="width: 90%;border: 1px #D7D7D7 dashed;border-radius: 10px"/>
             </el-col>
-            <el-col :span="8" align="left">
-              <img :src="faceDetail.faceUrl?faceUrl+faceDetail.faceUrl:imgPath"
-                   style="height: 160px;width: 160px;border: 1px #D7D7D7 dashed"/>
-              <el-form-item label="年龄" align="left" style="margin: 0">
+            <el-col :span="8" align="left" style="text-align: left">
+              <img :src="faceDetail.faceUrl?faceDetail.faceUrl:imgPath"
+                   style="height: 160px;width: 160px;border: 1px #D7D7D7 dashed;border-radius: 8px"/>
+              <el-form-item label="年龄" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000">{{faceDetail.age ? faceDetail.age : '--'}}</span>
               </el-form-item>
-              <el-form-item label="性别" align="left" style="margin: 0">
+              <el-form-item label="性别" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000">{{faceDetail.sex == 0 ? '男' : faceDetail.sex == 1 ? '女' : '--'}}</span>
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="告警时间" align="left" style="margin: 0">
+              <el-form-item label="告警时间" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000">{{faceDetail.timeStr ? faceDetail.timeStr : '--'}}</span>
               </el-form-item>
-              <el-form-item label="告警地区" align="left" style="margin: 0">
+              <el-form-item label="告警地区" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000">{{faceDetail.area ? faceDetail.area : '--'}}</span>
               </el-form-item>
-              <el-form-item label="告警地点" align="left" style="margin: 0">
+              <el-form-item label="告警地点" align="left" style="margin: 0;text-align: left">
                 <span
                   style="font-size: 15px;color:#000">{{faceDetail.detailAddress ? faceDetail.detailAddress : '--'}}</span>
               </el-form-item>
-              <el-form-item label="告警场所" align="left" style="margin: 0">
+              <el-form-item label="告警场所" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000">{{faceDetail.placeName ? faceDetail.placeName : '--'}}</span>
               </el-form-item>
-              <el-form-item label="设备标识" align="left" style="margin: 0">
+              <el-form-item label="设备标识" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000">{{faceDetail.deviceName ? faceDetail.deviceName : '--'}}</span>
               </el-form-item>
-              <el-form-item label="设备ID" align="left" style="margin: 0">
+              <el-form-item label="设备ID" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000">{{faceDetail.deviceId ? faceDetail.deviceId : '--'}}</span>
               </el-form-item>
             </el-col>
@@ -52,7 +52,7 @@
         </el-form>
       </div>
       <el-row>
-        <el-col :span="16" align="left" class="tab-card">
+        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="疑似人员" name="person"></el-tab-pane>
             <el-tab-pane label="所有记录" name="list"></el-tab-pane>
@@ -62,9 +62,9 @@
       <div v-show="activeItem=='person'" style="padding: 20px">
         <div class="face-main">
           <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
-            <img :src="item.fileUrl?faceUrl+item.fileUrl:imgPath"/>
+            <img :src="item.fileUrl?item.fileUrl:imgPath"/>
             <el-form :model="item" align="left" label-width="60px" label-position="right"
-                     style="position: absolute;top: 25px;left:180px">
+                     style="position: absolute;top: 25px;left:180px;text-align: left">
               <el-form-item label="档案ID" style="margin:0">
                 <span style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId}}</span>
                 <el-button type="text">查看人员</el-button>
@@ -82,8 +82,8 @@
       </div>
       <div v-show="activeItem=='list'">
         <el-row style="margin-top: 15px">
-          <el-col :span="18" align="left">
-            <el-form :inline="true" :model="query" align="left">
+          <el-col :span="18" align="left" style="text-align: left" v-show="getButtonVial('common:face:listFaceTrace')">
+            <el-form :inline="true" :model="query" align="left" style="text-align: left">
               <el-form-item label="相似度" style="margin-bottom: 10px">
                 <el-row>
                   <el-input v-model="query.startSimilar" type="number" size="medium" style="width: 80px"
@@ -114,7 +114,7 @@
               </el-form-item>
             </el-form>
           </el-col>
-          <el-col :span="6" align="right">
+          <el-col :span="6" align="right" style="text-align: right">
             <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="gotoPath()">查看轨迹</el-button>
           </el-col>
         </el-row>
@@ -124,7 +124,8 @@
           <el-table-column align="left" label="现场图像" prop="fileUrl" min-width="125"
                            max-width="250">
             <template slot-scope="scope">
-              <img v-bind:src="scope.row.fileUrl?faceUrl+scope.row.fileUrl:imgPath" style="width: 90px;height:90px"/>
+              <img v-bind:src="scope.row.fileUrl?scope.row.fileUrl:imgPath"
+                   style="width: 90px;height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
           <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="150"
@@ -147,7 +148,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <div class="block" style="margin-top: 20px" align="right">
+        <div class="block" style="margin-top: 20px;text-align: right" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
                          :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                          layout="total, sizes, prev, pager, next, jumper"></el-pagination>
@@ -230,11 +231,10 @@
       },
       getData() {
         if (!!this.caseTime) {
-          this.query.startTime = this.caseTime[1];
-          this.query.endTime = this.caseTime[0];
+          this.query.startTime = this.caseTime[1] / 1000;
+          this.query.endTime = this.caseTime[0] / 1000;
         }
 
-        this.query.imsi = this.imsi;
         this.listLoading = true;
         this.$post('common/face/listFaceTrace', this.query).then((data) => {
           this.faceList = data.data.list;
@@ -340,6 +340,7 @@
     width: 130px;
     height: 130px;
     border: 1px #D7D7D7 dashed;
+    border-radius: 8px;
     text-align: left;
   }
 

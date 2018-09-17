@@ -35,9 +35,9 @@
               <i class="fa fa-user fa-2x" style="display: inline-block;padding-top: 13px"></i>
               <span style="display: inline-block;padding-left: 5px;height:60px;line-height: 60px">{{userName}}</span>
             </el-button>
-            <div class="item" style="text-align: center" @click="$router.push({path: '/platforms'})">
-              <i class="fa fa-retweet fa-2x" style="padding-top: 13px"></i>
-            </div>
+            <!--<div class="item" style="text-align: center" @click="$router.push({path: '/platforms'})">-->
+            <!--<i class="fa fa-retweet fa-2x" style="padding-top: 13px"></i>-->
+            <!--</div>-->
             <div class="item" style="text-align: center" @click="loginOut">
               <i class="fa fa-sign-out fa-2x" style="padding-top: 13px"></i>
             </div>

@@ -190,7 +190,7 @@
 
 /*标签页*/
 .tab-card .el-tabs--border-card {
-  background: #fff;
+  background: #ECF0F1;
   border: none;
   -webkit-box-shadow: none;
   box-shadow: none;
@@ -203,7 +203,7 @@
 }
 
 .tab-card .el-tabs--border-card > .el-tabs__header {
-  background-color: #fff;
+  background-color: #ECF0F1;
   border-bottom: none;
   margin: 0;
   padding: 0;
@@ -214,24 +214,27 @@
 }
 
 .tab-card .el-tabs__item {
-  background-color: #F2F2F2;
-  border-top: 4px #F2F2F2 solid;
+  background-color: #ECF0F1;
+  border-top: 4px #ECF0F1 solid;
+  color: #343434 !important;
+  font-weight: bold;
+  font-size: 15px;
 }
 
 .tab-card .el-tabs__item.is-active {
-  color: #6699FF;
+  color: #6699FF !important;
   border-top: 4px #6699FF solid;
 }
 
 .tab-card .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
-  color: #6699FF;
-  background-color: #fff;
+  color: #6699FF !important;
+  background-color: #ECF0F1;
   border-right-color: transparent;
   border-left-color: transparent
 }
 
 .tab-card .el-tabs__item:hover {
-  color: #6699FF;
+  color: #6699FF !important;
   cursor: pointer
 }
 
@@ -253,7 +256,7 @@
   bottom: 0;
   width: 430px;
   border-radius: 0;
-  background: #f2f2f2;
+  background: #ECF0F1;
 }
 
 .view-msg .el-dialog__header, .view-msg .el-dialog__body, .warning .el-dialog__body {
@@ -264,7 +267,7 @@
   position: absolute;
   right: 10px;
   border-radius: 4px;
-  background: #fff;
+  background: #ECF0F1;
 }
 
 .warning .el-dialog__header {
@@ -359,7 +362,7 @@
 
 .content-main {
   padding-right: 5%;
-  background-color: #fff;
+  background-color: #ECF0F1;
   flex: 1;
   overflow-y: scroll;
   padding-top: 10px;

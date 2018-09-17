@@ -2,14 +2,14 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="16" align="left" class="tab-card">
+        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="今日记录" name="T"></el-tab-pane>
             <el-tab-pane label="历史记录" name="H"></el-tab-pane>
           </el-tabs>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-input v-model="query.similarThreshold" placeholder="输入相似度阈值" size="medium" style="width: 260px">
             <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
@@ -60,14 +60,15 @@
         <el-table-column align="left" label="现场图像" prop="imageUrl" min-width="125"
                          max-width="250">
           <template slot-scope="scope">
-            <img v-bind:src="scope.row.imageUrl?faceUrl+scope.row.imageUrl:imgPath" style="width: 90px;height:90px"/>
+            <img v-bind:src="scope.row.imageUrl?scope.row.imageUrl:imgPath"
+                 style="width: 90px;height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
         <el-table-column align="left" label="年龄" prop="age" width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="抓取场所" prop="placeName" min-width="150"
+        <el-table-column align="left" label="抓取场所" prop="place" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="抓取时间" prop="catchTime" width="170"
                          :formatter="formatterAddress"></el-table-column>
@@ -128,7 +129,7 @@
         this.clearData();
         this.exportKey = 'archives:get:listFaceToday';
         if (this.activeItem === 'H') {
-          this.exportKey = 'archives:get:listFaceRecordHistory';
+          this.exportKey = 'archives:get:listFaceHistory';
         }
       },
       //查看图像详情
@@ -158,7 +159,7 @@
       getData() {
         let url = 'archives/get/listFaceToday';
         if (this.activeItem === 'H') {
-          url = 'archives/get/listFaceRecordHistory';
+          url = 'archives/get/listFaceHistory';
         }
         if (this.query.deviceId) {
           if (noValidator(this.query.deviceId)) {
@@ -173,8 +174,8 @@
           }
         }
         if (this.cTime) {//时间戳的毫秒转化成秒
-          this.query.startTime = this.cTime[0];
-          this.query.endTime = this.cTime[1];
+          this.query.startTime = this.cTime[0] / 1000;
+          this.query.endTime = this.cTime[1] / 1000;
         }
         this.listLoading = true;
         this.$post(url, this.query).then((data) => {
@@ -198,6 +199,7 @@
         } else {
           this.cTime = '';
         }
+        this.count = 0;
         this.getData();
       },
       pageChange(index) {

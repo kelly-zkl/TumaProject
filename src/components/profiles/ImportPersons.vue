@@ -58,17 +58,17 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="6" align="right">
-          <el-button type="primary" size="medium" style="margin-bottom: 10px"
-                     @click="$router.push('/listData')">名单入库
-          </el-button>
-          <el-button type="primary" size="medium" style="margin-bottom: 10px"
-                     @click="$router.push('/listManage')">名单管理
-          </el-button>
-          <el-button type="primary" size="medium" style="margin-bottom: 10px"
-                     @click="runningAddPerson=true;addPerson={}">添加人员
-          </el-button>
-        </el-col>
+        <!--<el-col :span="6" align="right">-->
+        <!--<el-button type="primary" size="medium" style="margin-bottom: 10px"-->
+        <!--@click="$router.push('/listData')">名单入库-->
+        <!--</el-button>-->
+        <!--<el-button type="primary" size="medium" style="margin-bottom: 10px"-->
+        <!--@click="$router.push('/listManage')">名单管理-->
+        <!--</el-button>-->
+        <!--<el-button type="primary" size="medium" style="margin-bottom: 10px"-->
+        <!--@click="runningAddPerson=true;addPerson={}">添加人员-->
+        <!--</el-button>-->
+        <!--</el-col>-->
       </el-row>
       <el-table :data="vipList" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
@@ -77,7 +77,8 @@
         <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="150"
                          max-width="250" :formatter="formatterAddress">
           <template slot-scope="scope">
-            <img v-bind:src="scope.row.faceUrl?faceUrl+scope.row.faceUrl:imgPath" style="width: 90px;height:90px"/>
+            <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
+                 style="width: 90px;height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
         <el-table-column align="left" label="年龄" prop="age" width="120"

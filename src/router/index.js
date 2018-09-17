@@ -100,7 +100,7 @@ export default new Router({
             {path: '/imsiDetail', component: ImsiDetail, name: 'IMSI详情'},
             {path: '/faceDetail', component: FaceDetail, name: '图像详情'},
             {path: '/listData', component: ListData, name: '名单入库'},
-            {path: '/pathLine', component: PathLine, name: '轨迹'}
+            {path: '/pathLine', component: PathLine, name: '轨迹跟踪'}
           ]
         },
         {

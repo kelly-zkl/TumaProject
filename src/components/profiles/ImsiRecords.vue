@@ -2,14 +2,14 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="16" align="left" class="tab-card">
+        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
             <el-tab-pane label="今日记录" name="first"></el-tab-pane>
             <el-tab-pane label="历史记录" name="second"></el-tab-pane>
           </el-tabs>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-input placeholder="设备ID" v-model="query.deviceName" :maxlength="30" size="medium"
                     style="width: 160px"></el-input>
@@ -149,8 +149,8 @@
           }
         }
         if (this.cTime) {//时间戳的毫秒转化成秒
-          this.query.startTime = this.cTime[0];
-          this.query.endTime = this.cTime[1];
+          this.query.startTime = this.cTime[0] / 1000;
+          this.query.endTime = this.cTime[1] / 1000;
         }
         this.listLoading = true;
         this.$post(url, this.query).then((data) => {

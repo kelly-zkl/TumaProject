@@ -29,27 +29,16 @@ Vue.config.productionTip = true;
 axios.get("serverconfig.json").then((result) => {
   localStorage.setItem("ApiUrl", result.data.ApiUrl);
   localStorage.setItem("UserUrl", result.data.UserUrl);
-  localStorage.setItem("faceUrl", result.data.faceUrl);
-
-  let user = JSON.parse(sessionStorage.getItem('user'));
-  if (!user) {
-    sessionStorage.setItem("user", JSON.stringify(result.data.user));
-  }
 
   Vue.prototype.$User_Url = result.data.UserUrl;
   axios.defaults.baseURL = result.data.ApiUrl;
-  Vue.prototype.faceUrl = result.data.faceUrl;
 }).catch((error) => {
   window.console.log(error)
 });
-Vue.prototype.faceUrl = localStorage.getItem("faceUrl");
 axios.defaults.baseURL = localStorage.getItem("ApiUrl");
 Vue.prototype.$User_Url = localStorage.getItem("UserUrl");
 
-Vue.prototype.faceUrl = "http://192.168.31.245/";
-
 axios.defaults.baseURL = "http://192.168.31.244:8090/meerkat-web/";
-
 Vue.prototype.$User_Url = "http://192.168.31.244:8090/manager-api";
 
 Vue.prototype.$post = function (path, param, successMsg, failMsg, isLogin) {

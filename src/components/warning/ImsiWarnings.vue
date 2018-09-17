@@ -2,14 +2,15 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="16" align="left" class="tab-card">
+        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="今日告警" name="T"></el-tab-pane>
             <el-tab-pane label="历史告警" name="H"></el-tab-pane>
           </el-tabs>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px" v-show="getButtonVial(exportKey)">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left"
+               v-show="getButtonVial(exportKey)">
         <el-form-item style="margin-bottom: 10px">
           <el-input v-model="query.imsi" placeholder="输入IMSI" size="medium" style="width: 160px"
                     :maxlength=30></el-input>
@@ -24,7 +25,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
+        <el-form-item style="margin-bottom: 10px" v-if="activeItem=='H'">
           <el-date-picker v-model="caseTime" type="datetimerange" range-separator="至"
                           start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                           :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
@@ -129,8 +130,8 @@
           url = 'warning/get/listImsiHistory';
         }
         if (!!this.caseTime) {
-          this.query.startTime = this.caseTime[1];
-          this.query.endTime = this.caseTime[0];
+          this.query.startTime = this.caseTime[1] / 1000;
+          this.query.endTime = this.caseTime[0] / 1000;
         }
 
         this.listLoading = true;
@@ -149,7 +150,12 @@
       //清除查询条件
       clearData() {
         this.query = {page: 1, size: 10};
-        this.caseTime = '';
+        if (this.activeItem === 'T') {
+          this.cTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        } else {
+          this.cTime = '';
+        }
         this.getData();
       },
       pageChange(index) {

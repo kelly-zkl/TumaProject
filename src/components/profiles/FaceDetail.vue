@@ -10,14 +10,14 @@
         <el-form :model="faceDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8" align="center">
-              <img :src="faceDetail.senceImageUrl?faceUrl+faceDetail.senceImageUrl:imgPath"
-                   style="height: 240px;width: 240px;border: 1px #D7D7D7 dashed"/>
+              <img :src="faceDetail.senceImageUrl?faceDetail.senceImageUrl:imgPath"
+                   style="width: 90%;border: 1px #D7D7D7 dashed;border-radius: 10px"/>
             </el-col>
             <el-col :span="8" align="left">
-              <img :src="faceDetail.imageUrl?faceUrl+faceDetail.imageUrl:imgPath"
-                   style="height: 160px;width: 160px;border: 1px #D7D7D7 dashed"/>
+              <img :src="faceDetail.imageUrl?faceDetail.imageUrl:imgPath"
+                   style="height: 160px;width: 160px;border: 1px #D7D7D7 dashed;border-radius: 8px"/>
               <el-form-item label="年龄" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{faceDetail.age ? faceDetail.age : '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{faceDetail.age}}</span>
               </el-form-item>
               <el-form-item label="性别" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{faceDetail.sex == 0 ? '男' : faceDetail.sex == 1 ? '女' : '--'}}</span>
@@ -35,7 +35,7 @@
                   style="font-size: 15px;color:#000">{{faceDetail.detailAddress ? faceDetail.detailAddress : '--'}}</span>
               </el-form-item>
               <el-form-item label="抓取场所" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{faceDetail.placeName ? faceDetail.placeName : '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{faceDetail.place ? faceDetail.place : '--'}}</span>
               </el-form-item>
               <el-form-item label="设备标识" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{faceDetail.deviceName ? faceDetail.deviceName : '--'}}</span>
@@ -58,7 +58,7 @@
       <div v-show="activeItem=='person'" style="padding: 20px">
         <div class="face-main">
           <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
-            <img :src="item.fileUrl?faceUrl+item.fileUrl:imgPath"/>
+            <img :src="item.fileUrl?item.fileUrl:imgPath"/>
             <el-form :model="item" align="left" label-width="60px" label-position="right"
                      style="position: absolute;top: 25px;left:180px">
               <el-form-item label="档案ID" style="margin:0">
@@ -79,7 +79,7 @@
       <div v-show="activeItem=='list'">
         <el-row style="margin-top: 15px">
           <el-col :span="18" align="left">
-            <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('archives:getFaceRecordById')">
+            <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('common:face:listFaceTrace')">
               <el-form-item label="相似度" style="margin-bottom: 10px">
                 <el-row>
                   <el-input v-model="query.age1" type="number" size="medium" style="width: 80px"
@@ -122,7 +122,8 @@
           <el-table-column align="left" label="现场图像" prop="fileUrl" min-width="125"
                            max-width="250">
             <template slot-scope="scope">
-              <img v-bind:src="scope.row.fileUrl?faceUrl+scope.row.fileUrl:imgPath" style="width: 90px;height:90px"/>
+              <img v-bind:src="scope.row.fileUrl?scope.row.fileUrl:imgPath"
+                   style="width: 90px;height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
           <el-table-column align="left" label="相似度" prop="followTarget" min-width="150"
@@ -202,9 +203,7 @@
           this.faceDetail = data.data;
           this.faceDetail.timeStr = formatDate(new Date(this.faceDetail.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss');
           let code = (this.faceDetail.areaCode ? this.faceDetail.areaCode : this.faceDetail.cityCode ? this.faceDetail.cityCode : this.faceDetail.provinceCode ? this.faceDetail.provinceCode : 0);
-          if (code != 0) {
-            this.faceDetail.area = this.getAreaLable(code);
-          }
+          this.faceDetail.area = this.getAreaLable(code);
         }).catch((err) => {
           this.$message.error(err);
         });
@@ -227,11 +226,10 @@
       },
       getData() {
         if (!!this.caseTime) {
-          this.query.startTime = this.caseTime[1];
-          this.query.endTime = this.caseTime[0];
+          this.query.startTime = this.caseTime[1] / 1000;
+          this.query.endTime = this.caseTime[0] / 1000;
         }
 
-        this.query.imsi = this.imsi;
         this.listLoading = true;
         this.$post('common/face/listFaceTrace', this.query).then((data) => {
           this.faceList = data.data.list;
@@ -312,12 +310,6 @@
       this.getPlaces();
       this.getFaceDetail();
       this.getPersons();
-      this.persons = [{id: '2312', imsi: '156456', phone: '12345678901'}, {
-        id: '956',
-        imsi: '156456',
-        phone: '12345678901'
-      },
-        {id: '565', imsi: '2656', phone: '12345678901'}, {id: '26546', imsi: '156456', phone: '12345678901'}]
     }
   }
 </script>
@@ -343,6 +335,7 @@
     width: 130px;
     height: 130px;
     border: 1px #D7D7D7 dashed;
+    border-radius: 8px;
     text-align: left;
   }
 

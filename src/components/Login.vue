@@ -6,11 +6,11 @@
       </el-col>
       <el-col :span="24" align="center">
         <el-form label-width="0" label-position="left" :model="account" class="login-input">
-          <el-form-item align="left" style="position: absolute;top: 0;left: 15px">
-            <el-button type="text" style="font-size: 16px" @click="changePlatform()">
-              <i class="fa fa-retweet" style="margin-right: 5px;font-size: 1.4em"></i>切换系统
-            </el-button>
-          </el-form-item>
+          <!--<el-form-item align="left" style="position: absolute;top: 0;left: 15px">-->
+          <!--<el-button type="text" style="font-size: 16px" @click="changePlatform()">-->
+          <!--<i class="fa fa-retweet" style="margin-right: 5px;font-size: 1.4em"></i>切换系统-->
+          <!--</el-button>-->
+          <!--</el-form-item>-->
           <el-form-item class="lan-no">
             <span style="font-size: 22px;color: #fefefe">登录后台</span>
           </el-form-item>
@@ -43,7 +43,7 @@
         </el-form>
       </el-col>
       <el-col :span="24" class="main-footer">
-        All Rights Reserved V2.0.3
+        All Rights Reserved V3.0
       </el-col>
     </section>
   </div>
@@ -51,7 +51,6 @@
 
 <script>
   import md5 from 'js-md5';
-  import axios from "axios";
 
   export default {
     data() {

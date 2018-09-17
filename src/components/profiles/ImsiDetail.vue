@@ -39,7 +39,7 @@
             </el-col>
             <el-col :span="8">
               <el-form-item label="抓取场所" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.placeName ? imsiDetail.placeName : '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{imsiDetail.place ? imsiDetail.place : '--'}}</span>
               </el-form-item>
               <el-form-item label="设备标识" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{imsiDetail.deviceName ? imsiDetail.deviceName : '--'}}</span>
@@ -62,7 +62,7 @@
       <div v-show="activeItem=='person'" style="padding: 20px">
         <div class="face-main">
           <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
-            <img :src="item.fileUrl?faceUrl+item.fileUrl:imgPath"/>
+            <img :src="item.fileUrl?item.fileUrl:imgPath"/>
             <el-form :model="item" align="left" label-width="60px" label-position="right"
                      style="position: absolute;top: 25px;left:180px">
               <el-form-item label="档案ID" style="margin:0">
@@ -185,7 +185,7 @@
       },
       //获取imsi详情
       getImsiDetail() {
-        this.$post('archives/getImsiRecordById' + this.id, {}).then((data) => {
+        this.$post('archives/getImsiRecordById/' + this.id, {}).then((data) => {
           this.imsiDetail = data.data;
           this.imsiDetail.timeStr = formatDate(new Date(this.imsiDetail.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss');
           let code = (this.imsiDetail.areaCode ? this.imsiDetail.areaCode : this.imsiDetail.cityCode ? this.imsiDetail.cityCode : this.imsiDetail.provinceCode ? this.imsiDetail.provinceCode : 0);
@@ -214,8 +214,8 @@
       },
       getData() {
         if (!!this.caseTime) {
-          this.query.startTime = this.caseTime[1];
-          this.query.endTime = this.caseTime[0];
+          this.query.startTime = this.caseTime[1] / 1000;
+          this.query.endTime = this.caseTime[0] / 1000;
         }
 
         this.query.imsi = this.imsi;
@@ -320,6 +320,7 @@
     width: 130px;
     height: 130px;
     border: 1px #D7D7D7 dashed;
+    border-radius: 8px;
     text-align: left;
   }
 
