@@ -71,9 +71,8 @@
         </el-table-column>
       </el-table>
       <div class="block" style="margin-top: 20px" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
-                       :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
-                       layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
+                       :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
     </section>
   </div>
@@ -90,11 +89,18 @@
         cTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         count: 0,
-        list: [],
         places: [],
+        list: [],
+        list10: [],
+        isShow: false,
+        isFirst: true,
+        isSearch: false,
+        firstPage: 0,
+        page: 1,
         exportKey: 'archives:get:listImsiToday',
         listLoading: false,
-        query: {page: 1, size: 10},
+        query: {size: 5},
+        intervalid: null,
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -105,9 +111,21 @@
         }
       }
     },
+    //页面关闭时停止刷新
+    beforeDestroy() {
+      clearInterval(this.intervalid);
+    },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      //定时刷新侦码数据
+      dataTask() {
+        if (!this.intervalid) {
+          this.intervalid = setInterval(() => {
+            this.getTodayData();
+          }, 2000);
+        }
       },
       handleClick(tab, event) {
         this.clearData();
@@ -132,10 +150,6 @@
       },
       //历史数据
       getData() {
-        let url = 'archives/get/listImsiToday';
-        if (this.activeName === 'second') {
-          url = 'archives/get/listImsiHistory';
-        }
         if (this.query.deviceId) {
           if (noValidator(this.query.deviceId)) {
             this.$message.error('请输入正确的设备设备ID');
@@ -152,35 +166,116 @@
           this.query.startTime = this.cTime[0] / 1000;
           this.query.endTime = this.cTime[1] / 1000;
         }
-        this.listLoading = true;
-        this.$post(url, this.query).then((data) => {
-          this.list = data.data.list;
-          this.count = data.data.count;
-          setTimeout(() => {
-            this.listLoading = false;
-          }, 500);
+        if (this.activeName === 'second') {
+          this.getAllData();
+        } else {
+          this.getTodayData();
+        }
+      },
+      //今天的数据
+      getTodayData() {
+        this.listLoading = false;
+        this.$post("archives/get/listImsiToday", this.query).then((data) => {
+          if (this.list.length >= 10) {
+            this.list = [];
+          }
+          if (this.list.length === 0) {//
+            data.data.forEach((item) => {
+              if ((new Date().getTime() - item.catchTime) >= -120 * 1000 && (new Date().getTime() - item.catchTime) <= 120 * 1000) {//10s内的数据
+                setTimeout(() => {
+                  this.list.push(item);
+                }, 1000);
+              }
+            });
+          } else {//
+            data.data.forEach((item) => {
+              if ((new Date().getTime() - item.catchTime) >= -120 * 1000 && (new Date().getTime() - item.catchTime) <= 120 * 1000) {//10s内的数据
+                for (let terminate of this.list) {
+                  if (terminate.id === item.id) {
+                    return;
+                  }
+                }
+                setTimeout(() => {
+                  this.list.push(item);
+                }, 1000);
+              }
+            });
+          }
         }).catch((err) => {
           this.list = [];
           this.listLoading = false;
           this.$message.error(err);
         });
       },
+      //历史数据
+      getAllData() {
+        if (this.isSearch) {
+          this.list = [];
+          this.list10 = [];
+          delete this.query['pageTime'];
+          this.isSearch = false;
+        }
+        this.listLoading = true;
+        this.$post("archives/get/listImsiHistory", this.query).then((data) => {
+          if (this.query.pageTime && !this.isSearch) {
+            this.list = this.list.concat(data.data);
+          } else {
+            this.list = data.data;
+            this.page = 1;
+            this.firstPage = 0
+          }
+          this.list10 = this.list;
+          if (this.list.length - this.page * 10 >= 0) {
+            this.list10 = this.list10.slice((this.page * 10 - 10), (this.page * 10));
+          } else {
+            this.list10 = this.list10.slice((this.page * 10 - 10), this.list.length);
+          }
+          this.count = this.list.length;
+          if (this.list.length - this.firstPage === 100) {
+            this.isFirst = false;
+          } else {
+            this.isFirst = true;
+          }
+          this.listLoading = false;
+        }).catch((err) => {
+          this.list = [];
+          this.list10 = [];
+          this.listLoading = false;
+          this.$message.error(err);
+        });
+      },
       pageChange(index) {
         this.page = index;
-        this.getData();
+        if (!this.isFirst && this.list.length > this.firstPage) {
+          this.isFirst = true;
+        }
+        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
+          (this.list.length % 100 === 0 || this.list.length === this.couple)) {
+          this.firstPage = this.list.length;
+          this.query.pageTime = this.list[this.list.length - 1].catchTime / 1000;
+          this.getData();
+        }
+        this.list10 = this.list;
+        if ((this.list.length - (index * 10)) >= 0) {
+          this.list10 = this.list10.slice((index * 10 - 10), (index * 10));
+        } else {
+          this.list10 = this.list10.slice((index * 10 - 10), this.list.length);
+        }
       },
       handleSizeChange(val) {
-        this.query.size = val;
-        this.getData();
       },
       clearData() {
-        this.query = {page: 1, size: 10};
+        this.list = [];
         if (this.activeName === 'first') {
-          this.cTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+          this.query = {size: 5};
+          this.isShow = false;
         } else {
-          this.cTime = '';
+          this.query = {size: 100};
+          this.isSearch = true;
         }
+        this.cTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+
         this.getData();
       },
       //告警场所
@@ -205,6 +300,7 @@
       }
       this.getPlaces();
       this.getData();
+      this.dataTask();
     }
   }
 </script>

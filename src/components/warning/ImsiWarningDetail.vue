@@ -6,8 +6,8 @@
           <div style="font-size:14px;padding:10px 20px">当前状态：待处理</div>
         </el-col>
         <el-col :span="8" :offset="8" align="right">
-          <el-button type="text">查看处理记录</el-button>
-          <el-button type="primary" size="medium">处理告警</el-button>
+          <el-button type="primary" size="medium" @click=changeStatus(2)>已处理</el-button>
+          <el-button type="primary" size="medium" @click=changeStatus(3)>误报</el-button>
         </el-col>
       </el-row>
       <div class="add-appdiv dialog" style="border-top: none;padding: 10px 30px;border-radius: 0 0 4px 4px">
@@ -156,8 +156,8 @@
         places: [],
         query: {page: 1, size: 10},
         count: 0,
-        statuses: [{label: '全部', value: ''}, {label: '待处理', value: '1'}, {label: '处理中', value: '2'},
-          {label: '已处理', value: '3'}, {label: '误报', value: '4'}],
+        statuses: [{label: '全部', value: ''}, {label: '待处理', value: 1}, {label: '处理中', value: 2},
+          {label: '已处理', value: 3}, {label: '误报', value: 4}],
         sels: [],
         pickerBeginDate: {
           disabledDate: (time) => {
@@ -179,6 +179,13 @@
         } else {
           this.getData();
         }
+      },
+      changeStatus(status) {
+        this.$post('warning/dealWithWarningById', {id: this.id, status: status}, "处理成功").then((data) => {
+          this.getImsiDetail();
+        }).catch((err) => {
+          this.$message.error(err);
+        });
       },
       //获取imsi详情
       getImsiDetail() {

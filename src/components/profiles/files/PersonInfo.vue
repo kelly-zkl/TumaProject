@@ -12,6 +12,9 @@
               <el-form-item label="入库时间" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{userInfo.imsi ? userInfo.imsi : '566262'}}</span>
               </el-form-item>
+              <el-form-item label="备注" align="left" style="margin: 0">
+                <span style="font-size: 15px;color:#000">{{userInfo.imsi ? userInfo.imsi : '566262'}}</span>
+              </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label="姓名" align="left" style="margin: 0">
@@ -34,10 +37,10 @@
               <el-form-item label="座机" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{userInfo.imsi ? userInfo.imsi : '566262'}}</span>
               </el-form-item>
-              <el-form-item label="所属名单" align="left" style="margin: 0">
+              <el-form-item label="所属辖区" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{userInfo.imsi ? userInfo.imsi : '566262'}}</span>
               </el-form-item>
-              <el-form-item label="备注" align="left" style="margin: 0">
+              <el-form-item label="所属名单" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{userInfo.imsi ? userInfo.imsi : '566262'}}</span>
               </el-form-item>
             </el-col>
