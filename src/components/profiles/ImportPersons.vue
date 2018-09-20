@@ -7,8 +7,8 @@
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.similarThreshold" placeholder="输入相似度阈值" size="medium" style="width: 260px">
                 <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
-                           :on-success="handleSuccess" :on-change="handleChange" size="medium"
-                           :auto-upload="false" :show-file-list="false">
+                           :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
+                           :auto-upload="true" :show-file-list="false">
                   <el-button type="primary" size="medium">上传头像图片</el-button>
                 </el-upload>
               </el-input>
@@ -44,12 +44,12 @@
               <el-input placeholder="输入身份证号" v-model="query.idCard" :maxlength="30"
                         style="width: 180px" size="medium"></el-input>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.blackPersonType" placeholder="所属名单" size="medium" style="width: 150px">
-                <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
+            <!--<el-form-item style="margin-bottom: 10px">-->
+            <!--<el-select v-model="query.blackPersonType" placeholder="所属名单" size="medium" style="width: 150px">-->
+            <!--<el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">-->
+            <!--</el-option>-->
+            <!--</el-select>-->
+            <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
             </el-form-item>
@@ -78,26 +78,28 @@
                          max-width="250" :formatter="formatterAddress">
           <template slot-scope="scope">
             <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
-                 style="width: 90px;height:90px;border-radius: 6px"/>
+                 @click="bigUrl=scope.row.faceUrl;runBigPic=true"
+                 style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="年龄" prop="age" width="120"
+        <el-table-column align="left" label="年龄" prop="startAge" width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="IMSI" prop="imsiList" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="IMSI" prop="imsiList" min-width="200"
+                         max-width="300" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="手机号" prop="phone" width="150"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="身份证" prop="idCard" width="170"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="姓名" prop="name" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="所属名单" prop="blackPersonType" width="150"
+        <el-table-column align="left" label="所属名单" prop="blackClass" width="150"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoDetail(scope.row)">人员档案</el-button>
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('archives:detail')">人员档案
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -106,6 +108,19 @@
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
+      <!--查看大图-->
+      <el-dialog title="查看大图" :visible.sync="runBigPic" width="450px" center>
+        <div class="block">
+          <el-row>
+            <el-col :span="24" style="text-align: center" align="center">
+              <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:8px;vertical-align:middle"/>
+            </el-col>
+          </el-row>
+          <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">
+            <el-button type="primary" @click="runBigPic=false" size="medium">关闭</el-button>
+          </div>
+        </div>
+      </el-dialog>
       <!--添加人员-->
       <el-dialog title="名单录入" :visible.sync="runningAddPerson" width="600px" center class="dialog">
         <el-form :model="addPerson" align="left" label-width="120px" label-position="right" :rules="rules"
@@ -175,11 +190,13 @@
         count: 0,
         listLoading: false,
         vipList: [],
-        uploadUrl: '',
+        uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         imgUrl: '',
         runningAddPerson: false,
+        runBigPic: false,
         addPerson: {},
         imageUrl: '',
+        bigUrl: '',
         rules: {
           img: [{required: true, message: '请选择头像', trigger: 'blur'}],
           age: [{required: true, message: '请输入年龄', trigger: 'blur'}],
@@ -216,58 +233,31 @@
         this.imageUrl1 = URL.createObjectURL(file.raw);
       },
       beforeAvatarUpload(file) {
-        if (globalValidImg(file.raw, this.$message)) {
+        if (globalValidImg(file, this.$message)) {
         }
-        return globalValidImg(file.raw, this.$message);
+        return globalValidImg(file, this.$message);
       },
       //批量导入设备的文件格式验证
-      handleChange(file, fileList) {
-        if (file.status == 'ready') {
-          if (globalValidImg(file.raw, this.$message)) {
-          }
-        }
-      },
       handleSuccess(res, file) {
         if (res.code === '000000') {
-          if (res.data && res.data.length > 0) {
-
-          } else {
-            this.$message({type: 'success', message: res.msg});
+          if (res.data) {
+            this.query.faceUrl = res.data.fileUrl;
             this.getData();
+            setTimeout(() => {
+              this.getData();
+            }, 7000);
           }
         } else {
           this.$message.error(res.msg);
         }
       },
-      //省市县变化
-      areaChange(value) {
-        this.areaList = value;
-        this.query.provinceCode = '';
-        this.query.cityCode = '';
-        this.query.areaCode = '';
-        if (value.length === 1) {
-          this.query.provinceCode = value[0];
-        } else if (value.length === 2) {
-          this.query.provinceCode = value[0];
-          this.query.cityCode = value[1];
-        } else if (value.length === 3) {
-          this.query.provinceCode = value[0];
-          this.query.cityCode = value[1];
-          this.query.areaCode = value[2];
-        } else if (value.length === 3) {
-          this.query.provinceCode = value[0];
-          this.query.cityCode = value[1];
-          this.query.areaCode = value[2];
-          this.query.streetCode = value[3];
-        }
-      },
-      gotoDetail(task) {
-        this.$router.push({path: '/personnelFiles'});
+      gotoDetail(row) {
+        this.$router.push({path: '/personnelFiles', query: {faceId: row.faceId}});
       },
       //获取IMSI告警列表
       getData() {
         this.listLoading = true;
-        this.$post('archives/listPerson', this.query).then((data) => {
+        this.$post('person/query', this.query).then((data) => {
           this.vipList = data.data.list;
           this.count = data.data.count;
           setTimeout(() => {
@@ -282,6 +272,7 @@
       //清除查询条件
       clearData() {
         this.query = {page: 1, size: 10};
+        delete this.query['faceUrl'];
         this.getData();
       },
       pageChange(index) {
@@ -299,9 +290,11 @@
         } else if (column.property === 'imsiList') {
           let imsi = [];
           row.imsiList.forEach((item) => {
-            imsi.push(item.imsi)
+            imsi.push(item.imsi + '(' + item.weight / 10 + '%)')
           });
           return imsi.join("，");
+        } else if (column.property === 'startAge') {
+          return row.startAge && row.endAge ? row.startAge + '~' + row.endAge : row.startAge ? row.startAge : row.endAge ? row.endAge : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

@@ -28,7 +28,7 @@
       <div class="content" v-show="activeItem == 'record'">
         <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('follow:queryRecord')">
           <el-form-item style="margin-bottom: 10px">
-            <el-date-picker v-model="caseTime" type="datetimerange" range-separator="至"
+            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                             start-placeholder="抓取时间" size="medium" end-placeholder="结束日期" clearable
                             :default-time="['00:00:00', '23:59:59']" value-format="timestamp">
             </el-date-picker>
@@ -101,7 +101,7 @@
     data() {
       return {
         activeItem: 'record',
-        caseTime: "",
+        qTime: "",
         taskId: this.$route.query.taskId || '',
         followType: this.$route.query.followType || '',
         imsi: this.$route.query.imsi || '',
@@ -143,7 +143,7 @@
       //清除查询条件
       clearData() {
         this.query = {page: 1, size: 10};
-        this.caseTime = '';
+        this.qTime = '';
         this.getList();
       },
       pageChange(index) {
@@ -156,11 +156,11 @@
       },
       //imsi记录
       getList() {
-        if (!!this.caseTime) {
-          this.query.endTime = this.caseTime[1] / 1000;
-          this.query.startTime = this.caseTime[0] / 1000;
+        if (!!this.qTime) {
+          this.query.endTime = this.qTime[1] / 1000;
+          this.query.startTime = this.qTime[0] / 1000;
         } else {
-          delete this.query['caseTime'];
+          delete this.query['qTime'];
         }
 
         this.query.followTaskId = this.taskId;

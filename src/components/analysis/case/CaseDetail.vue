@@ -145,7 +145,7 @@
                 <el-input v-model="queryFollow.taskName" placeholder="任务名称" size="medium" style="width: 160px"
                           :maxlength=20></el-input>
               </el-form-item>
-              <el-date-picker v-model="caseTime" type="datetimerange" range-separator="至"
+              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                               start-placeholder="创建时间" size="medium" end-placeholder="结束日期" clearable
                               :default-time="['00:00:00', '23:59:59']" value-format="timestamp">
               </el-date-picker>
@@ -216,7 +216,7 @@
         caseId: this.$route.query.caseId || '',
         caseDetail: {},
         activeItem: "collision",
-        caseTime: "",
+        qTime: "",
         date1: "",
         collisions: [],
         queryCollision: {page: 1, size: 10},
@@ -382,9 +382,9 @@
       },
       //伴随任务
       getFollows() {
-        if (!!this.caseTime) {
-          this.queryFollow.endTime = this.caseTime[1] / 1000;
-          this.queryFollow.startTime = this.caseTime[0] / 1000;
+        if (!!this.qTime) {
+          this.queryFollow.endTime = this.qTime[1] / 1000;
+          this.queryFollow.startTime = this.qTime[0] / 1000;
         } else {
           delete this.queryFollow['endTime'];
           delete this.queryFollow['startTime'];
@@ -427,7 +427,7 @@
           this.caseDetail = data.data;
           this.caseDetail.timeStr = formatDate(new Date(this.caseDetail.creatTime * 1000), 'yyyy-MM-dd hh:mm:ss');
           this.caseDetail.fishStr = this.caseDetail.updateTime !== 0 ? formatDate(new Date(this.caseDetail.updateTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-          this.caseDetail.startStr = formatDate(new Date(this.caseDetail.caseTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+          this.caseDetail.startStr = formatDate(new Date(this.caseDetail.qTime * 1000), 'yyyy-MM-dd hh:mm:ss');
           this.caseDetail.endStr = formatDate(new Date(this.caseDetail.caseToTime * 1000), 'yyyy-MM-dd hh:mm:ss');
         }).catch((err) => {
         });

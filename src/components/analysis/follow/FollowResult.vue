@@ -101,7 +101,7 @@
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-date-picker v-model="caseTime" type="datetimerange" range-separator="至"
+            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                             start-placeholder="抓取时间" size="medium" end-placeholder="结束日期" clearable
                             :default-time="['00:00:00', '23:59:59']" value-format="timestamp">
             </el-date-picker>
@@ -184,7 +184,7 @@
         dialogWidth: isPC() ? '35%' : '90%',
         runTaskDetail: false,
         activeItem: 'result',
-        caseTime: "",
+        qTime: "",
         results: [],
         exportKey: 'follow:export:analyze',
         queryResult: {page: 1, size: 10},
@@ -262,7 +262,7 @@
           this.getResult();
         } else {
           this.queryRecord = {page: 1, size: 10};
-          this.caseTime = '';
+          this.qTime = '';
           this.getList();
         }
       },
@@ -301,11 +301,11 @@
       },
       //所有记录
       getList() {
-        if (!!this.caseTime) {
-          this.queryRecord.endTime = this.caseTime[1] / 1000;
-          this.queryRecord.startTime = this.caseTime[0] / 1000;
+        if (!!this.qTime) {
+          this.queryRecord.endTime = this.qTime[1] / 1000;
+          this.queryRecord.startTime = this.qTime[0] / 1000;
         } else {
-          delete this.queryRecord['caseTime'];
+          delete this.queryRecord['qTime'];
         }
 
         this.queryRecord.followTaskId = this.taskId;

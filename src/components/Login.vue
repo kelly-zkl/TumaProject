@@ -2,7 +2,12 @@
   <div class="login-bg">
     <section class="content" style="margin: 0">
       <el-col :span="24" class="main-header" align="left">
-        <img src="../assets/img/login_logo.png">
+        <div align="left" style="display: flex;height: 40px;align-items: center">
+          <img src="../assets/img/icon_logo.png" style="display:inline-block;height: 34px">
+          <div style="display:inline-block;font-size: 22px;;margin-left: 10px;color: #fff;letter-spacing:3px">
+            图码联侦实战布控平台
+          </div>
+        </div>
       </el-col>
       <el-col :span="24" align="center">
         <el-form label-width="0" label-position="left" :model="account" class="login-input">

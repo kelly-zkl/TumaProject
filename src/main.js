@@ -55,7 +55,7 @@ Vue.prototype.$post = function (path, param, successMsg, failMsg, isLogin) {
     }
   }
 
-  if (path.indexOf('/manager/') === 0) {
+  if (path.indexOf('/manager/') === 0 || path.indexOf('/workflow/') === 0) {
     path = Vue.prototype.$User_Url + path;
   }
 

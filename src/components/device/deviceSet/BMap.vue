@@ -155,7 +155,7 @@
             _this.map.clearOverlays();
             _this.position.lng = point.lng;
             _this.position.lat = point.lat;
-            _this.map.centerAndZoom(point, 16);
+            _this.map.centerAndZoom(point, 14);
             _this.map.addOverlay(new BMap.Marker(point));
             _this.setLocation();
           } else {
@@ -183,13 +183,23 @@
       this.map = new BMap.Map("container");
       this.map.enableScrollWheelZoom(true);
       this.geocoder = new BMap.Geocoder();
-      this.geolocation = new BMap.Geolocation();
 
+      var point = new BMap.Point(116.331398, 39.897445);
+      this.map.centerAndZoom(point, 12);
+
+      function myFun(result) {
+        var cityName = result.name;
+        _this.map.setCenter(cityName);
+      }
+
+      var myCity = new BMap.LocalCity();
+      myCity.get(myFun);
+
+      this.geolocation = new BMap.Geolocation();
       this.geolocation.getCurrentPosition(function (r) {
         console.log(r);
         _this.map.clearOverlays();
         _this.map.addOverlay(new BMap.Marker(r.point));
-        _this.map.centerAndZoom(r.point, 16);
         _this.position.lng = r.point.lng;
         _this.position.lat = r.point.lat;
         _this.setLocation();

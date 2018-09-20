@@ -18,7 +18,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="时间范围" style="margin-bottom: 10px">
-          <el-date-picker v-model="date1" type="datetimerange" range-separator="至" size="medium"
+          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" size="medium"
                           :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
                           start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px">
           </el-date-picker>
@@ -70,19 +70,18 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC,buttonValidator} from "../../../assets/js/util";
+  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
 
   export default {
     data() {
       return {
         listLoading: false,
-        activeType: "imsi",
         taskId: this.$route.query.taskId || '',
         collisionType: this.$route.query.collisionType || '',
         picUrl: this.$route.query.picUrl || '',
         query: {page: 1, size: 10},
         sexs: [{value: '0', label: '男'}, {value: '2', label: '女'}],
-        date1: '',
+        qTime: '',
         task: {},
         records: [],
         count: 0
@@ -111,7 +110,7 @@
       //清除查询条件
       clearData() {
         this.query = {page: 1, size: 10};
-        this.date1 = '';
+        this.qTime = '';
         this.getData();
       },
       //跳转图像记录页面
@@ -125,9 +124,9 @@
       },
       //获取图像记录
       getData() {
-        if (!!this.date1) {
-          this.query.startTime = this.date1[0] / 1000;
-          this.query.endTime = this.date1[1] / 1000;
+        if (!!this.qTime) {
+          this.query.startTime = this.qTime[0] / 1000;
+          this.query.endTime = this.qTime[1] / 1000;
         } else {
           delete this.query['startTime'];
           delete this.query['endTime'];

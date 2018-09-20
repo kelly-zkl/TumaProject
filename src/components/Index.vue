@@ -1,27 +1,27 @@
 <template>
   <div>
     <el-container class="main-container">
-      <el-header style="background: #060450;color:#fff">
-        <div style="display: flex;flex-direction: row;height: 60px;width: 100%">
-          <div align="left" style="display: flex;height: 60px;align-items: center">
-            <img src="../assets/img/404_cloud.png" style="display:inline-block;height: 34px">
-            <div style="display:inline-block;font-size: 16px;;margin-left: 10px">
+      <el-header style="background: #060450;color:#fff" height="70px">
+        <div style="display: flex;flex-direction: row;height: 70px;width: 100%">
+          <div align="left" style="display: flex;height: 70px;align-items: center">
+            <img src="../assets/img/icon_logo.png" style="display:inline-block;height: 34px">
+            <div style="display:inline-block;font-size: 18px;;margin-left: 10px;letter-spacing:3px">
               图码联侦实战布控平台
             </div>
           </div>
-          <div align="center" style="flex: 1;height: 60px;align-items: center;justify-content: center">
+          <div align="center" style="flex: 1;height: 70px;align-items: center;justify-content: center">
             <!--fa-th-large fa-tachometer-->
             <el-button v-for="item in menu" :key="item.permissionUrl"
                        v-bind:class="indx==item.orders?'item active':'item'"
                        @click="handleSelectItem(item)">
               <i :class="item.icon"
                  v-bind:style="item.orders<6?'font-size: 1.9em':item.orders>5?'font-size: 2.3em':'font-size: 2.1em'"></i>
-              <span class="title" v-bind:style="item.orders<6?'margin-top: 5px':''">{{item.name}}</span>
+              <span class="title" v-bind:style="item.orders<6?'margin-top: 6px':'margin-top: 2px'">{{item.name}}</span>
             </el-button>
           </div>
-          <div align="right" style="height: 60px">
+          <div align="right" style="display: flex;height: 70px;align-items: center">
             <div class="item" style="text-align: center" @click="runMsg = true">
-              <i class="fa fa-bell-o fa-2x" style="padding-top: 15px;font-size: 1.8em"></i>
+              <i class="fa fa-bell-o fa-2x" style="padding-top: 20px;font-size: 1.8em"></i>
             </div>
             <el-popover ref="modifyPsw" placement="bottom" width="200" trigger="click">
               <el-col :span="24">
@@ -32,14 +32,14 @@
               </el-col>
             </el-popover>
             <el-button class="item" style="text-align: center;width: 120px" v-popover:modifyPsw>
-              <i class="fa fa-user fa-2x" style="display: inline-block;padding-top: 13px"></i>
+              <i class="fa fa-user fa-2x" style="display: inline-block;padding-top: 20px"></i>
               <span style="display: inline-block;padding-left: 5px;height:60px;line-height: 60px">{{userName}}</span>
             </el-button>
             <!--<div class="item" style="text-align: center" @click="$router.push({path: '/platforms'})">-->
             <!--<i class="fa fa-retweet fa-2x" style="padding-top: 13px"></i>-->
             <!--</div>-->
             <div class="item" style="text-align: center" @click="loginOut">
-              <i class="fa fa-sign-out fa-2x" style="padding-top: 13px"></i>
+              <i class="fa fa-sign-out fa-2x" style="padding-top: 20px"></i>
             </div>
           </div>
         </div>
@@ -76,24 +76,28 @@
           <el-form :model="imsiWarning" align="left" style="padding: 10px 50px;border-top: 1px #f2f2f2 solid"
                    label-width="100px" label-position="left">
             <el-form-item label="抓取IMSI" style="margin:0">
-              <span style="font-size: 15px;color:#000">6515646</span>
+              <span style="font-size: 15px;color:#000">{{imsiWarning.imsi}}</span>
             </el-form-item>
             <el-form-item label="运营商" style="margin:0">
-              <span style="font-size: 15px;color:#000">移动</span>
+              <span style="font-size: 15px;color:#000">
+                {{imsiWarning.isp == 0 ? '移动' : imsiWarning.isp == 1 ? '联通' : imsiWarning.isp == 2 ? '电信' : '未知'}}
+              </span>
             </el-form-item>
             <el-form-item label="告警时间" style="margin:0">
-              <span style="font-size: 15px;color:#000">2018-07-23 12:32:23</span>
+              <span style="font-size: 15px;color:#000">
+                {{imsiWarning.timeStr ? imsiWarning.timeStr : '--'}}
+              </span>
             </el-form-item>
             <el-form-item label="告警场所" style="margin:0">
-              <span style="font-size: 15px;color:#000">256</span>
+              <span style="font-size: 15px;color:#000">{{imsiWarning.placeName?imsiWarning.placeName:'--'}}</span>
             </el-form-item>
             <el-form-item label="设备标识" style="margin:0">
-              <span style="font-size: 15px;color:#000">15615</span>
+              <span style="font-size: 15px;color:#000">{{imsiWarning.deviceName?imsiWarning.deviceName:'--'}}</span>
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer" align="center">
-            <el-button type="warning" size="medium" @click="runFaceWarning=true">处理告警</el-button>
-            <el-button type="primary" size="medium" @click="">查看人员信息</el-button>
+            <el-button type="warning" size="medium" @click="gotoImsiDetail">处理告警</el-button>
+            <el-button type="primary" size="medium" @click="gotoImsiDetail">查看人员信息</el-button>
           </div>
         </el-dialog>
       </transition>
@@ -104,29 +108,31 @@
         <el-dialog width="500px" :visible.sync="runFaceWarning" :close-on-click-modal="false"
                    style="border-radius: 6px" top="70px" title="嫌疑告警">
           <div style="padding: 20px 20px 10px;text-align: left;position: relative;border-top: 1px #f2f2f2 solid">
-            <img src="../assets/img/icon_people.png">
-            <el-form :model="imsiWarning" align="left" label-width="80px" label-position="left"
+            <img :src="faceWarning.faceUrl?faceWarning.faceUrl:imgPath">
+            <el-form :model="faceWarning" align="left" label-width="80px" label-position="left"
                      style="display:inline-block;position: absolute;top: 20px">
               <el-form-item label="年龄" style="margin:0">
-                <span style="font-size: 15px;color:#000">23-36</span>
+                <span style="font-size: 15px;color:#000">{{faceWarning.age}}</span>
               </el-form-item>
               <el-form-item label="性别" style="margin:0">
-                <span style="font-size: 15px;color:#000">男</span>
+                <span style="font-size: 15px;color:#000">
+                  {{faceWarning.sex == 0 ? '男' : faceWarning.sex == 1 ? '女' : '--'}}
+                </span>
               </el-form-item>
               <el-form-item label="告警时间" style="margin:0">
-                <span style="font-size: 15px;color:#000">2018-07-23 12:32:23</span>
+                <span style="font-size: 15px;color:#000">{{faceWarning.timeStr ? faceWarning.timeStr : '--'}}</span>
               </el-form-item>
               <el-form-item label="告警场所" style="margin:0">
-                <span style="font-size: 15px;color:#000">256</span>
+                <span style="font-size: 15px;color:#000">{{faceWarning.placeName?faceWarning.placeName:'--'}}</span>
               </el-form-item>
               <el-form-item label="设备标识" style="margin:0">
-                <span style="font-size: 15px;color:#000">15615</span>
+                <span style="font-size: 15px;color:#000">{{faceWarning.deviceName?faceWarning.deviceName:'--'}}</span>
               </el-form-item>
             </el-form>
           </div>
           <div slot="footer" class="dialog-footer" align="center">
-            <el-button type="warning" size="medium" @click="runImsiWarning=true">处理告警</el-button>
-            <el-button type="primary" size="medium" @click="">查看人员信息</el-button>
+            <el-button type="warning" size="medium" @click="gotoFaceDetail">处理告警</el-button>
+            <el-button type="primary" size="medium" @click="gotoFaceDetail">查看人员信息</el-button>
           </div>
         </el-dialog>
       </transition>
@@ -160,6 +166,7 @@
 <script>
   import md5 from 'js-md5';
   import {pswValidator} from '../assets/js/api';
+  import {formatDate, isPC, buttonValidator} from "../assets/js/util";
 
   export default {
     data() {
@@ -177,14 +184,17 @@
       return {
         indx: 1,
         runMsg: false,
-        runImsiWarning: true,
+        runImsiWarning: false,
         runFaceWarning: false,
         runModifyPsw: false,
+        imgPath: require('../assets/img/icon_people.png'),
         userName: JSON.parse(sessionStorage.getItem("user")).realName || '',
         userId: JSON.parse(sessionStorage.getItem("user")).userId,
         psw: {password: '', password1: '', password2: ''},
         imsiWarning: {},
+        faceWarning: {},
         menu: [],
+        intervalid: null,
         rules: {
           password1: [
             {required: true, message: '请输入新密码', trigger: 'blur'},
@@ -198,10 +208,60 @@
         }
       }
     },
+    //页面关闭时停止更新设备在线状态
+    beforeDestroy() {
+      clearInterval(this.intervalid);
+    },
     methods: {
+      //IMSI/图像告警
+      statusTask() {
+        if (!this.intervalid) {
+          this.intervalid = setInterval(() => {
+            this.getImsiWarning();
+            this.getFaceWarning();
+          }, 10000);
+        }
+      },
       handleSelectItem(item) {
         this.indx = item.orders;
         this.$router.push(item.permissionUrl);
+      },
+      getImsiWarning() {
+        this.$post("warning/get/listImsiToday", {size: 1}).then((data) => {
+          if (data.data && data.data.length > 0) {
+            let imsi = data.data[0];
+            if ((new Date().getTime() - imsi.catchTime * 1000) >= -120 * 1000 && (new Date().getTime() - imsi.catchTime * 1000) <= 120 * 1000) {//10s内的数据
+              this.imsiWarning = imsi;
+              if (imsiWarning.id !== imsi.id) {
+                this.imsiWarning = imsi;
+                this.imsiWarning.timeStr = formatDate(new Date(this.imsiWarning.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+                this.runImsiWarning = true;
+              }
+            }
+          }
+        });
+      },
+      getFaceWarning() {
+        this.$post("warning/get/listFaceToday", {size: 1}).then((data) => {
+          if (data.data && data.data.length > 0) {
+            let face = data.data[0];
+            if ((new Date().getTime() - face.catchTime * 1000) >= -120 * 1000 && (new Date().getTime() - face.catchTime * 1000) <= 120 * 1000) {//10s内的数据
+              if (faceWarning.id !== face.id) {
+                this.faceWarning = face;
+                this.faceWarning.timeStr = formatDate(new Date(this.faceWarning.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+                this.runFaceWarning = true;
+              }
+            }
+          }
+        });
+      },
+      gotoImsiDetail() {
+        this.runImsiWarning = false;
+        this.$router.push({path: '/imsiWarningDetail', query: {id: this.imsiWarning.id, imsi: this.imsiWarning.imsi}});
+      },
+      gotoFaceDetail() {
+        this.runFaceWarning = false;
+        this.$router.push({path: '/faceWarningDetail', query: {id: this.faceWarning.id}});
       },
       //退出
       loginOut() {
@@ -261,6 +321,8 @@
 
       this.userId = JSON.parse(sessionStorage.getItem("user")).userId;
       this.menu = JSON.parse(sessionStorage.getItem("menu")) || [];
+
+      this.statusTask();
     }
   }
 </script>
@@ -318,7 +380,7 @@
     display: inline-block;
     cursor: pointer;
     width: 80px;
-    height: 60px;
+    height: 70px;
     padding: 0;
     margin: 0;
     color: #fff;

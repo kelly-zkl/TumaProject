@@ -1,22 +1,26 @@
 <template>
   <div>
     <section class="content">
-      <el-form :model="query" style="margin: 0" label-width="100px" label-position="left">
-        <el-form-item align="left" label="侦码设备" style="margin:0 0 10px 20px">
-          <span style="display: inline-block;margin-right: 20px;font-size: 14px">全部{{deviceImsi.count}}</span>
-          <el-checkbox-group v-model="query.code" style="display: inline-block" @change="codeChange">
-            <el-checkbox :label="true">在线{{deviceImsi.onlineCount}}</el-checkbox>
-            <el-checkbox :label="false">离线{{deviceImsi.offlineCount}}</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item align="left" label="相机设备" style="margin:0 0 10px 20px">
-          <span style="display: inline-block;margin-right: 20px;font-size: 14px">全部{{camera.count}}</span>
-          <el-checkbox-group v-model="query.camera" style="display: inline-block" @change="cameraChange">
-            <el-checkbox :label="true">在线{{camera.onlineCount}}</el-checkbox>
-            <el-checkbox :label="false">离线{{camera.offlineCount}}</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-      </el-form>
+      <el-row class="view-top">
+        <el-col :span="24" style="text-align: center" align="center">
+          <el-form :model="query" style="margin: 0" label-width="100px" label-position="right" :inline="true">
+            <el-form-item align="left" label="侦码设备" style="margin:0 0 10px 20px">
+              <span style="display: inline-block;margin-right: 20px;font-size: 14px">全部{{deviceImsi.count}}</span>
+              <el-checkbox-group v-model="query.code" style="display: inline-block" @change="codeChange">
+                <el-checkbox :label="true">在线{{deviceImsi.onlineCount}}</el-checkbox>
+                <el-checkbox :label="false">离线{{deviceImsi.offlineCount}}</el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+            <el-form-item align="left" label="相机设备" style="margin:0 0 10px 20px">
+              <span style="display: inline-block;margin-right: 20px;font-size: 14px">全部{{camera.count}}</span>
+              <el-checkbox-group v-model="query.camera" style="display: inline-block" @change="cameraChange">
+                <el-checkbox :label="true">在线{{camera.onlineCount}}</el-checkbox>
+                <el-checkbox :label="false">离线{{camera.offlineCount}}</el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
       <div class="view-map" id="view-map"></div>
     </section>
   </div>
@@ -102,6 +106,9 @@
 
             this.deviceMap();
           }
+        }).catch((err) => {
+          this.mapData = [];
+          this.deviceMap();
         });
       },
       deviceMap() {
@@ -122,7 +129,7 @@
           grid: {left: 0, right: 0, bottom: 0, top: 0, containLabel: true},
           bmap: {
             center: [116.404, 39.915],
-            zoom: 11,
+            zoom: 12,
             roam: true
           },
           series: [
@@ -170,6 +177,18 @@
           bmap.addControl(mapType1);          //2D图，卫星图
           bmap.addControl(mapType2);          //左上角，默认地图控件
           bmap.addControl(overView);          //添加默认缩略地图控件
+
+          //定位l
+          var point = new BMap.Point(116.331398, 39.897445);
+          bmap.centerAndZoom(point, 12);
+
+          function myFun(result) {
+            var cityName = result.name;
+            bmap.setCenter(cityName);
+          }
+
+          var myCity = new BMap.LocalCity();
+          myCity.get(myFun);
 //          bmap.addControl(overViewOpen);
 //          var myDrag = new BMapLib.RectangleZoom(bmap, {
 //            followText: "拖拽鼠标进行操作"
@@ -181,18 +200,25 @@
     },
     mounted() {
       this.getMapData();
-      this.statusTask();
+      // this.statusTask();
     }
   }
 </script>
 <style scoped>
   .view-map {
     position: absolute;
-    left: 210px;
+    left: 200px;
     right: 15px;
     bottom: 20px;
-    top: 160px;
+    top: 40px;
     color: #fff;
     font-size: 30px;
+  }
+
+  .content .view-top {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
   }
 </style>

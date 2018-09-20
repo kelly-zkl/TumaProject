@@ -110,6 +110,40 @@
 <script>
   import echarts from "echarts";
   import china from "echarts/map/js/china";
+  import anhui from "echarts/map/js/province/anhui";
+  import aomen from "echarts/map/js/province/aomen";
+  import beijing from "echarts/map/js/province/beijing";
+  import chongqing from "echarts/map/js/province/chongqing";
+  import fujian from "echarts/map/js/province/fujian";
+  import gansu from "echarts/map/js/province/gansu";
+  import guangdong from "echarts/map/js/province/guangdong";
+  import guangxi from "echarts/map/js/province/guangxi";
+  import guizhou from "echarts/map/js/province/guizhou";
+  import hainan from "echarts/map/js/province/hainan";
+  import hebei from "echarts/map/js/province/hebei";
+  import heilongjiang from "echarts/map/js/province/heilongjiang";
+  import henan from "echarts/map/js/province/henan";
+  import hubei from "echarts/map/js/province/hubei";
+  import hunan from "echarts/map/js/province/hunan";
+  import jiangsu from "echarts/map/js/province/jiangsu";
+  import jiangxi from "echarts/map/js/province/jiangxi";
+  import jilin from "echarts/map/js/province/jilin";
+  import liaoning from "echarts/map/js/province/liaoning";
+  import neimenggu from "echarts/map/js/province/neimenggu";
+  import ningxia from "echarts/map/js/province/ningxia";
+  import qinghai from "echarts/map/js/province/qinghai";
+  import shandong from "echarts/map/js/province/shandong";
+  import shanghai from "echarts/map/js/province/shanghai";
+  import shanxi from "echarts/map/js/province/shanxi";
+  import shanxi1 from "echarts/map/js/province/shanxi1";
+  import sichuan from "echarts/map/js/province/sichuan";
+  import taiwan from "echarts/map/js/province/taiwan";
+  import tianjin from "echarts/map/js/province/tianjin";
+  import xianggang from "echarts/map/js/province/xianggang";
+  import xinjiang from "echarts/map/js/province/xinjiang";
+  import xizang from "echarts/map/js/province/xizang";
+  import yunnan from "echarts/map/js/province/yunnan";
+  import zhejiang from "echarts/map/js/province/zhejiang";
   import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
 
   export default {
@@ -129,6 +163,7 @@
         catchData: {},
         warning: {},
         hotSpots: [],
+        isChina: true,
         intervalid: null,
         imgPath: require('../../assets/img/icon_people.png')
       }
@@ -175,6 +210,8 @@
           if (data.code === '000000') {
             this.warningCount = data.data;
           }
+        }).catch((err) => {
+          this.warningCount = 0;
         });
         //今日新增imsi、face
         this.$post('/home/addTodayFaceImsi', {}).then((data) => {
@@ -184,29 +221,40 @@
               this.addFaceCount = data.data.face
             }
           }
+        }).catch((err) => {
+          this.addImsiCount = 0;
+          this.addFaceCount = 0
         });
         //获取图码碰撞当天次数的总量
         this.$post('/home/countTodayCollide', {}).then((data) => {
           if (data.code === '000000') {
             this.collCount = data.data;
           }
+        }).catch((err) => {
+          this.collCount = 0
         });
       },
       //数据热力图
       getHotSpot() {
         this.$post('/home/getHotSpot', {num: 60}).then((data) => {
           if (data.code === '000000') {
-            data.data.face.forEach((item, idx) => {
-              let param = {value: [item.lon, item.lat, item.total]};
-              this.hotSpots.push(param);
-            });
-            data.data.imsi.forEach((item, idx) => {
-              let param = {value: [item.lon, item.lat, item.total]};
-              this.hotSpots.push(param);
-            });
-
+            if (data.data.face && data.data.face.length > 0) {
+              data.data.face.forEach((item, idx) => {
+                let param = {value: [item.lon, item.lat, item.total]};
+                this.hotSpots.push(param);
+              });
+            }
+            if (data.data.imsi && data.data.imsi.length > 0) {
+              data.data.imsi.forEach((item, idx) => {
+                let param = {value: [item.lon, item.lat, item.total]};
+                this.hotSpots.push(param);
+              });
+            }
             this.getDataHeat();
           }
+        }).catch((err) => {
+          this.hotSpots = [];
+          this.getDataHeat();
         });
       },
       getDataHeat() {
@@ -227,7 +275,7 @@
             max: 200,			// 值域最大值，必须参数
             calculable: true,	// 是否启用值域漫游
             inRange: {
-              color: ['#50a3ba', '#eac736', '#d94e5d']
+              color: ['#50a3ba', '#75B755', '#eac736', '#d94e5d']
               // 指定数值从低到高时的颜色变化
             },
             textStyle: {
@@ -258,6 +306,18 @@
           bmap.addControl(mapType1);          //2D图，卫星图
           bmap.addControl(mapType2);          //左上角，默认地图控件
           bmap.addControl(overView);          //添加默认缩略地图控件
+
+          //定位l
+          var point = new BMap.Point(116.331398, 39.897445);
+          bmap.centerAndZoom(point, 12);
+
+          function myFun(result) {
+            var cityName = result.name;
+            bmap.setCenter(cityName);
+          }
+
+          var myCity = new BMap.LocalCity();
+          myCity.get(myFun);
         }
       },
       //设备地图
@@ -307,9 +367,18 @@
             this.getCamera();
             this.getDevice();
           }
+        }).catch((err) => {
+          this.deviceImsi = {};
+          this.camera = {};
+          this.mapData = [];
+          this.devicePie = {};
+          this.getDeviceMap();
+          this.getCamera();
+          this.getDevice();
         });
       },
       getDeviceMap() {
+        let _this = this;
         let myChart = echarts.init(document.getElementById('devicemap'));
         // myChart.clear();
         let option = {
@@ -326,6 +395,8 @@
           geo: {
             map: 'china',
             zoom: 1.25,
+            selectedMode: 'single',
+            silent: true,
             roam: true,
             label: {
               normal: {
@@ -384,6 +455,18 @@
           ]
         };
         myChart.setOption(option);
+        //下钻其实就是点击事件，切换脚本而已
+        myChart.on('click', function (chinaParam) {
+          var option1 = myChart.getOption();
+          if (_this.isChina) {
+            _this.isChina = false;
+            option1.geo[0].map = chinaParam.name;
+          } else {
+            _this.isChina = true;
+            option1.geo[0].map = 'china';
+          }
+          myChart.setOption(option1);
+        });
       },
       //相机--饼状图
       getCamera() {
@@ -392,8 +475,8 @@
         let option = {
           color: ['#2CA85C', '#F04864'],
           title: {
-            text: '相机总数\n\n' + this.devicePie.device2.count, textStyle: {color: '#fff', fontSize: '14'},
-            top: 'center', left: 'center', bottom: 'center', right: 'center'
+            text: '相机总数\n\n' + (this.devicePie.device2 ? this.devicePie.device2.count : 0),
+            textStyle: {color: '#fff', fontSize: '14'}, top: 'center', left: 'center', bottom: 'center', right: 'center'
           },
           tooltip: {trigger: 'item', formatter: "{a} <br/>{b}: {c} ({d}%)"},
           legend: {textStyle: {color: '#999'}, orient: 'vertical', x: 'right', data: ['在线', '离线']},
@@ -408,7 +491,7 @@
                 emphasis: {show: true, textStyle: {fontSize: '20', fontWeight: 'bold'}}
               },
               labelLine: {normal: {show: true}},
-              data: this.devicePie.device2.data
+              data: (this.devicePie.device2 ? this.devicePie.device2.data : [])
             }
           ]
         };
@@ -422,7 +505,8 @@
         let option = {
           color: ['#2CA85C', '#F04864'],
           title: {
-            text: '侦码仪总数\n\n' + this.devicePie.device1.count, textStyle: {color: '#fff', fontSize: '14'},
+            text: '侦码仪总数\n\n' + (this.devicePie.device1 ? this.devicePie.device1.count : 0),
+            textStyle: {color: '#fff', fontSize: '14'},
             top: 'center', left: 'center', bottom: 'center', right: 'center'
           },
           tooltip: {trigger: 'item', formatter: "{a} <br/>{b}: {c} ({d}%)"},
@@ -438,7 +522,7 @@
                 emphasis: {show: true, textStyle: {fontSize: '20', fontWeight: 'bold'}}
               },
               labelLine: {normal: {show: true}},
-              data: this.devicePie.device1.data
+              data: (this.devicePie.device1 ? this.devicePie.device1.data : [])
             }
           ]
         };
@@ -457,6 +541,9 @@
             });
             this.getImsiFace();
           }
+        }).catch((err) => {
+          this.catchData = {imsi: [], face: [], createTime: []};
+          this.getImsiFace();
         });
         this.$post('/home/countLast7DayWarnings', {}).then((data) => {
           if (data.code === '000000') {
@@ -468,6 +555,9 @@
             });
             this.getWarning();
           }
+        }).catch((err) => {
+          this.warning = {imsi: [], face: [], createTime: []};
+          this.getWarning();
         });
       },
       getImsiFace() {
@@ -581,7 +671,7 @@
     line-height: 50px;
     cursor: pointer;
     color: #5F5E91;
-    font-size: 20px;
+    font-size: 18px;
     margin: 0 15px;
     padding: 0 20px 10px 20px;
     border-bottom: 3px transparent solid;
@@ -592,7 +682,7 @@
     line-height: 50px;
     cursor: pointer;
     color: #66CCFF;
-    font-size: 20px;
+    font-size: 18px;
     margin: 0 15px;
     padding: 0 20px 10px 20px;
     border-bottom: 3px #66CCFF solid;

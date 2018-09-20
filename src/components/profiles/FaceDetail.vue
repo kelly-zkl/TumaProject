@@ -35,7 +35,7 @@
                   style="font-size: 15px;color:#000">{{faceDetail.detailAddress ? faceDetail.detailAddress : '--'}}</span>
               </el-form-item>
               <el-form-item label="抓取场所" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{faceDetail.place ? faceDetail.place : '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{faceDetail.placeName ? faceDetail.placeName : '--'}}</span>
               </el-form-item>
               <el-form-item label="设备标识" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{faceDetail.deviceName ? faceDetail.deviceName : '--'}}</span>
@@ -51,7 +51,7 @@
         <el-col :span="16" align="left" class="tab-card">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="疑似人员" name="person"></el-tab-pane>
-            <el-tab-pane label="所有记录" name="list"></el-tab-pane>
+            <!--<el-tab-pane label="所有记录" name="list"></el-tab-pane>-->
           </el-tabs>
         </el-col>
       </el-row>
@@ -74,6 +74,11 @@
             </el-form>
           </div>
           <span v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px">暂无数据</span>
+          <el-row style="width: 100%" v-if="persons.length>=num">
+            <el-col :span="24" style="text-align: center" align="center">
+              <el-button type="text" @click="loadMore()">加载更多</el-button>
+            </el-col>
+          </el-row>
         </div>
       </div>
       <div v-show="activeItem=='list'">
@@ -96,60 +101,58 @@
                 </el-select>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
-                <el-date-picker v-model="caseTime" type="datetimerange" range-separator="至"
+                <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                                 start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                                 :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                                 :picker-options="pickerBeginDate">
                 </el-date-picker>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
-                <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
+                <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
                 <el-button size="medium" @click="clearData()">重置</el-button>
               </el-form-item>
             </el-form>
           </el-col>
-          <el-col :span="6" align="right">
+          <el-col :span="6" align="right" v-show="getButtonVial('route:query')">
             <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="gotoPath()"
                        v-show="getButtonVial('common:face:listFaceTrace')">查看轨迹
             </el-button>
           </el-col>
         </el-row>
-        <el-table :data="faceList" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
+        <el-table :data="list10" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
           <el-table-column type="selection" width="45" align="left"></el-table-column>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="现场图像" prop="fileUrl" min-width="125"
-                           max-width="250">
+          <el-table-column align="left" label="人员图像" prop="fileUrl" min-width="125" max-width="250">
             <template slot-scope="scope">
-              <img v-bind:src="scope.row.fileUrl?scope.row.fileUrl:imgPath"
+              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
                    style="width: 90px;height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
-          <el-table-column align="left" label="相似度" prop="followTarget" min-width="150"
+          <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="年龄" prop="caseName" min-width="150"
+          <el-table-column align="left" label="年龄" prop="age" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="性别" prop="taskName" min-width="150"
+          <el-table-column align="left" label="性别" prop="sex" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="抓取时间" prop="followTarget" width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="场所" prop="caseName" min-width="150"
+          <el-table-column align="left" label="场所" prop="placeName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备标识" prop="taskStatus" min-width="150"
+          <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备ID" prop="caseName" min-width="150"
+          <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="操作" width="160">
-            <template slot-scope="scope">
-              <el-button type="text" @click="">查看</el-button>
-            </template>
-          </el-table-column>
+          <!--<el-table-column align="left" label="操作" width="160">-->
+          <!--<template slot-scope="scope">-->
+          <!--<el-button type="text" @click="">查看</el-button>-->
+          <!--</template>-->
+          <!--</el-table-column>-->
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
-                         :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
-                         layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
+                         :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
       </div>
     </section>
@@ -164,17 +167,24 @@
       return {
         listLoading: false,
         activeItem: 'person',
-        caseTime: '',
+        qTime: '',
         provinceList: json,
         imgPath: require('../../assets/img/icon_people.png'),
         id: this.$route.query.id || '',
         imageId: this.$route.query.imageId || '',
         faceDetail: {},
-        faceList: [],
         persons: [],
         places: [],
-        query: {page: 1, size: 10},
+        query: {size: 100},
         count: 0,
+        list: [],
+        list10: [],
+        isShow: false,
+        isFirst: true,
+        isSearch: false,
+        firstPage: 0,
+        page: 1,
+        num: 10,
         sels: [],
         pickerBeginDate: {
           disabledDate: (time) => {
@@ -193,9 +203,16 @@
       handleType(val) {
         if (this.activeItem === 'person') {
           this.getPersons();
+          this.isSearch = false;
         } else {
+          this.isSearch = true;
           this.getData();
         }
+      },
+      //关联人员加载更多
+      loadMore() {
+        this.num += 10;
+        this.getPersons();
       },
       //获取图像详情
       getFaceDetail() {
@@ -210,51 +227,101 @@
       },
       //根据人脸查找指定的对应人员
       getPersons() {
-        this.$post('archives/listFaceByImageId/' + this.imageId, {}).then((data) => {
-          this.persons = data.data;
+        this.$post('archives/listFaceByImageId', {imsi: this.imageId, num: this.num}).then((data) => {
+          if (data.data && data.data.length > 0) {
+            this.persons = data.data;
+          }
         }).catch((err) => {
           this.$message.error(err);
         });
       },
       //查看轨迹
       gotoPath() {
-        this.$router.push("/pathLine");
+        if (this.qTime.length === 0) {
+          this.$message.error('请选择时间范围');
+          return;
+        }
+        let faces = [];
+        this.sels.forEach((item) => {
+          // if (this.faceId != item.faceId) {
+          faces.push(item.faceId);
+          // }
+        });
+        sessionStorage.setItem("pathFace", JSON.stringify(faces));
+        sessionStorage.setItem("pathTime", JSON.stringify(this.qTime));
+        this.$router.push({path: '/pathLine', query: {face: 1}});
       },
       //全选
       selsChange(sels) {
         this.sels = sels;
       },
       getData() {
-        if (!!this.caseTime) {
-          this.query.startTime = this.caseTime[1] / 1000;
-          this.query.endTime = this.caseTime[0] / 1000;
+        if (!!this.qTime) {
+          this.query.startTime = this.qTime[1] / 1000;
+          this.query.endTime = this.qTime[0] / 1000;
+        }
+        if (this.isSearch) {
+          this.list = [];
+          this.list10 = [];
+          delete this.query['pageTime'];
+          this.isSearch = false;
         }
 
         this.listLoading = true;
         this.$post('common/face/listFaceTrace', this.query).then((data) => {
-          this.faceList = data.data.list;
-          this.count = data.data.count;
-          setTimeout(() => {
-            this.listLoading = false;
-          }, 500);
+          if (this.query.pageTime && !this.isSearch) {
+            this.list = this.list.concat(data.data);
+          } else {
+            this.list = data.data;
+            this.page = 1;
+            this.firstPage = 0
+          }
+          this.list10 = this.list;
+          if (this.list.length - this.page * 10 >= 0) {
+            this.list10 = this.list10.slice((this.page * 10 - 10), (this.page * 10));
+          } else {
+            this.list10 = this.list10.slice((this.page * 10 - 10), this.list.length);
+          }
+          this.count = this.list.length;
+          if (this.list.length - this.firstPage === 100) {
+            this.isFirst = false;
+          } else {
+            this.isFirst = true;
+          }
+          this.listLoading = false;
         }).catch((err) => {
           this.listLoading = false;
-          this.faceList = [];
+          this.list = [];
+          this.list10 = [];
           this.$message.error(err);
         });
       },
-      //清除查询条件
-      clearData() {
-        this.query = {page: 1, size: 10};
-        this.caseTime = '';
-        this.getData();
-      },
       pageChange(index) {
-        this.query.page = index;
-        this.getData();
+        this.page = index;
+        if (!this.isFirst && this.list.length > this.firstPage) {
+          this.isFirst = true;
+        }
+        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
+          (this.list.length % 100 === 0 || this.list.length === this.couple)) {
+          this.firstPage = this.list.length;
+          this.query.pageTime = this.list[this.list.length - 1].catchTime;
+          this.getData();
+        }
+        this.list10 = this.list;
+        if ((this.list.length - (index * 10)) >= 0) {
+          this.list10 = this.list10.slice((index * 10 - 10), (index * 10));
+        } else {
+          this.list10 = this.list10.slice((index * 10 - 10), this.list.length);
+        }
       },
       handleSizeChange(val) {
-        this.query.size = val;
+      },
+      clearData() {
+        this.list10 = [];
+        this.query = {size: 100};
+        this.isSearch = true;
+        this.qTime = '';
+
         this.getData();
       },
       //格式化内容   有数据就展示，没有数据就显示--
@@ -325,7 +392,7 @@
     height: 132px;
     border: 1px #D7D7D7 solid;
     padding: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     position: relative;
   }
 

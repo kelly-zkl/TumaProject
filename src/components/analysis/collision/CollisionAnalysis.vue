@@ -16,7 +16,7 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-date-picker v-model="date1" type="datetimerange" range-separator="至" size="medium"
+              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" size="medium"
                               :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
                               start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px">
               </el-date-picker>
@@ -97,7 +97,7 @@
         taskStatus: [{value: 'FINISH', label: '已完成'}, {value: 'FAILE', label: '任务失败'},
           {value: 'WAIT', label: '等待中'}, {value: 'EXECUTION', label: '分析中'}],
         query: {page: 1, size: 10, taskName: "", ctype: "", taskStatus: ""},
-        date1: '',
+        qTime: '',
         count: 0,
         sels: []
       }
@@ -113,7 +113,7 @@
       //清除查询条件
       clearData() {
         this.query = {page: 1, size: 10, taskName: "", ctype: "", taskStatus: ""};
-        this.date1 = '';
+        this.qTime = '';
         this.getData();
       },
       //跳转新建碰撞条件
@@ -163,9 +163,9 @@
       },
       //获取碰撞任务列表
       getData() {
-        if (!!this.date1) {
-          this.query.startTime = this.date1[0] / 1000;
-          this.query.endTime = this.date1[1] / 1000;
+        if (!!this.qTime) {
+          this.query.startTime = this.qTime[0] / 1000;
+          this.query.endTime = this.qTime[1] / 1000;
         } else {
           delete this.query['startTime'];
           delete this.query['endTime'];

@@ -16,16 +16,16 @@
         <el-row>
           <el-col :span="18" align="left">
             <el-form-item style="margin-bottom: 10px">
-              <el-input v-model="query.num" size="medium" :maxlength=30 placeholder="编号"></el-input>
+              <el-input v-model="query.recordId" size="medium" :maxlength=30 placeholder="编号"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.lev" placeholder="勤务等级" size="medium" style="width: 150px">
+              <el-select v-model="query.staffLevel" placeholder="勤务等级" size="medium" style="width: 150px">
                 <el-option v-for="item in levs" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-date-picker v-model="caseTime" type="datetimerange" range-separator="至"
+              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                               start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                               :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                               :picker-options="pickerBeginDate">
@@ -48,23 +48,23 @@
       <el-table :data="imsiList" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="编号" prop="taskName" min-width="150"
+        <el-table-column align="left" label="编号" prop="recordId" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="业务类型" prop="followType" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="勤务等级" prop="followTarget" min-width="150"
+        <el-table-column align="left" label="勤务等级" prop="staffLevel" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="申请人" prop="followTarget" min-width="150"
+        <el-table-column align="left" label="申请人" prop="creatorName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="申请人所属组织" prop="followTarget" min-width="150"
+        <el-table-column align="left" label="申请人所属组织" prop="creatorGroupName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="申请时间" prop="taskStatus" width="170"
+        <el-table-column align="left" label="申请时间" prop="createTime" width="170"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="当前节点" prop="taskStatus" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="当前节点负责人" prop="caseName" width="170"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="状态" prop="caseName" width="120"
+        <el-table-column align="left" label="状态" prop="ccReadStatus" width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
@@ -85,17 +85,18 @@
 </template>
 <script>
   import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+
   export default {
     data() {
       return {
         listLoading: false,
         activeItem: 'UNREAD',
         imsiList: [],
-        query: {page: 1, size: 10},
-        caseTime: '',
+        query: {page: 1, size: 10, ccReadStatus: 1},
+        qTime: '',
         count: 0,
         sels: [],
-        levs: [{value: '1', label: '一级'}, {value: '2', label: '二级'}, {value: '3', label: '三级'}],
+        levs: [{value: '一级', label: '一级'}, {value: '二级', label: '二级'}, {value: '三级', label: '三级'}],
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -115,22 +116,29 @@
         this.sels = sels;
       },
       handleType(val) {
+        if (val.name === 'UNREAD') {
+          this.query.ccReadStatus = 1;
+        } else {
+          this.query.ccReadStatus = 0;
+        }
+        this.getData();
       },
       //标记已读
       updateStatus() {
         this.$confirm('确认标记为已读?', '提示', {type: 'info'}).then(() => {
-//          let param = [];
-//          this.sels.forEach((item) => {
-//            let caseItem = {id: item.id, taskStatus: 'FINISH'};
-//            param.push(caseItem);
-//          });
-//          this.$post('disposition/batchUpdateStatus', param, '操作成功').then((data) => {
-//            if ("000000" === data.code) {
-//              this.getData();
-//              this.sels = [];
-//            }
-//          }).catch((err) => {
-//          });
+          let param = {};
+          let ids = [];
+          this.sels.forEach((item) => {
+            ids.push(item.recordId);
+          });
+          param = {ids: ids, operator: JSON.parse(sessionStorage.getItem("user")).userId, remark: ''};
+          this.$post('/workflow/translation/ccread', param, '操作成功').then((data) => {
+            if ("000000" === data.code) {
+              this.getData();
+              this.sels = [];
+            }
+          }).catch((err) => {
+          });
         }).catch(() => {
         });
       },
@@ -142,32 +150,52 @@
         }
       },
       handleSizeChange(val) {
+        this.query.size = val;
+        this.getData();
       },
       pageChange(val) {
+        this.query.page = val;
+        this.getData();
       },
       getData() {
+        if (!!this.qTime) {
+          this.query.startTime = this.qTime[0] / 1000;
+          this.query.endTime = this.qTime[1] / 1000;
+        }
+        this.listLoading = true;
+        this.$post('/workflow/translation/mycc/' + JSON.parse(sessionStorage.getItem("user")).userId, this.query).then((data) => {
+          this.imsiList = data.data.records;
+          this.count = data.data.count;
+          setTimeout(() => {
+            this.listLoading = false;
+          }, 500);
+        }).catch((err) => {
+          this.listLoading = false;
+          this.imsiList = [];
+          this.$message.error(err);
+        });
       },
       clearData() {
         this.query = {page: 1, size: 10};
-        this.caseTime = '';
+        this.qTime = '';
+        this.getData();
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'taskStatus') {
-          return row.taskStatus === "WAIT" ? '等待中' : row.taskStatus === "FINISH" ? '已完成' : row.taskStatus === "FAILE" ? '失败' : row.taskStatus === "EXECUTION" ? '进行中' : '--';
+        if (column.property === 'createTime') {
+          // return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
+          return row.createTime ? row.createTime : '--';
         } else if (column.property === 'followType') {
-          return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '图像' : row.followType === "MAC" ? 'MAC' : '--';
-        } else if (column.property === 'status') {
-          return row.status === 'UNHANDLED' ? '未处理' : row.status === 'EXECUTION' ? '进行中' : row.status === 'HANDLED' ? '已结案' : '--';
-        } else if (column.property === 'followCount') {
-          return row.followCount === 0 ? 0 : row.followCount;
+          return "IMSI翻码";
+        } else if (column.property === 'ccReadStatus') {
+          return row.ccReadStatus === 1 ? '未读' : row.ccReadStatus === 0 ? '已读' : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
       }
     },
     mounted() {
-      this.imsiList = [{}, {}]
+      this.getData();
     }
   }
 </script>

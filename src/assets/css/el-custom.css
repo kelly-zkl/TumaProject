@@ -190,7 +190,7 @@
 
 /*标签页*/
 .tab-card .el-tabs--border-card {
-  background: #ECF0F1;
+  background: #E9ECF1;
   border: none;
   -webkit-box-shadow: none;
   box-shadow: none;
@@ -203,7 +203,7 @@
 }
 
 .tab-card .el-tabs--border-card > .el-tabs__header {
-  background-color: #ECF0F1;
+  background-color: #E9ECF1;
   border-bottom: none;
   margin: 0;
   padding: 0;
@@ -214,8 +214,8 @@
 }
 
 .tab-card .el-tabs__item {
-  background-color: #ECF0F1;
-  border-top: 4px #ECF0F1 solid;
+  background-color: #E9ECF1;
+  border-top: 4px #E9ECF1 solid;
   color: #343434 !important;
   font-weight: bold;
   font-size: 15px;
@@ -228,7 +228,7 @@
 
 .tab-card .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
   color: #6699FF !important;
-  background-color: #ECF0F1;
+  background-color: #E9ECF1;
   border-right-color: transparent;
   border-left-color: transparent
 }
@@ -256,7 +256,7 @@
   bottom: 0;
   width: 430px;
   border-radius: 0;
-  background: #ECF0F1;
+  background: #E9ECF1;
 }
 
 .view-msg .el-dialog__header, .view-msg .el-dialog__body, .warning .el-dialog__body {
@@ -267,7 +267,7 @@
   position: absolute;
   right: 10px;
   border-radius: 4px;
-  background: #ECF0F1;
+  background: #E9ECF1;
 }
 
 .warning .el-dialog__header {
@@ -351,19 +351,28 @@
 .content-aside-close {
   flex: 0 0 60px;
   width: 60px;
-  background-color: #333;
+  background-color: #E4E4E4;
 }
 
 .content-aside {
   flex: 0 0 200px;
   width: 200px;
-  background-color: #333;
+  background-color: #E4E4E4;
 }
 
 .content-main {
   padding-right: 5%;
-  background-color: #ECF0F1;
+  background-color: #E9ECF1;
   flex: 1;
   overflow-y: scroll;
   padding-top: 10px;
+}
+
+.el-menu-item:focus, .el-menu-item:hover {
+  outline: 0;
+  background-color: rgba(0, 0, 0, 0) !important
+}
+
+.el-menu-item.is-active {
+  border-left: 13px solid #6699FF;
 }

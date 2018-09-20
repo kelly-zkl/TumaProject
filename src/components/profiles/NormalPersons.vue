@@ -7,8 +7,8 @@
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.imgUrl" placeholder="输入相似度阈值" size="medium" style="width: 260px">
                 <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
-                           :on-success="handleSuccess" :on-change="handleChange" size="medium"
-                           :auto-upload="false" :show-file-list="false">
+                           :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
+                           :auto-upload="true" :show-file-list="false">
                   <el-button type="primary" size="medium">上传头像图片</el-button>
                 </el-upload>
               </el-input>
@@ -42,12 +42,12 @@
               <el-input placeholder="输入身份证号" v-model="query.idNumber" :maxlength="30"
                         style="width: 180px" size="medium"></el-input>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.value" placeholder="所属名单" size="medium" style="width: 150px">
-                <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
+            <!--<el-form-item style="margin-bottom: 10px">-->
+            <!--<el-select v-model="query.value" placeholder="所属名单" size="medium" style="width: 150px">-->
+            <!--<el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">-->
+            <!--</el-option>-->
+            <!--</el-select>-->
+            <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
             </el-form-item>
@@ -72,7 +72,9 @@
         <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="150"
                          max-width="250" :formatter="formatterAddress">
           <template slot-scope="scope">
-            <img v-bind:src="scope.row.faceUrl?faceUrl+scope.row.faceUrl:imgPath" style="width: 90px;height:90px"/>
+            <img v-bind:src="scope.row.faceUrl?faceUrl+scope.row.faceUrl:imgPath"
+                 @click="bigUrl=scope.row.faceUrl;runBigPic=true"
+                 style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
         <el-table-column align="left" label="年龄" prop="age" width="120"
@@ -100,6 +102,19 @@
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
+      <!--查看大图-->
+      <el-dialog title="查看大图" :visible.sync="runBigPic" width="450px" center>
+        <div class="block">
+          <el-row>
+            <el-col :span="24" style="text-align: center" align="center">
+              <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:8px;vertical-align:middle"/>
+            </el-col>
+          </el-row>
+          <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">
+            <el-button type="primary" @click="runBigPic=false" size="medium">关闭</el-button>
+          </div>
+        </div>
+      </el-dialog>
       <!--添加人员-->
       <el-dialog title="名单录入" :visible.sync="runningAddPerson" width="600px" center class="dialog">
         <el-form :model="addPerson" align="left" label-width="120px" label-position="right" :rules="rules"
@@ -157,6 +172,8 @@
   export default {
     data() {
       return {
+        runBigPic: false,
+        bigUrl: '',
         query: {page: 1, size: 10},
         provinceList: json,
         imgPath: require('../../assets/img/icon_people.png'),
@@ -168,7 +185,7 @@
         count: 0,
         listLoading: false,
         normalList: [],
-        uploadUrl: '',
+        uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         imgUrl: '',
         runningAddPerson: false,
         addPerson: {},
@@ -206,49 +223,22 @@
         this.imageUrl1 = URL.createObjectURL(file.raw);
       },
       beforeAvatarUpload(file) {
-        if (globalValidImg(file.raw, this.$message)) {
+        if (globalValidImg(file, this.$message)) {
         }
-        return globalValidImg(file.raw, this.$message);
+        return globalValidImg(file, this.$message);
       },
       //批量导入设备的文件格式验证
-      handleChange(file, fileList) {
-        if (file.status == 'ready') {
-          if (globalValidImg(file.raw, this.$message)) {
-          }
-        }
-      },
       handleSuccess(res, file) {
         if (res.code === '000000') {
-          if (res.data && res.data.length > 0) {
-
-          } else {
-            this.$message({type: 'success', message: res.msg});
+          if (res.data) {
+            this.query.faceUrl = res.data.fileUrl;
             this.getData();
+            setTimeout(() => {
+              this.getData();
+            }, 7000);
           }
         } else {
           this.$message.error(res.msg);
-        }
-      },
-      //省市县变化
-      areaChange(value) {
-        this.areaList = value;
-        this.query.provinceCode = '';
-        this.query.cityCode = '';
-        this.query.areaCode = '';
-        if (value.length === 1) {
-          this.query.provinceCode = value[0];
-        } else if (value.length === 2) {
-          this.query.provinceCode = value[0];
-          this.query.cityCode = value[1];
-        } else if (value.length === 3) {
-          this.query.provinceCode = value[0];
-          this.query.cityCode = value[1];
-          this.query.areaCode = value[2];
-        } else if (value.length === 3) {
-          this.query.provinceCode = value[0];
-          this.query.cityCode = value[1];
-          this.query.areaCode = value[2];
-          this.query.streetCode = value[3];
         }
       },
       gotoDetail(item) {
@@ -272,6 +262,7 @@
       //清除查询条件
       clearData() {
         this.query = {page: 1, size: 10};
+        delete this.query['faceUrl'];
         this.getData();
       },
       pageChange(index) {

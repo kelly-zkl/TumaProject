@@ -3,9 +3,11 @@
     <section class="content">
       <el-row style="background: #F2F2F2">
         <el-col :span="8" align="left">
-          <div style="font-size:14px;padding:10px 20px">当前状态：待处理</div>
+          <div style="font-size:14px;padding:10px 20px">
+            当前状态：{{imsiDetail.status==0?'待处理':imsiDetail.status==1?'处理中':imsiDetail.status==2?'已处理':imsiDetail.status==3?'误报':''}}
+          </div>
         </el-col>
-        <el-col :span="8" :offset="8" align="right">
+        <el-col :span="8" :offset="8" align="right" style="text-align: right" v-if="imsiDetail.status==0">
           <el-button type="primary" size="medium" @click=changeStatus(2)>已处理</el-button>
           <el-button type="primary" size="medium" @click=changeStatus(3)>误报</el-button>
         </el-col>
@@ -79,6 +81,11 @@
             </el-form>
           </div>
           <span v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px">暂无数据</span>
+          <el-row style="width: 100%" v-if="persons.length>=num">
+            <el-col :span="24" style="text-align: center" align="center">
+              <el-button type="text" @click="loadMore()">加载更多</el-button>
+            </el-col>
+          </el-row>
         </div>
       </div>
       <div v-show="activeItem=='list'">
@@ -93,27 +100,27 @@
                 </el-select>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
-                <el-date-picker v-model="caseTime" type="datetimerange" range-separator="至"
+                <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                                 start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                                 :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                                 :picker-options="pickerBeginDate">
                 </el-date-picker>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
-                <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
+                <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
                 <el-button size="medium" @click="clearData()">重置</el-button>
               </el-form-item>
             </el-form>
           </el-col>
-          <el-col :span="6" align="right" style="text-align: right">
+          <el-col :span="6" align="right" style="text-align: right" v-show="getButtonVial('route:query')">
             <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="gotoPath()"
                        v-show="getButtonVial('warning:getImsiWarning')">查看轨迹
             </el-button>
           </el-col>
         </el-row>
-        <el-table :data="imsiList" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
+        <el-table :data="list10" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
           <el-table-column type="selection" width="45" align="left"></el-table-column>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="抓取时间" prop="catchTime" width="200"
@@ -127,10 +134,9 @@
           <el-table-column align="left" label="告警状态" prop="status" width="150"
                            :formatter="formatterAddress"></el-table-column>
         </el-table>
-        <div class="block" style="margin-top: 20px;text-align: right" align="right">
-          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
-                         :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
-                         layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+        <div class="block" style="margin-top: 20px" align="right">
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
+                         :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
       </div>
     </section>
@@ -149,15 +155,21 @@
         imgPath: require('../../assets/img/icon_people.png'),
         id: this.$route.query.id || '',
         imsi: this.$route.query.imsi || '',
-        caseTime: '',
+        qTime: '',
         imsiDetail: {},
         imsiList: [],
         persons: [],
         places: [],
-        query: {page: 1, size: 10},
+        query: {size: 100},
         count: 0,
-        statuses: [{label: '全部', value: ''}, {label: '待处理', value: 1}, {label: '处理中', value: 2},
-          {label: '已处理', value: 3}, {label: '误报', value: 4}],
+        list: [],
+        list10: [],
+        isShow: false,
+        isFirst: true,
+        isSearch: false,
+        firstPage: 0,
+        page: 1,
+        num: 10,
         sels: [],
         pickerBeginDate: {
           disabledDate: (time) => {
@@ -176,9 +188,16 @@
       handleType(val, event) {
         if (this.activeItem === 'person') {
           this.getPersons();
+          this.isSearch = false;
         } else {
+          this.isSearch = true;
           this.getData();
         }
+      },
+      //关联人员加载更多
+      loadMore() {
+        this.num += 10;
+        this.getPersons();
       },
       changeStatus(status) {
         this.$post('warning/dealWithWarningById', {id: this.id, status: status}, "处理成功").then((data) => {
@@ -202,7 +221,14 @@
       },
       //查看轨迹
       gotoPath() {
-        this.$router.push("/pathLine");
+        if (this.qTime.length === 0) {
+          this.$message.error('请选择时间范围');
+          return;
+        }
+        let imsis = [this.imsi];
+        sessionStorage.setItem("pathImsi", JSON.stringify(imsis));
+        sessionStorage.setItem("pathTime", JSON.stringify(this.qTime));
+        this.$router.push({path: '/pathLine', query: {imsi: 1}});
       },
       //全选
       selsChange(sels) {
@@ -210,44 +236,82 @@
       },
       //根据imsi查找指定的对应人员
       getPersons() {
-        this.$post('common/imsi/listFace/' + this.imsi, {}).then((data) => {
-          this.persons = data.data;
+        this.$post('common/imsi/listFace', {imsi: this.imsi, num: this.num}).then((data) => {
+          if (data.data && data.data.length > 0) {
+            this.persons = data.data;
+          }
         }).catch((err) => {
           this.$message.error(err);
         });
       },
       getData() {
-        if (!!this.caseTime) {
-          this.query.startTime = this.caseTime[1] / 1000;
-          this.query.endTime = this.caseTime[0] / 1000;
+        if (!!this.qTime) {
+          this.query.startTime = this.qTime[1] / 1000;
+          this.query.endTime = this.qTime[0] / 1000;
+        }
+        if (this.isSearch) {
+          this.list = [];
+          this.list10 = [];
+          delete this.query['pageTime'];
+          this.isSearch = false;
         }
 
         this.query.imsi = this.imsi;
         this.listLoading = true;
         this.$post('common/imsi/listImsiRecordBySpecialImsi', this.query).then((data) => {
-          this.imsiList = data.data.list;
-          this.count = data.data.count;
-          setTimeout(() => {
-            this.listLoading = false;
-          }, 500);
-        }).catch((err) => {
+          if (this.query.pageTime && !this.isSearch) {
+            this.list = this.list.concat(data.data);
+          } else {
+            this.list = data.data ? data.data : [];
+            this.page = 1;
+            this.firstPage = 0
+          }
+          this.list10 = this.list;
+          if (this.list.length - this.page * 10 >= 0) {
+            this.list10 = this.list10.slice((this.page * 10 - 10), (this.page * 10));
+          } else {
+            this.list10 = this.list10.slice((this.page * 10 - 10), this.list.length);
+          }
+          this.count = this.list.length;
+          if (this.list.length - this.firstPage === 100) {
+            this.isFirst = false;
+          } else {
+            this.isFirst = true;
+          }
           this.listLoading = false;
-          this.imsiList = [];
+        }).catch((err) => {
+          this.list = [];
+          this.list10 = [];
+          this.listLoading = false;
           this.$message.error(err);
         });
       },
-      //清除查询条件
-      clearData() {
-        this.query = {page: 1, size: 10};
-        this.caseTime = '';
-        this.getData();
-      },
       pageChange(index) {
-        this.query.page = index;
-        this.getData();
+        this.page = index;
+        if (!this.isFirst && this.list.length > this.firstPage) {
+          this.isFirst = true;
+        }
+        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
+          (this.list.length % 100 === 0 || this.list.length === this.couple)) {
+          this.firstPage = this.list.length;
+          this.query.pageTime = this.list[this.list.length - 1].catchTime;
+          this.getData();
+        }
+        this.list10 = this.list;
+        if ((this.list.length - (index * 10)) >= 0) {
+          this.list10 = this.list10.slice((index * 10 - 10), (index * 10));
+        } else {
+          this.list10 = this.list10.slice((index * 10 - 10), this.list.length);
+        }
       },
       handleSizeChange(val) {
-        this.query.size = val;
+      },
+      clearData() {
+        this.list10 = [];
+        this.query = {size: 100};
+        this.isSearch = true;
+        this.qTime = '';
+
         this.getData();
       },
       //格式化内容   有数据就展示，没有数据就显示--
@@ -315,7 +379,7 @@
     height: 132px;
     border: 1px #D7D7D7 solid;
     padding: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     position: relative;
   }
 

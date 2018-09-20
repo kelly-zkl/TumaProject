@@ -23,7 +23,7 @@
         </el-row>
       </div>
       <!--<div align="left" class="tab-card">-->
-      <!--<el-tabs v-model="activeType" @tab-click="handleType" type="border-card">-->
+      <!--<el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">-->
       <!--<el-tab-pane label="所有记录" name="imsi"></el-tab-pane>-->
       <!--<el-tab-pane label="关联身份" name="identity"></el-tab-pane>-->
       <!--</el-tabs>-->
@@ -36,7 +36,7 @@
                     :maxlength=30></el-input>
         </el-form-item>
         <el-form-item label="时间范围">
-          <el-date-picker v-model="date1" type="datetimerange" range-separator="至" size="medium"
+          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" size="medium"
                           :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
                           start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px">
           </el-date-picker>
@@ -87,13 +87,13 @@
     data() {
       return {
         listLoading: false,
-        activeType: "imsi",
+        activeItem: "imsi",
         taskId: this.$route.query.taskId || '',
         collisionType: this.$route.query.collisionType || '',
         personID: this.$route.query.personID || '',
         picUrl: this.$route.query.picUrl || '',
         query: {page: 1, size: 10},
-        date1: '',
+        qTime: '',
         task: {},
         records: [],
         count: 0
@@ -110,14 +110,14 @@
         this.query.collisionType = this.collisionType;
         this.query.collisionTaskId = this.taskId;
         this.query.personID = this.personID;
-        this.date1 = '';
+        this.qTime = '';
         this.getData();
       },
       //获取图像记录
       getData() {
-        if (!!this.date1) {
-          this.query.startTime = this.date1[0] / 1000;
-          this.query.endTime = this.date1[1] / 1000;
+        if (!!this.qTime) {
+          this.query.startTime = this.qTime[0] / 1000;
+          this.query.endTime = this.qTime[1] / 1000;
         } else {
           delete this.query['startTime'];
           delete this.query['endTime'];

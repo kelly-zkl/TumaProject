@@ -13,8 +13,8 @@
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-input v-model="query.similarThreshold" placeholder="输入相似度阈值" size="medium" style="width: 260px">
             <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
-                       :on-success="handleSuccess" :on-change="handleChange" size="medium"
-                       :auto-upload="false" :show-file-list="false">
+                       :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
+                       :auto-upload="true" :show-file-list="false">
               <el-button type="primary" size="medium">上传头像图片</el-button>
             </el-upload>
           </el-input>
@@ -38,8 +38,8 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem == 'H'">
-          <el-date-picker v-model="caseTime" type="datetimerange" range-separator="至"
+        <el-form-item style="margin-bottom: 10px" v-if="activeItem == 'H'">
+          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                           start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                           :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                           :picker-options="pickerBeginDate" style="width: 360px">
@@ -49,26 +49,28 @@
           <el-input placeholder="设备名称/ID" v-model="query.deviceId" :maxlength="30" size="medium"></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
+          <el-button type="primary" size="medium" @click="getData()" v-if="activeItem=='T'">搜索</el-button>
+          <el-button type="primary" size="medium" @click="isSearch = true;getData()" v-if="activeItem=='H'">搜索
+          </el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
       </el-form>
-      <el-table :data="imgRecords" v-loading="listLoading" class="center-block" stripe>
+      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="现场图像" prop="imageUrl" min-width="125"
-                         max-width="250">
+        <el-table-column align="left" label="人员图像" prop="imageUrl" min-width="125" max-width="250">
           <template slot-scope="scope">
             <img v-bind:src="scope.row.imageUrl?scope.row.imageUrl:imgPath"
-                 style="width: 90px;height:90px;border-radius: 6px"/>
+                 @click="bigUrl=scope.row.imageUrl;runBigPic=true"
+                 style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
         <el-table-column align="left" label="年龄" prop="age" width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="抓取场所" prop="place" min-width="150"
+        <el-table-column align="left" label="抓取场所" prop="placeName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="抓取时间" prop="catchTime" width="170"
                          :formatter="formatterAddress"></el-table-column>
@@ -84,11 +86,23 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
-                       :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
-                       layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+      <div class="block" style="margin-top: 20px" align="right" v-if="activeItem == 'H'">
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
+                       :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
+      <!--查看大图-->
+      <el-dialog title="查看大图" :visible.sync="runBigPic" width="450px" center>
+        <div class="block">
+          <el-row>
+            <el-col :span="24" style="text-align: center" align="center">
+              <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:8px;vertical-align:middle"/>
+            </el-col>
+          </el-row>
+          <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">
+            <el-button type="primary" @click="runBigPic=false" size="medium">关闭</el-button>
+          </div>
+        </div>
+      </el-dialog>
     </section>
   </div>
 </template>
@@ -99,18 +113,28 @@
   export default {
     data() {
       return {
+        runBigPic: false,
+        bigUrl: '',
         activeItem: 'T',
-        query: {page: 1, size: 10},
+        query: {size: 5},
         imgPath: require('../../assets/img/icon_people.png'),
-        caseTime: '',
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
+        qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         count: 0,
+        list: [],
+        list10: [],
+        isShow: false,
+        isFirst: true,
+        isSearch: false,
+        firstPage: 0,
+        page: 1,
         listLoading: false,
         exportKey: 'archives:get:listFaceToday',
-        imgRecords: [],
         places: [],
-        uploadUrl: '',
+        uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         imgUrl: '',
+        intervalid: null,
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -121,15 +145,33 @@
         }
       }
     },
+    //页面关闭时停止刷新
+    beforeDestroy() {
+      clearInterval(this.intervalid);
+      this.intervalid = null;
+    },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      //定时刷新侦码数据
+      dataTask() {
+        if (!this.intervalid) {
+          this.intervalid = setInterval(() => {
+            this.getTodayData();
+          }, 2000);
+        }
+      },
       handleType(val) {
         this.clearData();
-        this.exportKey = 'archives:get:listFaceToday';
+
         if (this.activeItem === 'H') {
           this.exportKey = 'archives:get:listFaceHistory';
+          clearInterval(this.intervalid);
+          this.intervalid = null;
+        } else {
+          this.exportKey = 'archives:get:listFaceToday';
+          this.dataTask();
         }
       },
       //查看图像详情
@@ -137,19 +179,20 @@
         this.$router.push({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
       },
       //批量导入设备的文件格式验证
-      handleChange(file, fileList) {
-        if (file.status === 'ready') {
-          if (globalValidImg(file.raw, this.$message)) {
-          }
+      beforeAvatarUpload(file) {
+        if (globalValidImg(file, this.$message)) {
         }
+        return globalValidImg(file, this.$message);
       },
+      //批量导入设备的文件格式验证
       handleSuccess(res, file) {
         if (res.code === '000000') {
-          if (res.data && res.data.length > 0) {
-
-          } else {
-            this.$message({type: 'success', message: res.msg});
+          if (res.data) {
+            this.query.faceUrl = res.data.fileUrl;
             this.getData();
+            setTimeout(() => {
+              this.getData();
+            }, 7000);
           }
         } else {
           this.$message.error(res.msg);
@@ -157,57 +200,127 @@
       },
       //获取IMSI告警列表
       getData() {
-        let url = 'archives/get/listFaceToday';
-        if (this.activeItem === 'H') {
-          url = 'archives/get/listFaceHistory';
-        }
         if (this.query.deviceId) {
           if (noValidator(this.query.deviceId)) {
             this.$message.error('请输入正确的设备设备ID');
             return;
           }
         }
-        if (this.query.imsi) {
-          if (!/[0-9]$/.test(this.query.imsi)) {
-            this.$message.error('请输入正确的imsi');
-            return;
+        if (!!this.qTime) {
+          this.query.startTime = this.qTime[0] / 1000;
+          this.query.endTime = this.qTime[1] / 1000;
+        }
+        if (this.activeItem === 'H') {
+          this.getAllData();
+        } else {
+          this.getTodayData();
+        }
+      },
+      //今天的数据
+      getTodayData() {
+        this.listLoading = false;
+        this.$post("archives/get/listFaceToday", this.query).then((data) => {
+          if (this.list10.length >= 10) {
+            this.list10 = [];
           }
-        }
-        if (this.cTime) {//时间戳的毫秒转化成秒
-          this.query.startTime = this.cTime[0] / 1000;
-          this.query.endTime = this.cTime[1] / 1000;
-        }
-        this.listLoading = true;
-        this.$post(url, this.query).then((data) => {
-          this.imgRecords = data.data.list;
-          this.count = data.data.count;
-          setTimeout(() => {
-            this.listLoading = false;
-          }, 500);
+          if (this.list10.length === 0) {//
+            data.data.forEach((item) => {
+              if ((new Date().getTime() - item.catchTime * 1000) >= -120 * 1000 && (new Date().getTime() - item.catchTime * 1000) <= 120 * 1000) {//10s内的数据
+                setTimeout(() => {
+                  this.list10.push(item);
+                }, 1000);
+              }
+            });
+          } else {//
+            data.data.forEach((item) => {
+              if ((new Date().getTime() - item.catchTime * 1000) >= -120 * 1000 && (new Date().getTime() - item.catchTime * 1000) <= 120 * 1000) {//10s内的数据
+                for (let terminate of this.list10) {
+                  if (terminate.id === item.id) {
+                    return;
+                  }
+                }
+                setTimeout(() => {
+                  this.list10.push(item);
+                }, 1000);
+              }
+            });
+          }
         }).catch((err) => {
-          this.imgRecords = [];
+          this.list10 = [];
           this.listLoading = false;
           this.$message.error(err);
         });
       },
-      //清除查询条件
-      clearData() {
-        this.query = {page: 1, size: 10};
-        if (this.activeItem === 'first') {
-          this.cTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
-        } else {
-          this.cTime = '';
+      //历史数据
+      getAllData() {
+        if (this.isSearch) {
+          this.list = [];
+          this.list10 = [];
+          delete this.query['pageTime'];
+          this.isSearch = false;
         }
-        this.count = 0;
-        this.getData();
+        this.listLoading = true;
+        this.$post("archives/get/listFaceHistory", this.query).then((data) => {
+          if (this.query.pageTime && !this.isSearch) {
+            this.list = this.list.concat(data.data);
+          } else {
+            this.list = data.data;
+            this.page = 1;
+            this.firstPage = 0
+          }
+          this.list10 = this.list;
+          if (this.list.length - this.page * 10 >= 0) {
+            this.list10 = this.list10.slice((this.page * 10 - 10), (this.page * 10));
+          } else {
+            this.list10 = this.list10.slice((this.page * 10 - 10), this.list.length);
+          }
+          this.count = this.list.length;
+          if (this.list.length - this.firstPage === 100) {
+            this.isFirst = false;
+          } else {
+            this.isFirst = true;
+          }
+          this.listLoading = false;
+        }).catch((err) => {
+          this.list = [];
+          this.list10 = [];
+          this.listLoading = false;
+          this.$message.error(err);
+        });
       },
       pageChange(index) {
-        this.query.page = index;
-        this.getData();
+        this.page = index;
+        if (!this.isFirst && this.list.length > this.firstPage) {
+          this.isFirst = true;
+        }
+        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
+          (this.list.length % 100 === 0 || this.list.length === this.couple)) {
+          this.firstPage = this.list.length;
+          this.query.pageTime = this.list[this.list.length - 1].catchTime;
+          this.getData();
+        }
+        this.list10 = this.list;
+        if ((this.list.length - (index * 10)) >= 0) {
+          this.list10 = this.list10.slice((index * 10 - 10), (index * 10));
+        } else {
+          this.list10 = this.list10.slice((index * 10 - 10), this.list.length);
+        }
       },
       handleSizeChange(val) {
-        this.query.size = val;
+      },
+      clearData() {
+        this.list10 = [];
+        if (this.activeItem === 'T') {
+          this.query = {size: 5};
+          this.isShow = false;
+        } else {
+          this.query = {size: 100};
+          this.isSearch = true;
+        }
+        delete this.query['faceUrl'];
+        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+
         this.getData();
       },
       //格式化内容   有数据就展示，没有数据就显示--
@@ -215,7 +328,7 @@
         if (column.property === 'sex') {
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
         } else if (column.property === 'catchTime') {
-          return row.catchTime ? formatDate(new Date(row.catchTime), 'yyyy-MM-dd hh:mm:ss') : '--';
+          return row.catchTime ? formatDate(new Date(row.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'age') {
           return row.age;
         } else {
@@ -234,6 +347,7 @@
     mounted() {
       this.getPlaces();
       this.getData();
+      this.dataTask();
     }
   }
 </script>

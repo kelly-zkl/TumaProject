@@ -48,7 +48,7 @@
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-date-picker v-model="caseTime" type="datetimerange" range-separator="至"
+            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                             start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                             :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                             :picker-options="pickerBeginDate">
@@ -134,7 +134,7 @@
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-date-picker v-model="caseTime1" type="datetimerange" range-separator="至"
+            <el-date-picker v-model="qTime1" type="datetimerange" range-separator="至"
                             start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                             :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                             :picker-options="pickerBeginDate">
@@ -245,7 +245,7 @@
         taskId: this.$route.query.taskId || '',
         activeItem: "IMSI",
         query: {status: '', page: 1, size: 10},
-        caseTime: '',
+        qTime: '',
         statuses: [{label: '全部', value: ''}, {label: '待处理', value: '1'}, {label: '处理中', value: '2'},
           {label: '已处理', value: '3'}, {label: '误报', value: '4'}],
         areaList: [],
@@ -255,7 +255,7 @@
         query1: {status: '', page: 1, size: 10},
         sexs: [{value: '0', label: '男'}, {value: '2', label: '女'}],
         areaList1: [],
-        caseTime1: '',
+        qTime1: '',
         count1: 0,
         listLoading1: false,
         imgList: [],
@@ -350,7 +350,7 @@
       //清除查询条件
       clearData() {
         this.query = {page: 1, size: 10};
-        this.caseTime = '';
+        this.qTime = '';
         this.getData();
       },
       pageChange(index) {
@@ -407,7 +407,7 @@
       //清除查询条件
       clearImgData() {
         this.query1 = {page: 1, size: 10};
-        this.caseTime1 = '';
+        this.qTime1 = '';
         this.getImgData();
       },
       pageImgChange(index) {

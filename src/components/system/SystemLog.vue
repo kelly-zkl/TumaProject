@@ -8,7 +8,7 @@
               <el-input placeholder="账号/用户名" v-model="query.name" :maxlength="20" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-date-picker v-model="caseTime" type="datetimerange" range-separator="至"
+              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                               start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                               :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                               :picker-options="pickerBeginDate">
@@ -60,7 +60,7 @@
       return {
         listLoading: false,
         query: {page: 1, size: 10},
-        caseTime: '',
+        qTime: '',
         count: 0,
         logs: [],
         pickerBeginDate: {

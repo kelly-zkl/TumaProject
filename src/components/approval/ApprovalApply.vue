@@ -6,7 +6,7 @@
         <div class="add-appdiv">
           <el-form-item label="业务类型" align="left">IMSI翻码</el-form-item>
           <el-form-item label="勤务等级" align="left" style="margin: 0">
-            <el-radio-group v-model="approval.lev" size="medium">
+            <el-radio-group v-model="approval.staffLevel" size="medium">
               <el-radio-button v-for="item in levs" :label="item.value" :key="item.value">{{item.label}}
               </el-radio-button>
             </el-radio-group>
@@ -15,16 +15,17 @@
         <h5 class="add-label" style="margin-top: 0">需要翻码的IMSI</h5>
         <div class="add-appdiv">
           <el-form-item label="录入方式" align="left">
-            <el-radio-group v-model="approval.way" size="medium">
+            <el-radio-group v-model="way" size="medium">
               <el-radio-button v-for="item in ways" :label="item.value" :key="item.value">{{item.label}}
               </el-radio-button>
             </el-radio-group>
-            <span style="color: #fff;font-size: 14px;margin-left: 20px;background: #F60">IMSI数量不要超过20个</span>
+            <span style="color: #fff;font-size: 14px;margin-left: 20px;background: #F60"
+                  v-if="way == '2'">IMSI数量不要超过20个</span>
           </el-form-item>
-          <el-form-item label="选择人员" align="left" style="margin: 0" v-show="approval.way == '1'">
+          <el-form-item label="选择人员" align="left" style="margin: 0" v-if="way == '1'">
             <el-button type="primary" size="medium" icon="el-icon-plus">从名单中选择人员</el-button>
           </el-form-item>
-          <el-form-item label="输入IMSI" align="left" style="margin: 0" v-show="approval.way == '2'">
+          <el-form-item label="输入IMSI" align="left" style="margin: 0" v-if="way == '2'">
             <el-tag :key="tag" v-for="tag in dynamicTags" closable hit
                     :disable-transitions="false" @close="handleClose(tag)">{{tag}}
             </el-tag>
@@ -65,13 +66,14 @@
   export default {
     data() {
       return {
-        approval: {lev: '1', way: '1'},
+        approval: {staffLevel: '一级'},
+        way: '2',
         active: 0,
         dynamicTags: [],
         inputVisible: false,
         inputValue: '',
-        levs: [{value: '1', label: '一级'}, {value: '2', label: '二级'}, {value: '3', label: '三级'}],
-        ways: [{value: '1', label: '选择人员'}, {value: '2', label: '输入IMSI'}],
+        levs: [{value: '一级', label: '一级'}, {value: '二级', label: '二级'}, {value: '三级', label: '三级'}],
+        ways: [{value: '2', label: '输入IMSI'}],//{value: '1', label: '选择人员'},
         rules: {}
       }
     },
@@ -97,6 +99,17 @@
         this.inputValue = '';
       },
       addApproval() {
+        if (this.dynamicTags.length === 0) {
+          this.$message.error('请输入需要翻码的IMSI');
+          return;
+        }
+        this.approval.applyImsiList = this.dynamicTags;
+        this.approval.creatorId = JSON.parse(sessionStorage.getItem("user")).userId;
+        this.$post('/workflow/translation/apply', this.approval, "申请成功").then((data) => {
+          if ("000000" === data.code)
+            this.$router.go(-1);
+        }).catch((err) => {
+        });
       }
     },
     mounted() {

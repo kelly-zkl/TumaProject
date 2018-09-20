@@ -13,7 +13,7 @@
             <el-tab-pane label="抓取记录" name="2" style="padding-top: 15px">
               <FetchRecords ref="fetchRecords"></FetchRecords>
             </el-tab-pane>
-            <el-tab-pane label="轨迹分析" name="3" style="padding-top: 15px">
+            <el-tab-pane label="轨迹分析" name="3" style="padding-top: 15px" v-if="getButtonVial('route:query')">
               <PathAnalysis ref="pathAnalysis"></PathAnalysis>
             </el-tab-pane>
           </el-tabs>
@@ -28,14 +28,19 @@
   import FollowAnaly from './files/FollowAnaly.vue';
   import PathAnalysis from './files/PathAnalysis.vue';
   import PersonInfo from './files/PersonInfo.vue';
+  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
 
   export default {
     data() {
       return {
-        activeItem: '0'
+        activeItem: '0',
+        faceId: this.$route.query.faceId || ''
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       handleType(val) {
 
       }

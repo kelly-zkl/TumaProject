@@ -26,18 +26,18 @@
           </el-select>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-if="activeItem=='H'">
-          <el-date-picker v-model="caseTime" type="datetimerange" range-separator="至"
+          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                           start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                           :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                           :picker-options="pickerBeginDate">
           </el-date-picker>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.blackClassId" placeholder="人员名单" size="medium" style="width: 150px">
-            <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
+        <!--<el-form-item style="margin-bottom: 10px">-->
+        <!--<el-select v-model="query.blackClassId" placeholder="人员名单" size="medium" style="width: 150px">-->
+        <!--<el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">-->
+        <!--</el-option>-->
+        <!--</el-select>-->
+        <!--</el-form-item>-->
         <el-form-item style="margin-bottom: 10px">
           <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 130px" clearable>
             <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
@@ -45,13 +45,15 @@
           </el-select>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
+          <el-button type="primary" size="medium" @click="getData()" v-if="activeItem=='T'">搜索</el-button>
+          <el-button type="primary" size="medium" @click="isSearch = true;getData()" v-if="activeItem=='H'">搜索
+          </el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
       </el-form>
-      <el-table :data="list" v-loading="listLoading" class="center-block" stripe>
+      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="抓取IMSI" prop="imsi" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -75,7 +77,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
+      <div class="block" style="margin-top: 20px" align="right" v-if="activeItem == 'H'">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
                        :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
@@ -94,7 +96,7 @@
         statuses: [{label: '待处理', value: 0}, {label: '处理中', value: 1},
           {label: '已处理', value: 2}, {label: '误报', value: 3}],
         exportKey: 'warning:get:listImsiToday',
-        caseTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+        qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         count: 0,
         list: [],
@@ -104,6 +106,7 @@
         isSearch: false,
         firstPage: 0,
         page: 1,
+        intervalid: null,
         places: [],
         pickerBeginDate: {
           disabledDate: (time) => {
@@ -118,6 +121,7 @@
     //页面关闭时停止刷新
     beforeDestroy() {
       clearInterval(this.intervalid);
+      this.intervalid = null;
     },
     methods: {
       getButtonVial(msg) {
@@ -133,9 +137,14 @@
       },
       handleType(val, ev) {
         this.clearData();
-        this.exportKey = 'warning:get:listImsiToday';
+
         if (this.activeItem === 'H') {
           this.exportKey = 'warning:get:listImsiHistory';
+          clearInterval(this.intervalid);
+          this.intervalid = null;
+        } else {
+          this.exportKey = 'warning:get:listImsiToday';
+          this.dataTask();
         }
       },
       gotoDetail(row) {
@@ -143,10 +152,10 @@
       },
       //获取IMSI告警列表
       getData() {
-        // if (!!this.caseTime) {
-        //   this.query.startTime = this.caseTime[1] / 1000;
-        //   this.query.endTime = this.caseTime[0] / 1000;
-        // }
+        if (!!this.qTime) {
+          this.query.startTime = this.qTime[0] / 1000;
+          this.query.endTime = this.qTime[1] / 1000;
+        }
         if (this.activeItem === 'H') {
           this.getAllData();
         } else {
@@ -157,33 +166,33 @@
       getTodayData() {
         this.listLoading = false;
         this.$post("warning/get/listImsiToday", this.query).then((data) => {
-          if (this.list.length >= 10) {
-            this.list = [];
+          if (this.list10.length >= 10) {
+            this.list10 = [];
           }
-          if (this.list.length === 0) {//
+          if (this.list10.length === 0) {//
             data.data.forEach((item) => {
-              if ((new Date().getTime() - item.catchTime) >= -120 * 1000 && (new Date().getTime() - item.catchTime) <= 120 * 1000) {//10s内的数据
+              if ((new Date().getTime() - item.catchTime * 1000) >= -120 * 1000 && (new Date().getTime() - item.catchTime * 1000) <= 120 * 1000) {//10s内的数据
                 setTimeout(() => {
-                  this.list.push(item);
+                  this.list10.push(item);
                 }, 1000);
               }
             });
           } else {//
             data.data.forEach((item) => {
-              if ((new Date().getTime() - item.catchTime) >= -120 * 1000 && (new Date().getTime() - item.catchTime) <= 120 * 1000) {//10s内的数据
-                for (let terminate of this.list) {
+              if ((new Date().getTime() - item.catchTime * 1000) >= -120 * 1000 && (new Date().getTime() - item.catchTime * 1000) <= 120 * 1000) {//10s内的数据
+                for (let terminate of this.list10) {
                   if (terminate.id === item.id) {
                     return;
                   }
                 }
                 setTimeout(() => {
-                  this.list.push(item);
+                  this.list10.push(item);
                 }, 1000);
               }
             });
           }
         }).catch((err) => {
-          this.list = [];
+          this.list10 = [];
           this.listLoading = false;
           this.$message.error(err);
         });
@@ -201,7 +210,7 @@
           if (this.query.pageTime && !this.isSearch) {
             this.list = this.list.concat(data.data);
           } else {
-            this.list = data.data;
+            this.list = data.data ? data.data : [];
             this.page = 1;
             this.firstPage = 0
           }
@@ -233,7 +242,7 @@
         if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
           (this.list.length % 100 === 0 || this.list.length === this.couple)) {
           this.firstPage = this.list.length;
-          this.query.pageTime = this.list[this.list.length - 1].catchTime / 1000;
+          this.query.pageTime = this.list[this.list.length - 1].catchTime;
           this.getData();
         }
         this.list10 = this.list;
@@ -246,7 +255,7 @@
       handleSizeChange(val) {
       },
       clearData() {
-        this.list = [];
+        this.list10 = [];
         if (this.activeItem === 'T') {
           this.query = {size: 5};
           this.isShow = false;
@@ -254,7 +263,7 @@
           this.query = {size: 100};
           this.isSearch = true;
         }
-        this.caseTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
 
         this.getData();
@@ -262,7 +271,7 @@
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'status') {
-          return row.status === 0 ? '待处理' : row.taskStatus === 1 ? '处理中' : row.taskStatus === 2 ? '已处理' : row.taskStatus === 3 ? '误报' : '--';
+          return row.status === 0 ? '待处理' : row.status === 1 ? '处理中' : row.status === 2 ? '已处理' : row.status === 3 ? '误报' : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {
@@ -281,6 +290,7 @@
     mounted() {
       this.getPlaces();
       this.getData();
+      this.dataTask();
     }
   }
 </script>

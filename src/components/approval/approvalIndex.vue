@@ -3,7 +3,7 @@
     <!--左侧菜单栏-->
     <el-aside :width="collapseWidth" v-bind:class="isCollapse ? 'content-aside-close' : 'content-aside'">
       <el-menu :default-active="$route.path" :collapse="isCollapse" unique-opened router mode="vertical"
-               background-color="#333" text-color="#ccc" active-text-color="#59aaf4" @select="handleActive">
+               background-color="#fff" text-color="#333" active-text-color="#6699FF" @select="handleActive">
         <el-menu-item v-for="item in menu" :index="item.permissionUrl">
           {{item.name}}
         </el-menu-item>
@@ -73,7 +73,7 @@
 <style scoped>
   .main-container {
     position: absolute;
-    top: 60px;
+    top: 70px;
     bottom: 0;
     left: 0;
     width: 100%;

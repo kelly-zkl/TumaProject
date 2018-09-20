@@ -16,7 +16,7 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-date-picker v-model="caseTime" type="datetimerange" range-separator="至"
+              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                               start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                               :default-time="['00:00:00', '23:59:59']" value-format="timestamp">
               </el-date-picker>
@@ -83,7 +83,7 @@
       return {
         listLoading: false,
         tasks: [],
-        caseTime: "",
+        qTime: "",
         query: {page: 1, size: 10},
         followTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '图像'}],//{value: 'MAC', label: 'MAC'}
         taskTypes: [{value: 'EXECUTION', label: '进行中'}, {value: 'FINISH', label: '已完成'},
@@ -127,7 +127,7 @@
       //清除查询条件
       clearData() {
         this.query = {page: 1, size: 10};
-        this.caseTime = '';
+        this.qTime = '';
         this.getData();
       },
       pageChange(index) {
@@ -139,11 +139,11 @@
         this.getData();
       },
       getData() {
-        if (!!this.caseTime) {
-          this.query.caseToTime = this.caseTime[1] / 1000;
-          this.query.caseTime = this.caseTime[0] / 1000;
+        if (!!this.qTime) {
+          this.query.caseToTime = this.qTime[1] / 1000;
+          this.query.qTime = this.qTime[0] / 1000;
         } else {
-          delete this.query['caseTime'];
+          delete this.query['qTime'];
         }
         this.listLoading = true;
         this.$post('/follow/query', this.query).then((data) => {

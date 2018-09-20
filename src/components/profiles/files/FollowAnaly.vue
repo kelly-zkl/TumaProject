@@ -3,7 +3,7 @@
     <section class="content">
       <el-form :inline="true" :model="query" align="left">
         <el-form-item style="margin-bottom: 10px">
-          <el-date-picker v-model="cTime" type="datetimerange" range-separator="至" start-placeholder="开始日期"
+          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" start-placeholder="开始日期"
                           end-placeholder="结束日期" value-format="timestamp" :picker-options="pickerBeginDate"
                           size="medium" :default-time="['00:00:00', '23:59:59']">
           </el-date-picker>
@@ -51,7 +51,7 @@
         listLoading: false,
         query: {page: 1, size: 10},
         faceList: [],
-        cTime: '',
+        qTime: '',
         count: 0,
         pickerBeginDate: {
           disabledDate: (time) => {
@@ -71,7 +71,7 @@
       //清除查询条件
       clearData() {
         this.query = {page: 1, size: 10};
-        this.cTime = '';
+        this.qTime = '';
         this.getData();
       },
       pageChange(index) {

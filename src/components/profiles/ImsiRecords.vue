@@ -3,7 +3,7 @@
     <section class="content">
       <el-row>
         <el-col :span="16" align="left" class="tab-card" style="text-align: left">
-          <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
+          <el-tabs v-model="activeItem" @tab-click="handleClick" type="border-card">
             <el-tab-pane label="今日记录" name="first"></el-tab-pane>
             <el-tab-pane label="历史记录" name="second"></el-tab-pane>
           </el-tabs>
@@ -28,21 +28,24 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeName == 'second'">
-          <el-date-picker v-model="cTime" type="datetimerange" range-separator="至" start-placeholder="开始日期"
+        <el-form-item style="margin-bottom: 10px" v-if="activeItem == 'second'">
+          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" start-placeholder="开始日期"
                           end-placeholder="结束日期" value-format="timestamp" :picker-options="pickerBeginDate"
                           size="medium" :default-time="['00:00:00', '23:59:59']">
           </el-date-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-button type="primary" icon="search" @click="getData()" size="medium">搜索
+          <el-button type="primary" @click="getData()" size="medium" v-if="activeItem == 'first'">搜索
+          </el-button>
+          <el-button type="primary" @click="isSearch = true;getData()" size="medium"
+                     v-if="activeItem == 'second'">搜索
           </el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button @click="clearData()" size="medium">清除</el-button>
         </el-form-item>
       </el-form>
-      <el-table :data="list" class="center-block" v-loading="listLoading" stripe>
+      <el-table :data="list10" class="center-block" v-loading="listLoading" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
@@ -54,7 +57,7 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="place" label="抓取场所" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="catchTime" label="抓取时间" width="170"
+        <el-table-column align="left" prop="uptime" label="抓取时间" width="170"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="isp" label="运营商" max-width="150" min-width="100"
                          :formatter="formatterAddress"></el-table-column>
@@ -65,12 +68,12 @@
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)"
-                       v-show="getButtonVial('archives:getImsiRecordById')">查看详情
+                       v-show="getButtonVial('archives:getImsiRecordByImsi')">查看详情
             </el-button>
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
+      <div class="block" style="margin-top: 20px" align="right" v-if="activeItem == 'second'">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
                        :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
@@ -85,8 +88,8 @@
   export default {
     data() {
       return {
-        activeName: 'first',
-        cTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+        activeItem: 'first',
+        qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         count: 0,
         places: [],
@@ -114,6 +117,7 @@
     //页面关闭时停止刷新
     beforeDestroy() {
       clearInterval(this.intervalid);
+      this.intervalid = null;
     },
     methods: {
       getButtonVial(msg) {
@@ -129,19 +133,23 @@
       },
       handleClick(tab, event) {
         this.clearData();
-        this.exportKey = 'archives:get:listImsiToday';
-        if (this.activeName === 'second') {
+        if (this.activeItem === 'second') {
           this.exportKey = 'archives:get:listImsiHistory';
+          clearInterval(this.intervalid);
+          this.intervalid = null;
+        } else {
+          this.exportKey = 'archives:get:listImsiToday';
+          this.dataTask();
         }
       },
       //查看IMSI详情
       gotoDetail(row) {
-        this.$router.push({path: '/imsiDetail', query: {id: row.id, imsi: row.imsi}});
+        this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi}});
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'catchTime') {
-          return row.catchTime ? formatDate(new Date(row.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
+        if (column.property === 'uptime') {
+          return row.uptime ? formatDate(new Date(row.uptime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'isp') {
           return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '未知';
         } else {
@@ -162,11 +170,11 @@
             return;
           }
         }
-        if (this.cTime) {//时间戳的毫秒转化成秒
-          this.query.startTime = this.cTime[0] / 1000;
-          this.query.endTime = this.cTime[1] / 1000;
+        if (this.qTime) {//时间戳的毫秒转化成秒
+          this.query.startTime = this.qTime[0] / 1000;
+          this.query.endTime = this.qTime[1] / 1000;
         }
-        if (this.activeName === 'second') {
+        if (this.activeItem === 'second') {
           this.getAllData();
         } else {
           this.getTodayData();
@@ -176,33 +184,33 @@
       getTodayData() {
         this.listLoading = false;
         this.$post("archives/get/listImsiToday", this.query).then((data) => {
-          if (this.list.length >= 10) {
-            this.list = [];
+          if (this.list10.length >= 10) {
+            this.list10 = [];
           }
-          if (this.list.length === 0) {//
+          if (this.list10.length === 0) {//
             data.data.forEach((item) => {
-              if ((new Date().getTime() - item.catchTime) >= -120 * 1000 && (new Date().getTime() - item.catchTime) <= 120 * 1000) {//10s内的数据
+              if ((new Date().getTime() - item.uptime * 1000) >= -120 * 1000 && (new Date().getTime() - item.uptime * 1000) <= 120 * 1000) {//10s内的数据
                 setTimeout(() => {
-                  this.list.push(item);
+                  this.list10.push(item);
                 }, 1000);
               }
             });
           } else {//
             data.data.forEach((item) => {
-              if ((new Date().getTime() - item.catchTime) >= -120 * 1000 && (new Date().getTime() - item.catchTime) <= 120 * 1000) {//10s内的数据
-                for (let terminate of this.list) {
+              if ((new Date().getTime() - item.uptime * 1000) >= -120 * 1000 && (new Date().getTime() - item.uptime * 1000) <= 120 * 1000) {//10s内的数据
+                for (let terminate of this.list10) {
                   if (terminate.id === item.id) {
                     return;
                   }
                 }
                 setTimeout(() => {
-                  this.list.push(item);
+                  this.list10.push(item);
                 }, 1000);
               }
             });
           }
         }).catch((err) => {
-          this.list = [];
+          this.list10 = [];
           this.listLoading = false;
           this.$message.error(err);
         });
@@ -252,7 +260,7 @@
         if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
           (this.list.length % 100 === 0 || this.list.length === this.couple)) {
           this.firstPage = this.list.length;
-          this.query.pageTime = this.list[this.list.length - 1].catchTime / 1000;
+          this.query.pageTime = this.list[this.list.length - 1].uptime;
           this.getData();
         }
         this.list10 = this.list;
@@ -265,15 +273,15 @@
       handleSizeChange(val) {
       },
       clearData() {
-        this.list = [];
-        if (this.activeName === 'first') {
+        this.list10 = [];
+        if (this.activeItem === 'first') {
           this.query = {size: 5};
           this.isShow = false;
         } else {
           this.query = {size: 100};
           this.isSearch = true;
         }
-        this.cTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
 
         this.getData();
@@ -289,14 +297,14 @@
     },
     mounted() {
       let bol = JSON.parse(sessionStorage.getItem("query"));
-      let tab = sessionStorage.getItem("activeName");
-      let time1 = sessionStorage.getItem("cTime");
+      let tab = sessionStorage.getItem("activeItem");
+      let time1 = sessionStorage.getItem("qTime");
       if (tab && bol) {
-        this.activeName = tab;
+        this.activeItem = tab;
         this.query = JSON.parse(sessionStorage.getItem("query"));
       }
       if (time1) {
-        this.cTime = time1.split(',');
+        this.qTime = time1.split(',');
       }
       this.getPlaces();
       this.getData();

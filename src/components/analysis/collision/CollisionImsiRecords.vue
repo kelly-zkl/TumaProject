@@ -40,7 +40,7 @@
                       :maxlength=30></el-input>
           </el-form-item>
           <el-form-item label="时间范围">
-            <el-date-picker v-model="date1" type="datetimerange" range-separator="至" size="medium"
+            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" size="medium"
                             :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
                             start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px">
             </el-date-picker>
@@ -107,7 +107,7 @@
         imsi: this.$route.query.imsi || '',
         collisionType: this.$route.query.collisionType || '',
         query: {page: 1, size: 10},
-        date1: '',
+        qTime: '',
         task: {},
         records: [],
         count: 0,
@@ -140,7 +140,7 @@
       //清除查询条件
       clearData() {
         this.query = {page: 1, size: 10};
-        this.date1 = '';
+        this.qTime = '';
         this.query.collisionType = this.collisionType;
         this.query.collisionTaskId = this.taskId;
         this.query.imsi = this.imsi;
@@ -148,9 +148,9 @@
       },
       //获取imsi记录
       getData() {
-        if (!!this.date1) {
-          this.query.startTime = this.date1[0] / 1000;
-          this.query.endTime = this.date1[1] / 1000;
+        if (!!this.qTime) {
+          this.query.startTime = this.qTime[0] / 1000;
+          this.query.endTime = this.qTime[1] / 1000;
         } else {
           delete this.query['startTime'];
           delete this.query['endTime'];
