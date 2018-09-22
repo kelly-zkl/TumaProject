@@ -76,7 +76,7 @@
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="人员图像" prop="deviceId" min-width="125" max-width="250">
             <template slot-scope="scope">
-              <img v-bind:src="faceUrl+scope.row.faceImage" style="width: 90px;height:90px"/>
+              <img v-bind:src="scope.row.faceImage" style="max-width: 90px;max-height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
           <el-table-column align="left" label="人员ID" prop="personId" min-width="100"
@@ -179,8 +179,8 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'sex') {//0-女  1-男  2-未知
-          return row.sex === 0 ? '男' : row.sex === 2 ? '女' : '未知';
+        if (column.property === 'sex') {//0-男  1-女  2-未知
+          return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '未知';
         } else if (column.property === 'imsiList') {
           return row.imsiList ? row.imsiList.join("， ") : '--';
         } else if (column.property === 'isp') {

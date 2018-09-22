@@ -4,15 +4,15 @@
       <div class="add-appdiv" style="margin-bottom: 15px">
         <el-row>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
-            <p style="font-size: 13px;color:#CCC;margin: 0 20px">布控编号</p>
+            <p style="font-size: 14px;color: #999;margin: 0 20px">布控编号</p>
             <p style="margin: 5px 20px 0 20px">{{task.taskName}}</p>
           </el-col>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
-            <p style="font-size: 13px;color:#CCC;margin: 0 20px">有效期</p>
+            <p style="font-size: 14px;color: #999;margin: 0 20px">有效期</p>
             <p style="margin: 5px 20px 0 20px">{{task.startStr + "~" + task.endStr}}</p>
           </el-col>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
-            <p style="font-size: 13px;color:#CCC;margin: 0 20px">布控状态</p>
+            <p style="font-size: 14px;color: #999;margin: 0 20px">布控状态</p>
             <p style="margin: 5px 20px 0 20px">
               {{task.taskStatus == 'EXECUTION' ? '进行中' : task.taskStatus == 'FINISH' ? '已结束' : '异常'}}
             </p>
@@ -54,12 +54,12 @@
                             :picker-options="pickerBeginDate">
             </el-date-picker>
           </el-form-item>
-          <el-form-item style="margin-bottom: 10px">
-            <el-select v-model="query.value" placeholder="人员名单" size="medium" style="width: 150px">
-              <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
+          <!--<el-form-item style="margin-bottom: 10px">-->
+          <!--<el-select v-model="query.value" placeholder="人员名单" size="medium" style="width: 150px">-->
+          <!--<el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">-->
+          <!--</el-option>-->
+          <!--</el-select>-->
+          <!--</el-form-item>-->
           <el-form-item style="margin-bottom: 10px">
             <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 130px">
               <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
@@ -140,12 +140,12 @@
                             :picker-options="pickerBeginDate">
             </el-date-picker>
           </el-form-item>
-          <el-form-item style="margin-bottom: 10px">
-            <el-select v-model="query1.value" placeholder="人员名单" size="medium" style="width: 150px">
-              <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
+          <!--<el-form-item style="margin-bottom: 10px">-->
+          <!--<el-select v-model="query1.value" placeholder="人员名单" size="medium" style="width: 150px">-->
+          <!--<el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">-->
+          <!--</el-option>-->
+          <!--</el-select>-->
+          <!--</el-form-item>-->
           <el-form-item style="margin-bottom: 10px">
             <el-select v-model="query1.status" placeholder="告警状态" size="medium" style="width: 130px">
               <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
@@ -253,7 +253,7 @@
         listLoading: false,
         warningList: [],
         query1: {status: '', page: 1, size: 10},
-        sexs: [{value: '0', label: '男'}, {value: '2', label: '女'}],
+        sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         areaList1: [],
         qTime1: '',
         count1: 0,

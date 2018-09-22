@@ -4,15 +4,15 @@
       <div class="add-appdiv">
         <el-row style="margin-bottom: 10px">
           <el-col :span="7" align="left">
-            <span style="color: #999;margin-right: 20px">案件名称</span>
+            <span style="font-size: 14px;color: #999;margin-right: 20px">案件名称</span>
             <span>{{caseDetail.caseName}}</span>
           </el-col>
           <el-col :span="7" align="left">
-            <span style="color: #999;margin:auto 20px">案发地点</span>
+            <span style="font-size: 14px;color: #999;margin:auto 20px">案发地点</span>
             <span>{{caseDetail.caseAddress}}</span>
           </el-col>
           <el-col :span="7" align="left">
-            <span style="color: #999;margin:auto 20px">创建时间</span>
+            <span style="font-size: 14px;color: #999;margin:auto 20px">创建时间</span>
             <span>{{caseDetail.timeStr}}</span>
           </el-col>
           <el-col :span="3">
@@ -23,29 +23,29 @@
         </el-row>
         <el-row style="margin-bottom: 10px">
           <el-col :span="7" align="left">
-            <span style="color: #999;margin-right: 20px">案件编号</span>
+            <span style="font-size: 14px;color: #999;margin-right: 20px">案件编号</span>
             <span>{{caseDetail.caseNo}}</span>
           </el-col>
           <el-col :span="7" align="left">
-            <span style="color: #999;margin:auto 20px">案发时间</span>
+            <span style="font-size: 14px;color: #999;margin:auto 20px">案发时间</span>
             <span>{{caseDetail.startStr + " - " + caseDetail.endStr}}</span>
           </el-col>
           <el-col :span="7" align="left">
-            <span style="color: #999;margin:auto 20px;">案件状态</span>
+            <span style="font-size: 14px;color: #999;margin:auto 20px;">案件状态</span>
             <span>{{caseDetail.status === "EXECUTION" ? "进行中" : caseDetail.status === "HANDLED" ? "已结案" : "--"}}</span>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="7" align="left">
-            <span style="color: #999;margin-right: 20px">案件类型</span>
+            <span style="font-size: 14px;color: #999;margin-right: 20px">案件类型</span>
             <span>{{caseDetail.caseType}}</span>
           </el-col>
           <el-col :span="7" align="left">
-            <span style="color: #999;margin:auto 20px">备注</span>
+            <span style="font-size: 14px;color: #999;margin:auto 20px">备注</span>
             <span>{{caseDetail.remark}}</span>
           </el-col>
           <el-col :span="7" align="left">
-            <span style="color: #999;margin:auto 20px">
+            <span style="font-size: 14px;color: #999;margin:auto 20px">
               {{caseDetail.status === "EXECUTION" ? "更新时间" : caseDetail.status === "HANDLED" ? "结案时间" : "--"}}
             </span>
             <span>{{caseDetail.fishStr}}</span>
@@ -80,7 +80,8 @@
               <el-form-item style="margin-bottom: 10px">
                 <el-date-picker v-model="date1" type="datetimerange" range-separator="至" size="medium"
                                 :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
-                                start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px">
+                                start-placeholder="开始日期" end-placeholder="结束日期"
+                                style="width:360px" :picker-options="pickerBeginDate">
                 </el-date-picker>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
@@ -147,7 +148,8 @@
               </el-form-item>
               <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                               start-placeholder="创建时间" size="medium" end-placeholder="结束日期" clearable
-                              :default-time="['00:00:00', '23:59:59']" value-format="timestamp">
+                              :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                              :picker-options="pickerBeginDate">
               </el-date-picker>
               <el-form-item>
                 <el-select v-model="queryFollow.taskStatus" placeholder="任务状态" style="width: 120px"
@@ -233,6 +235,14 @@
           {value: 'WAIT', label: '等待中'}, {value: 'FAILE', label: '失败'}],
         selsFoll: [],
         selsColl: [],
+        pickerBeginDate: {
+          disabledDate: (time) => {
+            let beginDateVal = new Date().getTime();
+            if (beginDateVal) {
+              return beginDateVal < time.getTime();
+            }
+          }
+        }
       }
     },
     methods: {
@@ -427,7 +437,7 @@
           this.caseDetail = data.data;
           this.caseDetail.timeStr = formatDate(new Date(this.caseDetail.creatTime * 1000), 'yyyy-MM-dd hh:mm:ss');
           this.caseDetail.fishStr = this.caseDetail.updateTime !== 0 ? formatDate(new Date(this.caseDetail.updateTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-          this.caseDetail.startStr = formatDate(new Date(this.caseDetail.qTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+          this.caseDetail.startStr = formatDate(new Date(this.caseDetail.caseTime * 1000), 'yyyy-MM-dd hh:mm:ss');
           this.caseDetail.endStr = formatDate(new Date(this.caseDetail.caseToTime * 1000), 'yyyy-MM-dd hh:mm:ss');
         }).catch((err) => {
         });

@@ -8,8 +8,8 @@
             <el-tab-pane label="已读" name="READ"></el-tab-pane>
           </el-tabs>
         </el-col>
-        <el-col :span="8" align="right">
-          <el-button type="primary" size="medium" @click="$router.push('/approvalApply')">发起申请</el-button>
+        <el-col :span="8" align="right" v-show="getButtonVial('workflow:translation:apply')">
+          <el-button type="primary" size="medium" @click="addApply()">发起申请</el-button>
         </el-col>
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
@@ -19,7 +19,7 @@
               <el-input v-model="query.recordId" size="medium" :maxlength=30 placeholder="编号"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.staffLevel" placeholder="勤务等级" size="medium" style="width: 150px">
+              <el-select v-model="query.staffLevel" placeholder="勤务等级" size="medium" style="width: 150px" clearable>
                 <el-option v-for="item in levs" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
@@ -69,9 +69,11 @@
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
             <el-button type="text" @click="sels = [];sels.push(scope.row);updateStatus()"
-                       v-show="activeItem=='UNREAD'">标记已读
+                       v-show="activeItem=='UNREAD' && getButtonVial('workflow:translation:ccread')">标记已读
             </el-button>
-            <el-button type="text" @click="gotoDetail(scope.row)">查看</el-button>
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('workflow:translation:detail')">
+              查看
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -142,11 +144,22 @@
         }).catch(() => {
         });
       },
+      //发起申请
+      addApply() {
+        sessionStorage.setItem("activeItem", this.activeItem);
+        sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
+        sessionStorage.setItem("query", JSON.stringify(this.query));
+        this.$router.push('/approvalApply');
+      },
+      //翻码详情页
       gotoDetail(row) {
+        sessionStorage.setItem("activeItem", this.activeItem);
+        sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
+        sessionStorage.setItem("query", JSON.stringify(this.query));
         if (this.activeItem === 'UNREAD') {
-          this.$router.push({path: '/approvalDetail', query: {type: 3}})
+          this.$router.push({path: '/approvalDetail', query: {type: 3, recordId: row.recordId}})
         } else {
-          this.$router.push({path: '/approvalDetail', query: {type: 0}})
+          this.$router.push({path: '/approvalDetail', query: {type: 0, recordId: row.recordId}})
         }
       },
       handleSizeChange(val) {
@@ -195,6 +208,18 @@
       }
     },
     mounted() {
+      let bol = JSON.parse(sessionStorage.getItem("query"));
+      let tab = sessionStorage.getItem("activeItem");
+      let time1 = JSON.parse(sessionStorage.getItem("qTime"));
+      if (tab) {
+        this.activeItem = tab;
+      }
+      if (bol) {
+        this.query = JSON.parse(sessionStorage.getItem("query"));
+      }
+      if (time1) {
+        this.qTime = time1;
+      }
       this.getData();
     }
   }

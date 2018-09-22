@@ -16,8 +16,7 @@
                      v-show="activeItem == 'EXECUTION' && getButtonVial('disposition:batchUpdateStatus')"
                      :disabled="sels.length == 0" @click="finishTask()">结束布控
           </el-button>
-          <el-button type="primary" size="medium" @click="$router.push('/addControl')"
-                     v-show="getButtonVial('disposition:add')">添加布控
+          <el-button type="primary" size="medium" @click="addControl()" v-show="getButtonVial('disposition:add')">添加布控
           </el-button>
         </el-col>
       </el-row>
@@ -143,7 +142,18 @@
         }).catch(() => {
         });
       },
+      //跳转增加布控
+      addControl() {
+        sessionStorage.setItem("activeItem", this.activeItem);
+        sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
+        sessionStorage.setItem("query", JSON.stringify(this.query));
+        this.$router.push('/addControl');
+      },
+      //跳转布控详情页
       gotoDetail(task) {
+        sessionStorage.setItem("activeItem", this.activeItem);
+        sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
+        sessionStorage.setItem("query", JSON.stringify(this.query));
         this.$router.push({path: '/controlDetail', query: {taskId: task.id}});
       },
       //获取布控列表

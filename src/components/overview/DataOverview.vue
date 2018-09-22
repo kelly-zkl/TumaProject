@@ -177,12 +177,12 @@
       statusTask() {
         if (!this.intervalid) {
           this.intervalid = setInterval(() => {
-            this.getHotSpot();
-            this.getMapData();
+            // this.getHotSpot();
+            // this.getMapData();
             this.getWarningCount();
             this.getImsiList();
-            this.getLineData();
-          }, 5000);
+            // this.getLineData();
+          }, 10000);
         }
       },
       handleType(val) {
@@ -537,7 +537,7 @@
             data.data.forEach((item, idx) => {
               this.catchData.imsi[idx] = item.imsi;
               this.catchData.face[idx] = item.face;
-              this.catchData.createTime[idx] = formatDate(new Date(item.createTime), 'yyyy-MM-dd');
+              this.catchData.createTime[idx] = formatDate(new Date(item.createTime * 1000), 'yyyy-MM-dd');
             });
             this.getImsiFace();
           }
@@ -551,7 +551,7 @@
             data.data.forEach((item, idx) => {
               this.warning.imsi[idx] = item.imsi;
               this.warning.face[idx] = item.face;
-              this.warning.createTime[idx] = formatDate(new Date(item.createTime), 'yyyy-MM-dd');
+              this.warning.createTime[idx] = formatDate(new Date(item.createTime * 1000), 'yyyy-MM-dd');
             });
             this.getWarning();
           }
@@ -640,13 +640,13 @@
           row.imsiList.forEach((item) => {
             imsi.push(item.imsi)
           });
-          return imsi.join("，");
+          return imsi.length > 0 ? imsi.join("，") : '--';
         } else if (column.property === 'levl') {
           let lev = [];
           row.imsiList.forEach((item) => {
             lev.push(item.weight)
           });
-          return lev.join("，");
+          return lev.length > 0 ? lev.join("，") : '--';
         } else if (column.property === 'upTime') {
           return row.upTime ? formatDate(new Date(row.upTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {
@@ -661,7 +661,7 @@
       this.getWarningCount();
       this.getImsiList();
       this.getLineData();
-      // this.statusTask();
+      this.statusTask();
     }
   }
 </script>
@@ -711,9 +711,9 @@
   }
 
   .user-img {
-    width: 80px;
-    height: 80px;
-    border-radius: 4px;
+    max-width: 80px;
+    max-height: 80px;
+    border-radius: 6px;
     border: 1px dashed #999
   }
 </style>

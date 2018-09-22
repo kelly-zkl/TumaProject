@@ -69,8 +69,8 @@
             <el-form :model="item" align="left" label-width="60px" label-position="right"
                      style="position: absolute;top: 25px;left:180px;text-align: left">
               <el-form-item label="档案ID" style="margin:0">
-                <span style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId}}</span>
-                <el-button type="text">查看人员</el-button>
+                <span style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
+                <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
               </el-form-item>
               <el-form-item label="IMSI" style="margin:0">
                 <span style="font-size: 15px;color:#000">{{item.imsi}}</span>
@@ -123,16 +123,14 @@
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
           <el-table-column type="selection" width="45" align="left"></el-table-column>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="抓取时间" prop="catchTime" width="200"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="告警场所" prop="placeName" min-width="150"
+          <el-table-column align="left" label="抓取时间" prop="uptime" min-width="200"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="抓取场所" prop="placeName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="告警状态" prop="status" width="150"
-                           :formatter="formatterAddress"></el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
@@ -199,6 +197,13 @@
         this.num += 10;
         this.getPersons();
       },
+      //进入人员档案
+      gotoPerson(row) {
+        if (row.personId) {
+          // sessionStorage.setItem("activeItem", this.activeItem);
+          this.$router.push({path: '/personnelFiles', query: {faceId: row.personId}});
+        }
+      },
       changeStatus(status) {
         this.$post('warning/dealWithWarningById', {id: this.id, status: status}, "处理成功").then((data) => {
           this.getImsiDetail();
@@ -226,6 +231,11 @@
           return;
         }
         let imsis = [this.imsi];
+
+        // sessionStorage.setItem("activeItem", this.activeItem);
+        // sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
+        // sessionStorage.setItem("query", JSON.stringify(this.query));
+
         sessionStorage.setItem("pathImsi", JSON.stringify(imsis));
         sessionStorage.setItem("pathTime", JSON.stringify(this.qTime));
         this.$router.push({path: '/pathLine', query: {imsi: 1}});
@@ -318,8 +328,8 @@
       formatterAddress(row, column) {
         if (column.property === 'status') {
           return row.status === 0 ? '待处理' : row.taskStatus === 1 ? '处理中' : row.taskStatus === 2 ? '已处理' : row.taskStatus === 3 ? '误报' : '--';
-        } else if (column.property === 'catchTime') {
-          return row.catchTime ? formatDate(new Date(row.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
+        } else if (column.property === 'uptime') {
+          return row.uptime ? formatDate(new Date(row.uptime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
@@ -360,7 +370,18 @@
       }
     },
     mounted() {
-      this.id = this.$route.query.id || '';
+      // let bol = JSON.parse(sessionStorage.getItem("query"));
+      // let tab = sessionStorage.getItem("activeItem");
+      // let time1 = JSON.parse(sessionStorage.getItem("qTime"));
+      // if (tab) {
+      //   this.activeItem = tab;
+      // }
+      // if (bol) {
+      //   this.query = JSON.parse(sessionStorage.getItem("query"));
+      // }
+      // if (time1) {
+      //   this.qTime = time1;
+      // }
       this.getPlaces();
       this.getImsiDetail();
       this.getPersons();

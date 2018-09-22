@@ -62,6 +62,12 @@
         }
       }
     },
+    //页面关闭时删除时间、imsi和图像的缓存
+    beforeDestroy() {
+      sessionStorage.removeItem("pathTime");
+      sessionStorage.removeItem("pathImsi");
+      sessionStorage.removeItem("pathFace");
+    },
     methods: {
       //切换模式
       handleChange(val) {

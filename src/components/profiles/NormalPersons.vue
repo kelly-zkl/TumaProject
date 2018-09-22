@@ -103,7 +103,7 @@
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
       <!--查看大图-->
-      <el-dialog title="查看大图" :visible.sync="runBigPic" width="450px" center>
+      <el-dialog title="查看大图" :visible.sync="runBigPic" width="500px" center>
         <div class="block">
           <el-row>
             <el-col :span="24" style="text-align: center" align="center">

@@ -235,10 +235,10 @@
         }
         return bol;
       },
-      //获取全部组织列表
+      //获取全部相机设备
       getCameras() {
-        this.$post('/collision/getCamera', {}).then((data) => {
-          this.cameras = data.data;
+        this.$post('camera/query', {page: 1, size: 999999}).then((data) => {
+          this.cameras = data.data.list;
         }).catch((err) => {
           this.cameras = [];
         });

@@ -198,7 +198,7 @@
         this.num += 10;
         this.getPersons();
       },
-      //档案
+      //进入人员档案
       gotoPerson(row) {
         if (row.personId) {
           this.$router.push({path: '/personnelFiles', query: {faceId: row.personId}});

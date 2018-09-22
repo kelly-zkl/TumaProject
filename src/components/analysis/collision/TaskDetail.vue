@@ -4,17 +4,17 @@
       <div class="add-appdiv">
         <el-row>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
-            <p style="font-size: 13px;color:#CCC;margin: 0 20px;">任务名称</p>
+            <p style="font-size: 14px;color: #999;margin: 0 20px;">任务名称</p>
             <p style="margin: 5px 20px 0 20px">{{task.taskName}}</p>
           </el-col>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
-            <p style="font-size: 13px;color:#CCC;margin: 0 20px;">任务类型</p>
+            <p style="font-size: 14px;color: #999;margin: 0 20px;">任务类型</p>
             <p style="margin: 5px 20px 0 20px">
               {{collisionType == 'IMSI' ? 'IMSI' : collisionType == 'FACE' ? '图像' : 'MAC'}}
             </p>
           </el-col>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
-            <p style="font-size: 13px;color:#CCC;margin: 0 20px;">创建时间</p>
+            <p style="font-size: 14px;color: #999;margin: 0 20px;">创建时间</p>
             <p style="margin: 5px 20px 0 20px">{{task.timeStr}}</p>
           </el-col>
           <el-col :span="6" align="right">
@@ -151,11 +151,12 @@
           <el-table-column align="left" label="现场图像" prop="scensePicURL" min-width="125"
                            max-width="250">
             <template slot-scope="scope">
-              <img v-bind:src="faceUrl+scope.row.userFacePicURL" style="width: 90px;height:90px"/>
+              <img v-bind:src="scope.row.userFacePicURL" @click="bigUrl=scope.row.userFacePicURL;runBigPic=true"
+                   style="max-width: 90px;max-height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
           <el-table-column align="left" label="年龄" prop="age" min-width="125"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="250"></el-table-column>
           <el-table-column align="left" label="性别" prop="sex" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="条件1出现次数" prop="faceCount1" min-width="125"
@@ -164,7 +165,7 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" min-width="125" max-width="250">
             <template slot-scope="scope">
-              <el-button type="text" @click="gotoImage(faceUrl+scope.row.scensePicURL,scope.row.personID)"
+              <el-button type="text" @click="gotoImage(scope.row.scensePicURL,scope.row.personID)"
                          v-show="getButtonVial('collision:queryRecord')">查看图像
               </el-button>
             </template>
@@ -204,6 +205,19 @@
           </el-form>
         </div>
       </el-dialog>
+      <!--查看大图-->
+      <el-dialog title="查看大图" :visible.sync="runBigPic" width="500px" center>
+        <div class="block">
+          <el-row>
+            <el-col :span="24" style="text-align: center" align="center">
+              <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:8px;vertical-align:middle"/>
+            </el-col>
+          </el-row>
+          <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">
+            <el-button type="primary" @click="runBigPic=false" size="medium">关闭</el-button>
+          </div>
+        </div>
+      </el-dialog>
     </section>
   </div>
 </template>
@@ -221,6 +235,8 @@
       return {
         dialogWidth: isPC() ? '35%' : '90%',
         taskId: this.$route.query.taskId || '',
+        runBigPic: false,
+        bigUrl: '',
         collisionType: this.$route.query.collisionType || '',
         activeType: "IMSI",
         activeItem: 'first',
@@ -232,7 +248,7 @@
         query: {page: 1, size: 10},
         count: 0,
         task: {},
-        sexs: [{value: '0', label: '男'}, {value: '2', label: '女'}],
+        sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         operators: [{value: 0, label: '移动'}, {value: 1, label: '联通'}, {value: 2, label: '电信'}],
         param: ''
       }
@@ -304,8 +320,8 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'sex') {//0-女  1-男  2-未知
-          return row.sex === '0' ? '男' : row.sex === '2' ? '女' : '未知';
+        if (column.property === 'sex') {//0-男  1-女  2-未知
+          return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '未知';
         } else if (column.property === 'isp') {
           return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '未知';
         } else if (column.property === 'netType') {//网络类型 --> 根据运营商判断

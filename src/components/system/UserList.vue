@@ -46,6 +46,8 @@
                          max-width="300" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="phone" label="手机号" min-width="140"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" prop="groupName" label="所属组织" min-width="150"
+                         max-width="300" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="roleNameList" label="角色" min-width="120"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="groupAdmin" label="用户类型" width="130"

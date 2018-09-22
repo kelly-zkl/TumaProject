@@ -3,7 +3,7 @@
     <section class="content">
       <el-row>
         <el-col :span="18" align="left">
-          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('archives:listPerson')">
+          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('person:query')">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.similarThreshold" placeholder="输入相似度阈值" size="medium" style="width: 260px">
                 <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
@@ -72,7 +72,7 @@
       </el-row>
       <el-table :data="vipList" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="人员编号" prop="personCode" min-width="150"
+        <el-table-column align="left" label="人员编号" prop="faceId" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="150"
                          max-width="250" :formatter="formatterAddress">
@@ -109,7 +109,7 @@
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
       <!--查看大图-->
-      <el-dialog title="查看大图" :visible.sync="runBigPic" width="450px" center>
+      <el-dialog title="查看大图" :visible.sync="runBigPic" width="500px" center>
         <div class="block">
           <el-row>
             <el-col :span="24" style="text-align: center" align="center">
@@ -252,6 +252,7 @@
         }
       },
       gotoDetail(row) {
+        sessionStorage.setItem("query", JSON.stringify(this.query));
         this.$router.push({path: '/personnelFiles', query: {faceId: row.faceId}});
       },
       //获取IMSI告警列表
@@ -290,7 +291,7 @@
         } else if (column.property === 'imsiList') {
           let imsi = [];
           row.imsiList.forEach((item) => {
-            imsi.push(item.imsi + '(' + item.weight / 10 + '%)')
+            imsi.push(item.imsi + '[' + item.weight / 10 + '%]')
           });
           return imsi.join("，");
         } else if (column.property === 'startAge') {
@@ -301,6 +302,10 @@
       }
     },
     mounted() {
+      let bol = JSON.parse(sessionStorage.getItem("query"));
+      if (bol) {
+        this.query = JSON.parse(sessionStorage.getItem("query"));
+      }
       this.getData();
     }
   }

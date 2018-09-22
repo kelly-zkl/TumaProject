@@ -68,8 +68,8 @@
             <el-form :model="item" align="left" label-width="60px" label-position="right"
                      style="position: absolute;top: 25px;left:180px;text-align: left">
               <el-form-item label="档案ID" style="margin:0">
-                <span style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId}}</span>
-                <el-button type="text">查看人员</el-button>
+                <span style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
+                <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
               </el-form-item>
               <el-form-item label="IMSI" style="margin:0">
                 <span style="font-size: 15px;color:#000">{{item.imsi}}</span>
@@ -219,6 +219,13 @@
         this.num += 10;
         this.getPersons();
       },
+      //进入人员档案
+      gotoPerson(row) {
+        if (row.personId) {
+          // sessionStorage.setItem("activeItem", this.activeItem);
+          this.$router.push({path: '/personnelFiles', query: {faceId: row.personId}});
+        }
+      },
       changeStatus(status) {
         this.$post('warning/dealWithWarningById', {id: this.id, status: status}, "处理成功").then((data) => {
           this.getFaceDetail();
@@ -251,6 +258,10 @@
         //     faces.push(item.faceId);
         //   }
         // });
+        // sessionStorage.setItem("activeItem", this.activeItem);
+        // sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
+        // sessionStorage.setItem("query", JSON.stringify(this.query));
+
         sessionStorage.setItem("pathFace", JSON.stringify(faces));
         sessionStorage.setItem("pathTime", JSON.stringify(this.qTime));
         this.$router.push({path: '/pathLine', query: {face: 1}});
@@ -389,6 +400,18 @@
       }
     },
     mounted() {
+      // let bol = JSON.parse(sessionStorage.getItem("query"));
+      // let tab = sessionStorage.getItem("activeItem");
+      // let time1 = JSON.parse(sessionStorage.getItem("qTime"));
+      // if (tab) {
+      //   this.activeItem = tab;
+      // }
+      // if (bol) {
+      //   this.query = JSON.parse(sessionStorage.getItem("query"));
+      // }
+      // if (time1) {
+      //   this.qTime = time1;
+      // }
       this.getPlaces();
       this.getFaceDetail();
       this.getPersons();

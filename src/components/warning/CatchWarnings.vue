@@ -58,8 +58,7 @@
           </el-select>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-button type="primary" size="medium" @click="getData()" v-if="activeItem=='T'">搜索</el-button>
-          <el-button type="primary" size="medium" @click="isSearch = true;getData()" v-if="activeItem=='H'">搜索
+          <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索
           </el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
@@ -108,12 +107,12 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right" v-if="activeItem == 'H'">
+      <div class="block" style="margin-top: 20px" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
                        :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
       <!--查看大图-->
-      <el-dialog title="查看大图" :visible.sync="runBigPic" width="450px" center>
+      <el-dialog title="查看大图" :visible.sync="runBigPic" width="500px" center>
         <div class="block">
           <el-row>
             <el-col :span="24" style="text-align: center" align="center">
@@ -139,7 +138,7 @@
         bigUrl: '',
         activeItem: 'T',
         imgPath: require('../../assets/img/icon_people.png'),
-        query: {size: 5},
+        query: {size: 100},
         statuses: [{label: '待处理', value: 0}, {label: '处理中', value: 1},
           {label: '已处理', value: 2}, {label: '误报', value: 3}],
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
@@ -158,7 +157,6 @@
         places: [],
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         imgUrl: '',
-        intervalid: null,
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -169,33 +167,17 @@
         }
       }
     },
-    //页面关闭时停止刷新
-    beforeDestroy() {
-      clearInterval(this.intervalid);
-      this.intervalid = null;
-    },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
-      },
-      //定时刷新侦码数据
-      dataTask() {
-        if (!this.intervalid) {
-          this.intervalid = setInterval(() => {
-            this.getTodayData();
-          }, 2000);
-        }
       },
       handleType(val, ev) {
         this.clearData();
 
         if (this.activeItem === 'H') {
           this.exportKey = 'warning:get:listFaceHistory';
-          clearInterval(this.intervalid);
-          this.intervalid = null;
         } else {
           this.exportKey = 'warning:get:listFaceToday';
-          this.dataTask();
         }
       },
       //批量导入设备的文件格式验证
@@ -219,57 +201,23 @@
         }
       },
       gotoDetail(row) {
+        sessionStorage.setItem("activeItem", this.activeItem);
+        sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
+        sessionStorage.setItem("query", JSON.stringify(this.query));
         this.$router.push({path: '/faceWarningDetail', query: {id: row.id, faceId: row.faceId}});
       },
       //获取图像告警列表
       getData() {
+        let url = 'warning/get/listFaceToday';
+        if (this.activeItem === 'H') {
+          url = 'warning/get/listFaceHistory';
+        }
+
         if (!!this.qTime) {
           this.query.startTime = this.qTime[0] / 1000;
           this.query.endTime = this.qTime[1] / 1000;
         }
-        if (this.activeItem === 'H') {
-          this.getAllData();
-        } else {
-          this.getTodayData();
-        }
-      },
-      //今天的数据
-      getTodayData() {
-        this.listLoading = false;
-        this.$post("warning/get/listFaceToday", this.query).then((data) => {
-          if (this.list10.length >= 10) {
-            this.list10 = [];
-          }
-          if (this.list10.length === 0) {//
-            data.data.forEach((item) => {
-              if ((new Date().getTime() - item.catchTime * 1000) >= -120 * 1000 && (new Date().getTime() - item.catchTime * 1000) <= 120 * 1000) {//10s内的数据
-                setTimeout(() => {
-                  this.list10.push(item);
-                }, 1000);
-              }
-            });
-          } else {//
-            data.data.forEach((item) => {
-              if ((new Date().getTime() - item.catchTime * 1000) >= -120 * 1000 && (new Date().getTime() - item.catchTime * 1000) <= 120 * 1000) {//10s内的数据
-                for (let terminate of this.list10) {
-                  if (terminate.id === item.id) {
-                    return;
-                  }
-                }
-                setTimeout(() => {
-                  this.list10.push(item);
-                }, 1000);
-              }
-            });
-          }
-        }).catch((err) => {
-          this.list10 = [];
-          this.listLoading = false;
-          this.$message.error(err);
-        });
-      },
-      //历史数据
-      getAllData() {
+
         if (this.isSearch) {
           this.list = [];
           this.list10 = [];
@@ -277,7 +225,7 @@
           this.isSearch = false;
         }
         this.listLoading = true;
-        this.$post("warning/get/listFaceHistory", this.query).then((data) => {
+        this.$post(url, this.query).then((data) => {
           if (this.query.pageTime && !this.isSearch) {
             this.list = this.list.concat(data.data);
           } else {
@@ -327,13 +275,8 @@
       },
       clearData() {
         this.list10 = [];
-        if (this.activeItem === 'T') {
-          this.query = {size: 5};
-          this.isShow = false;
-        } else {
-          this.query = {size: 100};
-          this.isSearch = true;
-        }
+        this.query = {size: 100};
+        this.isSearch = true;
         delete this.query['faceUrl'];
         this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
@@ -362,9 +305,20 @@
       }
     },
     mounted() {
+      let bol = JSON.parse(sessionStorage.getItem("query"));
+      let tab = sessionStorage.getItem("activeItem");
+      let time1 = JSON.parse(sessionStorage.getItem("qTime"));
+      if (tab) {
+        this.activeItem = tab;
+      }
+      if (bol) {
+        this.query = JSON.parse(sessionStorage.getItem("query"));
+      }
+      if (time1) {
+        this.qTime = time1;
+      }
       this.getPlaces();
       this.getData();
-      this.dataTask();
     }
   }
 </script>

@@ -62,8 +62,8 @@
             <el-form :model="item" align="left" label-width="60px" label-position="right"
                      style="position: absolute;top: 25px;left:180px">
               <el-form-item label="档案ID" style="margin:0">
-                <span style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId}}</span>
-                <el-button type="text">查看人员</el-button>
+                <span style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
+                <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
               </el-form-item>
               <el-form-item label="IMSI" style="margin:0">
                 <span style="font-size: 15px;color:#000">{{item.imsi}}</span>
@@ -213,6 +213,12 @@
       loadMore() {
         this.num += 10;
         this.getPersons();
+      },
+      //进入人员档案
+      gotoPerson(row) {
+        if (row.personId) {
+          this.$router.push({path: '/personnelFiles', query: {faceId: row.personId}});
+        }
       },
       //获取图像详情
       getFaceDetail() {

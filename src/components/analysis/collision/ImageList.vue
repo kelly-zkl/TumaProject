@@ -20,7 +20,8 @@
         <el-form-item label="时间范围" style="margin-bottom: 10px">
           <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" size="medium"
                           :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
-                          start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px">
+                          start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px"
+                          :picker-options="pickerBeginDate">
           </el-date-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
@@ -35,7 +36,8 @@
         <el-table-column align="left" label="现场图像" prop="deviceId" min-width="125"
                          max-width="250">
           <template slot-scope="scope">
-            <img v-bind:src="faceUrl+scope.row.userFacePicURL" style="width: 90px;height:90px"/>
+            <img v-bind:src="scope.row.userFacePicURL" @click="bigUrl=scope.row.userFacePicURL;runBigPic=true"
+                 style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
         <el-table-column align="left" label="年龄" prop="age" min-width="100"
@@ -55,7 +57,7 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="125" max-width="250">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoImage(faceUrl+scope.row.scensePicURL,scope.row.personID)"
+            <el-button type="text" @click="gotoImage(scope.row.scensePicURL,scope.row.personID)"
                        v-show="getButtonVial('collision:queryRecord')">查看详情
             </el-button>
           </template>
@@ -66,6 +68,19 @@
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
+      <!--查看大图-->
+      <el-dialog title="查看大图" :visible.sync="runBigPic" width="500px" center>
+        <div class="block">
+          <el-row>
+            <el-col :span="24" style="text-align: center" align="center">
+              <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:8px;vertical-align:middle"/>
+            </el-col>
+          </el-row>
+          <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">
+            <el-button type="primary" @click="runBigPic=false" size="medium">关闭</el-button>
+          </div>
+        </div>
+      </el-dialog>
     </section>
   </div>
 </template>
@@ -76,15 +91,25 @@
     data() {
       return {
         listLoading: false,
+        runBigPic: false,
+        bigUrl: '',
         taskId: this.$route.query.taskId || '',
         collisionType: this.$route.query.collisionType || '',
         picUrl: this.$route.query.picUrl || '',
         query: {page: 1, size: 10},
-        sexs: [{value: '0', label: '男'}, {value: '2', label: '女'}],
+        sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         qTime: '',
         task: {},
         records: [],
-        count: 0
+        count: 0,
+        pickerBeginDate: {
+          disabledDate: (time) => {
+            let beginDateVal = new Date().getTime();
+            if (beginDateVal) {
+              return beginDateVal < time.getTime();
+            }
+          }
+        }
       }
     },
     methods: {
@@ -156,7 +181,7 @@
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'sex') {
-          return row.sex === '0' ? '男' : row.sex === '2' ? '女' : '未知';
+          return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '未知';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {

@@ -9,16 +9,16 @@
           </el-tabs>
         </el-col>
         <el-col :span="6" align="right">
-          <el-button type="primary" size="medium">导出数据</el-button>
+          <!--<el-button type="primary" size="medium">导出数据</el-button>-->
         </el-col>
       </el-row>
       <div v-show="activeItem=='imsi'">
         <el-form :inline="true" :model="queryImsi" align="left" style="margin-top: 15px">
-          <el-form-item style="margin-bottom: 10px">
-            <el-cascader :options="provinceList" :props="props" @change="areaChange" change-on-select
-                         v-model="areaList" style="width: 180px" placeholder="场所" size="medium"
-                         filterable clearable>
-            </el-cascader>
+          <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
+            <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
+              <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
@@ -32,50 +32,56 @@
                       style="width: 180px" size="medium"></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-button type="primary" size="medium" @click="getData1()">搜索</el-button>
+            <el-button type="primary" size="medium" @click="getImsiData()">搜索</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-button size="medium" @click="clearData1()">重置</el-button>
+            <el-button size="medium" @click="clearImsiData()">重置</el-button>
           </el-form-item>
         </el-form>
-        <el-table :data="imsiList" class="center-block" v-loading="listLoading1" stripe>
+        <el-table :data="list10" class="center-block" v-loading="listLoading" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" prop="deviceId" label="抓取时间" min-width="170" max-width="250"
+          <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="imei" label="抓取场所" min-width="150" max-width="250"
+          <el-table-column align="left" prop="isp" label="运营商" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="imsi" label="设备标识" min-width="150" max-width="250"
+          <el-table-column align="left" prop="regional" label="归属地" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="tmsi" label="设备ID" min-width="150" max-width="250"
+          <el-table-column align="left" prop="uptime" label="抓取时间" min-width="170" max-width="250"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="placeName" label="抓取场所" min-width="150" max-width="250"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150" max-width="250"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="160">
             <template slot-scope="scope">
-              <el-button type="text" @click="gotoDetail1(scope.row)">查看详情</el-button>
+              <el-button type="text" @click="gotoImsiDetail(scope.row)">查看详情</el-button>
             </template>
           </el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleSizeChange1" @current-change="pageChange1" :current-page="queryImsi.page"
-                         :page-sizes="[10, 15, 20, 30]" :page-size="queryImsi.size" :total="count1" background
-                         layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+          <el-pagination @size-change="handleImsiSizeChange" @current-change="imsiPageChange" :current-page="page"
+                         :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
       </div>
       <div v-show="activeItem=='face'">
         <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model="imgUrl" placeholder="输入相似度阈值" size="medium" style="width: 260px">
+            <el-input v-model="query.similarThreshold" placeholder="输入相似度阈值" size="medium" style="width: 260px">
               <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
-                         :on-success="handleSuccess" :on-change="handleChange" size="medium"
-                         :auto-upload="false" :show-file-list="false">
+                         :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
+                         :auto-upload="true" :show-file-list="false">
                 <el-button type="primary" size="medium">上传头像图片</el-button>
               </el-upload>
             </el-input>
           </el-form-item>
           <el-form-item label="年龄" style="margin-bottom: 10px">
             <el-row>
-              <el-input v-model="query.age1" type="number" size="medium" style="width: 80px" :maxlength=3></el-input>
+              <el-input v-model="query.startAge" type="number" size="medium" style="width: 80px"
+                        :maxlength=3></el-input>
               <span>~</span>
-              <el-input v-model="query.age2" type="number" size="medium" style="width: 80px" :maxlength=3></el-input>
+              <el-input v-model="query.endAge" type="number" size="medium" style="width: 80px" :maxlength=3></el-input>
             </el-row>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
@@ -84,11 +90,11 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item style="margin-bottom: 10px">
-            <el-cascader :options="provinceList" :props="props" @change="areaChange" change-on-select
-                         v-model="areaList" style="width: 180px" placeholder="场所" size="medium"
-                         filterable clearable>
-            </el-cascader>
+          <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
+            <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
+              <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
@@ -98,7 +104,7 @@
             </el-date-picker>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-input placeholder="设备名称/ID" v-model="query.deviceName" :maxlength="30"
+            <el-input placeholder="设备名称/ID" v-model="query.deviceId" :maxlength="30"
                       style="width: 180px" size="medium"></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
@@ -108,21 +114,23 @@
             <el-button size="medium" @click="clearData()">重置</el-button>
           </el-form-item>
         </el-form>
-        <el-table :data="imgRecords" v-loading="listLoading" class="center-block" stripe>
+        <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="现场图像" prop="taskName" min-width="150"
+          <el-table-column align="left" label="人员图像" prop="imageUrl" min-width="125" max-width="250">
+            <template slot-scope="scope">
+              <img v-bind:src="scope.row.imageUrl?scope.row.imageUrl:imgPath"
+                   @click="bigUrl=scope.row.imageUrl;runBigPic=true"
+                   style="max-width: 90px;max-height:90px;border-radius: 6px"/>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="年龄" prop="age" width="120"></el-table-column>
+          <el-table-column align="left" label="性别" prop="sex" width="120"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="抓取场所" prop="placeName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="年龄" prop="followType" width="120"
+          <el-table-column align="left" label="抓取时间" prop="catchTime" width="170"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="性别" prop="followTarget" width="120"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="抓取场所" prop="taskStatus" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="抓取时间" prop="caseName" width="170"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备标识" prop="caseName" width="150"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备ID" prop="caseName" min-width="150"
+          <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="160">
             <template slot-scope="scope">
@@ -131,39 +139,55 @@
           </el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
-                         :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
-                         layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
+                         :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
       </div>
+      <!--查看大图-->
+      <el-dialog title="查看大图" :visible.sync="runBigPic" width="500px" center>
+        <div class="block">
+          <el-row>
+            <el-col :span="24" style="text-align: center" align="center">
+              <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:8px;vertical-align:middle"/>
+            </el-col>
+          </el-row>
+          <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">
+            <el-button type="primary" @click="runBigPic=false" size="medium">关闭</el-button>
+          </div>
+        </div>
+      </el-dialog>
     </section>
   </div>
 </template>
 <script>
-  import json from '../../../assets/city.json';
   import {globalValidImg, noSValidator, noValidator} from "../../../assets/js/api";
+  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
 
   export default {
     data() {
       return {
         activeItem: 'imsi',
-        queryImsi: {page: 1, size: 10},
-        query: {status: '', page: 1, size: 10},
-        provinceList: json,
-        props: {value: 'o', label: 'n', children: 'c'},
+        runBigPic: false,
+        bigUrl: '',
+        faceId: this.$route.query.faceId || '',
+        imgPath: require('../../../assets/img/icon_people.png'),
+        queryImsi: {size: 100},
+        query: {size: 100},
         qTime: '',
-        statuses: [{label: '全部', value: ''}, {label: '待处理', value: '1'}, {label: '处理中', value: '2'},
-          {label: '已处理', value: '3'}, {label: '误报', value: '4'}],
-        sexs: [{value: '0', label: '男'}, {value: '2', label: '女'}],
-        areaList: [],
+        sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
+        places: [],
         count: 0,
         listLoading: false,
-        imgRecords: [],
-        uploadUrl: '',
+        list: [],
+        list10: [],
+        isShow: false,
+        isFirst: true,
+        isSearch: false,
+        firstPage: 0,
+        page: 1,
+        uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         imgUrl: '',
-        imsiList: [],
         count1: 0,
-        listLoading1: false,
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -175,112 +199,218 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       handleType(val) {
-
+        this.qTime = '';
+        this.isSearch = false;
+        if (val.name === 'imsi') {
+          this.queryImsi = {size: 100};
+          this.getImsiData();
+        } else {
+          this.query = {size: 100};
+          this.getData();
+        }
       },
       /**imsi*/
       //获取imsi列表
-      getData1() {
+      getImsiData() {
+        if (!!this.qTime) {
+          this.queryImsi.startTime = this.qTime[0] / 1000;
+          this.queryImsi.endTime = this.qTime[1] / 1000;
+        }
+        this.queryImsi.personId = this.faceId;
+        this.listLoading = true;
 
+        if (this.isSearch) {
+          this.list = [];
+          this.list10 = [];
+          delete this.queryImsi['pageTime'];
+          this.isSearch = false;
+        }
+        this.$post('archives/get/listImsiHistory', this.queryImsi).then((data) => {
+          if (this.queryImsi.pageTime && !this.isSearch) {
+            this.list = this.list.concat(data.data);
+          } else {
+            this.list = data.data;
+            this.page = 1;
+            this.firstPage = 0
+          }
+          this.list10 = this.list;
+          if (this.list.length - this.page * 10 >= 0) {
+            this.list10 = this.list10.slice((this.page * 10 - 10), (this.page * 10));
+          } else {
+            this.list10 = this.list10.slice((this.page * 10 - 10), this.list.length);
+          }
+          this.count = this.list.length;
+          if (this.list.length - this.firstPage === 100) {
+            this.isFirst = false;
+          } else {
+            this.isFirst = true;
+          }
+          this.listLoading = false;
+        }).catch((err) => {
+          this.list = [];
+          this.list10 = [];
+          this.listLoading = false;
+          this.$message.error(err);
+        });
       },
       //清除查询条件
-      clearData1() {
-        this.queryImsi = {page: 1, size: 10};
+      clearImsiData() {
+        this.list10 = [];
         this.qTime = '';
-        this.getData();
+        this.queryImsi = {size: 100};
+        this.isSearch = true;
+        this.getImsiData();
       },
-      pageChange1(index) {
-        this.queryImsi.page = index;
-        this.getData();
+      imsiPageChange(index) {
+        this.page = index;
+        if (!this.isFirst && this.list.length > this.firstPage) {
+          this.isFirst = true;
+        }
+        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
+          (this.list.length % 100 === 0 || this.list.length === this.couple)) {
+          this.firstPage = this.list.length;
+          this.queryImsi.pageTime = this.list[this.list.length - 1].uptime;
+          this.getImsiData();
+        }
+        this.list10 = this.list;
+        if ((this.list.length - (index * 10)) >= 0) {
+          this.list10 = this.list10.slice((index * 10 - 10), (index * 10));
+        } else {
+          this.list10 = this.list10.slice((index * 10 - 10), this.list.length);
+        }
       },
-      handleSizeChange1(val) {
-        this.queryImsi.size = val;
-        this.getData();
+      handleImsiSizeChange(val) {
       },
       //查看图像详情
-      gotoDetail1() {
-        this.$router.push({path: '/imsiDetail'});
+      gotoImsiDetail(row) {
+        this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi}});
       },
       /**图像*/
       //查看图像详情
-      gotoDetail() {
-        this.$router.push({path: '/faceDetail'});
+      gotoDetail(row) {
+        this.$router.push({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
       },
-      //批量导入设备的文件格式验证
-      handleChange(file, fileList) {
-        if (file.status === 'ready') {
-          if (globalValidImg(file.raw, this.$message)) {
-          }
+      //选择图片的文件格式验证
+      beforeAvatarUpload(file) {
+        if (globalValidImg(file, this.$message)) {
         }
+        return globalValidImg(file, this.$message);
       },
       handleSuccess(res, file) {
         if (res.code === '000000') {
-          if (res.data && res.data.length > 0) {
-
-          } else {
-            this.$message({type: 'success', message: res.msg});
+          if (res.data) {
+            this.query.imageUrl = res.data.fileUrl;
             this.getData();
+            setTimeout(() => {
+              this.getData();
+            }, 7000);
           }
         } else {
           this.$message.error(res.msg);
         }
       },
-      //省市县变化
-      areaChange(value) {
-        this.areaList = value;
-        this.query.provinceCode = '';
-        this.query.cityCode = '';
-        this.query.areaCode = '';
-        if (value.length === 1) {
-          this.query.provinceCode = value[0];
-        } else if (value.length === 2) {
-          this.query.provinceCode = value[0];
-          this.query.cityCode = value[1];
-        } else if (value.length === 3) {
-          this.query.provinceCode = value[0];
-          this.query.cityCode = value[1];
-          this.query.areaCode = value[2];
-        } else if (value.length === 3) {
-          this.query.provinceCode = value[0];
-          this.query.cityCode = value[1];
-          this.query.areaCode = value[2];
-          this.query.streetCode = value[3];
-        }
-      },
       //获取图像告警列表
       getData() {
+        if (!!this.qTime) {
+          this.query.startTime = this.qTime[0] / 1000;
+          this.query.endTime = this.qTime[1] / 1000;
+        }
+        this.query.personId = this.faceId;
 
+        if (this.isSearch) {
+          this.list = [];
+          this.list10 = [];
+          delete this.query['pageTime'];
+          this.isSearch = false;
+        }
+        this.listLoading = true;
+        this.$post('person/queryFaceRecrod', this.query).then((data) => {
+          if (this.query.pageTime && !this.isSearch) {
+            this.list = this.list.concat(data.data);
+          } else {
+            this.list = data.data;
+            this.page = 1;
+            this.firstPage = 0
+          }
+          this.list10 = this.list;
+          if (this.list.length - this.page * 10 >= 0) {
+            this.list10 = this.list10.slice((this.page * 10 - 10), (this.page * 10));
+          } else {
+            this.list10 = this.list10.slice((this.page * 10 - 10), this.list.length);
+          }
+          this.count = this.list.length;
+          if (this.list.length - this.firstPage === 100) {
+            this.isFirst = false;
+          } else {
+            this.isFirst = true;
+          }
+          this.listLoading = false;
+        }).catch((err) => {
+          this.list = [];
+          this.list10 = [];
+          this.listLoading = false;
+          this.$message.error(err);
+        });
       },
       //清除查询条件
       clearData() {
-        this.query = {page: 1, size: 10};
+        this.list10 = [];
         this.qTime = '';
+        this.query = {size: 100};
+        this.isSearch = true;
+        delete this.query['imageUrl'];
         this.getData();
       },
       pageChange(index) {
-        this.query.page = index;
-        this.getData();
+        this.page = index;
+        if (!this.isFirst && this.list.length > this.firstPage) {
+          this.isFirst = true;
+        }
+        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
+          (this.list.length % 100 === 0 || this.list.length === this.couple)) {
+          this.firstPage = this.list.length;
+          this.query.pageTime = this.list[this.list.length - 1].catchTime;
+          this.getData();
+        }
+        this.list10 = this.list;
+        if ((this.list.length - (index * 10)) >= 0) {
+          this.list10 = this.list10.slice((index * 10 - 10), (index * 10));
+        } else {
+          this.list10 = this.list10.slice((index * 10 - 10), this.list.length);
+        }
       },
       handleSizeChange(val) {
-        this.query.size = val;
-        this.getData();
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'taskStatus') {
-          return row.taskStatus === "WAIT" ? '等待中' : row.taskStatus === "FINISH" ? '已完成' : row.taskStatus === "FAILE" ? '失败' : row.taskStatus === "EXECUTION" ? '进行中' : '--';
-        } else if (column.property === 'followType') {
-          return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '图像' : row.followType === "MAC" ? 'MAC' : '--';
-        } else if (column.property === 'status') {
-          return row.status === 'UNHANDLED' ? '未处理' : row.status === 'EXECUTION' ? '进行中' : row.status === 'HANDLED' ? '已结案' : '--';
-        } else if (column.property === 'followCount') {
-          return row.followCount === 0 ? 0 : row.followCount;
+        if (column.property === 'uptime') {
+          return row.uptime ? formatDate(new Date(row.uptime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
+        } else if (column.property === 'catchTime') {
+          return row.catchTime ? formatDate(new Date(row.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
+        } else if (column.property === 'isp') {
+          return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '未知';
+        } else if (column.property === 'sex') {
+          return row.sex === 0 ? '男' : row.sex === 1 ? '女' : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
+      },
+      //告警场所
+      getPlaces() {
+        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+          this.places = data.data.list;
+        }).catch((err) => {
+          this.places = [];
+        });
       }
     },
     mounted() {
+      this.getPlaces();
+      this.getImsiData();
     }
   }
 </script>

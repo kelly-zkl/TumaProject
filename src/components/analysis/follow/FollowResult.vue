@@ -4,16 +4,16 @@
       <div class="add-appdiv" style="margin-bottom: 15px">
         <el-row>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
-            <p style="font-size: 13px;color:#CCC;margin: 0 20px">任务名称</p>
+            <p style="font-size: 14px;color: #999;margin: 0 20px">任务名称</p>
             <p style="margin: 5px 20px 0 20px">{{task.taskName}}</p>
           </el-col>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
-            <p style="font-size: 13px;color:#CCC;margin: 0 20px">任务类型</p>
+            <p style="font-size: 14px;color: #999;margin: 0 20px">任务类型</p>
             <p style="margin: 5px 20px 0 20px">
               {{task.followType == 'IMSI' ? 'IMSI' : task.followType == 'FACE' ? '图像' : 'MAC'}}</p>
           </el-col>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
-            <p style="font-size: 13px;color:#CCC;margin: 0 20px">分析对象</p>
+            <p style="font-size: 14px;color: #999;margin: 0 20px">分析对象</p>
             <p style="margin: 5px 20px 0 20px">{{task.followTarget}}</p>
           </el-col>
           <el-col :span="6" align="right">
@@ -34,7 +34,7 @@
           </el-button>
         </el-col>
       </el-row>
-      <div class="content" v-show="activeItem == 'result'">
+      <div class="content" v-show="activeItem == 'result' && task.followType == 'IMSI'">
         <el-form :inline="true" :model="queryResult" align="left" v-show="getButtonVial('follow:queryResult')">
           <el-form-item style="margin-bottom: 10px">
             <el-input v-model="queryResult.imsi" placeholder="输入IMSI" size="medium" style="width: 160px"
@@ -72,7 +72,7 @@
           <el-table-column align="left" label="归属地" prop="regional" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="伴随次数" prop="followCount" min-width="125"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="250"></el-table-column>
           <el-table-column align="left" label="置信度" prop="confidenceLevel" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="130">
@@ -88,7 +88,7 @@
                          layout="total, sizes, prev, pager, next, jumper"></el-pagination>
         </div>
       </div>
-      <div class="content" style="margin-left: 10px" v-show="activeItem == 'list'">
+      <div class="content" style="margin-left: 10px" v-show="activeItem == 'list' && task.followType == 'IMSI'">
         <el-form :inline="true" :model="queryRecord" align="left" v-show="getButtonVial('follow:queryRecord')">
           <el-form-item style="margin-bottom: 10px">
             <el-input v-model="queryRecord.imsi" placeholder="输入IMSI" size="medium" style="width: 160px"
@@ -103,7 +103,8 @@
           <el-form-item style="margin-bottom: 10px">
             <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                             start-placeholder="抓取时间" size="medium" end-placeholder="结束日期" clearable
-                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp">
+                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                            :picker-options="pickerBeginDate">
             </el-date-picker>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
@@ -150,6 +151,127 @@
                          layout="total, sizes, prev, pager, next, jumper"></el-pagination>
         </div>
       </div>
+      <div class="content" v-show="activeItem == 'result' && task.followType == 'FACE'">
+        <el-form :inline="true" :model="queryResult" align="left" v-show="getButtonVial('follow:queryResult')">
+          <el-form-item label="年龄" style="margin-bottom: 10px">
+            <el-row>
+              <el-input v-model="queryResult.startAge" type="number" size="medium" style="width: 80px"
+                        :maxlength=3></el-input>
+              <span>~</span>
+              <el-input v-model="queryResult.endAge" type="number" size="medium" style="width: 80px"
+                        :maxlength=3></el-input>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="性别">
+            <el-select v-model="queryResult.sex" placeholder="请选择" style="width: 100px" size="medium" clearable>
+              <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="伴随次数" style="margin-bottom: 10px">
+            <el-input v-model="queryResult.count1" type="number" size="medium" style="width: 80px"
+                      :maxlength=5></el-input>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-button type="primary" size="medium" @click="getResult()">搜索</el-button>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-button size="medium" @click="clearData()">重置</el-button>
+          </el-form-item>
+        </el-form>
+        <el-table :data="results" v-loading="listLoading1" class="center-block" stripe>
+          <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
+          <el-table-column align="left" label="人员图像" prop="imsi" min-width="150"
+                           max-width="300" :formatter="formatterAddress">
+            <template slot-scope="scope">
+              <img v-bind:src="scope.row.userFacePicURL?scope.row.userFacePicURL:imgPath"
+                   @click="bigUrl=scope.row.userFacePicURL;runBigPic=true"
+                   style="max-width: 90px;max-height:90px;border-radius: 6px"/>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="年龄" prop="isp" min-width="125"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="性别" prop="netType" min-width="125"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="伴随次数" prop="followCount" min-width="125"
+                           max-width="250"></el-table-column>
+          <!--<el-table-column align="left" label="操作" width="130">-->
+          <!--<template slot-scope="scope">-->
+          <!--<el-button type="text" @click="gotoImsi(scope.row)" v-show="getButtonVial('follow:queryRecord')">查看IMSI-->
+          <!--</el-button>-->
+          <!--</template>-->
+          <!--</el-table-column>-->
+        </el-table>
+        <div class="block" style="margin-top: 20px" align="right">
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="queryResult.page"
+                         :page-sizes="[10, 15, 20, 30]" :page-size="queryResult.size" :total="count1" background
+                         layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+        </div>
+      </div>
+      <div class="content" style="margin-left: 10px" v-show="activeItem == 'list' && task.followType == 'FACE'">
+        <el-form :inline="true" :model="queryRecord" align="left" v-show="getButtonVial('follow:queryRecord')">
+          <el-form-item label="年龄" style="margin-bottom: 10px">
+            <el-row>
+              <el-input v-model="queryRecord.startAge" type="number" size="medium" style="width: 80px"
+                        :maxlength=3></el-input>
+              <span>~</span>
+              <el-input v-model="queryRecord.endAge" type="number" size="medium" style="width: 80px"
+                        :maxlength=3></el-input>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="性别">
+            <el-select v-model="queryRecord.sex" placeholder="请选择" style="width: 100px" size="medium" clearable>
+              <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
+                            start-placeholder="开始时间" size="medium" end-placeholder="结束时间" clearable
+                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                            :picker-options="pickerBeginDate">
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-button type="primary" size="medium" @click="getList()">搜索</el-button>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-button size="medium" @click="clearData()">重置</el-button>
+          </el-form-item>
+        </el-form>
+        <el-table :data="records" v-loading="listLoading2" class="center-block" stripe>
+          <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
+          <el-table-column align="left" label="人员图像" prop="imsi" min-width="150"
+                           max-width="300" :formatter="formatterAddress">
+            <template slot-scope="scope">
+              <img v-bind:src="scope.row.userFacePicURL?scope.row.userFacePicURL:imgPath"
+                   @click="bigUrl=scope.row.userFacePicURL;runBigPic=true"
+                   style="max-width: 90px;max-height:90px;border-radius: 6px"/>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="年龄" prop="isp" min-width="125"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="性别" prop="netType" min-width="125"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="抓取时间" prop="upTime" min-width="170"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="抓取场所" prop="deviceName" min-width="125"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <!--<el-table-column align="left" label="操作" min-width="125" max-width="250">-->
+          <!--<template slot-scope="scope">-->
+          <!--<el-button type="text" @click="gotoImsi(scope.row)" v-show="getButtonVial('follow:queryRecord')">查看IMSI-->
+          <!--</el-button>-->
+          <!--</template>-->
+          <!--</el-table-column>-->
+        </el-table>
+        <div class="block" style="margin-top: 20px" align="right">
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="queryRecord.page"
+                         :page-sizes="[10, 15, 20, 30]" :page-size="queryRecord.size" :total="count2" background
+                         layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+        </div>
+      </div>
     </section>
     <!--任务详情-->
     <el-dialog title="任务详情" :width="dialogWidth" :visible.sync="runTaskDetail">
@@ -170,6 +292,19 @@
         </el-form>
       </div>
     </el-dialog>
+    <!--查看大图-->
+    <el-dialog title="查看大图" :visible.sync="runBigPic" width="500px" center>
+      <div class="block">
+        <el-row>
+          <el-col :span="24" style="text-align: center" align="center">
+            <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:8px;vertical-align:middle"/>
+          </el-col>
+        </el-row>
+        <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">
+          <el-button type="primary" @click="runBigPic=false" size="medium">关闭</el-button>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -179,8 +314,11 @@
     data() {
       return {
         task: {},
+        runBigPic: false,
+        bigUrl: '',
         taskId: this.$route.query.taskId || '',
         followType: this.$route.query.followType || '',
+        imgPath: require('../../../assets/img/icon_people.png'),
         dialogWidth: isPC() ? '35%' : '90%',
         runTaskDetail: false,
         activeItem: 'result',
@@ -194,7 +332,16 @@
         queryRecord: {page: 1, size: 10},
         listLoading2: false,
         count2: 0,
-        operators: [{value: 0, label: '移动'}, {value: 1, label: '联通'}, {value: 2, label: '电信'}]
+        sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
+        operators: [{value: 0, label: '移动'}, {value: 1, label: '联通'}, {value: 2, label: '电信'}],
+        pickerBeginDate: {
+          disabledDate: (time) => {
+            let beginDateVal = new Date().getTime();
+            if (beginDateVal) {
+              return beginDateVal < time.getTime();
+            }
+          }
+        }
       }
     },
     methods: {
@@ -323,8 +470,8 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'sex') {//0-女  1-男  2-未知
-          return row.sex === '0' ? '男' : row.sex === '2' ? '女' : '未知';
+        if (column.property === 'sex') {//0为男，1为女
+          return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '未知';
         } else if (column.property === 'isp') {
           return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '未知';
         } else if (column.property === 'netType') {//网络类型 --> 根据运营商判断

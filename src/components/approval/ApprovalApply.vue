@@ -26,14 +26,14 @@
             <el-button type="primary" size="medium" icon="el-icon-plus">从名单中选择人员</el-button>
           </el-form-item>
           <el-form-item label="输入IMSI" align="left" style="margin: 0" v-if="way == '2'">
-            <el-tag :key="tag" v-for="tag in dynamicTags" closable hit
+            <el-tag :key="tag" v-for="tag in approval.applyImsiList" closable hit
                     :disable-transitions="false" @close="handleClose(tag)">{{tag}}
             </el-tag>
-            <el-input class="input-tag" v-show="inputVisible && dynamicTags.length<20" v-model="inputValue"
+            <el-input class="input-tag" v-show="inputVisible && approval.applyImsiList.length<20" v-model="inputValue"
                       ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm"
                       @blur="handleInputConfirm">
             </el-input>
-            <el-button v-show="!inputVisible && dynamicTags.length<20" class="button-tag" size="small"
+            <el-button v-show="!inputVisible && approval.applyImsiList.length<20" class="button-tag" size="small"
                        @click="showInput" type="primary" icon="el-icon-plus">IMSI
             </el-button>
           </el-form-item>
@@ -66,10 +66,9 @@
   export default {
     data() {
       return {
-        approval: {staffLevel: '一级'},
+        approval: {staffLevel: '一级', applyImsiList: []},
         way: '2',
         active: 0,
-        dynamicTags: [],
         inputVisible: false,
         inputValue: '',
         levs: [{value: '一级', label: '一级'}, {value: '二级', label: '二级'}, {value: '三级', label: '三级'}],
@@ -80,7 +79,7 @@
     methods: {
       //删除标签
       handleClose(tag) {
-        this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+        this.approval.applyImsiList.splice(this.approval.applyImsiList.indexOf(tag), 1);
       },
       //输入频点
       showInput() {
@@ -93,21 +92,19 @@
       handleInputConfirm() {
         let inputValue = this.inputValue;
         if (inputValue) {
-          this.dynamicTags.push(inputValue);
+          this.approval.applyImsiList.push(inputValue);
         }
         this.inputVisible = false;
         this.inputValue = '';
       },
       addApproval() {
-        if (this.dynamicTags.length === 0) {
+        if (this.approval.applyImsiList.length === 0) {
           this.$message.error('请输入需要翻码的IMSI');
           return;
         }
-        this.approval.applyImsiList = this.dynamicTags;
         this.approval.creatorId = JSON.parse(sessionStorage.getItem("user")).userId;
         this.$post('/workflow/translation/apply', this.approval, "申请成功").then((data) => {
-          if ("000000" === data.code)
-            this.$router.go(-1);
+          this.$router.go(-1);
         }).catch((err) => {
         });
       }

@@ -42,7 +42,8 @@
           <el-form-item label="时间范围">
             <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" size="medium"
                             :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
-                            start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px">
+                            start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px"
+                            :picker-options="pickerBeginDate">
             </el-date-picker>
           </el-form-item>
           <el-form-item>
@@ -113,7 +114,15 @@
         count: 0,
         persons: [],
         listLoading1: false,
-        queryPerson: {imsi: this.imsi, size: 10000, page: 1}
+        queryPerson: {imsi: this.imsi, size: 10000, page: 1},
+        pickerBeginDate: {
+          disabledDate: (time) => {
+            let beginDateVal = new Date().getTime();
+            if (beginDateVal) {
+              return beginDateVal < time.getTime();
+            }
+          }
+        }
       }
     },
     methods: {

@@ -48,7 +48,7 @@
           </el-row>
         </el-form>
       </div>
-      <el-row style="background: #F2F2F2" v-if="persons.length>0 && imsiList.length>0">
+      <el-row style="background: #F2F2F2" v-if="persons.length>0 || imsiList.length>0">
         <el-col :span="12">
           <div style="font-size:14px;padding:10px 20px">最近抓拍</div>
         </el-col>
@@ -57,7 +57,7 @@
         </el-col>
       </el-row>
       <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px;padding:0"
-           v-if="persons.length>0 && imsiList.length>0">
+           v-if="persons.length>0 || imsiList.length>0">
         <el-row>
           <el-col :span="12" style="border-right: 1px solid #D0CACF">
             <div class="face-main">

@@ -91,8 +91,8 @@
             <el-form-item label="案件类型" prop="caseType">
               <el-input v-model="createCase.caseType" placeholder="案件类型" :maxlength=20></el-input>
             </el-form-item>
-            <el-form-item label="案发时间" prop="qTime">
-              <el-date-picker v-model="createCase.qTime" type="datetimerange" range-separator="至"
+            <el-form-item label="案发时间" prop="caseTime">
+              <el-date-picker v-model="createCase.caseTime" type="datetimerange" range-separator="至"
                               start-placeholder="案发开始日期" size="medium" end-placeholder="结束日期" clearable
                               :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                               :picker-options="pickerBeginDate" style="width: 100%"></el-date-picker>
@@ -160,7 +160,7 @@
         defaultProps: [{value: 'caseNo', name: '案件编号', min: 150, max: 250},
           {value: 'caseName', name: '案件名称', min: 150, max: 250},
           {value: 'caseType', name: '案件类型', min: 150, max: 250},
-          {value: 'qTime', name: '案发时间', min: 350, max: 350},
+          {value: 'caseTime', name: '案发时间', min: 350, max: 350},
           {value: 'caseAddress', name: '案发地点', min: 150, max: 250},
           {value: 'creatTime', name: '创建时间', min: 170, max: 170},
           {value: 'status', name: '案件状态', min: 120, max: 120}],
@@ -179,7 +179,7 @@
           caseArea: [
             {required: true, message: '请选择案发地点', trigger: 'blur'}
           ],
-          qTime: [
+          caseTime: [
             {required: true, message: '请选择案发时间', trigger: 'blur'}
           ],
           caseAddress: [
@@ -209,7 +209,7 @@
           this.defaultProps = [{value: 'caseNo', name: '案件编号', min: 150, max: 250},
             {value: 'caseName', name: '案件名称', min: 150, max: 250},
             {value: 'caseType', name: '案件类型', min: 150, max: 250},
-            {value: 'qTime', name: '案发时间', min: 350, max: 350},
+            {value: 'caseTime', name: '案发时间', min: 350, max: 350},
             {value: 'caseAddress', name: '案发地点', min: 150, max: 250},
             {value: 'creatTime', name: '创建时间', min: 170, max: 170},
             {value: 'status', name: '案件状态', min: 120, max: 120}];
@@ -217,7 +217,7 @@
           this.defaultProps = [{value: 'caseNo', name: '案件编号', min: 150, max: 250},
             {value: 'caseName', name: '案件名称', min: 150, max: 250},
             {value: 'caseType', name: '案件类型', min: 150, max: 250},
-            {value: 'qTime', name: '案发时间', min: 350, max: 350},
+            {value: 'caseTime', name: '案发时间', min: 350, max: 350},
             {value: 'caseAddress', name: '案发地点', min: 150, max: 250},
             {value: 'creatTime', name: '创建时间', min: 170, max: 170},
             {value: 'status', name: '案件状态', min: 120, max: 120},
@@ -226,6 +226,9 @@
         this.getData();
       },
       gotoDetail(task) {
+        sessionStorage.setItem("activeItem", this.activeItem);
+        sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
+        sessionStorage.setItem("query", JSON.stringify(this.query));
         this.$router.push({path: '/caseDetail', query: {caseId: task.id}});
       },
       //创建新案件
@@ -236,8 +239,8 @@
       createNewCase() {
         this.$refs['createCase'].validate((valid) => {
           if (valid) {
-            this.createCase.caseToTime = this.createCase.qTime[1] / 1000;
-            this.createCase.qTime = this.createCase.qTime[0] / 1000;
+            this.createCase.caseToTime = this.createCase.caseTime[1] / 1000;
+            this.createCase.caseTime = this.createCase.caseTime[0] / 1000;
 
             this.createCase.provinceCode = this.createCase.caseArea[0];
             this.createCase.cityCode = this.createCase.caseArea[1];
@@ -321,10 +324,10 @@
       },
       getData() {
         if (!!this.qTime) {
-          this.query.qTime = this.qTime[0] / 1000;
+          this.query.caseTime = this.qTime[0] / 1000;
           this.query.caseToTime = this.qTime[1] / 1000;
         } else {
-          delete this.query['qTime'];
+          delete this.query['caseTime'];
           delete this.query['caseToTime'];
         }
         this.query.status = this.activeItem;
@@ -344,8 +347,8 @@
           return row.updateTime ? formatDate(new Date(row.updateTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'creatTime') {
           return row.creatTime ? formatDate(new Date(row.creatTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-        } else if (column.property === 'qTime') {
-          let start = row.qTime ? formatDate(new Date(row.qTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
+        } else if (column.property === 'caseTime') {
+          let start = row.caseTime ? formatDate(new Date(row.caseTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
           let end = row.caseToTime ? formatDate(new Date(row.caseToTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
           return start + " ~ " + end;
         } else if (column.property === 'status') {
@@ -353,9 +356,21 @@
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
-      },
+      }
     },
     mounted() {
+      let bol = JSON.parse(sessionStorage.getItem("query"));
+      let tab = sessionStorage.getItem("activeItem");
+      let time1 = JSON.parse(sessionStorage.getItem("qTime"));
+      if (tab) {
+        this.activeItem = tab;
+      }
+      if (bol) {
+        this.query = JSON.parse(sessionStorage.getItem("query"));
+      }
+      if (time1) {
+        this.qTime = time1;
+      }
       this.getData();
     }
   }

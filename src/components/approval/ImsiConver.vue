@@ -8,8 +8,8 @@
             <el-tab-pane label="已返回" name="FINISH"></el-tab-pane>
           </el-tabs>
         </el-col>
-        <el-col :span="8" align="right">
-          <el-button type="primary" size="medium" @click="$router.push('/approvalApply')">发起申请</el-button>
+        <el-col :span="8" align="right" v-show="getButtonVial('workflow:translation:apply')">
+          <el-button type="primary" size="medium" @click="addApply()">发起申请</el-button>
         </el-col>
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
@@ -17,7 +17,7 @@
           <el-input v-model="query.recordId" size="medium" :maxlength=30 placeholder="编号"></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.staffLevel" placeholder="勤务等级" size="medium" style="width: 150px">
+          <el-select v-model="query.staffLevel" placeholder="勤务等级" size="medium" style="width: 150px" clearable>
             <el-option v-for="item in levs" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -61,7 +61,9 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoDetail(scope.row)">查看</el-button>
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('workflow:translation:detail')">
+              查看
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -111,11 +113,22 @@
         }
         this.getData();
       },
+      //发起申请
+      addApply() {
+        sessionStorage.setItem("activeItem", this.activeItem);
+        sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
+        sessionStorage.setItem("query", JSON.stringify(this.query));
+        this.$router.push('/approvalApply');
+      },
+      //翻码详情页
       gotoDetail(row) {
+        sessionStorage.setItem("activeItem", this.activeItem);
+        sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
+        sessionStorage.setItem("query", JSON.stringify(this.query));
         if (this.activeItem === 'HANDLED') {
-          this.$router.push({path: '/approvalDetail', query: {type: 4}})
+          this.$router.push({path: '/approvalDetail', query: {type: 4, recordId: row.recordId}})
         } else {
-          this.$router.push({path: '/approvalDetail', query: {type: 0}})
+          this.$router.push({path: '/approvalDetail', query: {type: 0, recordId: row.recordId}})
         }
       },
       handleSizeChange(val) {
@@ -151,21 +164,29 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'createTime') {
-          // return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-          return row.createTime ? row.createTime : '--';
-        } else if (column.property === 'followType') {
+        if (column.property === 'followType') {
           return "IMSI翻码";
         } else if (column.property === 'translateStatus') {
-          return row.translateStatus === 1 ? '待翻码' : row.translateStatus === 0 ? '已返回' : '--';
+          return this.activeItem === 'HANDLED' ? '待翻码' : this.activeItem === 'FINISH' ? '已返回' : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
       }
     },
     mounted() {
-      // this.getData();
-      this.imsiList = [{}];
+      let bol = JSON.parse(sessionStorage.getItem("query"));
+      let tab = sessionStorage.getItem("activeItem");
+      let time1 = JSON.parse(sessionStorage.getItem("qTime"));
+      if (tab) {
+        this.activeItem = tab;
+      }
+      if (bol) {
+        this.query = JSON.parse(sessionStorage.getItem("query"));
+      }
+      if (time1) {
+        this.qTime = time1;
+      }
+      this.getData();
     }
   }
 </script>

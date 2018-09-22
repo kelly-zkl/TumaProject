@@ -51,10 +51,9 @@
       },
       //菜单激活回调
       handleActive(index, indexPath) {
-        sessionStorage.removeItem("deviceTab");
         sessionStorage.removeItem("query");
-        sessionStorage.removeItem("activeName");
-        sessionStorage.removeItem("cTime");
+        sessionStorage.removeItem("qTime");
+        sessionStorage.removeItem("activeItem");
       }
     },
     mounted() {

@@ -20,9 +20,9 @@
             </el-button>
           </div>
           <div align="right" style="display: flex;height: 70px;align-items: center">
-            <div class="item" style="text-align: center" @click="runMsg = true">
-              <i class="fa fa-bell-o fa-2x" style="padding-top: 20px;font-size: 1.8em"></i>
-            </div>
+            <!--<div class="item" style="text-align: center" @click="runMsg = true">-->
+            <!--<i class="fa fa-bell-o fa-2x" style="padding-top: 20px;font-size: 1.8em"></i>-->
+            <!--</div>-->
             <el-popover ref="modifyPsw" placement="bottom" width="200" trigger="click">
               <el-col :span="24">
                 <el-button
@@ -225,6 +225,10 @@
       handleSelectItem(item) {
         this.indx = item.orders;
         this.$router.push(item.permissionUrl);
+        sessionStorage.removeItem("query");
+        sessionStorage.removeItem("qTime");
+        sessionStorage.removeItem("activeItem");
+        sessionStorage.removeItem("secItem");
       },
       getImsiWarning() {
         this.$post("warning/get/listImsiToday", {size: 1}).then((data) => {
@@ -269,10 +273,9 @@
           sessionStorage.removeItem("user");
           sessionStorage.removeItem("button");
           sessionStorage.removeItem("menu");
-          sessionStorage.removeItem("deviceTab");
           sessionStorage.removeItem("query");
-          sessionStorage.removeItem("activeName");
-          sessionStorage.removeItem("cTime");
+          sessionStorage.removeItem("qTime");
+          sessionStorage.removeItem("activeItem");
           sessionStorage.removeItem("index");
           this.$router.push("/login");
         }).catch(() => {

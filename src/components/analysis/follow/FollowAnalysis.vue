@@ -18,7 +18,8 @@
             <el-form-item style="margin-bottom: 10px">
               <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                               start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
-                              :default-time="['00:00:00', '23:59:59']" value-format="timestamp">
+                              :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                              :picker-options="pickerBeginDate">
               </el-date-picker>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
@@ -89,7 +90,15 @@
         taskTypes: [{value: 'EXECUTION', label: '进行中'}, {value: 'FINISH', label: '已完成'},
           {value: 'WAIT', label: '等待中'}, {value: 'FAILE', label: '失败'}],
         sels: [],
-        count: 0
+        count: 0,
+        pickerBeginDate: {
+          disabledDate: (time) => {
+            let beginDateVal = new Date().getTime();
+            if (beginDateVal) {
+              return beginDateVal < time.getTime();
+            }
+          }
+        }
       }
     },
     methods: {

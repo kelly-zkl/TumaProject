@@ -35,10 +35,7 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-button type="primary" @click="getData()" size="medium" v-if="activeItem == 'first'">搜索
-          </el-button>
-          <el-button type="primary" @click="isSearch = true;getData()" size="medium"
-                     v-if="activeItem == 'second'">搜索
+          <el-button type="primary" @click="isSearch = true;getData()" size="medium">搜索
           </el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
@@ -73,7 +70,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right" v-if="activeItem == 'second'">
+      <div class="block" style="margin-top: 20px" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
                        :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
@@ -102,8 +99,7 @@
         page: 1,
         exportKey: 'archives:get:listImsiToday',
         listLoading: false,
-        query: {size: 5},
-        intervalid: null,
+        query: {size: 100},
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -114,36 +110,23 @@
         }
       }
     },
-    //页面关闭时停止刷新
-    beforeDestroy() {
-      clearInterval(this.intervalid);
-      this.intervalid = null;
-    },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
-      },
-      //定时刷新侦码数据
-      dataTask() {
-        if (!this.intervalid) {
-          this.intervalid = setInterval(() => {
-            this.getTodayData();
-          }, 2000);
-        }
       },
       handleClick(tab, event) {
         this.clearData();
         if (this.activeItem === 'second') {
           this.exportKey = 'archives:get:listImsiHistory';
-          clearInterval(this.intervalid);
-          this.intervalid = null;
         } else {
           this.exportKey = 'archives:get:listImsiToday';
-          this.dataTask();
         }
       },
       //查看IMSI详情
       gotoDetail(row) {
+        sessionStorage.setItem("activeItem", this.activeItem);
+        sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
+        sessionStorage.setItem("query", JSON.stringify(this.query));
         this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi}});
       },
       //格式化内容   有数据就展示，没有数据就显示--
@@ -158,6 +141,11 @@
       },
       //历史数据
       getData() {
+        let url = 'archives/get/listImsiToday';
+        if (this.activeItem === 'second') {
+          url = 'archives/get/listImsiHistory';
+        }
+
         if (this.query.deviceId) {
           if (noValidator(this.query.deviceId)) {
             this.$message.error('请输入正确的设备设备ID');
@@ -174,49 +162,7 @@
           this.query.startTime = this.qTime[0] / 1000;
           this.query.endTime = this.qTime[1] / 1000;
         }
-        if (this.activeItem === 'second') {
-          this.getAllData();
-        } else {
-          this.getTodayData();
-        }
-      },
-      //今天的数据
-      getTodayData() {
-        this.listLoading = false;
-        this.$post("archives/get/listImsiToday", this.query).then((data) => {
-          if (this.list10.length >= 10) {
-            this.list10 = [];
-          }
-          if (this.list10.length === 0) {//
-            data.data.forEach((item) => {
-              if ((new Date().getTime() - item.uptime * 1000) >= -120 * 1000 && (new Date().getTime() - item.uptime * 1000) <= 120 * 1000) {//10s内的数据
-                setTimeout(() => {
-                  this.list10.push(item);
-                }, 1000);
-              }
-            });
-          } else {//
-            data.data.forEach((item) => {
-              if ((new Date().getTime() - item.uptime * 1000) >= -120 * 1000 && (new Date().getTime() - item.uptime * 1000) <= 120 * 1000) {//10s内的数据
-                for (let terminate of this.list10) {
-                  if (terminate.id === item.id) {
-                    return;
-                  }
-                }
-                setTimeout(() => {
-                  this.list10.push(item);
-                }, 1000);
-              }
-            });
-          }
-        }).catch((err) => {
-          this.list10 = [];
-          this.listLoading = false;
-          this.$message.error(err);
-        });
-      },
-      //历史数据
-      getAllData() {
+
         if (this.isSearch) {
           this.list = [];
           this.list10 = [];
@@ -224,7 +170,7 @@
           this.isSearch = false;
         }
         this.listLoading = true;
-        this.$post("archives/get/listImsiHistory", this.query).then((data) => {
+        this.$post(url, this.query).then((data) => {
           if (this.query.pageTime && !this.isSearch) {
             this.list = this.list.concat(data.data);
           } else {
@@ -274,13 +220,9 @@
       },
       clearData() {
         this.list10 = [];
-        if (this.activeItem === 'first') {
-          this.query = {size: 5};
-          this.isShow = false;
-        } else {
-          this.query = {size: 100};
-          this.isSearch = true;
-        }
+        this.isSearch = true;
+        this.query = {size: 100};
+
         this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
 
@@ -298,17 +240,18 @@
     mounted() {
       let bol = JSON.parse(sessionStorage.getItem("query"));
       let tab = sessionStorage.getItem("activeItem");
-      let time1 = sessionStorage.getItem("qTime");
-      if (tab && bol) {
+      let time1 = JSON.parse(sessionStorage.getItem("qTime"));
+      if (tab) {
         this.activeItem = tab;
+      }
+      if (bol) {
         this.query = JSON.parse(sessionStorage.getItem("query"));
       }
       if (time1) {
-        this.qTime = time1.split(',');
+        this.qTime = time1;
       }
       this.getPlaces();
       this.getData();
-      this.dataTask();
     }
   }
 </script>
