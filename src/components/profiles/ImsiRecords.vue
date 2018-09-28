@@ -39,7 +39,7 @@
           </el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-button @click="clearData()" size="medium">清除</el-button>
+          <el-button @click="clearData()" size="medium">重置</el-button>
         </el-form-item>
       </el-form>
       <el-table :data="list10" class="center-block" v-loading="listLoading" stripe>

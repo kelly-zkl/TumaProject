@@ -44,8 +44,8 @@
           </div>
         </div>
       </el-header>
-      <el-main style="background: #060450;border-top: 3px #02023F solid">
-        <el-col :span="24">
+      <el-main style="background: #060450;border-top: 3px #02023F solid;width: 100%;padding: 0;margin: 0">
+        <el-col :span="24" style="padding: 0;margin: 0">
           <transition name="fade" mode="out-in">
             <router-view @handleSelectItem="handleSelectItem"></router-view>
           </transition>
@@ -110,11 +110,11 @@
             <el-form :model="faceWarning" align="left" label-width="80px" label-position="left"
                      style="display:inline-block;position: absolute;top: 20px">
               <el-form-item label="年龄" style="margin:0">
-                <span style="font-size: 15px;color:#000">{{faceWarning.age}}</span>
+                <span style="font-size: 15px;color:#000">{{faceWarning.age<0?'未知':faceWarning.age}}</span>
               </el-form-item>
               <el-form-item label="性别" style="margin:0">
                 <span style="font-size: 15px;color:#000">
-                  {{faceWarning.sex == 0 ? '男' : faceWarning.sex == 1 ? '女' : '--'}}
+                  {{faceWarning.sex == 0 ? '男' : faceWarning.sex == 1 ? '女' : '未知'}}
                 </span>
               </el-form-item>
               <el-form-item label="告警时间" style="margin:0">

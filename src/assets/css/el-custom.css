@@ -84,9 +84,7 @@
 /**表格样式结束*/
 /**首页的表格样式----开始*/
 .overview .el-table {
-  position: absolute;
-  top: 61px;
-  bottom: 6px;
+  height: 365px;
   overflow-y: scroll;
   font-size: 14px;
   color: #fff;

@@ -37,15 +37,13 @@
                 <el-button type="primary" @click.stop="getData()" size="medium">搜索</el-button>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
-                <el-button @click.stop="clearData()" size="medium">清除</el-button>
+                <el-button @click.stop="clearData()" size="medium">重置</el-button>
               </el-form-item>
             </el-col>
           </el-row>
         </el-form>
 
-        <el-table :data="deviceList" v-loading="listLoading" class="center-block"
-                  @selection-change="selsChange" stripe>
-          <!--<el-table-column type="selection" width="45" align="left"></el-table-column>-->
+        <el-table :data="deviceList" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
@@ -59,8 +57,6 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="detailAddress" label="位置" min-width="180" max-width="300"
                            :formatter="formatterAddress"></el-table-column>
-          <!--<el-table-column align="left" prop="groupName" label="所属组织" min-width="125" max-width="200"-->
-          <!--:formatter="formatterAddress"></el-table-column>-->
           <el-table-column align="left" prop="lineStatus" label="在线状态" min-width="100"
                            max-width="120"></el-table-column>
           <el-table-column align="left" label="操作" width="150">
@@ -142,7 +138,6 @@
         addPlace: {deviceId: '', deviceName: '', deviceForm: '', deviceType: ''},
         online: [{value: true, label: '在线'}, {value: false, label: '离线'}],
         places: [],
-        sels: [],
         deviceForms: [],
         deviceTypes: [],
         intervalid: null,
@@ -172,15 +167,6 @@
           this.query.areaCode = value[2];
         }
       },
-      //跳转到设备设置页面
-      gotoSet(device) {
-        clearInterval(this.intervalid);
-        sessionStorage.setItem("query", JSON.stringify(this.query));
-        this.$router.push({
-          path: 'deviceSet',
-          query: {deviceId: device.deviceId, deviceForm: device.deviceForm, groupId: device.groupId}
-        });
-      },
       //获取设备类型和形态
       getDeviceTypeAndForm() {
         this.$post('device/get/deviceType').then((data) => {
@@ -194,9 +180,6 @@
             this.deviceForms = data.data;
           }
         });
-      },
-      selsChange(sels) {
-        this.sels = sels;
       },
       //定时刷新设备的在线状态
       statusTask() {

@@ -16,7 +16,7 @@
           <el-button type="primary" icon="search" @click.stop="getData()" size="medium">搜索</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-button @click.stop="clearData()" size="medium">清除</el-button>
+          <el-button @click.stop="clearData()" size="medium">重置</el-button>
         </el-form-item>
       </el-form>
       <el-table :data="logs" v-loading="listLoading" class="center-block" stripe>

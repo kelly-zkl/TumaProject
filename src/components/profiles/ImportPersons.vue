@@ -85,8 +85,8 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="置信度" prop="imsiList" min-width="200"
-                         max-width="300" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="置信度" prop="imsiList" width="200"
+                         :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="手机号" prop="phone" width="150"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="身份证号" prop="idCard" width="170"

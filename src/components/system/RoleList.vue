@@ -19,7 +19,7 @@
               <el-button type="primary" icon="search" @click.stop="getRoles" size="medium">搜索</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button @click.stop="clearData" size="medium">清除</el-button>
+              <el-button @click.stop="clearData" size="medium">重置</el-button>
             </el-form-item>
           </el-col>
           <el-col :span="4" align="right">

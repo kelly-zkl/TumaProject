@@ -56,7 +56,6 @@ import DeviceMap from '@/components/device/DeviceMap'
 import CameraDevice from '@/components/device/CameraDevice'
 import CodeDevice from '@/components/device/CodeDevice'
 import PlaceManager from '@/components/device/PlaceManager'
-import DeviceSet from "@/components/device/DeviceSet";
 
 import SystemHome from '@/components/system/SystemHome'
 import UserList from '@/components/system/UserList'
@@ -147,8 +146,7 @@ export default new Router({
             {path: '/deviceMap', component: DeviceMap, name: '设备地图'},
             {path: '/cameraDevice', component: CameraDevice, name: '相机设备'},
             {path: '/codeDevice', component: CodeDevice, name: '侦码设备'},
-            {path: '/placeManager', component: PlaceManager, name: '场所管理'},
-            {path: '/deviceSet', component: DeviceSet, name: '设备详情'},
+            {path: '/placeManager', component: PlaceManager, name: '场所管理'}
           ]
         },
         {

@@ -28,7 +28,7 @@
         <div class="add-appdiv">
           <el-steps :active="active" finish-status="success" align-center>
             <el-step v-for="item in approval.nodes" :key="item.nodeName" :title="item.nodeName"
-                     :description="item.remark"></el-step>
+                     :description="item.nodeOperatorName"></el-step>
           </el-steps>
         </div>
         <h5 class="add-label" style="margin-top: 0">基本信息</h5>
