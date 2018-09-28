@@ -11,7 +11,7 @@
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
-          <el-input v-model="query.similarThreshold" placeholder="输入相似度阈值" size="medium" style="width: 260px">
+          <el-input v-model.number="query.similarThreshold" placeholder="相似度阈值" size="medium" style="width: 260px">
             <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
                        :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
                        :auto-upload="true" :show-file-list="false">
@@ -20,11 +20,11 @@
           </el-input>
         </el-form-item>
         <el-form-item label="年龄" style="margin-bottom: 10px">
-          <el-row>
-            <el-input v-model="query.startAge" type="number" size="medium" style="width: 80px" :maxlength=3></el-input>
-            <span>~</span>
-            <el-input v-model="query.endAge" type="number" size="medium" style="width: 80px" :maxlength=3></el-input>
-          </el-row>
+          <el-input-number v-model="query.startAge" controls-position="right" :min="1"
+                           :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
+          <span>~</span>
+          <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
+                           :max="200" style="width: 100px" size="medium"></el-input-number>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px">
@@ -46,7 +46,7 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="设备名称/ID" v-model="query.deviceId" :maxlength="30" size="medium"></el-input>
+          <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索
@@ -106,7 +106,7 @@
   </div>
 </template>
 <script>
-  import {globalValidImg, noSValidator, noValidator} from "../../assets/js/api";
+  import {globalValidImg, doubleValid, noValidator} from "../../assets/js/api";
   import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
 
   export default {
@@ -174,10 +174,9 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
+            this.$message({message: '头像上传成功', type: 'success'});
+            this.isSearch = true;
             this.getData();
-            setTimeout(() => {
-              this.getData();
-            }, 7000);
           }
         } else {
           this.$message.error(res.msg);
@@ -189,10 +188,15 @@
         if (this.activeItem === 'H') {
           url = 'archives/get/listFaceHistory';
         }
-        if (this.query.deviceId) {
-          if (noValidator(this.query.deviceId)) {
-            this.$message.error('请输入正确的设备设备ID');
+        if (this.query.similarThreshold) {
+          if (!doubleValid(this.query.similarThreshold)) {
+            this.$message.error('相似度为0.1-99的数字');
             return;
+          } else {
+            if (this.query.similarThreshold < 0.1 || this.query.similarThreshold > 99) {
+              this.$message.error('相似度为0.1-99的数字');
+              return;
+            }
           }
         }
         if (!!this.qTime) {
@@ -207,32 +211,38 @@
           this.isSearch = false;
         }
         this.listLoading = true;
-        this.$post(url, this.query).then((data) => {
-          if (this.query.pageTime && !this.isSearch) {
-            this.list = this.list.concat(data.data);
+        this.$post(url, this.query, undefined, undefined, "login").then((data) => {
+          if ("000000" === data.code) {
+            this.listLoading = false;
+            if (this.query.pageTime && !this.isSearch) {
+              this.list = this.list.concat(data.data);
+            } else {
+              this.list = data.data;
+              this.page = 1;
+              this.firstPage = 0
+            }
+            this.list10 = this.list;
+            if (this.list.length - this.page * 10 >= 0) {
+              this.list10 = this.list10.slice((this.page * 10 - 10), (this.page * 10));
+            } else {
+              this.list10 = this.list10.slice((this.page * 10 - 10), this.list.length);
+            }
+            this.count = this.list.length;
+            if (this.list.length - this.firstPage === 100) {
+              this.isFirst = false;
+            } else {
+              this.isFirst = true;
+            }
+          } else if ("100000" === data.code) {//执行中
+            setTimeout(() => {
+              this.getData();
+            }, 5000);
           } else {
-            this.list = data.data;
-            this.page = 1;
-            this.firstPage = 0
+            this.list = [];
+            this.list10 = [];
+            this.listLoading = false;
+            this.$message.error(data.msg);
           }
-          this.list10 = this.list;
-          if (this.list.length - this.page * 10 >= 0) {
-            this.list10 = this.list10.slice((this.page * 10 - 10), (this.page * 10));
-          } else {
-            this.list10 = this.list10.slice((this.page * 10 - 10), this.list.length);
-          }
-          this.count = this.list.length;
-          if (this.list.length - this.firstPage === 100) {
-            this.isFirst = false;
-          } else {
-            this.isFirst = true;
-          }
-          this.listLoading = false;
-        }).catch((err) => {
-          this.list = [];
-          this.list10 = [];
-          this.listLoading = false;
-          this.$message.error(err);
         });
       },
       pageChange(index) {
@@ -260,8 +270,13 @@
         this.query = {size: 100};
         this.isSearch = true;
         delete this.query['faceUrl'];
-        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        if (this.activeItem === 'H') {
+          this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+            new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        } else {
+          this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        }
 
         this.getData();
       },
@@ -271,8 +286,8 @@
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
         } else if (column.property === 'catchTime') {
           return row.catchTime ? formatDate(new Date(row.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-        } else if (column.property === 'age') {
-          return row.age;
+        } else if (column.property === 'age' || column.property === 'similarThreshold') {
+          return row[column.property] < 0 ? '未知' : row[column.property];
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

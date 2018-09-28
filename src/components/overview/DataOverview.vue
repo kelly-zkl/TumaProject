@@ -10,7 +10,7 @@
         </el-col>
       </el-row>
       <div v-show="activeItem== 'device'">
-        <div style="position: absolute;top: 63px;bottom: 28%;left: 0;right: 10px">
+        <div style="position: absolute;top: 63px;bottom: 28%;left: 0;right: 0px">
           <div id="devicemap" style="width:100%; height: 100%"></div>
         </div>
         <div style="position: absolute;top: 72%;bottom: 0;left: 0;right: 0;border-top: 3px #080652 solid">
@@ -165,6 +165,7 @@
         hotSpots: [],
         isChina: true,
         intervalid: null,
+        icon: require('../../assets/img/icon.png'),
         imgPath: require('../../assets/img/icon_people.png')
       }
     },
@@ -266,7 +267,7 @@
           grid: {left: 0, right: 0, bottom: 0, top: 0, containLabel: true},
           bmap: {
             center: [116.404, 39.915],
-            zoom: 11,
+            zoom: 12,
             roam: true
           },
           visualMap: {
@@ -297,19 +298,19 @@
         myChart.setOption(option);
         if (!app.inNode) {
           // 添加百度地图插件
-          // 添加百度地图插件
           var bmap = myChart.getModel().getComponent('bmap').getBMap();
-          var mapType1 = new BMap.MapTypeControl({mapTypes: [BMAP_NORMAL_MAP, BMAP_HYBRID_MAP]});
-          var mapType2 = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
-
-          var overView = new BMap.OverviewMapControl();
-          bmap.addControl(mapType1);          //2D图，卫星图
-          bmap.addControl(mapType2);          //左上角，默认地图控件
-          bmap.addControl(overView);          //添加默认缩略地图控件
+          var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
+          bmap.setMapStyle({style: 'midnight'});
+          bmap.addControl(mapType);          //左上角，默认地图控件
 
           //定位l
           var point = new BMap.Point(116.331398, 39.897445);
           bmap.centerAndZoom(point, 12);
+
+          var mapStyle = {
+            features: ["road", "building", "water", "land"],//隐藏地图上的poi
+            style: "dark"  //设置地图风格为高端黑
+          };
 
           function myFun(result) {
             var cityName = result.name;
@@ -378,11 +379,11 @@
         });
       },
       getDeviceMap() {
-        let _this = this;
+        var app = {};
         let myChart = echarts.init(document.getElementById('devicemap'));
         // myChart.clear();
         let option = {
-          backgroundColor: "#21206C",
+          // backgroundColor: "#21206C",
           tooltip: {
             trigger: 'item',
             show: true, //不显示提示标签
@@ -390,42 +391,20 @@
               return '设备：' + params.data.deviceName + '<br/> ID：' + params.data.deviceId +
                 '<br/> 类型：' + params.data.type + '<br/> 状态：' + (params.data.onLine ? "在线" : "离线");
             }, //提示标签格式
+            backgroundColor: "#070616",//提示标签背景颜色
+            textStyle: {color: "#fff"} //提示标签字体颜色
           },
-          grid: {left: 0, right: 0, bottom: 0, containLabel: true},
-          geo: {
-            map: 'china',
-            zoom: 1.25,
-            selectedMode: 'single',
-            silent: true,
-            roam: true,
-            label: {
-              normal: {
-                show: true,//显示省份标签
-                textStyle: {color: "#6D6C98"}//省份标签字体颜色
-              },
-              emphasis: {//对应的鼠标悬浮效果
-                show: true,
-                textStyle: {color: "#fff"}
-              }
-            },
-            itemStyle: {
-              normal: {
-                borderWidth: .5,//区域边框宽度
-                borderColor: '#9BABFD',//区域边框颜色
-                areaColor: "#222D73",//区域颜色
-              },
-              emphasis: {
-                borderWidth: .5,
-                borderColor: '#9BABFD',
-                areaColor: "#100E5A",
-              }
-            }
+          grid: {left: 0, right: 0, bottom: 0, top: 0, containLabel: true},
+          bmap: {
+            center: [116.404, 39.915],
+            zoom: 12,
+            roam: true
           },
           series: [
             {
               name: '数量', // series名称
-              type: 'scatter', // series图表类型
-              coordinateSystem: 'geo', // series坐标系类型
+              type: 'scatter',
+              coordinateSystem: 'bmap',
               symbolSize: 15,
               itemStyle: {
                 color: '#FF6600'
@@ -435,7 +414,7 @@
             {
               name: 'Top 5',
               type: 'effectScatter',
-              coordinateSystem: 'geo',
+              coordinateSystem: 'bmap',
               data: this.mapData.filter(function (item) {
                 return item.onLine;
               }),
@@ -455,18 +434,40 @@
           ]
         };
         myChart.setOption(option);
-        //下钻其实就是点击事件，切换脚本而已
-        myChart.on('click', function (chinaParam) {
-          var option1 = myChart.getOption();
-          if (_this.isChina) {
-            _this.isChina = false;
-            option1.geo[0].map = chinaParam.name;
-          } else {
-            _this.isChina = true;
-            option1.geo[0].map = 'china';
+        if (!app.inNode) {
+          // 添加百度地图插件
+          // 添加百度地图插件
+          var bmap = myChart.getModel().getComponent('bmap').getBMap();
+          var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
+          bmap.setMapStyle({style: 'midnight'});
+          bmap.addControl(mapType);          //左上角，默认地图控件
+
+          //定位l
+          var point = new BMap.Point(116.331398, 39.897445);
+          bmap.centerAndZoom(point, 12);
+
+          var mapStyle = {
+            features: ["road", "building", "water", "land"],//隐藏地图上的poi
+            style: "dark"  //设置地图风格为高端黑
+          };
+
+          function myFun(result) {
+            var cityName = result.name;
+            bmap.setCenter(cityName);
           }
-          myChart.setOption(option1);
-        });
+
+          var myCity = new BMap.LocalCity();
+          myCity.get(myFun);
+
+          // var markers = [];
+          // for (var i = 0; i < this.mapData.length; i++) {
+          //   var pt = new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]);
+          //   var myIcon = new BMap.Icon(this.icon, new BMap.Size(2, 3));
+          //   markers.push(new BMap.Marker(pt, {icon: myIcon}));
+          // }
+          // //最简单的用法，生成一个marker数组，然后调用markerClusterer类即可。
+          // var markerClusterer = new BMapLib.MarkerClusterer(bmap, {markers: markers});
+        }
       },
       //相机--饼状图
       getCamera() {

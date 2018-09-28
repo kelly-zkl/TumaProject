@@ -2,10 +2,11 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="18" align="left">
+        <el-col :span="24" align="left">
           <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('person:query')">
             <el-form-item style="margin-bottom: 10px">
-              <el-input v-model="query.similarThreshold" placeholder="输入相似度阈值" size="medium" style="width: 260px">
+              <el-input v-model.number="query.similarThreshold" placeholder="相似度阈值" size="medium"
+                        style="width: 260px">
                 <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
                            :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
                            :auto-upload="true" :show-file-list="false">
@@ -14,13 +15,11 @@
               </el-input>
             </el-form-item>
             <el-form-item label="年龄" style="margin-bottom: 10px">
-              <el-row>
-                <el-input v-model="query.startAge" type="number" size="medium" style="width: 80px"
-                          :maxlength=3></el-input>
-                <span>~</span>
-                <el-input v-model="query.endAge" type="number" size="medium" style="width: 80px"
-                          :maxlength=3></el-input>
-              </el-row>
+              <el-input-number v-model="query.startAge" controls-position="right" :min="1"
+                               :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
+              <span>~</span>
+              <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
+                               :max="200" style="width: 100px" size="medium"></el-input-number>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px">
@@ -29,19 +28,19 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="输入IMSI" v-model="query.imsi" :maxlength="30"
+              <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="30"
                         style="width: 180px" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="输入手机号" v-model="query.cellphone" :maxlength="11"
+              <el-input placeholder="手机号" v-model="query.cellphone" :maxlength="11"
                         style="width: 180px" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="输入姓名" v-model="query.name" :maxlength="30"
+              <el-input placeholder="姓名" v-model="query.name" :maxlength="30"
                         style="width: 180px" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="输入身份证号" v-model="query.idCard" :maxlength="30"
+              <el-input placeholder="身份证号" v-model="query.idCard" :maxlength="30"
                         style="width: 180px" size="medium"></el-input>
             </el-form-item>
             <!--<el-form-item style="margin-bottom: 10px">-->
@@ -86,16 +85,14 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="IMSI" prop="imsiList" min-width="200"
+        <el-table-column align="left" label="置信度" prop="imsiList" min-width="200"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="手机号" prop="phone" width="150"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="身份证" prop="idCard" width="170"
+        <el-table-column align="left" label="身份证号" prop="idCard" width="170"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="姓名" prop="name" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="所属名单" prop="blackClass" width="150"
-                         :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('archives:detail')">人员档案
@@ -173,7 +170,7 @@
 </template>
 <script>
   import json from '../../assets/city.json';
-  import {globalValidImg, noSValidator, noValidator} from "../../assets/js/api";
+  import {globalValidImg, doubleValid, mobileValidator} from "../../assets/js/api";
   import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
 
   export default {
@@ -185,7 +182,7 @@
         props: {value: 'o', label: 'n', children: 'c'},
         statuses: [{label: '全部', value: ''}, {label: '待处理', value: '1'}, {label: '处理中', value: '2'},
           {label: '已处理', value: '3'}, {label: '误报', value: '4'}],
-        sexs: [{value: '0', label: '男'}, {value: '2', label: '女'}],
+        sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         areaList: [],
         count: 0,
         listLoading: false,
@@ -242,10 +239,8 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
+            this.$message({message: '头像上传成功', type: 'success'});
             this.getData();
-            setTimeout(() => {
-              this.getData();
-            }, 7000);
           }
         } else {
           this.$message.error(res.msg);
@@ -257,17 +252,39 @@
       },
       //获取IMSI告警列表
       getData() {
+        if (this.query.similarThreshold) {
+          if (!doubleValid(this.query.similarThreshold)) {
+            this.$message.error('相似度为0.1-99的数字');
+            return;
+          } else {
+            if (this.query.similarThreshold < 0.1 || this.query.similarThreshold > 99) {
+              this.$message.error('相似度为0.1-99的数字');
+              return;
+            }
+          }
+        }
+        if (this.query.cellphone) {
+          if (!mobileValidator(this.query.cellphone)) {
+            this.$message.error('请输入正确的手机号码');
+            return;
+          }
+        }
         this.listLoading = true;
-        this.$post('person/query', this.query).then((data) => {
-          this.vipList = data.data.list;
-          this.count = data.data.count;
-          setTimeout(() => {
+        this.vipList = [];
+        this.count = 0;
+        this.$post('person/query', this.query, undefined, undefined, "login").then((data) => {
+          if ("000000" === data.code) {
+            this.vipList = data.data.list;
+            this.count = data.data.count;
             this.listLoading = false;
-          }, 500);
-        }).catch((err) => {
-          this.listLoading = false;
-          this.vipList = [];
-          this.$message.error(err);
+          } else if ("100000" === data.code) {//执行中
+            setTimeout(() => {
+              this.getData();
+            }, 5000);
+          } else {
+            this.$message.error(data.msg);
+            this.listLoading = false;
+          }
         });
       },
       //清除查询条件

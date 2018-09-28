@@ -50,14 +50,14 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="申请时间" prop="createTime" width="170"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="当前节点" prop="taskStatus" min-width="150"
+        <el-table-column align="left" label="当前节点" prop="currentNode" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="当前节点负责人" prop="caseName" width="170"
+        <el-table-column align="left" label="当前节点负责人" prop="currentNodeOperatorName" width="170"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" v-for="item in timeColumn" :key="item.prop"
                          :label="item.label" :prop="item.prop" :min-width="item.min"
                          :max-width="item.max" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="状态" prop="translateStatus" width="120"
+        <el-table-column align="left" label="状态" prop="status" width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
@@ -84,7 +84,7 @@
         listLoading: false,
         activeItem: 'HANDLED',
         imsiList: [],
-        query: {page: 1, size: 10, translateStatus: 1},
+        query: {page: 1, size: 10, status: 1},
         qTime: '',
         count: 0,
         timeColumn: [],
@@ -106,10 +106,10 @@
       handleType(val) {
         if (val.name === 'FINISH') {
           this.timeColumn = [{label: '返回时间', prop: 'time', min: 170, max: 170}];
-          this.query.translateStatus = 0;
+          this.query.status = 0;
         } else {
           this.timeColumn = [];
-          this.query.translateStatus = 1;
+          this.query.status = 1;
         }
         this.getData();
       },
@@ -144,6 +144,11 @@
           this.query.startTime = this.qTime[0] / 1000;
           this.query.endTime = this.qTime[1] / 1000;
         }
+        if (this.activeItem === 'FINISH') {
+          this.query.status = 0;
+        } else {
+          this.query.status = 1;
+        }
         this.listLoading = true;
         this.$post('/workflow/translation/mytranslate/' + JSON.parse(sessionStorage.getItem("user")).userId, this.query).then((data) => {
           this.imsiList = data.data.records;
@@ -160,14 +165,15 @@
       clearData() {
         this.query = {page: 1, size: 10};
         this.qTime = '';
+
         this.getData();
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'followType') {
           return "IMSI翻码";
-        } else if (column.property === 'translateStatus') {
-          return this.activeItem === 'HANDLED' ? '待翻码' : this.activeItem === 'FINISH' ? '已返回' : '--';
+        } else if (column.property === 'status') {
+          return row.status === 1 ? '待翻码' : row.status === 0 ? '已返回' : '终止';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

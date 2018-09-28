@@ -5,15 +5,15 @@
         <el-row style="margin-bottom: 10px">
           <el-col :span="7" align="left">
             <span style="font-size: 14px;color: #999;margin-right: 20px">案件名称</span>
-            <span>{{caseDetail.caseName}}</span>
+            <span style="font-size: 15px">{{caseDetail.caseName}}</span>
           </el-col>
           <el-col :span="7" align="left">
             <span style="font-size: 14px;color: #999;margin:auto 20px">案发地点</span>
-            <span>{{caseDetail.caseAddress}}</span>
+            <span style="font-size: 15px">{{caseDetail.caseAddress}}</span>
           </el-col>
           <el-col :span="7" align="left">
             <span style="font-size: 14px;color: #999;margin:auto 20px">创建时间</span>
-            <span>{{caseDetail.timeStr}}</span>
+            <span style="font-size: 15px">{{caseDetail.timeStr}}</span>
           </el-col>
           <el-col :span="3">
             <el-button type="text" @click="deleteCase()" size="medium"
@@ -24,31 +24,31 @@
         <el-row style="margin-bottom: 10px">
           <el-col :span="7" align="left">
             <span style="font-size: 14px;color: #999;margin-right: 20px">案件编号</span>
-            <span>{{caseDetail.caseNo}}</span>
+            <span style="font-size: 15px">{{caseDetail.caseNo}}</span>
           </el-col>
           <el-col :span="7" align="left">
             <span style="font-size: 14px;color: #999;margin:auto 20px">案发时间</span>
-            <span>{{caseDetail.startStr + " - " + caseDetail.endStr}}</span>
+            <span style="font-size: 15px">{{caseDetail.startStr + " - " + caseDetail.endStr}}</span>
           </el-col>
           <el-col :span="7" align="left">
             <span style="font-size: 14px;color: #999;margin:auto 20px;">案件状态</span>
-            <span>{{caseDetail.status === "EXECUTION" ? "进行中" : caseDetail.status === "HANDLED" ? "已结案" : "--"}}</span>
+            <span style="font-size: 15px">{{caseDetail.status === "EXECUTION" ? "进行中" : caseDetail.status === "HANDLED" ? "已结案" : "--"}}</span>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="7" align="left">
             <span style="font-size: 14px;color: #999;margin-right: 20px">案件类型</span>
-            <span>{{caseDetail.caseType}}</span>
+            <span style="font-size: 15px">{{caseDetail.caseType}}</span>
           </el-col>
           <el-col :span="7" align="left">
             <span style="font-size: 14px;color: #999;margin:auto 20px">备注</span>
-            <span>{{caseDetail.remark}}</span>
+            <span style="font-size: 15px">{{caseDetail.remark}}</span>
           </el-col>
           <el-col :span="7" align="left">
             <span style="font-size: 14px;color: #999;margin:auto 20px">
               {{caseDetail.status === "EXECUTION" ? "更新时间" : caseDetail.status === "HANDLED" ? "结案时间" : "--"}}
             </span>
-            <span>{{caseDetail.fishStr}}</span>
+            <span style="font-size: 15px">{{caseDetail.fishStr}}</span>
           </el-col>
         </el-row>
       </div>

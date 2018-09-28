@@ -7,9 +7,9 @@
             <el-tab-pane label="人员信息" name="0" style="padding-top: 15px">
               <PersonInfo ref="personInfo"></PersonInfo>
             </el-tab-pane>
-            <el-tab-pane label="伴随分析" name="1" style="padding-top: 15px">
-              <FollowAnaly ref="followAnaly"></FollowAnaly>
-            </el-tab-pane>
+            <!--<el-tab-pane label="伴随分析" name="1" style="padding-top: 15px">-->
+            <!--<FollowAnaly ref="followAnaly"></FollowAnaly>-->
+            <!--</el-tab-pane>-->
             <el-tab-pane label="抓取记录" name="2" style="padding-top: 15px">
               <FetchRecords ref="fetchRecords"></FetchRecords>
             </el-tab-pane>

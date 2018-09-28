@@ -8,16 +8,16 @@
           </el-col>
           <el-col :span="18" align="right">
             <el-button type="primary" size="medium" @click="cancel()"
-                       v-show="show==1 && getButtonVial('workflow:translation:cancelapply')">撤销申请
+                       v-show="show==1&&approval.status==1&&getButtonVial('workflow:translation:cancelapply')">撤销申请
             </el-button>
-            <el-button type="primary" size="medium" v-show="show==2 && getButtonVial('workflow:translation:approve')"
-                       @clcik="handlePass(0)">通过
+            <el-button type="primary" size="medium" @click="applyPass(0)"
+                       v-show="show==2&&approval.approveStatus==1&&getButtonVial('workflow:translation:approve')">通过
             </el-button>
-            <el-button type="primary" size="medium" v-show="show==2 && getButtonVial('workflow:translation:approve')"
-                       @clcik="handlePass(1)">不通过
+            <el-button type="primary" size="medium" @click="applyPass(1)"
+                       v-show="show==2&&approval.approveStatus==1&&getButtonVial('workflow:translation:approve')">不通过
             </el-button>
-            <el-button type="primary" size="medium" v-show="show==3 && getButtonVial('workflow:translation:ccread')"
-                       @click="updateStatus()">标记已读
+            <el-button type="primary" size="medium" @click="updateStatus()"
+                       v-show="show==3&&approval.ccReadStatus==1&&getButtonVial('workflow:translation:ccread')">标记已读
             </el-button>
             <!--<el-button type="primary" size="medium" v-show="show==4">翻码返回</el-button>-->
             <el-button type="primary" size="medium" @click="showTranslation()"
@@ -40,16 +40,8 @@
         <div class="add-appdiv">
           <el-table :data="approval.imsiList" class="center-block" stripe>
             <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-            <el-table-column align="left" label="人员姓名" prop="name" min-width="150"
-                             max-width="250" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="身份证" prop="followType" min-width="150"
-                             max-width="250" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="所属名单" prop="followTarget" min-width="150"
-                             max-width="250" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="IMSI" prop="imsi" min-width="150"
-                             max-width="250" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="手机号码" prop="phone" min-width="150"
-                             max-width="250" :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" label="IMSI" prop="imsi" :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" label="手机号码" prop="phone" :formatter="formatterAddress"></el-table-column>
           </el-table>
         </div>
         <h5 class="add-label" style="margin-top: 0">记录</h5>
@@ -99,6 +91,7 @@
 </template>
 <script>
   import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {mobileValidator} from "../../assets/js/api";
 
   export default {
     data() {
@@ -145,7 +138,7 @@
         })
       },
       //通过/不通过
-      handlePass(status) {
+      applyPass(status) {
         let msg = '通过';
         if (status == 1) {
           msg = '不通过';
@@ -185,14 +178,18 @@
         let imsis = [];
         this.translations.forEach((item) => {
           if (item.phone && item.phone.length > 0) {
+            if (!mobileValidator(item.phone)) {
+              this.$message.error('请输入正确的手机号码');
+              return;
+            }
             let imsi = {imsi: item.imsi, phone: item.phone};
             imsis.push(imsi);
           }
         });
-        this.runTranslation = false;
         if (imsis.length === 0) {
           return;
         }
+        this.runTranslation = false;
         param.imsiList = imsis;
         //录入翻码
         this.$post('/workflow/translation/inputtranslate/' + this.recordId, param).then((data) => {

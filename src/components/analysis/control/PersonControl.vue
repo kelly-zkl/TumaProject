@@ -23,7 +23,7 @@
       <el-form :inline="true" :model="query" align="left" style="margin-top: 15px"
                v-show="getButtonVial('disposition:query')">
         <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.caseName" placeholder="输入案件名称" size="medium" style="width: 160px"
+          <el-input v-model="query.caseName" placeholder="案件名称" size="medium" style="width: 160px"
                     :maxlength=30></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
@@ -57,7 +57,7 @@
             </el-button>
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('disposition:get')">查看告警
             </el-button>
-            <el-button type="text" @click="sels = [];sels.push(scope.row);deleteCase()"
+            <el-button type="text" @click="sels = [];sels.push(scope.row);deleteTask()"
                        v-show="getButtonVial('disposition:delete')">删除
             </el-button>
           </template>

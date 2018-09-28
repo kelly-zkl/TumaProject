@@ -4,17 +4,17 @@
       <div class="add-appdiv" style="margin-top: 30px">
         <el-row>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
-            <p style="font-size: 13px;color:#CCC;margin: 0 20px;">任务名称</p>
-            <p style="margin: 5px 20px 0 20px">jghj</p>
+            <p style="font-size: 14px;color:#CCC;margin: 0 20px;">任务名称</p>
+            <p style="font-size: 15px;margin: 5px 20px 0 20px">jghj</p>
           </el-col>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
-            <p style="font-size: 13px;color:#CCC;margin: 0 20px;">任务编号</p>
-            <p style="margin: 5px 20px 0 20px">hgjngh
+            <p style="font-size: 14px;color:#CCC;margin: 0 20px;">任务编号</p>
+            <p style="font-size: 15px;margin: 5px 20px 0 20px">hgjngh
             </p>
           </el-col>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
-            <p style="font-size: 13px;color:#CCC;margin: 0 20px;">创建时间</p>
-            <p style="margin: 5px 20px 0 20px">fghgyh</p>
+            <p style="font-size: 14px;color:#CCC;margin: 0 20px;">创建时间</p>
+            <p style="font-size: 15px;margin: 5px 20px 0 20px">fghgyh</p>
           </el-col>
           <el-col :span="6" align="right">
             <el-button type="text" @click="">查看任务</el-button>

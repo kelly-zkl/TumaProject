@@ -116,8 +116,8 @@
           } else {
             this.query.approveStatus = 2;
           }
-          this.timeColumn = [{label: '当前节点', prop: 'time', min: 150, max: 250},
-            {label: '当前节点负责人', prop: 'reason', min: 150, max: 250}]
+          this.timeColumn = [{label: '当前节点', prop: 'currentNode', min: 150, max: 250},
+            {label: '当前节点负责人', prop: 'currentNodeOperatorName', min: 150, max: 250}]
         }
         this.getData();
       },
@@ -169,6 +169,13 @@
           this.query.startTime = this.qTime[0] / 1000;
           this.query.endTime = this.qTime[1] / 1000;
         }
+        if (this.activeItem === 'EXECUTION') {
+          this.query.approveStatus = 1;
+        } else if (this.activeItem === 'FINISH') {
+          this.query.approveStatus = 0;
+        } else {
+          this.query.approveStatus = 2;
+        }
         this.listLoading = true;
         this.$post('/workflow/translation/myapprove/' + JSON.parse(sessionStorage.getItem("user")).userId, this.query).then((data) => {
           this.imsiList = data.data.records;
@@ -185,6 +192,7 @@
       clearData() {
         this.query = {page: 1, size: 10};
         this.qTime = '';
+
         this.getData();
       },
       //格式化内容   有数据就展示，没有数据就显示--

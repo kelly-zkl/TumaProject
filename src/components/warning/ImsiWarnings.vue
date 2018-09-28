@@ -12,11 +12,11 @@
       <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left"
                v-show="getButtonVial(exportKey)">
         <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.imsi" placeholder="输入IMSI" size="medium" style="width: 160px"
+          <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 160px"
                     :maxlength=30></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.regional" placeholder="输入归属地" size="medium" style="width: 160px"
+          <el-input v-model="query.regional" placeholder="归属地" size="medium" style="width: 160px"
                     :maxlength=20></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
@@ -57,18 +57,18 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="抓取IMSI" prop="imsi" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="归属地" prop="regional" width="150"
-                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="归属地" prop="regional" min-width="150"
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警场所" prop="placeName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="告警时间" prop="createTime" width="170"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="告警状态" prop="status" width="150"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="所属名单" prop="blackClass" min-width="150"
+        <el-table-column align="left" label="告警时间" prop="createTime" min-width="170"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="告警状态" prop="status" min-width="150"
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <!--<el-table-column align="left" label="所属名单" prop="blackClass" min-width="150"-->
+        <!--max-width="250" :formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)"
@@ -93,8 +93,7 @@
         activeItem: 'T',
         query: {size: 100},
         listLoading: false,
-        statuses: [{label: '待处理', value: 0}, {label: '处理中', value: 1},
-          {label: '已处理', value: 2}, {label: '误报', value: 3}],
+        statuses: [{label: '待处理', value: 0}, {label: '已处理', value: 2}, {label: '误报', value: 3}],
         exportKey: 'warning:get:listImsiToday',
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
@@ -191,7 +190,7 @@
         if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
           (this.list.length % 100 === 0 || this.list.length === this.couple)) {
           this.firstPage = this.list.length;
-          this.query.pageTime = this.list[this.list.length - 1].catchTime;
+          this.query.pageTime = this.list[this.list.length - 1].createTime;
           this.getData();
         }
         this.list10 = this.list;
@@ -208,8 +207,13 @@
         this.isSearch = true;
         this.query = {size: 100};
 
-        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        if (this.activeItem === 'H') {
+          this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+            new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        } else {
+          this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        }
 
         this.getData();
       },

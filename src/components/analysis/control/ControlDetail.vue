@@ -5,15 +5,15 @@
         <el-row>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
             <p style="font-size: 14px;color: #999;margin: 0 20px">布控编号</p>
-            <p style="margin: 5px 20px 0 20px">{{task.taskName}}</p>
+            <p style="font-size: 15px;margin: 5px 20px 0 20px">{{task.taskName}}</p>
           </el-col>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
             <p style="font-size: 14px;color: #999;margin: 0 20px">有效期</p>
-            <p style="margin: 5px 20px 0 20px">{{task.startStr + "~" + task.endStr}}</p>
+            <p style="font-size: 15px;margin: 5px 20px 0 20px">{{task.startStr + "~" + task.endStr}}</p>
           </el-col>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
             <p style="font-size: 14px;color: #999;margin: 0 20px">布控状态</p>
-            <p style="margin: 5px 20px 0 20px">
+            <p style="font-size: 15px;margin: 5px 20px 0 20px">
               {{task.taskStatus == 'EXECUTION' ? '进行中' : task.taskStatus == 'FINISH' ? '已结束' : '异常'}}
             </p>
           </el-col>
@@ -34,14 +34,14 @@
       <div class="content" v-show="activeItem == 'IMSI'">
         <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model="query.caseName" placeholder="输入IMSI" size="medium" style="width: 160px"
+            <el-input v-model="query.imsi" placeholder="输入IMSI" size="medium" style="width: 160px"
                       :maxlength=30></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model="query.caseType" placeholder="输入归属地" size="medium" style="width: 160px"
+            <el-input v-model="query.regional" placeholder="输入归属地" size="medium" style="width: 160px"
                       :maxlength=20></el-input>
           </el-form-item>
-          <el-form-item style="margin-bottom: 10px">
+          <el-form-item style="margin-bottom: 10px" v-if="places">
             <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable>
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
@@ -73,68 +73,67 @@
             <el-button size="medium" @click="clearData()">重置</el-button>
           </el-form-item>
         </el-form>
-        <el-table :data="warningList" v-loading="listLoading" class="center-block" stripe>
+        <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="抓取IMSI" prop="taskName" min-width="150"
+          <el-table-column align="left" label="抓取IMSI" prop="imsi" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="归属地" prop="followType" width="150"
+          <el-table-column align="left" label="归属地" prop="regional" width="150"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="告警场所" prop="followTarget" min-width="150"
+          <el-table-column align="left" label="告警场所" prop="placeName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备标识" prop="taskStatus" min-width="150"
+          <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="告警时间" prop="caseName" width="170"
+          <el-table-column align="left" label="告警时间" prop="createTime" width="170"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="告警状态" prop="caseName" width="150"
+          <el-table-column align="left" label="告警状态" prop="status" width="150"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="所属名单" prop="caseName" min-width="150"
+          <el-table-column align="left" label="所属名单" prop="blackClass" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="160">
             <template slot-scope="scope">
-              <el-button type="text" @click="gotoDetail(scope.row)">查看告警</el-button>
+              <el-button type="text" @click="gotoDetail(scope.row)"
+                         v-show="getButtonVial('warning:getImsiWarning')">查看告警
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
-                         :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
-                         layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
+                         :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
       </div>
       <div class="content" v-show="activeItem == 'FACE'">
         <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model="imgUrl" placeholder="输入相似度阈值" size="medium" style="width: 260px">
+            <el-input v-model.number="query.similarThreshold" placeholder="输入相似度阈值" size="medium" style="width: 260px">
               <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
-                         :on-success="handleSuccess" :on-change="handleChange" size="medium"
-                         :auto-upload="false" :show-file-list="false">
+                         :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
+                         :auto-upload="true" :show-file-list="false">
                 <el-button type="primary" size="medium">上传头像图片</el-button>
               </el-upload>
             </el-input>
           </el-form-item>
           <el-form-item label="年龄" style="margin-bottom: 10px">
-            <el-row>
-              <el-input v-model="query1.age1" type="number" size="medium" style="width: 80px"
-                        :maxlength=3></el-input>
-              <span>~</span>
-              <el-input v-model="query1.age2" type="number" size="medium" style="width: 80px"
-                        :maxlength=3></el-input>
-            </el-row>
+            <el-input-number v-model="query.startAge" controls-position="right" :min="1"
+                             :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
+            <span>~</span>
+            <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
+                             :max="200" style="width: 100px" size="medium"></el-input-number>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-select v-model="query1.sex" placeholder="性别" size="medium" style="width: 100px">
+            <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px">
               <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item style="margin-bottom: 10px">
-            <el-select v-model="query1.placeId" placeholder="告警场所" size="medium" filterable clearable>
+          <el-form-item style="margin-bottom: 10px" v-if="places.length !== 0">
+            <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable>
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-date-picker v-model="qTime1" type="datetimerange" range-separator="至"
+            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                             start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                             :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                             :picker-options="pickerBeginDate">
@@ -147,7 +146,7 @@
           <!--</el-select>-->
           <!--</el-form-item>-->
           <el-form-item style="margin-bottom: 10px">
-            <el-select v-model="query1.status" placeholder="告警状态" size="medium" style="width: 130px">
+            <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 130px">
               <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
@@ -159,56 +158,72 @@
             <el-button size="medium" @click="clearImgData()">重置</el-button>
           </el-form-item>
         </el-form>
-        <el-table :data="imgList" v-loading="listLoading1" class="center-block" stripe>
+        <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="现场图像" prop="taskName" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="年龄" prop="followType" width="120"
+          <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150"
+                           max-width="300" :formatter="formatterAddress">
+            <template slot-scope="scope">
+              <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath"
+                   @click="bigUrl=scope.row.sceneUrl;runBigPic=true"
+                   style="max-height:70px;border-radius: 6px"/>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="年龄" prop="age" width="120"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="性别" prop="followTarget" width="120"
+          <el-table-column align="left" label="性别" prop="sex" width="120"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="告警场所" prop="taskStatus" min-width="150"
+          <el-table-column align="left" label="告警场所" prop="placeName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备标识" prop="taskStatus" min-width="150"
+          <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="告警时间" prop="caseName" width="170"
+          <el-table-column align="left" label="告警时间" prop="createTime" width="170"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="告警状态" prop="caseName" width="150"
+          <el-table-column align="left" label="告警状态" prop="status" width="150"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="布控人员图像" prop="caseName" min-width="150"
+          <el-table-column align="left" label="布控人员图像" prop="faceUrl" min-width="150"
+                           max-width="250" :formatter="formatterAddress">
+            <template slot-scope="scope">
+              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
+                   @click="bigUrl=scope.row.faceUrl;runBigPic=true"
+                   style="max-width: 90px;max-height:90px;border-radius: 6px"/>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="相似度" prop="caseName" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="所属名单" prop="caseName" min-width="150"
+          <el-table-column align="left" label="所属名单" prop="blackClass" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="160">
             <template slot-scope="scope">
-              <el-button type="text" @click="gotoImgDetail(scope.row)">查看告警</el-button>
+              <el-button type="text" @click="gotoDetail(scope.row)"
+                         v-show="getButtonVial('warning:getFaceWarning')">查看告警
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleImgSizeChange" @current-change="pageImgChange" :current-page="query1.page"
-                         :page-sizes="[10, 15, 20, 30]" :page-size="query1.size" :total="count1" background
-                         layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+          <el-pagination @size-change="handleImgSizeChange" @current-change="pageImgChange" :current-page="page"
+                         :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
       </div>
     </section>
     <!--布控详情-->
-    <el-dialog title="布控详情" :width="dialogWidth" :visible.sync="runTaskDetail">
+    <el-dialog title="布控详情" width="750px" :visible.sync="runTaskDetail">
       <div class="block gray-form">
         <el-form label-width="100px" :model="task" label-position="right" style="margin-right: 20px">
           <el-form-item label="布控编号" align="left" style="margin: 0">{{task.taskName}}</el-form-item>
           <el-form-item label="布控人员" align="left" style="margin: 0">
-            <el-row :gutter="10">
-              <el-col :span="6" v-for="item in task.featureList" :key="item.imageId">
-                <img :src="item.imageUrl" style="width: 100%">
-              </el-col>
+            <div class="face-main" v-if="task.featureList">
+              <div class="face-item" v-for="item in task.featureList" :key="item.imageId">
+                <img :src="item.imageUrl?item.imageUrl:imgPath" style="max-width: 100%;border-radius: 4px"/>
+              </div>
+            </div>
+            <el-row v-if="task.imsiList">
+              <el-col :span="24">{{task.imsi}}</el-col>
             </el-row>
-            <el-row style="margin-top: 15px" v-show="task.imsiList.length >0">
-              <el-col :span="24">
-                {{task.imsi}}
-              </el-col>
+          </el-form-item>
+          <el-form-item label="布控场所" align="left" style="margin: 0">
+            <el-row v-if="task.placeName">
+              <el-col :span="24">{{task.place}}</el-col>
             </el-row>
           </el-form-item>
           <el-form-item label="关联案件" align="left" style="margin: 0">{{task.caseName}}</el-form-item>
@@ -229,38 +244,51 @@
         </el-form>
       </div>
     </el-dialog>
+    <!--查看大图-->
+    <el-dialog title="查看大图" :visible.sync="runBigPic" width="500px" center>
+      <div class="block">
+        <el-row>
+          <el-col :span="24" style="text-align: center" align="center">
+            <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:8px;vertical-align:middle"/>
+          </el-col>
+        </el-row>
+        <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">
+          <el-button type="primary" @click="runBigPic=false" size="medium">关闭</el-button>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
   import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
-  import {globalValidImg, noSValidator, noValidator} from "../../../assets/js/api";
+  import {globalValidImg, doubleValid, noValidator} from "../../../assets/js/api";
 
   export default {
     data() {
       return {
         task: {},
         places: [],
-        dialogWidth: isPC() ? '35%' : '90%',
+        runBigPic: false,
+        bigUrl: '',
         runTaskDetail: false,
         taskId: this.$route.query.taskId || '',
+        imgPath: require('../../../assets/img/icon_people.png'),
         activeItem: "IMSI",
-        query: {status: '', page: 1, size: 10},
+        query: {size: 100},
         qTime: '',
-        statuses: [{label: '全部', value: ''}, {label: '待处理', value: '1'}, {label: '处理中', value: '2'},
-          {label: '已处理', value: '3'}, {label: '误报', value: '4'}],
+        statuses: [{label: '待处理', value: 0}, {label: '已处理', value: 2}, {label: '误报', value: 3}],
         areaList: [],
         count: 0,
+        list: [],
+        list10: [],
+        isShow: false,
+        isFirst: true,
+        isSearch: false,
+        firstPage: 0,
+        page: 1,
         listLoading: false,
-        warningList: [],
-        query1: {status: '', page: 1, size: 10},
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
-        areaList1: [],
-        qTime1: '',
-        count1: 0,
-        listLoading1: false,
-        imgList: [],
-        uploadUrl: '',
-        imgUrl: '',
+        uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -276,11 +304,21 @@
         return buttonValidator(msg);
       },
       handleType(val) {
+        this.list10 = [];
+        this.isSearch = true;
+        this.qTime = '';
+        this.query = {size: 100};
+        if (this.activeItem === 'IMSI') {
+          this.getData();
+        } else {
+          this.getImgData();
+        }
       },
       getTaskDetail() {
         this.$post('disposition/get/' + this.taskId, {}).then((data) => {
           this.task = data.data;
           this.task.imsi = this.task.imsiList.join("，");
+          this.task.place = this.task.placeName.join("，");
           this.task.timeStr = formatDate(new Date(this.task.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
           this.task.updateStr = formatDate(new Date(this.task.updateTime * 1000), 'yyyy-MM-dd hh:mm:ss');
           this.task.startStr = formatDate(new Date(this.task.startTime * 1000), 'yyyy-MM-dd');
@@ -321,7 +359,7 @@
             }
           }
         }
-        return arr.join("，");
+        return arr.length > 0 ? arr.join("，") : '--';
       },
       //删除布控任务
       deleteTask() {
@@ -341,36 +379,90 @@
        * @param value
        */
       gotoDetail(task) {
-        this.$router.push({path: '/imsiWarningDetail', query: {taskId: task.id, followType: task.followType}});
+        if (this.activeItem === 'IMSI') {
+          this.$router.push({path: '/imsiWarningDetail', query: {id: task.id, imsi: task.imsi}});
+        } else {
+          this.$router.push({path: '/faceWarningDetail', query: {id: task.id, faceId: task.faceId}});
+        }
       },
       //获取IMSI告警列表
       getData() {
+        if (!!this.qTime) {
+          this.query.startTime = this.qTime[0] / 1000;
+          this.query.endTime = this.qTime[1] / 1000;
+        }
 
+        if (this.isSearch) {
+          this.list = [];
+          this.list10 = [];
+          delete this.query['pageTime'];
+          this.isSearch = false;
+        }
+        this.listLoading = true;
+        this.query.dispositionTaskId = this.taskId;
+        this.$post('warning/get/listImsiWarningByDispositionTaskId', this.query).then((data) => {
+          if (this.query.pageTime && !this.isSearch) {
+            this.list = this.list.concat(data.data);
+          } else {
+            this.list = data.data ? data.data : [];
+            this.page = 1;
+            this.firstPage = 0
+          }
+          this.list10 = this.list;
+          if (this.list.length - this.page * 10 >= 0) {
+            this.list10 = this.list10.slice((this.page * 10 - 10), (this.page * 10));
+          } else {
+            this.list10 = this.list10.slice((this.page * 10 - 10), this.list.length);
+          }
+          this.count = this.list.length;
+          if (this.list.length - this.firstPage === 100) {
+            this.isFirst = false;
+          } else {
+            this.isFirst = true;
+          }
+          this.listLoading = false;
+        }).catch((err) => {
+          this.list = [];
+          this.list10 = [];
+          this.listLoading = false;
+          this.$message.error(err);
+        });
       },
       //清除查询条件
       clearData() {
-        this.query = {page: 1, size: 10};
+        this.list10 = [];
+        this.isSearch = true;
+        this.query = {size: 100};
         this.qTime = '';
+
         this.getData();
       },
       pageChange(index) {
-        this.query.page = index;
-        this.getData();
+        this.page = index;
+        if (!this.isFirst && this.list.length > this.firstPage) {
+          this.isFirst = true;
+        }
+        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
+          (this.list.length % 100 === 0 || this.list.length === this.couple)) {
+          this.firstPage = this.list.length;
+          this.query.pageTime = this.list[this.list.length - 1].createTime;
+          this.getData();
+        }
+        this.list10 = this.list;
+        if ((this.list.length - (index * 10)) >= 0) {
+          this.list10 = this.list10.slice((index * 10 - 10), (index * 10));
+        } else {
+          this.list10 = this.list10.slice((index * 10 - 10), this.list.length);
+        }
       },
       handleSizeChange(val) {
-        this.query.size = val;
-        this.getData();
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'taskStatus') {
-          return row.taskStatus === "WAIT" ? '等待中' : row.taskStatus === "FINISH" ? '已完成' : row.taskStatus === "FAILE" ? '失败' : row.taskStatus === "EXECUTION" ? '进行中' : '--';
-        } else if (column.property === 'followType') {
-          return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '图像' : row.followType === "MAC" ? 'MAC' : '--';
-        } else if (column.property === 'status') {
-          return row.status === 'UNHANDLED' ? '未处理' : row.status === 'EXECUTION' ? '进行中' : row.status === 'HANDLED' ? '已结案' : '--';
-        } else if (column.property === 'followCount') {
-          return row.followCount === 0 ? 0 : row.followCount;
+        if (column.property === 'status') {
+          return row.status === 0 ? '待处理' : row.status === 1 ? '处理中' : row.status === 2 ? '已处理' : row.status === 3 ? '误报' : '--';
+        } else if (column.property === 'createTime') {
+          return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
@@ -379,19 +471,19 @@
        * 图像告警
        */
       //批量导入设备的文件格式验证
-      handleChange(file, fileList) {
-        if (file.status == 'ready') {
-          if (globalValidImg(file.raw, this.$message)) {
-          }
+      beforeAvatarUpload(file) {
+        if (globalValidImg(file, this.$message)) {
         }
+        return globalValidImg(file, this.$message);
       },
+      //批量导入设备的文件格式验证
       handleSuccess(res, file) {
         if (res.code === '000000') {
-          if (res.data && res.data.length > 0) {
-
-          } else {
-            this.$message({type: 'success', message: res.msg});
-            this.getData();
+          if (res.data) {
+            this.query1.faceUrl = res.data.fileUrl;
+            this.$message({message: '头像上传成功', type: 'success'});
+            this.isSearch = true;
+            this.getImgData();
           }
         } else {
           this.$message.error(res.msg);
@@ -400,28 +492,102 @@
       gotoImgDetail(task) {
         this.$router.push({path: '/faceWarningDetail', query: {taskId: task.id, followType: task.followType}});
       },
-      //获取IMSI告警列表
+      //获取图像告警列表
       getImgData() {
+        if (this.query.similarThreshold) {
+          if (!doubleValid(this.query.similarThreshold)) {
+            this.$message.error('相似度为0.1-99的数字');
+            return;
+          } else {
+            if (this.query.similarThreshold < 0.1 || this.query.similarThreshold > 99) {
+              this.$message.error('相似度为0.1-99的数字');
+              return;
+            }
+          }
+        }
+        if (!!this.qTime) {
+          this.query.startTime = this.qTime[0] / 1000;
+          this.query.endTime = this.qTime[1] / 1000;
+        }
 
+        if (this.isSearch) {
+          this.list = [];
+          this.list10 = [];
+          delete this.query['pageTime'];
+          this.isSearch = false;
+        }
+        this.listLoading = true;
+        this.query.dispositionTaskId = this.taskId;
+        this.$post('warning/get/listFaceWarningByDispositionTaskId', this.query, undefined, undefined, "login").then((data) => {
+          if ("000000" === data.code) {
+            this.listLoading = false;
+            if (this.query.pageTime && !this.isSearch) {
+              this.list = this.list.concat(data.data);
+            } else {
+              this.list = data.data ? data.data : [];
+              this.page = 1;
+              this.firstPage = 0
+            }
+            this.list10 = this.list;
+            if (this.list.length - this.page * 10 >= 0) {
+              this.list10 = this.list10.slice((this.page * 10 - 10), (this.page * 10));
+            } else {
+              this.list10 = this.list10.slice((this.page * 10 - 10), this.list.length);
+            }
+            this.count = this.list.length;
+            if (this.list.length - this.firstPage === 100) {
+              this.isFirst = false;
+            } else {
+              this.isFirst = true;
+            }
+          } else if ("100000" === data.code) {//执行中
+            setTimeout(() => {
+              this.getData();
+            }, 5000);
+          } else {
+            this.list = [];
+            this.list10 = [];
+            this.listLoading = false;
+            this.$message.error(data.msg);
+          }
+        });
       },
       //清除查询条件
       clearImgData() {
-        this.query1 = {page: 1, size: 10};
-        this.qTime1 = '';
+        this.list10 = [];
+        this.isSearch = true;
+        this.qTime = '';
+        this.query = {size: 100};
+        delete this.query['faceUrl'];
+
         this.getImgData();
       },
       pageImgChange(index) {
-        this.query1.page = index;
-        this.getImgData();
+        this.page = index;
+        if (!this.isFirst && this.list.length > this.firstPage) {
+          this.isFirst = true;
+        }
+        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
+          (this.list.length % 100 === 0 || this.list.length === this.couple)) {
+          this.firstPage = this.list.length;
+          this.query.pageTime = this.list[this.list.length - 1].createTime;
+          this.getImgData();
+        }
+        this.list10 = this.list;
+        if ((this.list.length - (index * 10)) >= 0) {
+          this.list10 = this.list10.slice((index * 10 - 10), (index * 10));
+        } else {
+          this.list10 = this.list10.slice((index * 10 - 10), this.list.length);
+        }
       },
       handleImgSizeChange(val) {
-        this.query1.size = val;
-        this.getImgData();
       },
       //场所
       getPlaces() {
         this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          this.places = data.data.list;
+          if (data.data.list && data.data.list.length > 0) {
+            this.places = data.data.list;
+          }
         }).catch((err) => {
           this.places = [];
         });
@@ -430,6 +596,21 @@
     mounted() {
       this.getPlaces();
       this.getTaskDetail();
+      this.getData();
     }
   }
 </script>
+<style scoped>
+  .face-main {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .face-item {
+    max-width: 100px;
+    margin-right: 10px;
+    /*margin-bottom: 10px;*/
+    position: relative;
+  }
+</style>

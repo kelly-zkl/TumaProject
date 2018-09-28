@@ -3,13 +3,15 @@
     <section class="content">
       <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryRecord')">
         <el-form-item label="设备ID" style="margin-bottom: 10px">
-          <el-input v-model="query.deviceId" placeholder="请输入设备ID" style="width: 160px" size="medium"
+          <el-input v-model="query.deviceId" placeholder="设备ID" style="width: 160px" size="medium"
                     :maxlength=30></el-input>
         </el-form-item>
         <el-form-item label="年龄" style="margin-bottom: 10px">
-          <el-input v-model.number="query.age1" type="number" size="medium" style="width: 80px" :maxlength=3></el-input>
+          <el-input-number v-model="query.age1" controls-position="right" :min="1"
+                           :max="query.age2-1" style="width: 100px" size="medium"></el-input-number>
           <span>~</span>
-          <el-input v-model.number="query.age2" type="number" size="medium" style="width: 80px" :maxlength=3></el-input>
+          <el-input-number v-model="query.age2" controls-position="right" :min="query.age1+1"
+                           :max="200" style="width: 100px" size="medium"></el-input-number>
         </el-form-item>
         <el-form-item label="性别" style="margin-bottom: 10px">
           <el-select v-model="query.sex" placeholder="请选择" style="width: 100px" size="medium" clearable>

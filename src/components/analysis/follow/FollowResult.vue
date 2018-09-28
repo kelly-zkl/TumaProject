@@ -5,16 +5,18 @@
         <el-row>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
             <p style="font-size: 14px;color: #999;margin: 0 20px">任务名称</p>
-            <p style="margin: 5px 20px 0 20px">{{task.taskName}}</p>
+            <p style="margin: 5px 20px 0 20px;font-size: 15px">{{task.taskName}}</p>
           </el-col>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
             <p style="font-size: 14px;color: #999;margin: 0 20px">任务类型</p>
-            <p style="margin: 5px 20px 0 20px">
+            <p style="margin: 5px 20px 0 20px;font-size: 15px">
               {{task.followType == 'IMSI' ? 'IMSI' : task.followType == 'FACE' ? '图像' : 'MAC'}}</p>
           </el-col>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
             <p style="font-size: 14px;color: #999;margin: 0 20px">分析对象</p>
-            <p style="margin: 5px 20px 0 20px">{{task.followTarget}}</p>
+            <p
+              style="margin: 5px 20px 0 20px;font-size: 15px;word-break:normal;white-space:pre-warp;word-wrap:break-word">
+              {{task.followTarget}}</p>
           </el-col>
           <el-col :span="6" align="right">
             <el-button type="text" @click="runTaskDetail = true">查看任务</el-button>
@@ -37,22 +39,22 @@
       <div class="content" v-show="activeItem == 'result' && task.followType == 'IMSI'">
         <el-form :inline="true" :model="queryResult" align="left" v-show="getButtonVial('follow:queryResult')">
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model="queryResult.imsi" placeholder="输入IMSI" size="medium" style="width: 160px"
+            <el-input v-model="queryResult.imsi" placeholder="IMSI" size="medium" style="width: 160px"
                       :maxlength=20></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-select v-model="queryResult.isp" placeholder="选择运营商" style="width: 120px" size="medium" clearable>
+            <el-select v-model="queryResult.isp" placeholder="运营商" style="width: 120px" size="medium" clearable>
               <el-option v-for="item in operators" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model="queryResult.regional" placeholder="输入归属地" style="width: 160px" size="medium"
+            <el-input v-model="queryResult.regional" placeholder="归属地" style="width: 160px" size="medium"
                       :maxlength=20></el-input>
           </el-form-item>
           <el-form-item label="伴随次数" style="margin-bottom: 10px">
-            <el-input v-model="queryResult.count1" type="number" size="medium" style="width: 80px"
-                      :maxlength=5></el-input>
+            <el-input-number v-model="queryResult.count1" controls-position="right" :min="1"
+                             :max="99999" style="width: 100px" size="medium"></el-input-number>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button type="primary" size="medium" @click="getResult()">搜索</el-button>
@@ -91,11 +93,11 @@
       <div class="content" style="margin-left: 10px" v-show="activeItem == 'list' && task.followType == 'IMSI'">
         <el-form :inline="true" :model="queryRecord" align="left" v-show="getButtonVial('follow:queryRecord')">
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model="queryRecord.imsi" placeholder="输入IMSI" size="medium" style="width: 160px"
+            <el-input v-model="queryRecord.imsi" placeholder="IMSI" size="medium" style="width: 160px"
                       :maxlength=20></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-select v-model="queryRecord.isp" placeholder="选择运营商" style="width: 120px" size="medium" clearable>
+            <el-select v-model="queryRecord.isp" placeholder="运营商" style="width: 120px" size="medium" clearable>
               <el-option v-for="item in operators" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
@@ -108,7 +110,7 @@
             </el-date-picker>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model="queryRecord.regional" placeholder="输入归属地" style="width: 160px" size="medium"
+            <el-input v-model="queryRecord.regional" placeholder="归属地" style="width: 160px" size="medium"
                       :maxlength=20></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
@@ -154,23 +156,21 @@
       <div class="content" v-show="activeItem == 'result' && task.followType == 'FACE'">
         <el-form :inline="true" :model="queryResult" align="left" v-show="getButtonVial('follow:queryResult')">
           <el-form-item label="年龄" style="margin-bottom: 10px">
-            <el-row>
-              <el-input v-model="queryResult.startAge" type="number" size="medium" style="width: 80px"
-                        :maxlength=3></el-input>
-              <span>~</span>
-              <el-input v-model="queryResult.endAge" type="number" size="medium" style="width: 80px"
-                        :maxlength=3></el-input>
-            </el-row>
+            <el-input-number v-model="queryResult.startAge" controls-position="right" :min="1"
+                             :max="queryResult.endAge-1" style="width: 100px" size="medium"></el-input-number>
+            <span>~</span>
+            <el-input-number v-model="queryResult.endAge" controls-position="right" :min="queryResult.startAge+1"
+                             :max="200" style="width: 100px" size="medium"></el-input-number>
           </el-form-item>
           <el-form-item label="性别">
-            <el-select v-model="queryResult.sex" placeholder="请选择" style="width: 100px" size="medium" clearable>
+            <el-select v-model="queryResult.sex" placeholder="性别" style="width: 100px" size="medium" clearable>
               <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="伴随次数" style="margin-bottom: 10px">
-            <el-input v-model="queryResult.count1" type="number" size="medium" style="width: 80px"
-                      :maxlength=5></el-input>
+            <el-input-number v-model="queryResult.count1" controls-position="right" :min="1"
+                             :max="99999" style="width: 100px" size="medium"></el-input-number>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button type="primary" size="medium" @click="getResult()">搜索</el-button>
@@ -220,7 +220,7 @@
             </el-row>
           </el-form-item>
           <el-form-item label="性别">
-            <el-select v-model="queryRecord.sex" placeholder="请选择" style="width: 100px" size="medium" clearable>
+            <el-select v-model="queryRecord.sex" placeholder="性别" style="width: 100px" size="medium" clearable>
               <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>

@@ -5,17 +5,17 @@
         <el-row>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
             <p style="font-size: 14px;color: #999;margin: 0 20px;">任务名称</p>
-            <p style="margin: 5px 20px 0 20px">{{task.taskName}}</p>
+            <p style="margin: 5px 20px 0 20px;font-size: 15px">{{task.taskName}}</p>
           </el-col>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
             <p style="font-size: 14px;color: #999;margin: 0 20px;">任务类型</p>
-            <p style="margin: 5px 20px 0 20px">
+            <p style="margin: 5px 20px 0 20px;font-size: 15px">
               {{collisionType == 'IMSI' ? 'IMSI' : collisionType == 'FACE' ? '图像' : 'MAC'}}
             </p>
           </el-col>
           <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
             <p style="font-size: 14px;color: #999;margin: 0 20px;">创建时间</p>
-            <p style="margin: 5px 20px 0 20px">{{task.timeStr}}</p>
+            <p style="margin: 5px 20px 0 20px;font-size: 15px">{{task.timeStr}}</p>
           </el-col>
           <el-col :span="6" align="right">
             <el-button type="text" @click="runTaskDetail = true">查看任务</el-button>
@@ -49,17 +49,17 @@
       <div class="content" style="margin-left: 10px" v-show="activeType == 'IMSI'&&activeItem=='first'">
         <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryResult')">
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model="query.imsi" placeholder="请输入IMSI" size="medium" style="width: 160px"
+            <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 160px"
                       :maxlength=20></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-select v-model="query.isp" placeholder="请选择运营商" style="width: 120px" size="medium" clearable>
+            <el-select v-model="query.isp" placeholder="运营商" style="width: 120px" size="medium" clearable>
               <el-option v-for="item in operators" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model="query.regional" placeholder="请输入归属地" style="width: 160px" size="medium"
+            <el-input v-model="query.regional" placeholder="归属地" style="width: 160px" size="medium"
                       :maxlength=20></el-input>
           </el-form-item>
           <el-form-item label="条件1出现次数" style="margin-bottom: 10px">
@@ -121,23 +121,25 @@
       <div class="content" style="margin-left: 10px" v-show="activeType == 'FACE'&&imageItem=='image'">
         <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryResult')">
           <el-form-item label="年龄">
-            <el-row>
-              <el-input v-model="query.age1" type="number" size="medium" style="width: 80px" :maxlength=3></el-input>
-              <span>~</span>
-              <el-input v-model="query.age2" type="number" size="medium" style="width: 80px" :maxlength=3></el-input>
-            </el-row>
+            <el-input-number v-model="query.age1" controls-position="right" :min="1"
+                             :max="query.age2-1" style="width: 100px" size="medium"></el-input-number>
+            <span>~</span>
+            <el-input-number v-model="query.age2" controls-position="right" :min="query.age1+1"
+                             :max="200" style="width: 100px" size="medium"></el-input-number>
           </el-form-item>
           <el-form-item label="性别">
-            <el-select v-model="query.sex" placeholder="请选择" style="width: 100px" size="medium" clearable>
+            <el-select v-model="query.sex" placeholder="性别" style="width: 100px" size="medium" clearable>
               <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="条件1出现次数">
-            <el-input v-model="query.count1" type="number" size="medium" style="width: 80px" :maxlength=5></el-input>
+            <el-input-number v-model="query.count1" controls-position="right" :min="1"
+                             :max="99999" style="width: 100px" size="medium"></el-input-number>
           </el-form-item>
           <el-form-item label="条件2出现次数">
-            <el-input v-model="query.count2" type="number" size="medium" style="width: 80px" :maxlength=5></el-input>
+            <el-input-number v-model="query.count2" controls-position="right" :min="1"
+                             :max="99999" style="width: 100px" size="medium"></el-input-number>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
@@ -403,7 +405,7 @@
           this.task = data.data;
           this.task.condition1 = this.task.condition1.split("\r\n");
           this.task.condition2 = this.task.condition2.split("\r\n");
-          this.task.timeStr = $.Data.formatDate(new Date(this.task.createTime * 1000), 'yyyy-MM-dd hh:mm:ss')
+          this.task.timeStr = formatDate(new Date(this.task.createTime * 1000), 'yyyy-MM-dd hh:mm:ss')
         }).catch((err) => {
         });
       }

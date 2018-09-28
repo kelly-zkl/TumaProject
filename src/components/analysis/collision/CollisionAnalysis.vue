@@ -175,9 +175,6 @@
         if (!!this.qTime) {
           this.query.startTime = this.qTime[0] / 1000;
           this.query.endTime = this.qTime[1] / 1000;
-        } else {
-          delete this.query['startTime'];
-          delete this.query['endTime'];
         }
         this.listLoading = true;
         this.$post('/collision/query', this.query).then((data) => {

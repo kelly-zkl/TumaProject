@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <el-row class="view-top">
-        <el-col :span="24" style="text-align: center" align="center">
+        <el-col :span="24" style="text-align: right" align="right">
           <el-form :model="query" style="margin: 0" label-width="100px" label-position="right" :inline="true">
             <el-form-item align="left" label="侦码设备" style="margin:0 0 10px 20px">
               <span style="display: inline-block;margin-right: 20px;font-size: 14px">全部{{deviceImsi.count}}</span>
@@ -11,7 +11,7 @@
                 <el-checkbox :label="false">离线{{deviceImsi.offlineCount}}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
-            <el-form-item align="left" label="相机设备" style="margin:0 0 10px 20px">
+            <el-form-item align="left" label="相机设备" style="margin:0 50px 10px 20px">
               <span style="display: inline-block;margin-right: 20px;font-size: 14px">全部{{camera.count}}</span>
               <el-checkbox-group v-model="query.camera" style="display: inline-block" @change="cameraChange">
                 <el-checkbox :label="true">在线{{camera.onlineCount}}</el-checkbox>
@@ -33,6 +33,7 @@
       return {
         query: {code: [true, false], camera: [true, false]},
         deviceImsi: {},
+        icon: require('../../assets/img/icon.png'),
         camera: {},
         mapData: [],
         intervalid: null,
@@ -115,6 +116,7 @@
         var app = {};
 
         let myChart = echarts.init(document.getElementById('view-map'));
+        myChart.clear();
         let option = {
           animation: false,
           tooltip: {
@@ -169,14 +171,9 @@
         if (!app.inNode) {
           // 添加百度地图插件
           var bmap = myChart.getModel().getComponent('bmap').getBMap();
-          var mapType1 = new BMap.MapTypeControl({mapTypes: [BMAP_NORMAL_MAP, BMAP_HYBRID_MAP]});
-          var mapType2 = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
+          var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
 
-          var overView = new BMap.OverviewMapControl();
-          var overViewOpen = new BMap.OverviewMapControl({isOpen: true, anchor: BMAP_ANCHOR_BOTTOM_RIGHT});
-          bmap.addControl(mapType1);          //2D图，卫星图
-          bmap.addControl(mapType2);          //左上角，默认地图控件
-          bmap.addControl(overView);          //添加默认缩略地图控件
+          bmap.addControl(mapType);          //左上角，默认地图控件
 
           //定位l
           var point = new BMap.Point(116.331398, 39.897445);
@@ -189,12 +186,49 @@
 
           var myCity = new BMap.LocalCity();
           myCity.get(myFun);
-//          bmap.addControl(overViewOpen);
-//          var myDrag = new BMapLib.RectangleZoom(bmap, {
-//            followText: "拖拽鼠标进行操作"
-//          });
-//          myDrag.open();  //开启拉框放大
-          //myDrag.close();  //关闭拉框放大
+
+          var markers = [];
+          for (var i = 0; i < this.mapData.length; i++) {
+            var pt = new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]);
+            var myIcon = new BMap.Icon(this.icon, new BMap.Size(2, 3));
+            markers.push(new BMap.Marker(pt, {icon: myIcon}));
+          }
+          //最简单的用法，生成一个marker数组，然后调用markerClusterer类即可。
+          // var markerClusterer = new BMapLib.MarkerClusterer(bmap, {markers: markers});
+          // markers {Array} 要聚合的标记数组
+          // girdSize {Number} 聚合计算时网格的像素大小，默认60
+          // maxZoom {Number} 最大的聚合级别，大于该级别就不进行相应的聚合
+          // minClusterSize {Number} 最小的聚合数量，小于该数量的不能成为一个聚合，默认为2
+          // isAverangeCenter {Boolean} 聚合点的落脚位置是否是所有聚合在内点的平均值，默认为否，落脚在聚合内的第一个点
+          // styles {Array} 自定义聚合后的图标风格，请参考TextIconOverlay类
+          var overlays = [];
+          var overlaycomplete = function (e) {
+            overlays.push(e.overlay);
+          };
+          var styleOptions = {
+            strokeColor: "red",    //边线颜色。
+            fillColor: "red",      //填充颜色。当参数为空时，圆形将没有填充效果。
+            strokeWeight: 3,       //边线的宽度，以像素为单位。
+            strokeOpacity: 0.8,	   //边线透明度，取值范围0 - 1。
+            fillOpacity: 0.3,      //填充的透明度，取值范围0 - 1。
+            strokeStyle: 'solid' //边线的样式，solid或dashed。
+          };
+          // //实例化鼠标绘制工具
+          // var drawingManager = new BMapLib.DrawingManager(bmap, {
+          //   isOpen: false, //是否开启绘制模式
+          //   enableDrawingTool: true, //是否显示工具栏
+          //   drawingToolOptions: {
+          //     anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+          //     offset: new BMap.Size(5, 5), //偏离值
+          //     drawingModes: [BMAP_DRAWING_CIRCLE, BMAP_DRAWING_POLYGON, BMAP_DRAWING_RECTANGLE],
+          //     drawingType: BMAP_DRAWING_CIRCLE
+          //   },
+          //   circleOptions: styleOptions, //圆的样式
+          //   polygonOptions: styleOptions, //多边形的样式
+          //   rectangleOptions: styleOptions //矩形的样式
+          // });
+          // //添加鼠标绘制工具监听事件，用于获取绘制结果
+          // drawingManager.addEventListener('overlaycomplete', overlaycomplete);
         }
       }
     },

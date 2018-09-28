@@ -87,11 +87,11 @@
             <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('common:face:listFaceTrace')">
               <el-form-item label="相似度" style="margin-bottom: 10px">
                 <el-row>
-                  <el-input v-model="query.age1" type="number" size="medium" style="width: 80px"
-                            :maxlength=3></el-input>
+                  <el-input-number v-model="query.startSimilar" controls-position="right" :min="0.1" :step="0.1"
+                                   :max="query.endSimilar-1" style="width: 100px" size="medium"></el-input-number>
                   <span>~</span>
-                  <el-input v-model="query.age2" type="number" size="medium" style="width: 80px"
-                            :maxlength=3></el-input>
+                  <el-input-number v-model="query.endSimilar" controls-position="right" :min="query.startSimilar+1"
+                                   :max="99" style="width: 100px" size="medium" :step="0.1"></el-input-number>
                 </el-row>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:queryd')">
@@ -263,8 +263,8 @@
       },
       getData() {
         if (!!this.qTime) {
-          this.query.startTime = this.qTime[1] / 1000;
-          this.query.endTime = this.qTime[0] / 1000;
+          this.query.startTime = this.qTime[0] / 1000;
+          this.query.endTime = this.qTime[1] / 1000;
         }
         if (this.isSearch) {
           this.list = [];
@@ -338,8 +338,8 @@
           return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '图像' : row.followType === "MAC" ? 'MAC' : '--';
         } else if (column.property === 'status') {
           return row.status === 'UNHANDLED' ? '未处理' : row.status === 'EXECUTION' ? '进行中' : row.status === 'HANDLED' ? '已结案' : '--';
-        } else if (column.property === 'followCount') {
-          return row.followCount === 0 ? 0 : row.followCount;
+        } else if (column.property === 'age' || column.property === 'similarThreshold') {
+          return row[column.property] < 0 ? '未知' : row[column.property];
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

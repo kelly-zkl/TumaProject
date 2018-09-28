@@ -11,7 +11,7 @@
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
-          <el-input placeholder="设备ID" v-model="query.deviceName" :maxlength="30" size="medium"
+          <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
                     style="width: 160px"></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
@@ -19,7 +19,7 @@
                     style="width: 160px"></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.regional" placeholder="输入归属地" size="medium" style="width: 160px"
+          <el-input v-model="query.regional" placeholder="归属地" size="medium" style="width: 160px"
                     :maxlength=20></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:queryg')">
@@ -46,15 +46,15 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="telephone" label="手机号" min-width="150" max-width="200"
-                         :formatter="formatterAddress"></el-table-column>
+        <!--<el-table-column align="left" prop="telephone" label="手机号" min-width="150" max-width="200"-->
+        <!--:formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="place" label="抓取场所" min-width="150" max-width="200"
+        <el-table-column align="left" prop="placeName" label="抓取场所" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="uptime" label="抓取时间" width="170"
+        <el-table-column align="left" prop="uptime" label="抓取时间" min-width="170" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="isp" label="运营商" max-width="150" min-width="100"
                          :formatter="formatterAddress"></el-table-column>
@@ -223,8 +223,13 @@
         this.isSearch = true;
         this.query = {size: 100};
 
-        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        if (this.activeItem === 'second') {
+          this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+            new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        } else {
+          this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        }
 
         this.getData();
       },

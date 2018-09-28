@@ -92,10 +92,23 @@
       handleInputConfirm() {
         let inputValue = this.inputValue;
         if (inputValue) {
-          this.approval.applyImsiList.push(inputValue);
+          if (this.isMultiple(inputValue)) {
+            this.approval.applyImsiList.push(inputValue);
+          }
         }
         this.inputVisible = false;
         this.inputValue = '';
+      },
+      //是否重复
+      isMultiple(val) {
+        let bol = true;
+        this.approval.applyImsiList.forEach((item) => {
+          if (val == item) {
+            this.$message.error('重复IMSI');
+            bol = false;
+          }
+        });
+        return bol;
       },
       addApproval() {
         if (this.approval.applyImsiList.length === 0) {

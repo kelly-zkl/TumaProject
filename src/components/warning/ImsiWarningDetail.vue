@@ -256,8 +256,8 @@
       },
       getData() {
         if (!!this.qTime) {
-          this.query.startTime = this.qTime[1] / 1000;
-          this.query.endTime = this.qTime[0] / 1000;
+          this.query.startTime = this.qTime[0] / 1000;
+          this.query.endTime = this.qTime[1] / 1000;
         }
         if (this.isSearch) {
           this.list = [];
@@ -266,8 +266,8 @@
           this.isSearch = false;
         }
 
-        this.query.imsi = this.imsi;
         this.listLoading = true;
+        this.query.imsi = this.imsi;
         this.$post('common/imsi/listImsiRecordBySpecialImsi', this.query).then((data) => {
           if (this.query.pageTime && !this.isSearch) {
             this.list = this.list.concat(data.data);

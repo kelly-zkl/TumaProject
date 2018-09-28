@@ -15,6 +15,14 @@ export const mobileValidator = (phone) => {
   }
   return bol;
 };
+//小数
+export const doubleValid = (num) => {
+  let isNum = false;
+  if (/^[1-9][0-9]$|^[1-9][0-9]*\.\d{0,2}$|^[0]\.\d{1,2}$/g.test(num)) {
+    isNum = true;
+  }
+  return isNum;
+};
 //只能整数
 export const numValid = (num) => {
   let isNum = false;

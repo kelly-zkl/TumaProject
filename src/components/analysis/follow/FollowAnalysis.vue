@@ -59,6 +59,8 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="关联案件" prop="caseName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="创建日期" prop="createTime" min-width="150"
+                         max-width="300" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('follow:get')">查看</el-button>
@@ -149,10 +151,8 @@
       },
       getData() {
         if (!!this.qTime) {
-          this.query.caseToTime = this.qTime[1] / 1000;
-          this.query.qTime = this.qTime[0] / 1000;
-        } else {
-          delete this.query['qTime'];
+          this.query.startTime = this.qTime[0] / 1000;
+          this.query.endTime = this.qTime[1] / 1000;
         }
         this.listLoading = true;
         this.$post('/follow/query', this.query).then((data) => {
@@ -172,8 +172,8 @@
           return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '图像' : row.followType === "MAC" ? 'MAC' : '--';
         } else if (column.property === 'status') {
           return row.status === 'UNHANDLED' ? '未处理' : row.status === 'EXECUTION' ? '进行中' : row.status === 'HANDLED' ? '已结案' : '--';
-        } else if (column.property === 'followCount') {
-          return row.followCount === 0 ? 0 : row.followCount;
+        } else if (column.property === 'createTime') {
+          return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

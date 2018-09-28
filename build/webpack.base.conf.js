@@ -31,6 +31,7 @@ module.exports = {
       : config.dev.assetsPublicPath
   },
   externals: {
+    "BMap": "BMap",
     'jquery': 'window.jQuery',
   },
   resolve: {

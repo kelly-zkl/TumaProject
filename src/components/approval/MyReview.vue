@@ -60,9 +60,9 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="申请时间" prop="createTime" width="170"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="当前节点" prop="taskStatus" min-width="150"
+        <el-table-column align="left" label="当前节点" prop="currentNode" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="当前节点负责人" prop="caseName" width="170"
+        <el-table-column align="left" label="当前节点负责人" prop="currentNodeOperatorName" width="170"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="状态" prop="ccReadStatus" width="120"
                          :formatter="formatterAddress"></el-table-column>
@@ -174,6 +174,11 @@
         if (!!this.qTime) {
           this.query.startTime = this.qTime[0] / 1000;
           this.query.endTime = this.qTime[1] / 1000;
+        }
+        if (this.activeItem === 'UNREAD') {
+          this.query.ccReadStatus = 1;
+        } else {
+          this.query.ccReadStatus = 0;
         }
         this.listLoading = true;
         this.$post('/workflow/translation/mycc/' + JSON.parse(sessionStorage.getItem("user")).userId, this.query).then((data) => {

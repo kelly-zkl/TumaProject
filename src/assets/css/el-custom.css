@@ -209,33 +209,19 @@
   padding: 0;
 }
 
-.el-tabs--border-card > .el-tabs__header .el-tabs__item {
-  border: 1px solid transparent;
-}
-
-.tab-card .el-tabs__item {
-  background-color: #E9ECF1;
-  border-top: 4px #E9ECF1 solid;
+.tab-card .el-tabs--border-card > .el-tabs__header .el-tabs__item {
   color: #343434 !important;
   font-weight: bold;
   font-size: 15px;
-}
-
-.tab-card .el-tabs__item.is-active {
-  color: #6699FF !important;
-  border-top: 4px #6699FF solid;
+  border-top: 4px #E9ECF1 solid;
 }
 
 .tab-card .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
   color: #6699FF !important;
   background-color: #E9ECF1;
+  border-top: 4px #6699FF solid;
   border-right-color: transparent;
   border-left-color: transparent
-}
-
-.tab-card .el-tabs__item:hover {
-  color: #6699FF !important;
-  cursor: pointer
 }
 
 /**form的label变灰色*/
@@ -282,8 +268,8 @@
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  width: 222px;
-  height: 222px;
+  max-width: 222px;
+  max-height: 222px;
 }
 
 .avatar-uploader .el-upload:hover {

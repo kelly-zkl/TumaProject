@@ -4,16 +4,16 @@
       <div class="add-appdiv" style="margin-bottom:15px">
         <el-row>
           <el-col :span="8" align="left" style="border-right: 1px #e5e5e5 solid">
-            <span style="color: #999;margin-right: 20px">IMSI信息</span>
-            <span>{{imsi}}</span>
+            <span style="font-size: 14px;color: #999;margin-right: 20px">IMSI信息</span>
+            <span style="font-size: 15px">{{imsi}}</span>
           </el-col>
           <el-col :span="8" align="left" style="border-right: 1px #e5e5e5 solid">
-            <span style="color: #999;margin:auto 20px;font-size: 14px">运营商</span>
-            <span>{{isp === 0 ? '移动' : isp === 1 ? '联通' : isp === 2 ? '电信' : '未知'}}</span>
+            <span style="font-size: 14px;color: #999;margin:auto 20px;font-size: 14px">运营商</span>
+            <span style="font-size: 15px">{{isp === 0 ? '移动' : isp === 1 ? '联通' : isp === 2 ? '电信' : '未知'}}</span>
           </el-col>
           <el-col :span="8" align="left">
-            <span style="color: #999;margin:auto 20px;font-size: 14px">归属地</span>
-            <span>{{regional}}</span>
+            <span style="font-size: 14px;color: #999;margin:auto 20px;font-size: 14px">归属地</span>
+            <span style="font-size: 15px">{{regional}}</span>
           </el-col>
         </el-row>
       </div>
@@ -34,7 +34,7 @@
             </el-date-picker>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model="query.regional" placeholder="输入归属地" style="width: 160px" size="medium"
+            <el-input v-model="query.regional" placeholder="归属地" style="width: 160px" size="medium"
                       :maxlength=20></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">

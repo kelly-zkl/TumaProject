@@ -289,7 +289,7 @@
       clearData() {
         this.query = {
           page: 1, size: 10, deviceForm: '', deviceType: '', deviceName: '',
-          groupId: '1'
+
         };
         this.lineStatus = '';
         this.areaList = [];

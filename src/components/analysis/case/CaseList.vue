@@ -326,9 +326,6 @@
         if (!!this.qTime) {
           this.query.caseTime = this.qTime[0] / 1000;
           this.query.caseToTime = this.qTime[1] / 1000;
-        } else {
-          delete this.query['caseTime'];
-          delete this.query['caseToTime'];
         }
         this.query.status = this.activeItem;
         this.listLoading = true;

@@ -161,6 +161,13 @@
           this.query.startTime = this.qTime[0] / 1000;
           this.query.endTime = this.qTime[1] / 1000;
         }
+        if (this.activeItem === 'FINISH') {//终止
+          this.query.recordStatus = 2;
+        } else if (this.activeItem === 'HANDLED') {//已完成
+          this.query.recordStatus = 0;
+        } else {//进行中
+          this.query.recordStatus = 1;
+        }
         this.listLoading = true;
         this.$post('/workflow/translation/myapply/' + JSON.parse(sessionStorage.getItem("user")).userId, this.query).then((data) => {
           this.imsiList = data.data.records;
@@ -177,6 +184,7 @@
       clearData() {
         this.query = {page: 1, size: 10};
         this.qTime = '';
+
         this.getData();
       },
       //格式化内容   有数据就展示，没有数据就显示--

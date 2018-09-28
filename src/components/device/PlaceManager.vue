@@ -5,7 +5,7 @@
         <el-col :span="18" align="left">
           <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('place:query')">
             <el-form-item style="margin-bottom: 10px">
-              <el-input v-model="query.placeName" placeholder="输入场所编码/名称" size="medium" :maxlength=30></el-input>
+              <el-input v-model="query.placeName" placeholder="场所编码/名称" size="medium" :maxlength=30></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-select v-model="query.placeType" placeholder="场所类型" size="medium">

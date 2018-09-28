@@ -5,7 +5,7 @@
         <el-col :span="24" align="left">
           <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('camera:query')">
             <el-form-item style="margin-bottom: 10px">
-              <el-input v-model="query.cameraCode" placeholder="输入相机编码" size="medium" :maxlength=30></el-input>
+              <el-input v-model="query.cameraCode" placeholder="相机编码" size="medium" :maxlength=30></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-cascader :options="provinceList" :props="props" @change="areaChange" change-on-select

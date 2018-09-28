@@ -68,11 +68,10 @@
         </el-dialog>
       </transition>
     </div>
-    <!--IMSI告警-->
+    <!--IMSI告警 :close-on-click-modal="false"-->
     <div class="warning">
       <transition name="fade" mode="out-in" appear>
-        <el-dialog width="500px" :visible.sync="runImsiWarning" :close-on-click-modal="false"
-                   style="border-radius: 6px" top="70px" title="嫌疑告警">
+        <el-dialog width="500px" :visible.sync="runImsiWarning" style="border-radius: 6px" top="70px" title="嫌疑告警">
           <el-form :model="imsiWarning" align="left" style="padding: 10px 50px;border-top: 1px #f2f2f2 solid"
                    label-width="100px" label-position="left">
             <el-form-item label="抓取IMSI" style="margin:0">
@@ -102,11 +101,10 @@
         </el-dialog>
       </transition>
     </div>
-    <!--头像告警-->
+    <!--头像告警 :close-on-click-modal="false"-->
     <div class="warning">
       <transition name="fade" mode="out-in" appear>
-        <el-dialog width="500px" :visible.sync="runFaceWarning" :close-on-click-modal="false"
-                   style="border-radius: 6px" top="70px" title="嫌疑告警">
+        <el-dialog width="500px" :visible.sync="runFaceWarning" style="border-radius: 6px" top="70px" title="嫌疑告警">
           <div style="padding: 20px 20px 10px;text-align: left;position: relative;border-top: 1px #f2f2f2 solid">
             <img :src="faceWarning.faceUrl?faceWarning.faceUrl:imgPath">
             <el-form :model="faceWarning" align="left" label-width="80px" label-position="left"
@@ -191,8 +189,8 @@
         userName: JSON.parse(sessionStorage.getItem("user")).realName || '',
         userId: JSON.parse(sessionStorage.getItem("user")).userId,
         psw: {password: '', password1: '', password2: ''},
-        imsiWarning: {},
-        faceWarning: {},
+        imsiWarning: {id: ''},
+        faceWarning: {id: ''},
         menu: [],
         intervalid: null,
         rules: {
@@ -234,12 +232,18 @@
         this.$post("warning/get/listImsiToday", {size: 1}).then((data) => {
           if (data.data && data.data.length > 0) {
             let imsi = data.data[0];
-            if ((new Date().getTime() - imsi.catchTime * 1000) >= -120 * 1000 && (new Date().getTime() - imsi.catchTime * 1000) <= 120 * 1000) {//10s内的数据
-              this.imsiWarning = imsi;
-              if (imsiWarning.id !== imsi.id) {
+            // console.log(new Date().getTime() - imsi.createTime * 1000);
+            if ((new Date().getTime() - imsi.createTime * 1000) >= -120 * 1000 && (new Date().getTime() - imsi.createTime * 1000) <= 120 * 1000) {//10s内的数据
+              // console.log(this.imsiWarning.id);
+              if (this.imsiWarning.id !== imsi.id) {
+                // console.log(imsi.id);
                 this.imsiWarning = imsi;
                 this.imsiWarning.timeStr = formatDate(new Date(this.imsiWarning.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+                this.runFaceWarning = false;
                 this.runImsiWarning = true;
+                setTimeout(() => {
+                  this.runImsiWarning = false;
+                }, 5000);
               }
             }
           }
@@ -249,11 +253,18 @@
         this.$post("warning/get/listFaceToday", {size: 1}).then((data) => {
           if (data.data && data.data.length > 0) {
             let face = data.data[0];
-            if ((new Date().getTime() - face.catchTime * 1000) >= -120 * 1000 && (new Date().getTime() - face.catchTime * 1000) <= 120 * 1000) {//10s内的数据
-              if (faceWarning.id !== face.id) {
+            // console.log(new Date().getTime() - face.createTime * 1000);
+            if ((new Date().getTime() - face.createTime * 1000) >= -120 * 1000 && (new Date().getTime() - face.createTime * 1000) <= 120 * 1000) {//10s内的数据
+              // console.log(this.faceWarning.id);
+              if (this.faceWarning.id !== face.id) {
+                // console.log(face.id);
                 this.faceWarning = face;
                 this.faceWarning.timeStr = formatDate(new Date(this.faceWarning.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+                this.runImsiWarning = false;
                 this.runFaceWarning = true;
+                setTimeout(() => {
+                  this.runFaceWarning = false;
+                }, 5000);
               }
             }
           }
@@ -265,7 +276,10 @@
       },
       gotoFaceDetail() {
         this.runFaceWarning = false;
-        this.$router.push({path: '/faceWarningDetail', query: {id: this.faceWarning.id}});
+        this.$router.push({
+          path: '/faceWarningDetail',
+          query: {id: this.faceWarning.id, faceId: this.faceWarning.faceId}
+        });
       },
       //退出
       loginOut() {

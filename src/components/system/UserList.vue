@@ -5,7 +5,7 @@
         <el-row>
           <el-col :span="20" align="left" v-show="getButtonVial('manager:user:query')">
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="账号/用户名/手机号" v-model="query.keyword" :maxlength="30"
+              <el-input placeholder="账号/用户名" v-model="query.keyword" :maxlength="30"
                         style="width: 200px" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
@@ -44,8 +44,6 @@
                          max-width="300" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="realName" label="用户名" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="phone" label="手机号" min-width="140"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="groupName" label="所属组织" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="roleNameList" label="角色" min-width="120"
@@ -132,7 +130,6 @@
           <el-form-item label="用户名" prop="realName">
             <el-input v-model="admin.realName" placeholder="请输入用户名" :maxlength="10" :minlength="2"></el-input>
           </el-form-item>
-          <el-form-item label="手机号" align="left">{{admin.phone ? admin.phone : '--'}}</el-form-item>
           <el-form-item label="所属组织" align="left" prop="groupId">
             <el-select v-model="admin.groupId" placeholder="请选择组织" v-if="admin.groupAdmin != true" filterable>
               <el-option v-for="item in organizations" :key="item.groupId" :label="item.groupName"

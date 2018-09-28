@@ -244,8 +244,8 @@
       },
       getData() {
         if (!!this.qTime) {
-          this.query.startTime = this.qTime[1] / 1000;
-          this.query.endTime = this.qTime[0] / 1000;
+          this.query.startTime = this.qTime[0] / 1000;
+          this.query.endTime = this.qTime[1] / 1000;
         }
 
         if (this.isSearch) {

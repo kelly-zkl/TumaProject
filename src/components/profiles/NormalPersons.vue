@@ -14,11 +14,11 @@
               </el-input>
             </el-form-item>
             <el-form-item label="年龄" style="margin-bottom: 10px">
-              <el-row>
-                <el-input v-model="query.age1" type="number" size="medium" style="width: 80px" :maxlength=3></el-input>
-                <span>~</span>
-                <el-input v-model="query.age2" type="number" size="medium" style="width: 80px" :maxlength=3></el-input>
-              </el-row>
+              <el-input-number v-model="query.startAge" controls-position="right" :min="1"
+                               :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
+              <span>~</span>
+              <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
+                               :max="200" style="width: 100px" size="medium"></el-input-number>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px">
@@ -81,11 +81,11 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="IMSI" prop="imsiList" min-width="150"
+        <el-table-column align="left" label="置信度" prop="imsiList" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="手机号" prop="phone" width="150"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="身份证" prop="idCard" width="170"
+        <el-table-column align="left" label="身份证号" prop="idCard" width="170"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="姓名" prop="name" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -180,7 +180,7 @@
         props: {value: 'o', label: 'n', children: 'c'},
         statuses: [{label: '全部', value: ''}, {label: '待处理', value: '1'}, {label: '处理中', value: '2'},
           {label: '已处理', value: '3'}, {label: '误报', value: '4'}],
-        sexs: [{value: '0', label: '男'}, {value: '2', label: '女'}],
+        sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         areaList: [],
         count: 0,
         listLoading: false,

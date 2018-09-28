@@ -4,21 +4,21 @@
       <div class="add-appdiv">
         <el-row>
           <el-col :span="8" align="left" style="border-right: 1px #e5e5e5 solid">
-            <span style="color: #999;margin-right: 20px">IMSI信息</span>
-            <span>{{imsi}}</span>
+            <span style="color: #999;margin-right: 20px;font-size: 14px">IMSI信息</span>
+            <span style="font-size: 15px">{{imsi}}</span>
           </el-col>
           <el-col :span="8" align="left" style="border-right: 1px #e5e5e5 solid">
             <span style="color: #999;margin:auto 20px;font-size: 14px">条件1</span>
             <div v-for="(item,indx) in task.condition1" :key="indx" style="margin-left: 70px">
                 <span
-                  style="display:inline-block;width:90%;word-wrap:break-word;white-space:normal;margin-bottom: 10px">{{item}}</span>
+                  style="display:inline-block;width:90%;word-wrap:break-word;white-space:normal;margin-bottom: 10px;font-size: 15px">{{item}}</span>
             </div>
           </el-col>
           <el-col :span="8" align="left">
             <span style="color: #999;margin:auto 20px;font-size: 14px">条件2</span>
             <div v-for="(item,indx) in task.condition2" :key="indx" style="margin-left: 70px">
                 <span
-                  style="display:inline-block;width:90%;word-wrap:break-word;white-space:normal;margin-bottom: 10px">{{item}}</span>
+                  style="display:inline-block;width:90%;word-wrap:break-word;white-space:normal;margin-bottom: 10px;font-size: 15px">{{item}}</span>
             </div>
           </el-col>
         </el-row>
@@ -36,7 +36,7 @@
       <div class="content" style="margin-left: 10px" v-show="activeItem == 'record'">
         <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;margin-left: 30px">
           <el-form-item label="设备ID">
-            <el-input v-model="query.deviceId" placeholder="请输入设备ID" style="width: 160px" size="medium"
+            <el-input v-model="query.deviceId" placeholder="设备ID" style="width: 160px" size="medium"
                       :maxlength=30></el-input>
           </el-form-item>
           <el-form-item label="时间范围">

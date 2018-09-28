@@ -3,11 +3,11 @@
     <section class="content">
       <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryRecord')">
         <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.imsi" placeholder="请输入IMSI" size="medium" style="width: 160px"
+          <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 160px"
                     :maxlength=50></el-input>
         </el-form-item>
         <el-form-item label="设备ID" style="margin-bottom: 10px">
-          <el-input v-model="query.deviceId" placeholder="请输入设备ID" style="width: 160px" size="medium"
+          <el-input v-model="query.deviceId" placeholder="设备ID" style="width: 160px" size="medium"
                     :maxlength=30></el-input>
         </el-form-item>
         <el-form-item label="时间范围" style="margin-bottom: 10px">
@@ -24,7 +24,7 @@
           </el-select>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.regional" placeholder="请输入归属地" style="width: 160px" size="medium"
+          <el-input v-model="query.regional" placeholder="归属地" style="width: 160px" size="medium"
                     :maxlength=20></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">

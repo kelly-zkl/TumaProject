@@ -23,10 +23,10 @@
               <img :src="faceDetail.faceUrl?faceDetail.faceUrl:imgPath"
                    style="height: 160px;width: 160px;border: 1px #D7D7D7 dashed;border-radius: 8px"/>
               <el-form-item label="年龄" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{faceDetail.age}}</span>
+                <span style="font-size: 15px;color:#000">{{faceDetail.age<0?'未知':faceDetail.age}}</span>
               </el-form-item>
               <el-form-item label="性别" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{faceDetail.sex == 0 ? '男' : faceDetail.sex == 1 ? '女' : '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{faceDetail.sex == 0 ? '男' : faceDetail.sex == 1 ? '女' : '未知'}}</span>
               </el-form-item>
             </el-col>
             <el-col :span="8">
@@ -92,13 +92,11 @@
           <el-col :span="18" align="left" style="text-align: left" v-show="getButtonVial('common:face:listFaceTrace')">
             <el-form :inline="true" :model="query" align="left" style="text-align: left">
               <el-form-item label="相似度" style="margin-bottom: 10px">
-                <el-row>
-                  <el-input v-model="query.startSimilar" type="number" size="medium" style="width: 80px"
-                            :maxlength=3></el-input>
-                  <span>~</span>
-                  <el-input v-model="query.endSimilar" type="number" size="medium" style="width: 80px"
-                            :maxlength=3></el-input>
-                </el-row>
+                <el-input-number v-model="query.startSimilar" controls-position="right" :min="0.1" :step="0.1"
+                                 :max="query.endSimilar-1" style="width: 100px" size="medium"></el-input-number>
+                <span>~</span>
+                <el-input-number v-model="query.endSimilar" controls-position="right" :min="query.startSimilar+1"
+                                 :max="99" style="width: 100px" size="medium" :step="0.1"></el-input-number>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
                 <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable>
@@ -140,8 +138,8 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="性别" prop="sex" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="抓取时间" prop="createTime" width="200"
-                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="抓取时间" prop="createTime" min-width="170"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="场所" prop="place" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
@@ -282,8 +280,8 @@
       },
       getData() {
         if (!!this.qTime) {
-          this.query.startTime = this.qTime[1] / 1000;
-          this.query.endTime = this.qTime[0] / 1000;
+          this.query.startTime = this.qTime[0] / 1000;
+          this.query.endTime = this.qTime[1] / 1000;
         }
         if (this.isSearch) {
           this.list = [];
@@ -293,6 +291,7 @@
         }
 
         this.listLoading = true;
+        this.query.faceId = this.faceId;
         this.$post('common/face/listFaceTrace', this.query).then((data) => {
           if (this.query.pageTime && !this.isSearch) {
             this.list = this.list.concat(data.data);
@@ -358,8 +357,8 @@
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-        } else if (column.property === 'followCount') {
-          return row.followCount === 0 ? 0 : row.followCount;
+        } else if (column.property === 'age' || column.property === 'similarThreshold') {
+          return row[column.property] < 0 ? '未知' : row[column.property];
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

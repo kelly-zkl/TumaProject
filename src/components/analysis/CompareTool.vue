@@ -42,8 +42,8 @@
     methods: {
       /**第一张头像*/
       handleAvatarSuccess1(res, file) {
-        console.log(res);
-        console.log(file);
+        // console.log(res);
+        // console.log(file);
       },
       beforeAvatarUpload1(file) {
         let _this = this;
@@ -53,6 +53,7 @@
           reader.onload = function (e) {
             // 读取到的图片base64 数据编码 将此编码字符串传给后台即可
             _this.image1 = e.target.result;
+            // console.log(_this.image1);
             _this.compareFace();
           };
         }
@@ -60,8 +61,8 @@
       },
       /**第二张头像*/
       handleAvatarSuccess2(res, file) {
-        console.log(res);
-        console.log(file);
+        // console.log(res);
+        // console.log(file);
       },
       beforeAvatarUpload2(file) {
         let _this = this;
@@ -71,6 +72,7 @@
           reader.onload = function (e) {
             // 读取到的图片base64 数据编码 将此编码字符串传给后台即可
             _this.image2 = e.target.result;
+            // console.log(_this.image2);
             _this.compareFace();
           };
         }
@@ -91,7 +93,7 @@
         axios.post("collision/facecompare", param).then((res) => {
           if (res.status == 200) {
             let data = JSON.parse(res.data);
-            console.log(data);
+            // console.log(data);
             if (data.similarity) {
               this.similarity = data.similarity;
             }
