@@ -30,12 +30,20 @@
     },
     watch: {
       formattedAddress: function () {
-        this.selectedOptions2 = this.formattedAddress;
+        let param = JSON.parse(this.formattedAddress);
+        this.selectedOptions2 = param.codes;
+        this.detailAddress = this.getAreaLable(this.selectedOptions2[this.selectedOptions2.length - 1]) + param.address;
         this.setCenter();
       }
     },
     created() {
-      this.selectedOptions2 = this.formattedAddress;
+      this.map = new BMap.Map("container");
+      this.geocoder = new BMap.Geocoder();
+      this.geolocation = new BMap.Geolocation();
+      let param = JSON.parse(this.formattedAddress);
+      this.selectedOptions2 = param.codes;
+      this.detailAddress = this.getAreaLable(this.selectedOptions2[this.selectedOptions2.length - 1]) + param.address;
+      this.setCenter();
     },
     methods: {
       //场所省市县变化
@@ -120,7 +128,6 @@
       },
       //根据区域码找到对应的省市县编码
       getCode(code) {
-        console.log(code);
         let arr = [];
         json.forEach((province) => {
           if (province.c) {
@@ -155,7 +162,7 @@
             _this.map.clearOverlays();
             _this.position.lng = point.lng;
             _this.position.lat = point.lat;
-            _this.map.centerAndZoom(point, 14);
+            _this.map.centerAndZoom(point, 15);
             _this.map.addOverlay(new BMap.Marker(point));
             _this.setLocation();
           } else {
@@ -168,11 +175,14 @@
         let _this = this;
         this.geocoder.getLocation(new BMap.Point(this.position.lng, this.position.lat), function (rs) {
           console.log(rs);
-          _this.position.detailAddress = rs.addressComponents.street + rs.addressComponents.streetNumber;
+          let address = JSON.parse(_this.formattedAddress).address;
+          if (rs.addressComponents.street.length !== 0 || rs.addressComponents.streetNumber.length !== 0) {
+            address = rs.addressComponents.street + rs.addressComponents.streetNumber;
+          }
+          _this.position.detailAddress = address;
           _this.position.code = _this.getCityCode(rs.addressComponents.district);
           _this.selectedOptions2 = _this.getCode(_this.position.code);
           console.log(_this.position);
-          console.log(_this.selectedOptions2);
           _this.$emit('getLocation', _this.position);
         });
       }
@@ -184,26 +194,26 @@
       this.map.enableScrollWheelZoom(true);
       this.geocoder = new BMap.Geocoder();
 
-      var point = new BMap.Point(116.331398, 39.897445);
-      this.map.centerAndZoom(point, 12);
+      if (this.selectedOptions2.length === 0) {
+        var point = new BMap.Point(116.331398, 39.897445);
+        this.map.centerAndZoom(point, 12);
 
-      function myFun(result) {
-        var cityName = result.name;
-        _this.map.setCenter(cityName);
+        function myFun(result) {
+          var cityName = result.name;
+          _this.map.setCenter(cityName);
+        }
+
+        var myCity = new BMap.LocalCity();
+        myCity.get(myFun);
+        this.geolocation.getCurrentPosition(function (r) {
+          console.log(r);
+          _this.map.clearOverlays();
+          _this.map.addOverlay(new BMap.Marker(r.point));
+          _this.position.lng = r.point.lng;
+          _this.position.lat = r.point.lat;
+          _this.setLocation();
+        }, {enableHighAccuracy: true});
       }
-
-      var myCity = new BMap.LocalCity();
-      myCity.get(myFun);
-
-      this.geolocation = new BMap.Geolocation();
-      this.geolocation.getCurrentPosition(function (r) {
-        console.log(r);
-        _this.map.clearOverlays();
-        _this.map.addOverlay(new BMap.Marker(r.point));
-        _this.position.lng = r.point.lng;
-        _this.position.lat = r.point.lat;
-        _this.setLocation();
-      }, {enableHighAccuracy: true});
 
       this.map.addEventListener("click", function (e) {
         console.log(e);

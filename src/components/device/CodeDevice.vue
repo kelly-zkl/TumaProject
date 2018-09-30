@@ -68,10 +68,9 @@
           </el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px">
-          <el-pagination
-            @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page" background
-            :page-sizes="[10, 15, 20, 30]" :page-size="query.size" layout="total, sizes, prev, pager, next, jumper"
-            :total="count"></el-pagination>
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
+                         background :page-sizes="[10, 15, 20, 30]" :page-size="query.size"
+                         layout="total, sizes, prev, pager, next, jumper" :total="count"></el-pagination>
         </div>
       </div>
       <!--设置场所-->
@@ -108,20 +107,6 @@
 
   export default {
     data() {
-      let idValidator = (rule, value, callback) => {
-        if (!/[a-zA-Z0-9_]$/.test(value)) {
-          callback(new Error("请输入正确的设备id，由英文字母、数字、下划线组成"));
-        } else {
-          callback();
-        }
-      };
-      let devValidator = (rule, value, callback) => {
-        if (!/[A-Za-z0-9_\u4e00-\u9fa5]$/.test(value)) {
-          callback(new Error("请输入正确的设备名称，由汉字、数字、英文字母、下划线组成"));
-        } else {
-          callback();
-        }
-      };
       return {
         props: {value: 'o', label: 'n', children: 'c'},
         lineStatus: '',

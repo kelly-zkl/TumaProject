@@ -15,6 +15,14 @@ export const mobileValidator = (phone) => {
   }
   return bol;
 };
+// 验证座机号码
+export const telphoneValidator = (phone) => {
+  let bol = true;
+  if (!/^0\d{2,3}-\d{7,8}$/.test(phone)) {
+    bol = false;
+  }
+  return bol;
+};
 //小数
 export const doubleValid = (num) => {
   let isNum = false;
@@ -193,6 +201,9 @@ export const isNull = (str) => {
   let isNull = false;
   if (str == null || str == undefined || str == '' || str == 'null' || str == 'undefined' || str == 'NAN') {
     isNull = true;
+  }
+  if (str == 0) {
+    isNull = false;
   }
   return isNull;
 };

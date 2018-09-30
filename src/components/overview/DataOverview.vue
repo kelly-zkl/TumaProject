@@ -40,14 +40,14 @@
               <el-col :span="8" align="center">
                 <div
                   style="background: #060450;border-radius: 6px;height: 60px;width: 160px; margin-top: 20px;padding: 15px 20px">
-                  <div style="color: #fff;font-size: 14px">今日新增IMSI</div>
+                  <div style="color: #fff;font-size: 14px">今日抓取IMSI</div>
                   <br/>
                   <div style="color: #fff;font-size: 20px">{{addImsiCount}}<span
                     style="color: #fff;font-size: 14px">条</span></div>
                 </div>
                 <div
                   style="background: #060450;border-radius: 6px;height: 60px;width: 160px;margin-top: 20px;padding: 15px 20px">
-                  <div style="color: #fff;font-size: 14px">今日新增图像</div>
+                  <div style="color: #fff;font-size: 14px">今日抓取图像</div>
                   <br/>
                   <div style="color: #fff;font-size: 20px">{{addFaceCount}}<span
                     style="color: #fff;font-size: 14px">条</span></div>
@@ -87,16 +87,26 @@
           </el-row>
           <div class="overview">
             <el-table :data="imgList" :header-cell-style="{background:'#100E5A'}" stripe>
-              <el-table-column align="left" label="图像">
+              <el-table-column align="left" label="图像" style="align-content: center">
                 <template slot-scope="scope">
                   <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" class="user-img"/>
                 </template>
               </el-table-column>
-              <el-table-column align="left" label="IMSI" prop="imsiList"
-                               :formatter="formatterAddress"></el-table-column>
-              <el-table-column align="left" label="置信度" prop="levl"
-                               :formatter="formatterAddress"></el-table-column>
-              <el-table-column align="left" label="碰撞时间" prop="createTime"
+              <el-table-column align="left" label="IMSI" prop="imsiList">
+                <template slot-scope="scope">
+                  <div v-for="item in scope.row.imsiList">
+                    <span>{{item.imsi}}</span>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column align="left" label="置信度" prop="imsiList">
+                <template slot-scope="scope">
+                  <div v-for="item in scope.row.imsiList">
+                    <span>{{item.weight / 10 + '%'}}</span>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column align="left" label="碰撞时间" prop="uptime"
                                :formatter="formatterAddress"></el-table-column>
             </el-table>
           </div>
@@ -478,7 +488,9 @@
             textStyle: {color: '#fff', fontSize: '14'}, top: 'center', left: 'center', bottom: 'center', right: 'center'
           },
           tooltip: {trigger: 'item', formatter: "{a} <br/>{b}: {c} ({d}%)"},
-          legend: {textStyle: {color: '#999'}, orient: 'vertical', x: 'right', data: ['在线', '离线']},
+          legend: {
+            textStyle: {color: '#999'}, orient: 'vertical', x: 'right', data: ['在线', '离线']
+          },
           series: [
             {
               name: '相机设备',
@@ -634,20 +646,8 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'imsiList') {
-          let imsi = [];
-          row.imsiList.forEach((item) => {
-            imsi.push(item.imsi)
-          });
-          return imsi.length > 0 ? imsi.join("，") : '--';
-        } else if (column.property === 'levl') {
-          let lev = [];
-          row.imsiList.forEach((item) => {
-            lev.push(item.weight / 10 + '%')
-          });
-          return lev.length > 0 ? lev.join("，") : '--';
-        } else if (column.property === 'createTime') {
-          return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
+        if (column.property === 'uptime') {
+          return row.uptime ? formatDate(new Date(row.uptime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

@@ -59,12 +59,12 @@
           </el-tabs>
         </el-col>
       </el-row>
-      <div v-show="activeItem=='person'" style="padding: 20px">
+      <div v-show="activeItem=='person'" style="padding: 20px 0">
         <div class="face-main">
           <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
             <img :src="item.fileUrl?item.fileUrl:imgPath"/>
             <el-form :model="item" align="left" label-width="60px" label-position="right"
-                     style="position: absolute;top: 25px;left:180px">
+                     style="position: absolute;top: 15px;left:150px">
               <el-form-item label="档案ID" style="margin:0">
                 <span style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
                 <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
@@ -373,25 +373,27 @@
   }
 
   .face-item {
-    width: 43%;
-    height: 132px;
+    width: -moz-calc(50% - 42px);
+    width: -webkit-calc(50% - 42px);
+    width: calc(50% - 42px);
+    height: 122px;
     border: 1px #D7D7D7 solid;
-    padding: 20px;
+    padding: 15px;
     margin-bottom: 20px;
     position: relative;
   }
 
   .face-item img {
     position: absolute;
-    left: 20px;
-    width: 130px;
-    height: 130px;
+    left: 15px;
+    width: 120px;
+    height: 120px;
     border: 1px #D7D7D7 dashed;
     border-radius: 8px;
     text-align: left;
   }
 
   .face-item:nth-child(odd) {
-    margin-right: 30px;
+    margin-right: 20px;
   }
 </style>

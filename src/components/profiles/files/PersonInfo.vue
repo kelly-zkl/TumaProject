@@ -1,7 +1,14 @@
 <template>
   <div>
     <section class="content">
-      <div style="background: #F2F2F2;font-size:14px;padding: 10px 0;width: 100%;text-align: center">基本信息</div>
+      <el-row style="background: #F2F2F2;font-size:14px;padding: 10px 0;width: 100%;text-align: center">
+        <el-col :span="18" style="text-align: center" align="center">
+          <div style="font-size:14px;text-align: center">基本信息</div>
+        </el-col>
+        <el-col :span="6" style="text-align: right" align="right">
+          <el-button type="text" style="margin: 0;padding: 0" @click="clickModify()">修改基本信息</el-button>
+        </el-col>
+      </el-row>
       <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px">
         <el-form :model="userInfo" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
           <el-row style="margin: 0;padding: 0">
@@ -24,8 +31,9 @@
                 <span style="font-size: 15px;color:#000">{{userInfo.sex==0 ? '男' : userInfo.sex==1 ?'女':'未知'}}</span>
               </el-form-item>
               <el-form-item label="年龄" align="left" style="margin: 0">
-                <span
-                  style="font-size: 15px;color:#000">{{userInfo.startAge==userInfo.endAge ? userInfo.startAge : userInfo.startAge+'~'+userInfo.endAge}}</span>
+                <span style="font-size: 15px;color:#000">
+                  {{userInfo.startAge?userInfo.endAge?userInfo.startAge==userInfo.endAge?userInfo.startAge:userInfo.startAge+'~'+userInfo.endAge:userInfo.endAge?userInfo.endAge:'--':'--'}}
+                </span>
               </el-form-item>
               <el-form-item label="身份证" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{userInfo.idCard ? userInfo.idCard : '--'}}</span>
@@ -63,7 +71,7 @@
             <div class="face-main">
               <div class="face-item" v-for="item in persons" :key="item.id">
                 <img :src="item.faceUrl?item.faceUrl:imgPath">
-                <div style="font-size:14px;height: 30px;line-height: 30px">{{item.timeStr}}</div>
+                <div style="font-size:14px;height: 20px;line-height: 20px">{{item.timeStr}}</div>
               </div>
             </div>
           </el-col>
@@ -77,27 +85,158 @@
         </el-row>
       </div>
     </section>
+    <!--修改基本信息-->
+    <el-dialog title="修改基本信息" :visible.sync="runModifyPerson" width="650px" center>
+      <div class="block">
+        <el-form :model="person" label-position="right" label-width="80px">
+          <el-form-item label="姓名">
+            <el-input v-model="person.name" auto-complete="off" :maxlength="10" placeholder="输入姓名"></el-input>
+          </el-form-item>
+          <el-form-item label="年龄">
+            <el-input v-model.number="person.age" auto-complete="off" :maxlength="3" placeholder="输入年龄"></el-input>
+          </el-form-item>
+          <el-form-item label="性别">
+            <el-select v-model="person.sex" placeholder="选择性别" size="medium">
+              <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="身份证号">
+            <el-input v-model="person.idCard" auto-complete="off" :maxlength="18" placeholder="输入身份证号"></el-input>
+          </el-form-item>
+          <el-form-item label="手机号">
+            <el-input v-model="person.mobilePhone" auto-complete="off" :maxlength="11" placeholder="输入手机号"></el-input>
+          </el-form-item>
+          <el-form-item label="座机">
+            <el-input v-model="person.telephone" auto-complete="off" :maxlength="13"
+                      placeholder="输入座机号,例：0123-12345678"></el-input>
+          </el-form-item>
+          <el-form-item label="所属辖区">
+            <el-cascader :options="provinceList" :props="props" change-on-select filterable
+                         v-model="selectedOptions2" placeholder="选择所属辖区" clearable>
+            </el-cascader>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">
+          <el-button @click="runModifyPerson=false">取消</el-button>
+          <el-button type="primary" @click="saveInfo()">保存</el-button>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
   import json from '../../../assets/city.json';
   import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
+  import {
+    nameValidator, numValid, mobileValidator, userCardValid,
+    telphoneValidator, isNull
+  } from "../../../assets/js/api";
 
   export default {
     data() {
       return {
+        runModifyPerson: false,
+        person: {},
+        props: {value: 'o', label: 'n', children: 'c'},
+        selectedOptions2: [],
         provinceList: json,
         faceId: this.$route.query.faceId || '',
         imgPath: require('../../../assets/img/icon_people.png'),
+        sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         userInfo: {},
         imsiList: [],
         persons: []
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       //查看IMSI详情
       gotoDetail(row) {
         this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi}});
+      },
+      clickModify() {
+        let data = this.userInfo;
+        var age = !isNull(data.startAge) ? data.startAge : !isNull(data.endAge) ? data.endAge : '';
+        this.person = {
+          faceId: data.faceId, telephone: data.telephone ? data.telephone : '',
+          sex: !isNull(data.sex) ? data.sex : '', name: data.name ? data.name : '',
+          mobilePhone: data.mobilePhone ? data.mobilePhone : '', age: age,
+          idCard: data.idCard ? data.idCard : ''
+        };
+        this.selectedOptions2 = data.areaCode ? this.getCode(data.areaCode) : [];
+        if (isNull(data.sex)) {
+          delete this.person['sex'];
+        }
+        if (!data.name) {
+          delete this.person['name'];
+        }
+        if (!data.mobilePhone) {
+          delete this.person['mobilePhone'];
+        }
+        if (!data.idCard) {
+          delete this.person['idCard'];
+        }
+        if (isNull(data.startAge) && isNull(data.endAge)) {
+          delete this.person['age'];
+        }
+        if (!data.telephone) {
+          delete this.person['telephone'];
+        }
+
+        this.runModifyPerson = true;
+      },
+      //保存修改信息
+      saveInfo() {
+        if (this.person.name) {
+          if (!nameValidator(this.person.name)) {
+            this.$message.error('请输入由汉字、英文组成的姓名');
+            return;
+          }
+        }
+        if (this.person.age) {
+          if (!numValid(this.person.age)) {
+            this.$message.error('请输入正确的年龄');
+            return;
+          } else if (this.person.age < 1 && this.person.age > 150) {
+            this.$message.error('请输入正确的年龄');
+            return;
+          }
+        }
+        if (this.person.idCard) {
+          if (!userCardValid(this.person.idCard)) {
+            this.$message.error('请输入正确的身份证号');
+            return;
+          }
+        }
+        if (this.person.mobilePhone) {
+          if (!mobileValidator(this.person.mobilePhone)) {
+            this.$message.error('请输入正确的手机号码');
+            return;
+          }
+        }
+        if (this.person.telephone) {
+          if (!telphoneValidator(this.person.telephone)) {
+            this.$message.error('请输入正确的座机号');
+            return;
+          }
+        }
+        if (this.selectedOptions2.length === 1) {
+          this.person.provinceCode = this.selectedOptions2[0];
+        } else if (this.selectedOptions2.length === 2) {
+          this.person.provinceCode = this.selectedOptions2[0];
+          this.person.cityCode = this.selectedOptions2[1];
+        } else if (this.selectedOptions2.length === 3) {
+          this.person.provinceCode = this.selectedOptions2[0];
+          this.person.cityCode = this.selectedOptions2[1];
+          this.person.areaCode = this.selectedOptions2[2];
+        }
+        this.runModifyPerson = false;
+        this.$post("/manager/user/updatePwdByAdmin", this.person, '修改成功').then(() => {
+          this.getUserData();
+        });
       },
       getUserData() {
         this.$post('archives/detail', {faceId: this.faceId, showFaceTraces: 1, showImsiDetail: 1}).then((data) => {
@@ -118,7 +257,7 @@
               });
             }
             this.userInfo.timeStr = formatDate(new Date(data.data.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-            this.userInfo.area = this.getAreaLable(data.data.areaCode);
+            this.userInfo.area = data.data.areaCode ? this.getAreaLable(data.data.areaCode) : '--';
 
             sessionStorage.setItem("pathImsi", JSON.stringify(imsis));
             sessionStorage.setItem("pathFace", JSON.stringify(faces));
@@ -152,6 +291,32 @@
           }
         });
         return lable;
+      },
+      //根据区域码找到对应的省市县编码
+      getCode(code) {
+        let arr = [];
+        json.forEach((province) => {
+          if (province.c) {
+            province.c.forEach((city) => {
+              if (city.c) {
+                city.c.forEach((country) => {
+                  if (code === country.o) {
+                    arr = [province.o, city.o, country.o];
+                  }
+                })
+              } else {
+                if (code === city.o) {
+                  arr = [province.o, city.o];
+                }
+              }
+            })
+          } else {
+            if (code === province.o) {
+              arr = [province.o];
+            }
+          }
+        });
+        return arr;
       }
     },
     mounted() {

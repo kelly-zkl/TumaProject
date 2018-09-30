@@ -389,7 +389,7 @@
     top: 0;
     bottom: 0;
     width: 100%;
-    min-width: 1280px;
+    min-width: 1360px;
     margin-left: -8px;
   }
 

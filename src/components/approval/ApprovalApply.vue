@@ -30,7 +30,7 @@
                     :disable-transitions="false" @close="handleClose(tag)">{{tag}}
             </el-tag>
             <el-input class="input-tag" v-show="inputVisible && approval.applyImsiList.length<20" v-model="inputValue"
-                      ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm"
+                      ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm" :maxlength="15"
                       @blur="handleInputConfirm">
             </el-input>
             <el-button v-show="!inputVisible && approval.applyImsiList.length<20" class="button-tag" size="small"
@@ -63,6 +63,8 @@
   </div>
 </template>
 <script>
+  import {numValid} from "../../assets/js/api";
+
   export default {
     data() {
       return {
@@ -92,6 +94,10 @@
       handleInputConfirm() {
         let inputValue = this.inputValue;
         if (inputValue) {
+          if (!numValid(inputValue)) {
+            this.$message.error('请输入正确的IMSI');
+            return;
+          }
           if (this.isMultiple(inputValue)) {
             this.approval.applyImsiList.push(inputValue);
           }

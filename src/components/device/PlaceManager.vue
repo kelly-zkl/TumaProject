@@ -234,7 +234,6 @@
           }).catch((err) => {
           });
         }).catch(() => {
-          this.sels = [];
         });
       },
       addInfo() {
@@ -337,7 +336,12 @@
       },
       //地图选址，显示dialog
       selectAdd() {
-        this.getAddress = this.selectedOptions2;
+        let param = {
+          codes: this.selectedOptions2, address: this.addPlace.detailAddress ? this.addPlace.detailAddress : ''
+        };
+        console.log(param);
+        this.getAddress = JSON.stringify(param);
+        console.log(this.getAddress);
         this.mapVisible = true;
       },
       //地图选址完成设置经纬度

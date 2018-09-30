@@ -345,7 +345,7 @@
 }
 
 .content-main {
-  padding-right: 5%;
+  padding-right: 180px;
   background-color: #E9ECF1;
   flex: 1;
   overflow-y: scroll;

@@ -85,8 +85,13 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="置信度" prop="imsiList" width="200"
-                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="置信度" prop="imsiList" width="200">
+          <template slot-scope="scope">
+            <div v-for="item in scope.row.imsiList">
+              <span>{{item.imsi}}<span style="color:#000;font-weight: bold">[{{item.weight / 10}}%]</span></span>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="手机号" prop="phone" width="150"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="身份证号" prop="idCard" width="170"
@@ -270,8 +275,6 @@
           }
         }
         this.listLoading = true;
-        this.vipList = [];
-        this.count = 0;
         this.$post('person/query', this.query, undefined, undefined, "login").then((data) => {
           if ("000000" === data.code) {
             this.vipList = data.data.list;
@@ -282,6 +285,8 @@
               this.getData();
             }, 5000);
           } else {
+            this.vipList = [];
+            this.count = 0;
             this.$message.error(data.msg);
             this.listLoading = false;
           }
@@ -294,6 +299,7 @@
         this.getData();
       },
       pageChange(index) {
+        console.log(index);
         this.query.page = index;
         this.getData();
       },
@@ -305,12 +311,6 @@
       formatterAddress(row, column) {
         if (column.property === 'sex') {
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
-        } else if (column.property === 'imsiList') {
-          let imsi = [];
-          row.imsiList.forEach((item) => {
-            imsi.push(item.imsi + '[' + item.weight / 10 + '%]')
-          });
-          return imsi.join("，");
         } else if (column.property === 'startAge') {
           return row.startAge && row.endAge ? row.startAge + '~' + row.endAge : row.startAge ? row.startAge : row.endAge ? row.endAge : '--';
         } else {

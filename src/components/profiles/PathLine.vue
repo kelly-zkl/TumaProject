@@ -15,7 +15,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item>
-          <!--<el-button @click="luShu" size="medium" type="primary">轨迹回放</el-button>-->
+          <el-button @click="runLineList=true" size="medium" type="primary" v-if="query.merge == false">轨迹回放</el-button>
         </el-form-item>
       </el-form>
       <el-row v-if="query.merge == false">
@@ -31,6 +31,28 @@
       <div class="view-map" id="path"
            v-bind:style="query.merge == false&&faces.length>0&&imsis.length>0?'top: 160px':'top: 100px'"></div>
     </section>
+    <!--轨迹列表-->
+    <el-dialog title="轨迹列表" :visible.sync="runLineList" width="500px" center>
+      <div class="block">
+        <el-row>
+          <el-col :span="24" align="center" v-for="item in pathLines" :key="item.value"
+                  style="text-align: center;border-bottom: 1px #ddd solid" @click.stop="luShu(item)">
+            <el-form :model="item" align="left" label-width="80px" label-position="left">
+              <el-form-item label="类型" style="margin:0">
+                <span
+                  style="font-size: 14px;color:#000">{{item.type=='imsi' ? 'IMSI':item.type=='image'?'图像': '合并'}}</span>
+              </el-form-item>
+              <el-form-item label="IMSI" style="margin:0" v-if="item.type=='imsi'">
+                <span style="font-size: 14px;color:#000">{{item.value ? item.value : '--'}}</span>
+              </el-form-item>
+              <el-form-item label="人员ID" style="margin:0" v-if="item.type=='image'">
+                <span style="font-size: 14px;color:#000">{{item.value ? item.value : '--'}}</span>
+              </el-form-item>
+            </el-form>
+          </el-col>
+        </el-row>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -39,6 +61,7 @@
   export default {
     data() {
       return {
+        runLineList: false,
         query: {imsis: [], faceIds: [], merge: false},
         map: {},
         imsi: this.$route.query.imsi || 0,
@@ -84,15 +107,17 @@
         this.pathLines.forEach((item) => {
           if (item.value == this.choose.face) {
             var pois = [];
-            for (var i = 0; i < item.locs.length; i++) {
-              if (i == 0 && !this.isCenter) {
-                this.isCenter = true;
-                var point = new BMap.Point(item.locs[i].lon, item.locs[i].lat);
-                this.map.centerAndZoom(point, 12);
+            if (item.locs && item.locs.length > 0) {
+              for (var i = 0; i < item.locs.length; i++) {
+                if (i == 0 && !this.isCenter) {
+                  this.isCenter = true;
+                  var point = new BMap.Point(item.locs[i].lon, item.locs[i].lat);
+                  this.map.centerAndZoom(point, 12);
+                }
+                pois.push(new BMap.Point(item.locs[i].lon, item.locs[i].lat));
               }
-              pois.push(new BMap.Point(item.locs[i].lon, item.locs[i].lat));
+              this.pathLine(pois, 0);
             }
-            this.pathLine(pois, 0);
           }
         });
       },
@@ -105,15 +130,17 @@
         this.pathLines.forEach((item) => {
           if (item.value == this.choose.imsi) {
             var pois = [];
-            for (var i = 0; i < item.locs.length; i++) {
-              if (i == 0 && !this.isCenter) {
-                this.isCenter = true;
-                var point = new BMap.Point(item.locs[i].lon, item.locs[i].lat);
-                this.map.centerAndZoom(point, 12);
+            if (item.locs && item.locs.length > 0) {
+              for (var i = 0; i < item.locs.length; i++) {
+                if (i == 0 && !this.isCenter) {
+                  this.isCenter = true;
+                  var point = new BMap.Point(item.locs[i].lon, item.locs[i].lat);
+                  this.map.centerAndZoom(point, 12);
+                }
+                pois.push(new BMap.Point(item.locs[i].lon, item.locs[i].lat));
               }
-              pois.push(new BMap.Point(item.locs[i].lon, item.locs[i].lat));
+              this.pathLine(pois, 1);
             }
-            this.pathLine(pois, 1);
           }
         });
       },
@@ -185,14 +212,25 @@
         }
       },
       //轨迹回放
-      luShu() {
-        var pois = [
-          new BMap.Point(116.350658, 39.938285),
-          new BMap.Point(116.386446, 39.939281),
-          new BMap.Point(116.389034, 39.913828),
-          new BMap.Point(116.442501, 39.914603)
-        ];
-        this.pathLine(pois, 1);
+      luShu(line) {
+        this.runLineList = false;
+        console.log(line);
+        // this.deleteOverlay();
+        var pois = [];
+        var type = 1;
+        if (line.type == 'imsi') {
+          this.choose = {imsi: line.value, face: ''};
+          type = 1;
+        } else if (line.type == 'image') {
+          this.choose = {imsi: '', face: line.value};
+          type = 0;
+        }
+
+        for (var i = 0; i < line.locs.length; i++) {
+          pois.push(new BMap.Point(line.locs[i].lon, line.locs[i].lat));
+        }
+        this.pathLine(pois, type);
+
         var lushu = new BMapLib.LuShu(this.map, pois, {// 回放
           defaultContent: "",//"从天安门到百度大厦"
           autoView: true,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整

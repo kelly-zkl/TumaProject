@@ -113,7 +113,7 @@
       },
       //获取翻码详情
       getDetail() {
-        this.$post('/workflow/translation/detail/' + this.recordId, {}).then((data) => {
+        this.$post('/workflow/translation/detail/' + this.recordId, {userId: JSON.parse(sessionStorage.getItem("user")).userId}).then((data) => {
           this.approval = data.data.record;
           data.data.record.nodes.forEach((item, index) => {
             if (item.nodeName === data.data.record.currentNode) {
