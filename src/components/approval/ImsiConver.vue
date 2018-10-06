@@ -38,12 +38,12 @@
       </el-form>
       <el-table :data="imsiList" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="编号" prop="recordId" min-width="150"
+        <el-table-column align="left" label="编号" prop="recordId" min-width="220"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="业务类型" prop="followType" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="勤务等级" prop="staffLevel" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="业务类型" prop="followType" width="130"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="勤务等级" prop="staffLevel" width="120"
+                         :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="申请人" prop="creatorName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="申请人所属组织" prop="creatorGroupName" min-width="150"
@@ -84,7 +84,7 @@
         listLoading: false,
         activeItem: 'HANDLED',
         imsiList: [],
-        query: {page: 1, size: 10, status: 1},
+        query: {page: 1, size: 10, finishStatus: 1},
         qTime: '',
         count: 0,
         timeColumn: [],
@@ -106,10 +106,10 @@
       handleType(val) {
         if (val.name === 'FINISH') {
           this.timeColumn = [{label: '返回时间', prop: 'time', min: 170, max: 170}];
-          this.query.status = 0;
+          this.query.finishStatus = 0;
         } else {
           this.timeColumn = [];
-          this.query.status = 1;
+          this.query.finishStatus = 3;
         }
         this.getData();
       },
@@ -145,9 +145,9 @@
           this.query.endTime = this.qTime[1] / 1000;
         }
         if (this.activeItem === 'FINISH') {
-          this.query.status = 0;
+          this.query.finishStatus = 0;
         } else {
-          this.query.status = 1;
+          this.query.finishStatus = 3;
         }
         this.listLoading = true;
         this.$post('/workflow/translation/mytranslate/' + JSON.parse(sessionStorage.getItem("user")).userId, this.query).then((data) => {
@@ -173,7 +173,7 @@
         if (column.property === 'followType') {
           return "IMSI翻码";
         } else if (column.property === 'status') {
-          return row.status === 1 ? '待翻码' : row.status === 0 ? '已返回' : '终止';
+          return row.status == 3 ? '待翻码' : row.status == 0 ? '已返回' : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

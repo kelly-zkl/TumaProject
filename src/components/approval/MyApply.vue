@@ -39,12 +39,12 @@
       </el-form>
       <el-table :data="imsiList" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="编号" prop="recordId" min-width="150"
+        <el-table-column align="left" label="编号" prop="recordId" min-width="220"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="业务类型" prop="followType" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="勤务等级" prop="staffLevel" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="业务类型" prop="followType" width="130"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="勤务等级" prop="staffLevel" width="120"
+                         :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="申请时间" prop="createTime" width="170"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="当前节点" prop="currentNode" min-width="150"
@@ -54,7 +54,7 @@
         <el-table-column align="left" v-for="item in timeColumn" :key="item.prop"
                          :label="item.label" :prop="item.prop" :min-width="item.min"
                          :max-width="item.max" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="状态" prop="approveStatus" width="120"
+        <el-table-column align="left" label="状态" prop="status" width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
@@ -84,7 +84,7 @@
         listLoading: false,
         activeItem: 'EXECUTION',
         imsiList: [],
-        query: {page: 1, size: 10, recordStatus: 1},
+        query: {page: 1, size: 10, applyStatus: 1},
         qTime: '',
         count: 0,
         timeColumn: [],
@@ -107,13 +107,13 @@
         if (val.name === 'FINISH') {//终止
           this.timeColumn = [{label: '终止时间', prop: 'suspendTime', min: 170, max: 170},
             {label: '终止原因', prop: 'suspendRemark', min: 120, max: 200}];
-          this.query.recordStatus = 2;
+          this.query.applyStatus = 2;
         } else if (val.name === 'HANDLED') {//已完成
           this.timeColumn = [{label: '完成时间', prop: 'finishTime', min: 170, max: 170}];
-          this.query.recordStatus = 0;
+          this.query.applyStatus = 0;
         } else {//进行中
           this.timeColumn = [];
-          this.query.recordStatus = 1;
+          this.query.applyStatus = 1;
         }
         this.getData();
       },
@@ -162,11 +162,11 @@
           this.query.endTime = this.qTime[1] / 1000;
         }
         if (this.activeItem === 'FINISH') {//终止
-          this.query.recordStatus = 2;
+          this.query.applyStatus = 2;
         } else if (this.activeItem === 'HANDLED') {//已完成
-          this.query.recordStatus = 0;
+          this.query.applyStatus = 0;
         } else {//进行中
-          this.query.recordStatus = 1;
+          this.query.applyStatus = 1;
         }
         this.listLoading = true;
         this.$post('/workflow/translation/myapply/' + JSON.parse(sessionStorage.getItem("user")).userId, this.query).then((data) => {
@@ -191,8 +191,8 @@
       formatterAddress(row, column) {
         if (column.property === 'followType') {
           return "IMSI翻码";
-        } else if (column.property === 'approveStatus') {
-          return row.approveStatus === 1 ? '待审批' : row.approveStatus === 0 ? '已审批' : row.approveStatus === 2 ? '超时/撤销' : '--';
+        } else if (column.property === 'status') {
+          return row.status == 1 ? '进行中' : row.status == 0 ? '已返回' : row.status == 2 ? '终止' : row.status == 3 ? '进行中' : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

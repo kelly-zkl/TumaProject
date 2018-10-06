@@ -39,12 +39,12 @@
       </el-form>
       <el-table :data="imsiList" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="编号" prop="recordId" min-width="150"
+        <el-table-column align="left" label="编号" prop="recordId" min-width="220"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="业务类型" prop="followType" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="勤务等级" prop="staffLevel" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="业务类型" prop="followType" width="130"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="勤务等级" prop="staffLevel" width="120"
+                         :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="申请人" prop="creatorName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="申请人所属组织" prop="creatorGroupName" min-width="150"
@@ -54,7 +54,7 @@
         <el-table-column align="left" v-for="item in timeColumn" :key="item.prop"
                          :label="item.label" :prop="item.prop" :min-width="item.min"
                          :max-width="item.max" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="状态" prop="approveStatus" width="120"
+        <el-table-column align="left" label="状态" prop="status" width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="200">
           <template slot-scope="scope">
@@ -202,8 +202,8 @@
           return row.createTime ? row.createTime : '--';
         } else if (column.property === 'followType') {
           return "IMSI翻码";
-        } else if (column.property === 'approveStatus') {
-          return row.approveStatus === 1 ? '待审批' : row.approveStatus === 0 ? '已审批' : row.approveStatus === 2 ? '超时/撤销' : '--';
+        } else if (column.property === 'status') {
+          return row.status == 1 ? '待审批' : row.status == 0 ? '已审批' : row.status == 2 ? '超时/撤销' : row.status == 3 ? '已审批' : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

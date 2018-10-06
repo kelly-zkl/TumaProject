@@ -14,9 +14,9 @@
             <el-radio-button :label="true">合并轨迹</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item>
-          <el-button @click="runLineList=true" size="medium" type="primary" v-if="query.merge == false">轨迹回放</el-button>
-        </el-form-item>
+        <!--<el-form-item>-->
+        <!--<el-button @click="runLineList=true" size="medium" type="primary" v-if="query.merge == false">轨迹回放</el-button>-->
+        <!--</el-form-item>-->
       </el-form>
       <el-row v-if="query.merge == false">
         <el-col style="text-align: left;" align="left" :span="24">

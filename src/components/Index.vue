@@ -31,9 +31,9 @@
                 </el-button>
               </el-col>
             </el-popover>
-            <el-button class="item" style="text-align: center;width: 120px" v-popover:modifyPsw>
-              <i class="fa fa-user fa-2x" style="display: inline-block;padding-top: 20px"></i>
-              <span style="display: inline-block;padding-left: 5px;height:60px;line-height: 60px">{{userName}}</span>
+            <el-button class="item" style="text-align: center;width: auto" v-popover:modifyPsw>
+              <i class="fa fa-user fa-2x" style="display: inline-block;padding-top: 0"></i>
+              <span style="display: inline-block;padding-left: 5px">{{userName}}</span>
             </el-button>
             <!--<div class="item" style="text-align: center" @click="$router.push({path: '/platforms'})">-->
             <!--<i class="fa fa-retweet fa-2x" style="padding-top: 13px"></i>-->
@@ -389,7 +389,7 @@
     top: 0;
     bottom: 0;
     width: 100%;
-    min-width: 1360px;
+    min-width: 1366px;
     margin-left: -8px;
   }
 

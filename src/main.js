@@ -63,7 +63,11 @@ Vue.prototype.$post = function (path, param, successMsg, failMsg, isLogin) {
     let data = res.data;
     if ("000000" === data.code) {
       if (successMsg !== undefined) {
-        this.$message({message: successMsg, type: 'success'});
+        if (isLogin !== undefined) {
+          this.$message({message: successMsg, type: 'success', duration: 1000});
+        } else {
+          this.$message({message: successMsg, type: 'success'});
+        }
       }
       if (data === undefined) {
         data = {};

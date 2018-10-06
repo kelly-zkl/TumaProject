@@ -71,7 +71,7 @@
       </el-row>
       <el-table :data="vipList" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="人员编号" prop="faceId" min-width="150"
+        <el-table-column align="left" label="人员编号" prop="faceId" min-width="180"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="150"
                          max-width="250" :formatter="formatterAddress">
@@ -85,7 +85,7 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="置信度" prop="imsiList" width="200">
+        <el-table-column align="left" label="置信度" prop="imsiList" width="220">
           <template slot-scope="scope">
             <div v-for="item in scope.row.imsiList">
               <span>{{item.imsi}}<span style="color:#000;font-weight: bold">[{{item.weight / 10}}%]</span></span>

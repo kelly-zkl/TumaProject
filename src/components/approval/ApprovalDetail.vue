@@ -8,20 +8,21 @@
           </el-col>
           <el-col :span="18" align="right">
             <el-button type="primary" size="medium" @click="cancel()"
-                       v-show="show==1&&approval.status==1&&getButtonVial('workflow:translation:cancelapply')">撤销申请
+                       v-show="show==1&&(approval.status==1||approval.status==3)&&getButtonVial('workflow:translation:cancelapply')">
+              撤销申请
             </el-button>
             <el-button type="primary" size="medium" @click="applyPass(0)"
-                       v-show="show==2&&approval.approveStatus==1&&getButtonVial('workflow:translation:approve')">通过
+                       v-show="show==2&&approval.status==1&&getButtonVial('workflow:translation:approve')">通过
             </el-button>
             <el-button type="primary" size="medium" @click="applyPass(1)"
-                       v-show="show==2&&approval.approveStatus==1&&getButtonVial('workflow:translation:approve')">不通过
+                       v-show="show==2&&approval.status==1&&getButtonVial('workflow:translation:approve')">不通过
             </el-button>
             <el-button type="primary" size="medium" @click="updateStatus()"
                        v-show="show==3&&approval.ccReadStatus==1&&getButtonVial('workflow:translation:ccread')">标记已读
             </el-button>
             <!--<el-button type="primary" size="medium" v-show="show==4">翻码返回</el-button>-->
             <el-button type="primary" size="medium" @click="showTranslation()"
-                       v-show="show==4 && getButtonVial('workflow:translation:inputtranslate')">录入翻码
+                       v-show="show==4 &&approval.status==3&& getButtonVial('workflow:translation:inputtranslate')">录入翻码
             </el-button>
           </el-col>
         </el-row>

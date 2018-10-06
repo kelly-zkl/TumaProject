@@ -7,8 +7,16 @@
       </el-tabs>
       <div v-show="activeItem=='imsi'">
         <el-form :inline="true" :model="queryImsi" align="left" style="margin-top: 15px">
+          <el-form-item style="margin-bottom: 10px">
+            <el-input placeholder="设备ID" v-model="queryImsi.deviceId" :maxlength="30"
+                      style="width: 180px" size="medium"></el-input>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-input placeholder="IMSI" v-model="queryImsi.imsi" :maxlength="300" size="medium"
+                      style="width: 160px"></el-input>
+          </el-form-item>
           <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
-            <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
+            <el-select v-model="queryImsi.placeId" placeholder="选择场所" size="medium" filterable clearable>
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
@@ -19,10 +27,6 @@
                             :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                             :picker-options="pickerBeginDate" style="width: 360px">
             </el-date-picker>
-          </el-form-item>
-          <el-form-item style="margin-bottom: 10px">
-            <el-input placeholder="设备ID" v-model="queryImsi.deviceId" :maxlength="30"
-                      style="width: 180px" size="medium"></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button type="primary" size="medium" @click="getImsiData()">搜索</el-button>

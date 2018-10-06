@@ -72,6 +72,8 @@
 <style scoped>
   .main-container {
     position: absolute;
+    padding: 0;
+    margin: 0;
     top: 70px;
     bottom: 0;
     left: 0;

@@ -358,5 +358,20 @@
 }
 
 .el-menu-item.is-active {
-  border-left: 13px solid #6699FF;
+  border-left: 5px solid #6699FF;
 }
+
+/*去除百度地图左下角的Logo*/
+.anchorBL {
+  display: none;
+}
+
+/*去除高德地图左下角的logo*/
+/*.amap-logo {
+  display: none;
+}
+
+.amap-copyright {
+  bottom: -100px;
+  display: none;
+}*/

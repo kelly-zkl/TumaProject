@@ -171,6 +171,9 @@
         catchData: {},
         warning: {},
         hotSpots: [],
+        heatMap: null,
+        deviceChart: null,
+        deviceMap: null,
         isChina: true,
         intervalid: null,
         icon: require('../../assets/img/icon.png'),
@@ -190,7 +193,7 @@
             // this.getMapData();
             this.getWarningCount();
             this.getImsiList();
-            // this.getLineData();
+            this.getLineData();
           }, 10000);
         }
       },
@@ -249,13 +252,13 @@
           if (data.code === '000000') {
             if (data.data.face && data.data.face.length > 0) {
               data.data.face.forEach((item, idx) => {
-                let param = {value: [item.lon, item.lat, item.total]};
+                let param = {lng: item.lon, lat: item.lat, count: item.total};
                 this.hotSpots.push(param);
               });
             }
             if (data.data.imsi && data.data.imsi.length > 0) {
               data.data.imsi.forEach((item, idx) => {
-                let param = {value: [item.lon, item.lat, item.total]};
+                let param = {lng: item.lon, lat: item.lat, count: item.total};
                 this.hotSpots.push(param);
               });
             }
@@ -267,67 +270,33 @@
         });
       },
       getDataHeat() {
-        var app = {};
-
-        let myChart = echarts.init(document.getElementById('dataheat'));
-        let option = {
-          animation: false,
-          grid: {left: 0, right: 0, bottom: 0, top: 0, containLabel: true},
-          bmap: {
-            center: [116.404, 39.915],
-            zoom: 12,
-            roam: true
-          },
-          visualMap: {
-            show: false,
-            min: 0,       		// 值域最小值，必须参数
-            max: 200,			// 值域最大值，必须参数
-            calculable: true,	// 是否启用值域漫游
-            inRange: {
-              color: ['#50a3ba', '#75B755', '#eac736', '#d94e5d']
-              // 指定数值从低到高时的颜色变化
-            },
-            textStyle: {
-              color: '#fff'	// 值域控件的文本颜色
-            },
-            itemWidth: 0,
-            itemHeight: 0,
-            backgroundColor: 'rgba(0,0,0,0)'
-          },
-          series: [
-            {
-              name: '数量', // series名称
-              type: 'heatmap',
-              coordinateSystem: 'bmap',
-              data: this.hotSpots
-            }
-          ]
-        };
-        myChart.setOption(option);
-        if (!app.inNode) {
-          // 添加百度地图插件
-          var bmap = myChart.getModel().getComponent('bmap').getBMap();
-          var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
-          bmap.setMapStyle({style: 'midnight'});
-          bmap.addControl(mapType);          //左上角，默认地图控件
-
+        var _this = this;
+        if (this.heatMap) {
+          var heatmapOverlay = new BMapLib.HeatmapOverlay({"radius": 20});
+          this.heatMap.addOverlay(heatmapOverlay);
+          heatmapOverlay.setDataSet({data: this.hotSpots, max: 10000});
+          //显示热力图
+          heatmapOverlay.show();
+        } else {
+          this.heatMap = new BMap.Map("dataheat");// 创建地图实例
           //定位l
           var point = new BMap.Point(116.331398, 39.897445);
-          bmap.centerAndZoom(point, 12);
+          this.heatMap.centerAndZoom(point, 12);
 
-          var mapStyle = {
-            features: ["road", "building", "water", "land"],//隐藏地图上的poi
-            style: "dark"  //设置地图风格为高端黑
-          };
-
-          function myFun(result) {
-            var cityName = result.name;
-            bmap.setCenter(cityName);
-          }
-
-          var myCity = new BMap.LocalCity();
-          myCity.get(myFun);
+          this.heatMap.enableScrollWheelZoom(); // 允许滚轮缩放
+          var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
+          this.heatMap.setMapStyle({style: 'midnight'});
+          this.heatMap.addControl(mapType);//左上角，默认地图控件
         }
+
+        function myFun(result) {
+          var cityName = result.name;
+          _this.heatMap.setCenter(cityName);
+          _this.heatMap.setZoom(12);
+        }
+
+        var myCity = new BMap.LocalCity();
+        myCity.get(myFun);
       },
       //设备地图
       getMapData() {
@@ -387,95 +356,100 @@
         });
       },
       getDeviceMap() {
-        var app = {};
-        let myChart = echarts.init(document.getElementById('devicemap'));
-        // myChart.clear();
-        let option = {
-          // backgroundColor: "#21206C",
-          tooltip: {
-            trigger: 'item',
-            show: true, //不显示提示标签
-            formatter: function (params) {
-              return '设备：' + params.data.deviceName + '<br/> ID：' + params.data.deviceId +
-                '<br/> 类型：' + params.data.type + '<br/> 状态：' + (params.data.onLine ? "在线" : "离线");
-            }, //提示标签格式
-            backgroundColor: "#070616",//提示标签背景颜色
-            textStyle: {color: "#fff"} //提示标签字体颜色
-          },
-          grid: {left: 0, right: 0, bottom: 0, top: 0, containLabel: true},
-          bmap: {
-            center: [116.404, 39.915],
-            zoom: 12,
-            roam: true
-          },
-          series: [
-            {
-              name: '数量', // series名称
-              type: 'scatter',
-              coordinateSystem: 'bmap',
-              symbolSize: 15,
-              itemStyle: {
-                color: '#FF6600'
+        var _this = this;
+        if (this.deviceChart) {
+          this.deviceChart.setOption({
+            series: [
+              {
+                name: '数量', // series名称
+                type: 'scatter',
+                coordinateSystem: 'bmap',
+                data: this.mapData
               },
-              data: this.mapData
+              {
+                name: 'Top 5',
+                type: 'effectScatter',
+                coordinateSystem: 'bmap',
+                data: this.mapData.filter(function (item) {
+                  return item.onLine;
+                })
+              }
+            ]
+          });
+        } else {
+          var app = {};
+          this.deviceChart = echarts.init(document.getElementById('devicemap'));
+          let option = {
+            // backgroundColor: "#21206C",
+            tooltip: {
+              trigger: 'item',
+              show: true, //不显示提示标签
+              formatter: function (params) {
+                return '设备：' + params.data.deviceName + '<br/> ID：' + params.data.deviceId +
+                  '<br/> 类型：' + params.data.type + '<br/> 状态：' + (params.data.onLine ? "在线" : "离线");
+              }, //提示标签格式
+              backgroundColor: "#070616",//提示标签背景颜色
+              textStyle: {color: "#fff"} //提示标签字体颜色
             },
-            {
-              name: 'Top 5',
-              type: 'effectScatter',
-              coordinateSystem: 'bmap',
-              data: this.mapData.filter(function (item) {
-                return item.onLine;
-              }),
-              symbolSize: 20,
-              showEffectOn: 'render',
-              rippleEffect: {
-                brushType: 'stroke'
+            grid: {left: 0, right: 0, bottom: 0, top: 0, containLabel: true},
+            bmap: {
+              center: [116.404, 39.915],
+              zoom: 12,
+              roam: true
+            },
+            series: [
+              {
+                name: '数量', // series名称
+                type: 'scatter',
+                coordinateSystem: 'bmap',
+                symbolSize: 15,
+                itemStyle: {
+                  color: '#FF6600'
+                },
+                data: this.mapData
               },
-              hoverAnimation: true,
-              itemStyle: {
-                color: '#29A75D',
-                shadowBlur: 10,
-                shadowColor: '#333'
-              },
-              zlevel: 1
-            }
-          ]
-        };
-        myChart.setOption(option);
-        if (!app.inNode) {
-          // 添加百度地图插件
-          // 添加百度地图插件
-          var bmap = myChart.getModel().getComponent('bmap').getBMap();
-          var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
-          bmap.setMapStyle({style: 'midnight'});
-          bmap.addControl(mapType);          //左上角，默认地图控件
-
-          //定位l
-          var point = new BMap.Point(116.331398, 39.897445);
-          bmap.centerAndZoom(point, 12);
-
-          var mapStyle = {
-            features: ["road", "building", "water", "land"],//隐藏地图上的poi
-            style: "dark"  //设置地图风格为高端黑
+              {
+                name: 'Top 5',
+                type: 'effectScatter',
+                coordinateSystem: 'bmap',
+                data: this.mapData.filter(function (item) {
+                  return item.onLine;
+                }),
+                symbolSize: 20,
+                showEffectOn: 'render',
+                rippleEffect: {
+                  brushType: 'stroke'
+                },
+                hoverAnimation: true,
+                itemStyle: {
+                  color: '#29A75D',
+                  shadowBlur: 10,
+                  shadowColor: '#333'
+                },
+                zlevel: 1
+              }
+            ]
           };
-
-          function myFun(result) {
-            var cityName = result.name;
-            bmap.setCenter(cityName);
+          this.deviceChart.setOption(option);
+          if (!app.inNode) {
+            this.deviceMap = this.deviceChart.getModel().getComponent('bmap').getBMap();
+            var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
+            this.deviceMap.setMapStyle({style: 'midnight'});
+            this.deviceMap.addControl(mapType);          //左上角，默认地图控件
+            //定位l
+            var point = new BMap.Point(116.331398, 39.897445);
+            this.deviceMap.centerAndZoom(point, 12);
           }
-
-          var myCity = new BMap.LocalCity();
-          myCity.get(myFun);
-
-          // var markers = [];
-          // for (var i = 0; i < this.mapData.length; i++) {
-          //   var pt = new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]);
-          //   var myIcon = new BMap.Icon(this.icon, new BMap.Size(2, 3));
-          //   markers.push(new BMap.Marker(pt, {icon: myIcon}));
-          // }
-          // //最简单的用法，生成一个marker数组，然后调用markerClusterer类即可。
-          // var markerClusterer = new BMapLib.MarkerClusterer(bmap, {markers: markers});
         }
+
+        function myFun(result) {
+          var cityName = result.name;
+          _this.deviceMap.setCenter(cityName);
+          _this.deviceMap.setZoom(12);
+        }
+
+        var myCity = new BMap.LocalCity();
+        myCity.get(myFun);
       },
       //相机--饼状图
       getCamera() {
@@ -587,7 +561,7 @@
           tooltip: {trigger: 'axis', axisPointer: {type: 'cross'}},
           legend: {textStyle: {color: '#999'}, data: ['IMSI', '图像'], right: '20'},
           xAxis: {
-            data: this.catchData.createTime,
+            data: (this.catchData.createTime ? this.catchData.createTime : []),
             axisLine: {show: true, lineStyle: {color: '#6D6C98'}}
           },
           yAxis: {
@@ -597,11 +571,11 @@
           series: [{
             name: 'IMSI',
             type: 'line',//line -> 折线图  bar -> 柱状图
-            data: this.catchData.imsi
+            data: (this.catchData.imsi ? this.catchData.imsi : [])
           }, {
             name: '图像',
             type: 'line',//line -> 折线图  bar -> 柱状图
-            data: this.catchData.face
+            data: (this.catchData.face ? this.catchData.face : [])
           }]
         };
         // 使用刚指定的配置项和数据显示图表。
@@ -624,7 +598,7 @@
           tooltip: {trigger: 'axis', axisPointer: {type: 'cross'}},
           legend: {textStyle: {color: '#999'}, data: ['IMSI', '图像'], right: '20'},
           xAxis: {
-            data: this.warning.createTime,
+            data: (this.warning.createTime ? this.warning.createTime : []),
             axisLine: {show: true, lineStyle: {color: '#6D6C98'}}
           },
           yAxis: {
@@ -634,11 +608,11 @@
           series: [{
             name: 'IMSI',
             type: 'bar',//line -> 折线图  bar -> 柱状图
-            data: this.warning.imsi
+            data: (this.warning.imsi ? this.warning.imsi : [])
           }, {
             name: '图像',
             type: 'bar',//line -> 折线图  bar -> 柱状图
-            data: this.warning.face
+            data: (this.warning.face ? this.warning.face : [])
           }]
         };
         // 使用刚指定的配置项和数据显示图表。

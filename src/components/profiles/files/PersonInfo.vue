@@ -233,9 +233,9 @@
           this.person.cityCode = this.selectedOptions2[1];
           this.person.areaCode = this.selectedOptions2[2];
         }
-        this.runModifyPerson = false;
         this.$post("/manager/user/updatePwdByAdmin", this.person, '修改成功').then(() => {
           this.getUserData();
+          this.runModifyPerson = false;
         });
       },
       getUserData() {
