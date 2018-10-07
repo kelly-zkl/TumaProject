@@ -65,14 +65,14 @@
       <div v-show="activeItem=='person'" style="padding: 20px 0">
         <div class="face-main">
           <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
-            <img :src="item.fileUrl?item.fileUrl:imgPath"/>
+            <img :src="item.faceUrl?item.faceUrl:imgPath"/>
             <el-form :model="item" align="left" label-width="80px" label-position="right"
                      style="position: absolute;top: 15px;left:150px;text-align: left">
               <el-form-item label="档案ID" style="margin:0">
                 <span style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
                 <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
               </el-form-item>
-              <el-form-item label="伴随次数" style="margin:0">
+              <el-form-item label="关联次数" style="margin:0">
                 <span style="font-size: 15px;color:#000">{{item.fnIn}}</span>
               </el-form-item>
               <el-form-item label="置信度" style="margin:0">

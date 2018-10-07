@@ -299,7 +299,6 @@
         this.getData();
       },
       pageChange(index) {
-        console.log(index);
         this.query.page = index;
         this.getData();
       },

@@ -5,7 +5,7 @@
         <el-col :span="18" style="text-align: center" align="center">
           <div style="font-size:14px;text-align: center">基本信息</div>
         </el-col>
-        <el-col :span="6" style="text-align: right" align="right">
+        <el-col :span="6" style="text-align: right" align="right" v-show="false">
           <el-button type="text" style="margin: 0;padding: 0" @click="clickModify()">修改基本信息</el-button>
         </el-col>
       </el-row>
@@ -68,19 +68,21 @@
            v-if="persons.length>0 || imsiList.length>0">
         <el-row>
           <el-col :span="12" style="border-right: 1px solid #D0CACF">
-            <div class="face-main">
+            <div class="face-main" v-if="persons.length>0">
               <div class="face-item" v-for="item in persons" :key="item.id">
                 <img :src="item.faceUrl?item.faceUrl:imgPath">
                 <div style="font-size:14px;height: 20px;line-height: 20px">{{item.timeStr}}</div>
               </div>
             </div>
+            <div v-else style="width:100%;color: #909399;font-size: 14px;text-align: center">暂无数据</div>
           </el-col>
           <el-col :span="12">
-            <el-col :span="24" align="center" v-for="item in imsiList" :key="item.imsi">
+            <el-col :span="24" align="center" v-for="item in imsiList" :key="item.imsi" v-if="imsiList.length>0">
               <el-button type="text" @click="gotoDetail(item)">
                 {{item.imsi}} {{item.regional}} {{item.ispDes}} {{'['+item.weightDes+']'}}
               </el-button>
             </el-col>
+            <div v-else style="width:100%;color: #909399;font-size: 14px;text-align: center">暂无数据</div>
           </el-col>
         </el-row>
       </div>
