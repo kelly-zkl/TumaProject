@@ -13,7 +13,7 @@
         </el-col>
       </el-row>
       <div class="add-appdiv dialog" style="border-top: none;padding: 10px 30px;border-radius: 0 0 4px 4px">
-        <el-form :model="imsiDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
+        <el-form :model="imsiDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="120px">
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8">
               <el-form-item label="IMSI信息" align="left" style="margin: 0;text-align: left">
@@ -24,7 +24,7 @@
                   {{imsiDetail.isp == 0 ? '移动' : imsiDetail.isp == 1 ? '联通' : imsiDetail.isp == 2 ? '电信' : '未知'}}
                 </span>
               </el-form-item>
-              <el-form-item label="归属地" align="left" style="margin: 0;text-align: left">
+              <el-form-item label="IMSI归属地" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000">{{imsiDetail.regional ? imsiDetail.regional : '--'}}</span>
               </el-form-item>
             </el-col>
@@ -32,10 +32,10 @@
               <el-form-item label="告警时间" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000">{{imsiDetail.timeStr ? imsiDetail.timeStr : '--'}}</span>
               </el-form-item>
-              <el-form-item label="告警地区" align="left" style="margin: 0;text-align: left">
+              <el-form-item label="场所地区" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000">{{imsiDetail.area ? imsiDetail.area : '--'}}</span>
               </el-form-item>
-              <el-form-item label="告警地点" align="left" style="margin: 0;text-align: left">
+              <el-form-item label="场所地点" align="left" style="margin: 0;text-align: left">
                 <span
                   style="font-size: 15px;color:#000">{{imsiDetail.detailAddress ? imsiDetail.detailAddress : '--'}}</span>
               </el-form-item>
@@ -57,7 +57,7 @@
       <el-row>
         <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
-            <el-tab-pane label="对应人员" name="person"></el-tab-pane>
+            <el-tab-pane label="关联人员" name="person"></el-tab-pane>
             <el-tab-pane label="侦码记录" name="list"></el-tab-pane>
           </el-tabs>
         </el-col>
@@ -73,7 +73,7 @@
                 <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
               </el-form-item>
               <el-form-item label="关联次数" style="margin:0">
-                <span style="font-size: 15px;color:#000">{{item.fnIn}}</span>
+                <span style="font-size: 15px;color:#000">{{item.fnIn>=0?item.fnIn:'--'}}</span>
               </el-form-item>
               <el-form-item label="置信度" style="margin:0">
                 <span style="font-size: 15px;color:#000">{{item.weight?item.weight/10+'%':'--'}}</span>

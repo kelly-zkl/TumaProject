@@ -8,11 +8,14 @@
                           :default-time="['00:00:00', '23:59:59']" size="medium">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="轨迹模式">
-          <el-radio-group v-model="query.merge" size="medium" @change="handleChange">
-            <el-radio-button :label="false">记录轨迹</el-radio-button>
-            <el-radio-button :label="true">合并轨迹</el-radio-button>
-          </el-radio-group>
+        <!--<el-form-item label="轨迹模式">-->
+        <!--<el-radio-group v-model="query.merge" size="medium" @change="handleChange">-->
+        <!--<el-radio-button :label="false">记录轨迹</el-radio-button>-->
+        <!--<el-radio-button :label="true">合并轨迹</el-radio-button>-->
+        <!--</el-radio-group>-->
+        <!--</el-form-item>-->
+        <el-form-item>
+          <el-button @click="getLineData" size="medium" type="primary">搜索</el-button>
         </el-form-item>
         <!--<el-form-item>-->
         <!--<el-button @click="runLineList=true" size="medium" type="primary" v-if="query.merge == false">轨迹回放</el-button>-->
@@ -20,16 +23,16 @@
       </el-form>
       <el-row v-if="query.merge == false">
         <el-col style="text-align: left;" align="left" :span="24">
-          <el-radio-group v-model="choose.face" @change="handleFace">
-            <el-radio v-for="item in faces" :key="item" :label="item">{{item}}</el-radio>
-          </el-radio-group>
+          <!--<el-radio-group v-model="choose.face" @change="handleFace">-->
+          <!--<el-radio v-for="item in faces" :key="item" :label="item">{{item}}</el-radio>-->
+          <!--</el-radio-group>faces.length>0&&-->
           <el-radio-group v-model="choose.imsi" @change="handleImsi">
             <el-radio v-for="item in imsis" :key="item" :label="item">{{item}}</el-radio>
           </el-radio-group>
         </el-col>
       </el-row>
       <div class="view-map" id="path"
-           v-bind:style="query.merge == false&&faces.length>0&&imsis.length>0?'top: 160px':'top: 100px'"></div>
+           v-bind:style="query.merge == false&&imsis.length>0?'top: 160px':'top: 100px'"></div>
     </section>
     <!--轨迹列表-->
     <el-dialog title="轨迹列表" :visible.sync="runLineList" width="500px" center>
@@ -74,7 +77,7 @@
         faces: [],
         imsis: [],
         isCenter: false,
-        choose: {imsi: '', face: ''},
+        choose: {imsi: '', face: ''},//
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -146,6 +149,8 @@
       },
       //获取数据
       getLineData() {
+        this.map.clearOverlays();
+        this.isCenter = false;
         if (this.cTime) {//时间戳的毫秒转化成秒
           this.query.startTime = this.cTime[0] / 1000;
           this.query.endTime = this.cTime[1] / 1000;
@@ -160,7 +165,7 @@
             }
             this.pathLine(pois, 1);
           } else {
-            this.faceLine();
+            // this.faceLine();
             this.imsiLine();
           }
         }).catch((err) => {
@@ -298,7 +303,6 @@
           this.choose.face = pathFace[0];
         }
       }
-
       // var pois = [
       //   new BMap.Point(116.350658, 39.938285),
       //   new BMap.Point(116.386446, 39.939281),

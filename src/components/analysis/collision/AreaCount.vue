@@ -24,7 +24,7 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="归属地" prop="regional" min-width="125"
+        <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="IMSI数量" prop="count1" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>

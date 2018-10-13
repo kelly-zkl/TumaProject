@@ -26,12 +26,12 @@
           <el-input v-model="query.caseName" placeholder="案件名称" size="medium" style="width: 160px"
                     :maxlength=30></el-input>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
-          <el-select v-model="query.placeId" placeholder="布控场所" size="medium" filterable clearable>
-            <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
+        <!--<el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">-->
+        <!--<el-select v-model="query.placeId" placeholder="布控场所" size="medium" filterable clearable>-->
+        <!--<el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">-->
+        <!--</el-option>-->
+        <!--</el-select>-->
+        <!--</el-form-item>-->
         <el-form-item style="margin-bottom: 10px">
           <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
         </el-form-item>

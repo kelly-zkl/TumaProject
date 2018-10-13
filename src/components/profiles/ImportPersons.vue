@@ -85,7 +85,7 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="置信度" prop="imsiList" width="220">
+        <el-table-column align="left" label="IMSI[置信度]" prop="imsiList" width="220">
           <template slot-scope="scope">
             <div v-for="item in scope.row.imsiList">
               <span>{{item.imsi}}<span style="color:#000;font-weight: bold">[{{item.weight / 10}}%]</span></span>
@@ -244,6 +244,7 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
+            this.query.similarThreshold = 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.getData();
           }
@@ -257,6 +258,12 @@
       },
       //获取IMSI告警列表
       getData() {
+        if (this.query.faceUrl) {
+          if (!this.query.similarThreshold) {
+            this.$message.error('请输入相似度');
+            return;
+          }
+        }
         if (this.query.similarThreshold) {
           if (!doubleValid(this.query.similarThreshold)) {
             this.$message.error('相似度为0.1-99的数字');

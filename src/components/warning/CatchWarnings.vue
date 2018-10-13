@@ -39,7 +39,7 @@
           </el-select>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-if="activeItem=='H'">
-          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
+          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
                           start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                           :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                           :picker-options="pickerBeginDate">
@@ -170,6 +170,13 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      handleChange(val) {
+        if (!val || val.length == 0) {
+          this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+            new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+          this.getData();
+        }
+      },
       handleType(val, ev) {
         this.clearData();
 
@@ -190,6 +197,7 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
+            this.query.similarThreshold = 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.isSearch = true;
             this.getData();
@@ -210,7 +218,12 @@
         if (this.activeItem === 'H') {
           url = 'warning/get/listFaceHistory';
         }
-
+        if (this.query.faceUrl) {
+          if (!this.query.similarThreshold) {
+            this.$message.error('请输入相似度');
+            return;
+          }
+        }
         if (!!this.qTime) {
           this.query.startTime = this.qTime[0] / 1000;
           this.query.endTime = this.qTime[1] / 1000;

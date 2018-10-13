@@ -7,7 +7,7 @@
         </el-col>
       </el-row>
       <div class="add-appdiv dialog" style="border-top: none;padding: 10px 30px;border-radius: 0 0 4px 4px">
-        <el-form :model="imsiDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
+        <el-form :model="imsiDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="120px">
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8">
               <el-form-item label="IMSI信息" align="left" style="margin: 0">
@@ -18,7 +18,7 @@
                   {{imsiDetail.isp == 0 ? '移动' : imsiDetail.isp == 1 ? '联通' : imsiDetail.isp == 2 ? '电信' : '未知'}}
                 </span>
               </el-form-item>
-              <el-form-item label="归属地" align="left" style="margin: 0">
+              <el-form-item label="IMSI归属地" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{imsiDetail.regional ? imsiDetail.regional : '--'}}</span>
               </el-form-item>
               <el-form-item label="网络类型" align="left" style="margin: 0">
@@ -29,10 +29,10 @@
               <el-form-item label="抓取时间" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{imsiDetail.timeStr ? imsiDetail.timeStr : '--'}}</span>
               </el-form-item>
-              <el-form-item label="抓取地区" align="left" style="margin: 0">
+              <el-form-item label="场所地区" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{imsiDetail.area ? imsiDetail.area : '--'}}</span>
               </el-form-item>
-              <el-form-item label="抓取地点" align="left" style="margin: 0">
+              <el-form-item label="场所地点" align="left" style="margin: 0">
                 <span
                   style="font-size: 15px;color:#000">{{imsiDetail.detailAddress ? imsiDetail.detailAddress : '--'}}</span>
               </el-form-item>
@@ -70,7 +70,7 @@
                 <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
               </el-form-item>
               <el-form-item label="关联次数" style="margin:0">
-                <span style="font-size: 15px;color:#000">{{item.fnIn}}</span>
+                <span style="font-size: 15px;color:#000">{{item.fnIn>=0?item.fnIn:'--'}}</span>
               </el-form-item>
               <el-form-item label="置信度" style="margin:0">
                 <span style="font-size: 15px;color:#000">{{item.weight?item.weight/10+'%':'--'}}</span>
@@ -132,7 +132,7 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="netType" label="网络类型" max-width="150" min-width="100"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="归属地" max-width="200" min-width="150" prop="regional"
+          <el-table-column align="left" label="IMSI归属地" max-width="200" min-width="150" prop="regional"
                            :formatter="formatterAddress"></el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">

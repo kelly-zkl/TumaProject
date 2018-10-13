@@ -16,7 +16,7 @@
         <el-col :span="18" align="left">
           <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('case:query')">
             <el-form-item style="margin-bottom: 10px">
-              <el-input v-model="query.caseName" placeholder="案件名称" size="medium" style="width: 160px"
+              <el-input v-model="query.caseName" placeholder="案件编号/名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">

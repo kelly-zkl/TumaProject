@@ -19,6 +19,7 @@
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
+            <el-button type="primary" size="medium" @click="mapVisible=true" style="margin-left: 10px">地图选择</el-button>
           </el-form-item>
         </div>
         <h5 class="add-label">设置布控人员</h5>
@@ -26,7 +27,7 @@
           <el-form-item label="特征布控" align="left" style="margin: 0">
             <el-upload :action="uploadUrl" list-type="picture-card" :before-remove="beforeRemove"
                        :on-change="handleChange" :limit="20">
-              <i class="el-icon-plus"></i>
+              <div class="el-upload__text" style="color: #777">上传头像</div>
             </el-upload>
             <el-row style="margin-top: 15px">
               <el-col :span="24">
@@ -34,7 +35,7 @@
                         :disable-transitions="false" @close="handleClose(tag)">{{tag}}
                 </el-tag>
                 <el-input class="input-tag" v-show="inputVisible && controlTask.imsiList.length<20" v-model="inputValue"
-                          ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm"
+                          ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm" :maxlength="15"
                           @blur="handleInputConfirm">
                 </el-input>
                 <el-button v-show="!inputVisible && controlTask.imsiList.length<20" class="button-tag" size="small"
@@ -82,10 +83,21 @@
       <div class="block" style="margin-top: 30px">
         <el-button type="primary" @click="createControlTask()">确认创建布控</el-button>
       </div>
+      <!--在地图上选择场所-->
+      <el-dialog title="选择场所" :visible.sync="mapVisible">
+        <PlaceMap @getPlaceList="getPlaceList"></PlaceMap>
+        <div class="block" style="margin-top: 20px">
+          <el-button @click="mapVisible = false">取消</el-button>
+          <el-button type="primary" @click="setPlaceList">确定</el-button>
+        </div>
+      </el-dialog>
     </section>
   </div>
 </template>
 <script>
+  import {numValid} from "../../../assets/js/api";
+  import PlaceMap from '../PlaceMap';
+
   export default {
     data() {
       let nameValidator = (rule, value, callback) => {
@@ -103,9 +115,11 @@
         }
       };
       return {
+        mapVisible: false,
         controlTask: {cycleType: 'EVERYDAY', intervalType: 'ALLDAY', week: [], imsiList: [], featureList: []},
         cases: [],
         places: [],
+        placeList: [],
         inputVisible: false,
         inputValue: '',
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
@@ -125,10 +139,19 @@
       }
     },
     methods: {
+      //地图选择场所
+      setPlaceList() {
+        this.controlTask.placeList = this.placeList;
+        this.mapVisible = false;
+      },
+      //获得地图选择的场所
+      getPlaceList(pos) {
+        this.placeList = pos;
+        // console.log(pos);
+      },
       //图像个数变化
       handleChange(file, fileList) {
         this.controlTask.featureList = [];
-        console.log(fileList);
         fileList.forEach((item) => {
           if (item.status === 'success') {
             let data = item.response;
@@ -139,7 +162,6 @@
             }
           }
         });
-        console.log(this.controlTask.featureList);
       },
       beforeRemove(file, fileList) {
         return this.$confirm(`确定移除 ${ file.name }？`);
@@ -159,10 +181,27 @@
       handleInputConfirm() {
         let inputValue = this.inputValue;
         if (inputValue) {
-          this.controlTask.imsiList.push(inputValue);
+          if (!numValid(inputValue) || inputValue.length != 15) {
+            this.$message.error('请输入15位正确的IMSI');
+            return;
+          }
+          if (this.isMultiple(inputValue)) {
+            this.controlTask.imsiList.push(inputValue);
+          }
         }
         this.inputVisible = false;
         this.inputValue = '';
+      },
+      //是否重复
+      isMultiple(val) {
+        let bol = true;
+        this.controlTask.imsiList.forEach((item) => {
+          if (val == item) {
+            this.$message.error('重复IMSI');
+            bol = false;
+          }
+        });
+        return bol;
       },
       //创建布控任务
       createControlTask() {
@@ -185,7 +224,7 @@
               this.controlTask.startTimeInterval = this.controlTask.timerange[0];
               this.controlTask.endTimeInterval = this.controlTask.timerange[1];
             }
-            if (this.controlTask.featureList === 0 && this.controlTask.imsiList.length === 0) {
+            if (this.controlTask.featureList.length === 0 && this.controlTask.imsiList.length === 0) {
               this.$message.error('请设置布控人员特征');
               return;
             }
@@ -248,6 +287,9 @@
     mounted() {
       this.getCases();
       this.getPlaces();
+    },
+    components: {
+      PlaceMap
     }
   }
 </script>

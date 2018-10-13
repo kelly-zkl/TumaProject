@@ -87,26 +87,26 @@
           </el-row>
           <div class="overview">
             <el-table :data="imgList" :header-cell-style="{background:'#100E5A'}" stripe>
-              <el-table-column align="left" label="图像" style="align-content: center">
+              <el-table-column align="left" label="图像" style="align-content: center" min-width="90" max-width="200">
                 <template slot-scope="scope">
                   <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" class="user-img"/>
                 </template>
               </el-table-column>
-              <el-table-column align="left" label="IMSI" prop="imsiList">
+              <el-table-column align="left" label="IMSI" prop="imsiList" min-width="140" max-width="200">
                 <template slot-scope="scope">
                   <div v-for="item in scope.row.imsiList">
                     <span>{{item.imsi}}</span>
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column align="left" label="置信度" prop="imsiList">
+              <el-table-column align="left" label="置信度" prop="imsiList" min-width="70" max-width="250">
                 <template slot-scope="scope">
                   <div v-for="item in scope.row.imsiList">
                     <span>{{item.weight / 10 + '%'}}</span>
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column align="left" label="碰撞时间" prop="uptime"
+              <el-table-column align="left" label="碰撞时间" prop="uptime" min-width="160" max-width="200"
                                :formatter="formatterAddress"></el-table-column>
             </el-table>
           </div>
@@ -158,24 +158,31 @@
     data() {
       return {
         activeItem: 'device',
-        indx: 1,
         imgList: [],
-        deviceImsi: {},
-        camera: {},
-        mapData: [],
-        devicePie: {},
-        warningCount: 0,
-        addImsiCount: 0,
-        addFaceCount: 0,
-        collCount: 0,
-        catchData: {},
-        warning: {},
-        hotSpots: [],
-        heatMap: null,
-        deviceChart: null,
-        deviceMap: null,
-        isChina: true,
-        intervalid: null,
+        mapData: [],//设备实况数据
+        deviceChart: null,//设备实况的eCharts
+        deviceMap: null,//设备地图
+        mapPoint: null,//设备实况地图的中心点
+        mapZoom: 12,//设备实况地图的放大倍数
+        devicePie: {//相机设备和侦码设备的饼状图数据
+          device1: {count: 0, data: [{value: 0, name: '在线'}, {value: 0, name: '离线'}]},
+          device2: {count: 0, data: [{value: 0, name: '在线'}, {value: 0, name: '离线'}]}
+        },
+        warningCount: 0,//告警次数
+        addImsiCount: 0,//新增imsi数
+        addFaceCount: 0,//新增头像数
+        collCount: 0,//碰撞次数
+        catchData: {imsi: [], face: [], createTime: []},//近7天抓取数据
+        warning: {imsi: [], face: [], createTime: []},//近7天告警数据
+        hotSpots: [],//热力图数据
+        hotPoint: null,//热力图的中心点
+        hotZoom: 12,//热力图的放大倍数
+        heatMap: null,//热力图的地图
+        devicePieChart: null,//侦码设备饼状图
+        cameraPieChart: null,//相机设备饼状图
+        catchLineChart: null,//抓取数据折线图
+        warningBarChart: null,//告警数据柱状图
+        intervalid: null,//定时器
         icon: require('../../assets/img/icon.png'),
         imgPath: require('../../assets/img/icon_people.png')
       }
@@ -189,12 +196,12 @@
       statusTask() {
         if (!this.intervalid) {
           this.intervalid = setInterval(() => {
-            // this.getHotSpot();
-            // this.getMapData();
+            this.getHotSpot();
+            this.getMapData();
             this.getWarningCount();
             this.getImsiList();
             this.getLineData();
-          }, 10000);
+          }, 10 * 1000);
         }
       },
       handleType(val) {
@@ -207,7 +214,7 @@
       },
       //从数据库获取一定数量的图码碰撞记录数据展示在首页上
       getImsiList() {
-        this.$post('/home/getTodayCollideList', {num: 10}).then((data) => {
+        this.$post('/home/getTodayCollideList', {num: 5}).then((data) => {
           if ('000000' === data.code) {
             this.imgList = data.data;
           }
@@ -248,16 +255,10 @@
       },
       //数据热力图
       getHotSpot() {
-        this.$post('/home/getHotSpot', {num: 99999}).then((data) => {
+        this.$post('/home/getHotSpot', {}).then((data) => {//指定获取30分钟的数据
           if (data.code === '000000') {
-            if (data.data.face && data.data.face.length > 0) {
-              data.data.face.forEach((item, idx) => {
-                let param = {lng: item.lon, lat: item.lat, count: item.total};
-                this.hotSpots.push(param);
-              });
-            }
-            if (data.data.imsi && data.data.imsi.length > 0) {
-              data.data.imsi.forEach((item, idx) => {
+            if (data.data && data.data.length > 0) {
+              data.data.forEach((item, idx) => {
                 let param = {lng: item.lon, lat: item.lat, count: item.total};
                 this.hotSpots.push(param);
               });
@@ -272,47 +273,69 @@
       getDataHeat() {
         var _this = this;
         if (this.heatMap) {
-          var heatmapOverlay = new BMapLib.HeatmapOverlay({"radius": 20});
-          this.heatMap.addOverlay(heatmapOverlay);
-          heatmapOverlay.setDataSet({data: this.hotSpots, max: 10000});
-          //显示热力图
-          heatmapOverlay.show();
-        } else {
+          this.hotPoint = this.heatMap.getCenter();
+          this.hotZoom = this.heatMap.getZoom();
+        }
+        if (!this.heatMap) {
           this.heatMap = new BMap.Map("dataheat");// 创建地图实例
-          //定位l
-          var point = new BMap.Point(116.331398, 39.897445);
-          this.heatMap.centerAndZoom(point, 12);
-
           this.heatMap.enableScrollWheelZoom(); // 允许滚轮缩放
           var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
           this.heatMap.setMapStyle({style: 'midnight'});
           this.heatMap.addControl(mapType);//左上角，默认地图控件
+        } else {
+          this.heatMap.clearHotspots();//清空地图所有热区,添加新数据
+          var heatmapOverlay = new BMapLib.HeatmapOverlay({"radius": 40});
+          this.heatMap.addOverlay(heatmapOverlay);
+          heatmapOverlay.setDataSet({data: this.hotSpots, max: 2500});
+          // heatmapOverlay.setOptions({
+          //   gradient: {
+          //     0.45: "rgb(0,0,255)", 0.55: "rgb(0,255,255)", 0.7: "rgb(0,255,0)", 0.9: "yellow", 1.0: "rgb(255,0,0)"
+          //   }
+          // });
+          heatmapOverlay.show();//显示热力图
+        }
+        //IP定位
+        if (!this.hotPoint) {
+          var point = new BMap.Point(116.331398, 39.897445);
+          this.heatMap.centerAndZoom(point, this.hotZoom);
+
+          function myFun(result) {
+            var cityName = result.name;
+            _this.heatMap.setCenter(cityName);
+            _this.heatMap.setZoom(_this.hotZoom);
+            _this.hotPoint = _this.heatMap.getCenter();
+          }
+
+          var myCity = new BMap.LocalCity();
+          myCity.get(myFun);
+        } else {
+          this.heatMap.centerAndZoom(this.hotPoint, this.hotZoom);
         }
 
-        function myFun(result) {
-          var cityName = result.name;
-          _this.heatMap.setCenter(cityName);
-          _this.heatMap.setZoom(12);
+        function zoom() {
+          _this.heatMap.centerAndZoom(_this.heatMap.getCenter(), _this.heatMap.getZoom());
+          _this.hotPoint = _this.heatMap.getCenter();
+          _this.hotZoom = _this.heatMap.getZoom();
         }
 
-        var myCity = new BMap.LocalCity();
-        myCity.get(myFun);
+        this.heatMap.addEventListener("zoomend", zoom);
+        this.heatMap.addEventListener("dragend", zoom);
       },
       //设备地图
       getMapData() {
         this.$post('/home/getAllDevice', {}).then((data) => {
           if (data.code === '000000') {
-            this.deviceImsi = data.data.imsiDeviceDistribute;
-            this.camera = data.data.cameraDeviceDistribute;
+            var deviceImsi = data.data.imsiDeviceDistribute;
+            var camera = data.data.cameraDeviceDistribute;
 
             let device1 = {
-              count: this.deviceImsi.count,
-              data: [{value: this.deviceImsi.onlineCount, name: '在线'},
-                {value: this.deviceImsi.offlineCount, name: '离线'}]
+              count: deviceImsi.count,
+              data: [{value: deviceImsi.onlineCount, name: '在线'},
+                {value: deviceImsi.offlineCount, name: '离线'}]
             };
             let device2 = {
-              count: this.camera.count,
-              data: [{value: this.camera.onlineCount, name: '在线'}, {value: this.camera.offlineCount, name: '离线'}]
+              count: camera.count,
+              data: [{value: camera.onlineCount, name: '在线'}, {value: camera.offlineCount, name: '离线'}]
             };
             this.devicePie.device1 = device1;
             this.devicePie.device2 = device2;
@@ -325,7 +348,8 @@
                 }
                 let param = {
                   name: item.city, value: [item.devicePos.longitude, item.devicePos.latitude, 1],
-                  deviceName: item.deviceName, deviceId: item.deviceId, type: '侦码设备', onLine: onLine
+                  deviceName: item.deviceName, deviceId: item.deviceId, type: '侦码设备', onLine: onLine,
+                  placeName: item.placeName
                 };
                 this.mapData.push(param);
               }
@@ -337,7 +361,7 @@
               }
               let param = {
                 name: item.name, value: [item.longitude, item.latitude, 1], deviceName: item.name,
-                deviceId: item.cameraCode, onLine: onLine, type: '相机设备'
+                deviceId: item.cameraCode, onLine: onLine, type: '相机设备', placeName: item.placeName
               };
               this.mapData.push(param);
             });
@@ -346,10 +370,11 @@
             this.getDevice();
           }
         }).catch((err) => {
-          this.deviceImsi = {};
-          this.camera = {};
           this.mapData = [];
-          this.devicePie = {};
+          this.devicePie = {
+            device1: {count: 0, data: [{value: 0, name: '在线'}, {value: 0, name: '离线'}]},
+            device2: {count: 0, data: [{value: 0, name: '在线'}, {value: 0, name: '离线'}]}
+          };
           this.getDeviceMap();
           this.getCamera();
           this.getDevice();
@@ -357,39 +382,30 @@
       },
       getDeviceMap() {
         var _this = this;
-        if (this.deviceChart) {
-          this.deviceChart.setOption({
-            series: [
-              {
-                name: '数量', // series名称
-                type: 'scatter',
-                coordinateSystem: 'bmap',
-                data: this.mapData
-              },
-              {
-                name: 'Top 5',
-                type: 'effectScatter',
-                coordinateSystem: 'bmap',
-                data: this.mapData.filter(function (item) {
-                  return item.onLine;
-                })
-              }
-            ]
-          });
-        } else {
+        if (this.deviceMap) {
+          this.mapPoint = this.deviceMap.getCenter();
+          this.mapZoom = this.deviceMap.getZoom();
+        }
+        if (!this.deviceChart) {//deviceChart不存在，创建实例
           var app = {};
           this.deviceChart = echarts.init(document.getElementById('devicemap'));
           let option = {
             // backgroundColor: "#21206C",
             tooltip: {
               trigger: 'item',
+              padding: [5, 10],
               show: true, //不显示提示标签
               formatter: function (params) {
-                return '设备：' + params.data.deviceName + '<br/> ID：' + params.data.deviceId +
-                  '<br/> 类型：' + params.data.type + '<br/> 状态：' + (params.data.onLine ? "在线" : "离线");
+                var res = '';
+                res += '设备类型：' + params.data.type + '<br>';
+                res += '设 备 ID ：' + params.data.deviceId + '<br>';
+                res += '在线状态：' + (params.data.onLine ? "在线" : "离线") + '<br>';
+                res += '安装场所：' + (params.data.placeName ? params.data.placeName : '--') + '<br>';
+                res += '设备标识：' + params.data.deviceName + '<br>';
+                return res;
               }, //提示标签格式
               backgroundColor: "#070616",//提示标签背景颜色
-              textStyle: {color: "#fff"} //提示标签字体颜色
+              textStyle: {color: "#fff", align: 'left'} //提示标签字体颜色
             },
             grid: {left: 0, right: 0, bottom: 0, top: 0, containLabel: true},
             bmap: {
@@ -402,31 +418,7 @@
                 name: '数量', // series名称
                 type: 'scatter',
                 coordinateSystem: 'bmap',
-                symbolSize: 15,
-                itemStyle: {
-                  color: '#FF6600'
-                },
-                data: this.mapData
-              },
-              {
-                name: 'Top 5',
-                type: 'effectScatter',
-                coordinateSystem: 'bmap',
-                data: this.mapData.filter(function (item) {
-                  return item.onLine;
-                }),
-                symbolSize: 20,
-                showEffectOn: 'render',
-                rippleEffect: {
-                  brushType: 'stroke'
-                },
-                hoverAnimation: true,
-                itemStyle: {
-                  color: '#29A75D',
-                  shadowBlur: 10,
-                  shadowColor: '#333'
-                },
-                zlevel: 1
+                data: []
               }
             ]
           };
@@ -436,83 +428,184 @@
             var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
             this.deviceMap.setMapStyle({style: 'midnight'});
             this.deviceMap.addControl(mapType);          //左上角，默认地图控件
-            //定位l
-            var point = new BMap.Point(116.331398, 39.897445);
-            this.deviceMap.centerAndZoom(point, 12);
           }
+        } else {
+          this.deviceChart.setOption({
+            series: [
+              {
+                name: '数量', // series名称
+                type: 'scatter',
+                coordinateSystem: 'bmap',
+                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAACxAAAAsQHGLUmNAAADAUlEQVRYhe1XS08TURT+7p3pw7aALyCaYDGNj8QYTVuLPFy50h1K1MSFLkzcGfkDmrjRjUqMO13IwoULy8aYuHBDAAVKowvjg2CAxKAxWmkp05nOPceFDlRoDY8huPDb3TPnzvlyznfOyRXMjPWEXNfo/wkA0N382YdEtM0rxRkhECq1K8Jnm/nJ7qF038I7wg0RfmyK3djgFR1+XUZ8uijrY9oMo0ivjSLfjQyO3HeFwPjh2HGfR9yp8WuRpd5RxMia1D9r0dldQ+mJFRN4fyh6ui6k3/PposqxZQuUt4n7LJtfWYo/A4AmsT/glXt8umgNeOYll7doKmOoUyvWgF8Xx5zgps25bEElwy9GzlfyH01Ew4bONzdukCc1KRD0ym3f8iq+YgI2wZ8zCcQ8Zhb5UuPLkafjzbFOjyZO6lK0On7MyCvmV1KIBw0DqY6xptiFoFd2Bb0iCLgkwtFENBzwyofVPtmqyfIiVMT4YdDjhoFUx2giGlaE9r2pdJcrBN7Fo5d3bPLcds6zRYJl82vFqAl5ZaPTGYoYn6btzr2pdJfj6+ogUsT4OmN3Z2ZV4/a+1MGG/tTOr3n7SMZQ/QBQLjuuDCJNomcyU4QQmNoznH4EAOPNsc6i4uTv4dP2Nh69rkvUaRI9pXddKcFCjDfHOrcEtFszFo3NmHR011B6opLvmuwCARzQpECNX4soQvtffZ0MjCai4ZBPPpdCLHmqVYImAWfo5Ez64xsx/5GVOQ0oQvtyRupSUeVblOTItEHtALqAf30dK+JFrWPaDEv9KlvAI8q21nJQMQOmzbnvs6pb0XyXKGLkTLpa3zss6nuHxXSBnq0qeiUCihjZgkpaiq/mLf7i2DMGvdkxkLrmnI0iXcwWKL8aAmVLoEmBzQHt3HSBjlf7Za1j3xrU9k20xAbBeAsAIZ9sq/bLoOsESkjULrTXBvUEgMRqgpZi3btgjoAQmDLttX+kmDZDCEzNxS3dBZMt8Su6xIm1JGATkqVCXpNltBz8Oxr4T2C98BN+QlGAwvTMTwAAAABJRU5ErkJggg==',
+                symbolSize: [24, 24],
+                data: this.mapData.filter(function (item) {
+                  return !item.onLine && item.type == '侦码设备';
+                })
+              },
+              {
+                name: '数量', // series名称
+                type: 'scatter',
+                coordinateSystem: 'bmap',
+                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAACxAAAAsQHGLUmNAAABcUlEQVRYhe2Xu0oDQRSG/zMzya6uURA0jWDAwjYkMQQMIkiIiLWdT2AQG7EUn8DKyjfwCbQVxECMnSCKkMImamMSZXPZGaukyIVks4EFmb8aOIfzf3PhzAwppeCnmK/uGkADaAAAoj14X09cBzhlvRZsOupm6e5h2zVAgFM2ZHhfkGpdupqEGJ4yWN+282YKtmgICo2S/5KMpQXRLmMoR+6L554AKrYs1+py67ehMvPT/NIQ1JPzmowtA9g3BYsGOKUXLBE2BMGRCqVUfCWSL+bGBrCCFLabdGwZLNPPvJSK74QMfjVrMqs7xhmBCDOAhxXgjDA3xQ/6mQMAEfb6mXfL06kbZO5GvvcBDfB/AeyWqvgKsFp4PPyoti6+fpynal32xFsSJuCxFQ9TJF/MtcfPidiRFWRpwREFAKnUCQBQ+1Vc3lhTE7qMEL4tjNwgOo4NR5U8u49Rp7MFdlNuftbU2QQATt3kk/6YaAAN4DfAH3GdayPrcd34AAAAAElFTkSuQmCC',
+                symbolSize: [24, 24],
+                data: this.mapData.filter(function (item) {
+                  return !item.onLine && item.type == '相机设备';
+                })
+              },
+              {
+                name: '数量',
+                type: 'scatter',
+                coordinateSystem: 'bmap',
+                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAACxAAAAsQHGLUmNAAABdklEQVRYhWP8//8/w0ACpgG1fdQBow4YdQADAwMLjOG6KWIHNyuTO6UGfv39b+duvxUeJDuAm5XJXYqHnVL7GZ59+UmSJ1gIK8ENHn36cVeAg0WMj42Flxj1RiuDbdiZGX1YmZleHgpc1U+RAx5//vnyxddfzm++/3ZVFeSazcvGjKHGZFWwPAMDQyw/O4sBFyuzjbYItzgvGzPDz7//GGzXhSofDlqdQ7YDxLhYxT/8+F0qxsXmis1y23WhXlI87KtkeNm50eXYmZkYmJkYeRgYKAgBdmYmBgV+zmxsljMwMDAwMzGGYbMcHVCUDXFZTgoY8HJg1AHD1wEffv75NKAOuBC+Lu/y6y9Tb7z7dvXZl58Y8j/+/ONgYKCwKCYEDgetzoGx9VYEFYhystpwsjAZMDAwMPz597+c5g5ABpci1k1gYGCYgC4Oj4Kvv/8+oIZFpJoDD4H3P/44XHv7tZFSB3z59beeFPWMox2TUQeMOmCgHQAA7cZmOlB3L2AAAAAASUVORK5CYII=',
+                symbolSize: [24, 24],
+                data: this.mapData.filter(function (item) {
+                  return item.onLine && item.type == '相机设备';
+                })
+              },
+              {
+                name: '数量',
+                type: 'scatter',
+                coordinateSystem: 'bmap',
+                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAACxAAAAsQHGLUmNAAADJUlEQVRYhe1V20sUURj/5szszOyOu2pesOsaWxRlJbFEoUnUkxHZutsq9FAPQW+R/0BCL/VSSfRWD/mQtZvuGoQQYQQZFEWoYEGg3byGljq7zp4zc8700shqu+FlRB/6Pc35zfed78d3vgtnmiasJtCqRv8vAAAEOy/bHwlWKg5UzyMuJ53HBhvF1Hzyvq6ta74PZ0cRHmoNXStwOkL5ssPnFvmMNiqhMKHpPT9T+u3Xoda7tgg4HDt9PFcSbm3xyL6F+mDKYEjFr8Y1/cy7cNvXJQsof1hbV1ak3PGIgtviBlWc1AzWlSBGd9JgowAAIs/tKZQdOzySUFHodMz6/5ghIwOTqfCSayBPFqqt4NPEUAdVHHtxKnoum70/GvROaPr10lw5KPEIil3i+k+/NP+SBaQMJg8nMBjM7J/CxsWXtY86quLhBpeAgrKAKiw7ZkKSUNYtIO5eZ00kdLA1dL7YJTYVuRwKgE1F6I8GvYVOx/2NbqlC4jN3NqYMvkyl2jprIiF/NOglzAz01seabBGw92HtpcqNuTet87imQ4LQHp2x3BJFKrU6A1MGb0fVht76WJNla+sgwpTBh4lk88CkVtpx4kH5s5ORrX3jycMDk9orAIBM2bFlEImIi3cNTQECGOmuj0UAAKri4YYZncb+DJ/KsgeBq7KAikXExdN9bXmC+aiKhxu25ztvjCVJ/2iSHHsXbvuazXZFdgHiYJ/EI9jikX2EmYF/2c5mwB8NeksUsVNA3IKnWjaIPAJr6Awn8Jx/BjPnZGW2BggzA4sZqQvFhhxpPuX7puIAADQBrPV1jCn7q3VUQkElBgAAFDgdGVtrMcjqPU0MtX9Sa8aUzRE0lMCN7dUtXHt1C/dtGj9dVvRsAjBlMKjiWILQxh8z+pjFf55K9T2viVyxzr9S+oVBFSeXIyDjE0g8Al+e8+x3FR/f7JaKLH7nOtfuI+3hNwDwEQCgRBErN7klxXYBlohtec6i+fyuAuUAABxYTtB0rHoXoLSPEZXQFQ+oEgoIYMQ6z9kFRx/XXZZ5VLuSAlKUxdILeUWW0WKwdmrgv4DVwm+D61eTFNG8+QAAAABJRU5ErkJggg==',
+                symbolSize: [24, 24],
+                data: this.mapData.filter(function (item) {
+                  return item.onLine && item.type == '侦码设备';
+                })
+              }
+            ]
+          });
+        }
+        //IP定位
+        if (!this.mapPoint) {
+          var point = new BMap.Point(116.331398, 39.897445);
+          this.deviceMap.centerAndZoom(point, this.mapZoom);
+
+          function myFun(result) {
+            var cityName = result.name;
+            _this.deviceMap.setCenter(cityName);
+            _this.deviceMap.setZoom(_this.mapZoom);
+            _this.mapPoint = _this.deviceMap.getCenter();
+          }
+
+          var myCity = new BMap.LocalCity();
+          myCity.get(myFun);
+        } else {
+          this.heatMap.centerAndZoom(this.mapPoint, this.mapZoom);
         }
 
-        function myFun(result) {
-          var cityName = result.name;
-          _this.deviceMap.setCenter(cityName);
-          _this.deviceMap.setZoom(12);
+        function map() {
+          _this.deviceMap.centerAndZoom(_this.deviceMap.getCenter(), _this.deviceMap.getZoom());
+          _this.mapPoint = _this.deviceMap.getCenter();
+          _this.mapZoom = _this.deviceMap.getZoom();
         }
 
-        var myCity = new BMap.LocalCity();
-        myCity.get(myFun);
+        this.deviceMap.addEventListener("zoomend", map);
+        this.deviceMap.addEventListener("dragend", map);
       },
       //相机--饼状图
       getCamera() {
-        let myChart = echarts.init(document.getElementById('camera'));
-        // myChart.clear();
-        let option = {
-          color: ['#2CA85C', '#F04864'],
-          title: {
-            text: '相机总数\n\n' + (this.devicePie.device2 ? this.devicePie.device2.count : 0),
-            textStyle: {color: '#fff', fontSize: '14'}, top: 'center', left: 'center', bottom: 'center', right: 'center'
-          },
-          tooltip: {trigger: 'item', formatter: "{a} <br/>{b}: {c} ({d}%)"},
-          legend: {
-            textStyle: {color: '#999'}, orient: 'vertical', x: 'right', data: ['在线', '离线']
-          },
-          series: [
-            {
-              name: '相机设备',
-              type: 'pie',
-              radius: ['50%', '70%'],
-              avoidLabelOverlap: false,
-              label: {
-                normal: {show: true, position: 'outside'},
-                emphasis: {show: true, textStyle: {fontSize: '20', fontWeight: 'bold'}}
-              },
-              labelLine: {normal: {show: true}},
-              data: (this.devicePie.device2 ? this.devicePie.device2.data : [])
-            }
-          ]
-        };
-        // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option);
+        if (!this.cameraPieChart) {
+          this.cameraPieChart = echarts.init(document.getElementById('camera'));
+          let option = {
+            color: ['#2CA85C', '#F04864'],
+            title: {
+              text: '相机总数\n\n' + (this.devicePie.device2 ? this.devicePie.device2.count : 0),
+              textStyle: {color: '#fff', fontSize: '14'},
+              top: 'center',
+              left: 'center',
+              bottom: 'center',
+              right: 'center'
+            },
+            tooltip: {trigger: 'item', formatter: "{a} <br/>{b}: {c} ({d}%)"},
+            legend: {
+              textStyle: {color: '#999'}, orient: 'vertical', x: 'right', data: ['在线', '离线']
+            },
+            series: [
+              {
+                name: '相机设备',
+                type: 'pie',
+                radius: ['50%', '70%'],
+                avoidLabelOverlap: false,
+                label: {
+                  normal: {show: true, position: 'outside'},
+                  emphasis: {show: true, textStyle: {fontSize: '20', fontWeight: 'bold'}}
+                },
+                labelLine: {normal: {show: true}},
+                data: (this.devicePie.device2 ? this.devicePie.device2.data : [])
+              }
+            ]
+          };
+          this.cameraPieChart.setOption(option);
+        } else {
+          this.cameraPieChart.setOption({
+            title: {
+              text: '相机总数\n\n' + (this.devicePie.device2 ? this.devicePie.device2.count : 0),
+              textStyle: {color: '#fff', fontSize: '14'},
+              top: 'center',
+              left: 'center',
+              bottom: 'center',
+              right: 'center'
+            },
+            series: [
+              {
+                name: '相机设备',
+                type: 'pie',
+                radius: ['50%', '70%'],
+                avoidLabelOverlap: false,
+                label: {
+                  normal: {show: true, position: 'outside'},
+                  emphasis: {show: true, textStyle: {fontSize: '20', fontWeight: 'bold'}}
+                },
+                labelLine: {normal: {show: true}},
+                data: (this.devicePie.device2 ? this.devicePie.device2.data : [])
+              }
+            ]
+          });
+        }
       },
       //侦码设备--饼状图
       getDevice() {
-        let myChart = echarts.init(document.getElementById('device'));
-        // myChart.clear();
-        let option = {
-          color: ['#2CA85C', '#F04864'],
-          title: {
-            text: '侦码仪总数\n\n' + (this.devicePie.device1 ? this.devicePie.device1.count : 0),
-            textStyle: {color: '#fff', fontSize: '14'},
-            top: 'center', left: 'center', bottom: 'center', right: 'center'
-          },
-          tooltip: {trigger: 'item', formatter: "{a} <br/>{b}: {c} ({d}%)"},
-          legend: {textStyle: {color: '#999'}, orient: 'vertical', x: 'right', data: ['在线', '离线']},
-          series: [
-            {
-              name: '侦码设备',
-              type: 'pie',
-              radius: ['50%', '70%'],
-              avoidLabelOverlap: false,
-              label: {
-                normal: {show: true, position: 'outside'},
-                emphasis: {show: true, textStyle: {fontSize: '20', fontWeight: 'bold'}}
-              },
-              labelLine: {normal: {show: true}},
-              data: (this.devicePie.device1 ? this.devicePie.device1.data : [])
-            }
-          ]
-        };
-        // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option);
+        if (!this.devicePieChart) {
+          this.devicePieChart = echarts.init(document.getElementById('device'));
+          let option = {
+            color: ['#2CA85C', '#F04864'],
+            title: {
+              text: '侦码设备总数\n\n' + (this.devicePie.device1 ? this.devicePie.device1.count : 0),
+              textStyle: {color: '#fff', fontSize: '14'},
+              top: 'center', left: 'center', bottom: 'center', right: 'center'
+            },
+            tooltip: {trigger: 'item', formatter: "{a} <br/>{b}: {c} ({d}%)"},
+            legend: {textStyle: {color: '#999'}, orient: 'vertical', x: 'right', data: ['在线', '离线']},
+            series: [
+              {
+                name: '侦码设备',
+                type: 'pie',
+                radius: ['50%', '70%'],
+                avoidLabelOverlap: false,
+                label: {
+                  normal: {show: true, position: 'outside'},
+                  emphasis: {show: true, textStyle: {fontSize: '20', fontWeight: 'bold'}}
+                },
+                labelLine: {normal: {show: true}},
+                data: (this.devicePie.device1 ? this.devicePie.device1.data : [])
+              }
+            ]
+          };
+          this.devicePieChart.setOption(option);
+        } else {
+          this.devicePieChart.setOption({
+            title: {
+              text: '侦码设备总数\n\n' + (this.devicePie.device1 ? this.devicePie.device1.count : 0)
+            },
+            series: [
+              {
+                name: '侦码设备',
+                type: 'pie',
+                data: (this.devicePie.device1 ? this.devicePie.device1.data : [])
+              }
+            ]
+          });
+        }
       },
       //图码抓取数据--折线图
       getLineData() {
@@ -546,77 +639,103 @@
         });
       },
       getImsiFace() {
-        // 基于准备好的dom，初始化echarts实例
-        let myChart = echarts.init(document.getElementById('imsi'));
-        // myChart.clear();
-        // 指定图表的配置项和数据
-        let option = {
-          textStyle: {color: '#6D6C98'},
-          title: {
-            text: '近7天抓取数量统计',
-            textStyle: {color: '#999', fontSize: '14'}
-          },
-          grid: {left: 0, right: 0, bottom: 0, containLabel: true},
-          color: ['#66CCFF', '#FFBF00'],
-          tooltip: {trigger: 'axis', axisPointer: {type: 'cross'}},
-          legend: {textStyle: {color: '#999'}, data: ['IMSI', '图像'], right: '20'},
-          xAxis: {
-            data: (this.catchData.createTime ? this.catchData.createTime : []),
-            axisLine: {show: true, lineStyle: {color: '#6D6C98'}}
-          },
-          yAxis: {
-            axisLine: {show: true, lineStyle: {color: '#6D6C98'}},
-            splitLine: {lineStyle: {color: ['#6D6C98'], type: 'dashed'}}
-          },
-          series: [{
-            name: 'IMSI',
-            type: 'line',//line -> 折线图  bar -> 柱状图
-            data: (this.catchData.imsi ? this.catchData.imsi : [])
-          }, {
-            name: '图像',
-            type: 'line',//line -> 折线图  bar -> 柱状图
-            data: (this.catchData.face ? this.catchData.face : [])
-          }]
-        };
-        // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option);
+        if (!this.catchLineChart) {
+          this.catchLineChart = echarts.init(document.getElementById('imsi'));
+          let option = {
+            textStyle: {color: '#6D6C98'},
+            title: {
+              text: '近7天抓取数量统计',
+              textStyle: {color: '#999', fontSize: '14'}
+            },
+            grid: {left: 0, right: 0, bottom: 0, containLabel: true},
+            color: ['#3fa9f5', '#FFBF00'],
+            tooltip: {trigger: 'axis', axisPointer: {type: 'cross'}},
+            legend: {textStyle: {color: '#999'}, data: ['IMSI', '图像'], right: '20'},
+            xAxis: {
+              data: (this.catchData.createTime ? this.catchData.createTime : []),
+              axisLine: {show: true, lineStyle: {color: '#6D6C98'}}
+            },
+            yAxis: {
+              axisLine: {show: true, lineStyle: {color: '#6D6C98'}},
+              splitLine: {lineStyle: {color: ['#6D6C98'], type: 'dashed'}}
+            },
+            series: [{
+              name: 'IMSI',
+              type: 'line',//line -> 折线图  bar -> 柱状图
+              data: (this.catchData.imsi ? this.catchData.imsi : [])
+            }, {
+              name: '图像',
+              type: 'line',//line -> 折线图  bar -> 柱状图
+              data: (this.catchData.face ? this.catchData.face : [])
+            }]
+          };
+          this.catchLineChart.setOption(option);
+        } else {
+          this.catchLineChart.setOption({
+            xAxis: {
+              data: (this.catchData.createTime ? this.catchData.createTime : [])
+            },
+            series: [{
+              name: 'IMSI',
+              type: 'line',//line -> 折线图  bar -> 柱状图
+              data: (this.catchData.imsi ? this.catchData.imsi : [])
+            }, {
+              name: '图像',
+              type: 'line',//line -> 折线图  bar -> 柱状图
+              data: (this.catchData.face ? this.catchData.face : [])
+            }]
+          });
+        }
       },
       //今日告警图表
       getWarning() {
-        // 基于准备好的dom，初始化echarts实例
-        let myChart = echarts.init(document.getElementById('warning'));
-        // myChart.clear();
-        // 指定图表的配置项和数据
-        let option = {
-          textStyle: {color: '#6D6C98'},
-          title: {
-            text: '近7天告警数量统计',
-            textStyle: {color: '#999', fontSize: '14'}
-          },
-          grid: {left: 0, right: 0, bottom: 0, containLabel: true},
-          color: ['#2FC25B', '#FFBF00'],
-          tooltip: {trigger: 'axis', axisPointer: {type: 'cross'}},
-          legend: {textStyle: {color: '#999'}, data: ['IMSI', '图像'], right: '20'},
-          xAxis: {
-            data: (this.warning.createTime ? this.warning.createTime : []),
-            axisLine: {show: true, lineStyle: {color: '#6D6C98'}}
-          },
-          yAxis: {
-            axisLine: {show: true, lineStyle: {color: '#6D6C98'}},
-            splitLine: {lineStyle: {color: ['#6D6C98'], type: 'dashed'}}
-          },
-          series: [{
-            name: 'IMSI',
-            type: 'bar',//line -> 折线图  bar -> 柱状图
-            data: (this.warning.imsi ? this.warning.imsi : [])
-          }, {
-            name: '图像',
-            type: 'bar',//line -> 折线图  bar -> 柱状图
-            data: (this.warning.face ? this.warning.face : [])
-          }]
-        };
-        // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option);
+        if (!this.warningBarChart) {
+          this.warningBarChart = echarts.init(document.getElementById('warning'));
+          let option = {
+            textStyle: {color: '#6D6C98'},
+            title: {
+              text: '近7天告警数量统计',
+              textStyle: {color: '#999', fontSize: '14'}
+            },
+            grid: {left: 0, right: 0, bottom: 0, containLabel: true},
+            color: ['#3fa9f5', '#FFBF00'],
+            tooltip: {trigger: 'axis', axisPointer: {type: 'cross'}},
+            legend: {textStyle: {color: '#999'}, data: ['IMSI', '图像'], right: '20'},
+            xAxis: {
+              data: (this.warning.createTime ? this.warning.createTime : []),
+              axisLine: {show: true, lineStyle: {color: '#6D6C98'}}
+            },
+            yAxis: {
+              axisLine: {show: true, lineStyle: {color: '#6D6C98'}},
+              splitLine: {lineStyle: {color: ['#6D6C98'], type: 'dashed'}}
+            },
+            series: [{
+              name: 'IMSI',
+              type: 'bar',//line -> 折线图  bar -> 柱状图
+              data: (this.warning.imsi ? this.warning.imsi : [])
+            }, {
+              name: '图像',
+              type: 'bar',//line -> 折线图  bar -> 柱状图
+              data: (this.warning.face ? this.warning.face : [])
+            }]
+          };
+          this.warningBarChart.setOption(option);
+        } else {
+          this.warningBarChart.setOption({
+            xAxis: {
+              data: (this.warning.createTime ? this.warning.createTime : [])
+            },
+            series: [{
+              name: 'IMSI',
+              type: 'bar',//line -> 折线图  bar -> 柱状图
+              data: (this.warning.imsi ? this.warning.imsi : [])
+            }, {
+              name: '图像',
+              type: 'bar',//line -> 折线图  bar -> 柱状图
+              data: (this.warning.face ? this.warning.face : [])
+            }]
+          });
+        }
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
@@ -629,11 +748,20 @@
     },
     mounted() {
       sessionStorage.setItem("index", 1);
+      //初始化地图个表格
+      this.getDeviceMap();
+      this.getDataHeat();
+      this.getCamera();
+      this.getDevice();
+      this.getImsiFace();
+      this.getWarning();
+      //获取概览数据
       this.getHotSpot();
       this.getMapData();
       this.getWarningCount();
       this.getImsiList();
       this.getLineData();
+      //定时请求数据==>30s请求一次
       this.statusTask();
     }
   }
@@ -687,6 +815,5 @@
     max-width: 80px;
     max-height: 80px;
     border-radius: 6px;
-    border: 1px dashed #999
   }
 </style>

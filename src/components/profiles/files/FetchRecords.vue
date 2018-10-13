@@ -41,7 +41,7 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="isp" label="运营商" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="regional" label="归属地" min-width="150" max-width="250"
+          <el-table-column align="left" prop="regional" label="IMSI归属地" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="uptime" label="抓取时间" min-width="170" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
@@ -300,6 +300,7 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
+            this.query.similarThreshold = 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.isSearch = true;
             this.getData();
@@ -310,6 +311,12 @@
       },
       //获取图像告警列表
       getData() {
+        if (this.query.faceUrl) {
+          if (!this.query.similarThreshold) {
+            this.$message.error('请输入相似度');
+            return;
+          }
+        }
         if (this.query.similarThreshold) {
           if (!doubleValid(this.query.similarThreshold)) {
             this.$message.error('相似度为0.1-99的数字');

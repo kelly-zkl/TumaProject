@@ -49,7 +49,7 @@
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model="queryResult.regional" placeholder="归属地" style="width: 160px" size="medium"
+            <el-input v-model="queryResult.regional" placeholder="IMSI归属地" style="width: 160px" size="medium"
                       :maxlength=20></el-input>
           </el-form-item>
           <el-form-item label="伴随次数" style="margin-bottom: 10px">
@@ -71,7 +71,7 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="网络类型" prop="netType" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="归属地" prop="regional" min-width="125"
+          <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="伴随次数" prop="followCount" min-width="125"
                            max-width="250"></el-table-column>
@@ -110,7 +110,7 @@
             </el-date-picker>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model="queryRecord.regional" placeholder="归属地" style="width: 160px" size="medium"
+            <el-input v-model="queryRecord.regional" placeholder="IMSI归属地" style="width: 160px" size="medium"
                       :maxlength=20></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
@@ -134,7 +134,7 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="网络类型" prop="netType" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="归属地" prop="regional" min-width="125"
+          <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>

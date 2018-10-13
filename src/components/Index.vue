@@ -95,7 +95,7 @@
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer" align="center">
-            <el-button type="warning" size="medium" @click="gotoImsiDetail">处理告警</el-button>
+            <!--<el-button type="warning" size="medium" @click="gotoImsiDetail">处理告警</el-button>-->
             <el-button type="primary" size="medium" @click="gotoImsiDetail">查看人员信息</el-button>
           </div>
         </el-dialog>
@@ -129,7 +129,7 @@
             </el-form>
           </div>
           <div slot="footer" class="dialog-footer" align="center">
-            <el-button type="warning" size="medium" @click="gotoFaceDetail">处理告警</el-button>
+            <!--<el-button type="warning" size="medium" @click="gotoFaceDetail">处理告警</el-button>-->
             <el-button type="primary" size="medium" @click="gotoFaceDetail">查看人员信息</el-button>
           </div>
         </el-dialog>

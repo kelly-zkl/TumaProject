@@ -11,7 +11,6 @@
 </template>
 <script>
   import json from '../../../assets/city.json';
-  import axios from "axios";
 
   export default {
     props: ['formattedAddress'],
@@ -109,19 +108,43 @@
         return lable;
       },
       //获取城市编码
-      getCityCode(code) {
+      getCityCode(cName, code, type) {
         let lable = '';
         this.provinceList.forEach((province) => {
           if (province.c) {
-            province.c.forEach((city) => {
-              if (city.c) {//省级+市级+县级
-                city.c.forEach((country) => {
-                  if (code === country.n) {
-                    lable = country.o;
+            if (type == 0) {//省市县都有
+              province.c.forEach((city) => {
+                if (city.c) {//省级+市级+县级
+                  if (city.n.indexOf(cName) >= 0) {
+                    city.c.forEach((country) => {
+                      if (code === country.n) {
+                        lable = country.o;
+                      }
+                    })
                   }
-                })
-              }
-            })
+                } else {
+                  if (province.n.indexOf(cName) >= 0) {
+                    if (code === city.n) {
+                      lable = city.o;
+                    }
+                  }
+                }
+              })
+            } else {//只有省县，没有市
+              province.c.forEach((city) => {
+                if (city.c) {//省级+市级+县级
+                  if (city.n.indexOf(cName) >= 0) {
+                    city.c.forEach((country) => {
+                      if (province.n.indexOf(cName) >= 0) {
+                        if (code === country.n) {
+                          lable = country.o;
+                        }
+                      }
+                    })
+                  }
+                }
+              })
+            }
           }
         });
         return lable;
@@ -180,7 +203,10 @@
             address = rs.addressComponents.street + rs.addressComponents.streetNumber;
           }
           _this.position.detailAddress = address;
-          _this.position.code = _this.getCityCode(rs.addressComponents.district);
+          let cnmae = rs.addressComponents.city ? rs.addressComponents.city : rs.addressComponents.province;
+          let type = rs.addressComponents.city ? 0 : 1;
+          _this.position.code = _this.getCityCode(cnmae, rs.addressComponents.district, type);
+          console.log(_this.position.code);
           _this.selectedOptions2 = _this.getCode(_this.position.code);
           console.log(_this.position);
           _this.$emit('getLocation', _this.position);

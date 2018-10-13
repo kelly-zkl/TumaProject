@@ -94,8 +94,8 @@
       handleInputConfirm() {
         let inputValue = this.inputValue;
         if (inputValue) {
-          if (!numValid(inputValue)) {
-            this.$message.error('请输入正确的IMSI');
+          if (!numValid(inputValue) || inputValue.length != 15) {
+            this.$message.error('请输入15位正确的IMSI');
             return;
           }
           if (this.isMultiple(inputValue)) {

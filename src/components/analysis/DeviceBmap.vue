@@ -1,27 +1,7 @@
 <template>
   <div>
     <section class="content">
-      <el-row class="view-top">
-        <el-col :span="24" style="text-align: right" align="right">
-          <el-form :model="query" style="margin: 0" label-width="100px" label-position="right" :inline="true">
-            <el-form-item align="left" label="侦码设备" style="margin:0 0 10px 20px">
-              <span style="display: inline-block;margin-right: 20px;font-size: 14px">全部{{deviceImsi.count}}</span>
-              <el-checkbox-group v-model="query.code" style="display: inline-block" @change="codeChange">
-                <el-checkbox :label="true">在线{{deviceImsi.onlineCount}}</el-checkbox>
-                <el-checkbox :label="false">离线{{deviceImsi.offlineCount}}</el-checkbox>
-              </el-checkbox-group>
-            </el-form-item>
-            <el-form-item align="left" label="相机设备" style="margin:0 50px 10px 20px">
-              <span style="display: inline-block;margin-right: 20px;font-size: 14px">全部{{camera.count}}</span>
-              <el-checkbox-group v-model="query.camera" style="display: inline-block" @change="cameraChange">
-                <el-checkbox :label="true">在线{{camera.onlineCount}}</el-checkbox>
-                <el-checkbox :label="false">离线{{camera.offlineCount}}</el-checkbox>
-              </el-checkbox-group>
-            </el-form-item>
-          </el-form>
-        </el-col>
-      </el-row>
-      <div class="view-map" id="view-map"></div>
+      <div id="device-map" style="width: 100%;height:550px"></div>
     </section>
   </div>
 </template>
@@ -29,17 +9,14 @@
   import echarts from "echarts";
 
   export default {
+    props: ['deviceData'],
     data() {
       return {
-        query: {code: [true, false], camera: [true, false]},
-        deviceImsi: {},
-        icon: require('../../assets/img/icon.png'),
-        camera: {},
         myChart: null,
-        drawingManager: null,
         bMap: null,
         point: null,
         ply: null,//多边形
+        drawingManager: null,
         zoom: 12,
         styleOptions: {
           strokeColor: "#FF6600",    //边线颜色。
@@ -50,76 +27,59 @@
           strokeStyle: 'solid' //边线的样式，solid或dashed。
         },
         mapData: [],
-        intervalid: null,
+        deviceList: [],
+        deviceType: '',//设备类型-->相机：FACE 侦码：IMSI
+        dataType: ''//数据类型-->条件1：data1  条件2：data2
       }
     },
-    //页面关闭时停止更新设备在线状态
-    beforeDestroy() {
-      clearInterval(this.intervalid);
+    watch: {
+      deviceData: function () {
+        let param = JSON.parse(this.deviceData);
+        this.deviceType = param.deviceType;
+        this.dataType = param.dataType;
+        this.getMapData();
+      }
+    },
+    created() {
+      let param = JSON.parse(this.deviceData);
+      this.deviceType = param.deviceType;
+      this.dataType = param.dataType;
+      this.getMapData();
     },
     methods: {
-      //定时刷新设备的在线状态
-      statusTask() {
-        if (!this.intervalid) {
-          this.intervalid = setInterval(() => {
-            this.getMapData();
-          }, 20 * 1000);
-        }
-      },
-      //侦码设备
-      codeChange(val) {
-        this.getMapData();
-      },
-      //相机设备
-      cameraChange(val) {
-        this.getMapData();
-      },
       //设备地图
       getMapData() {
         this.mapData = [];
         this.$post('/home/getAllDevice', {}).then((data) => {
           if (data.code === '000000') {
-            this.deviceImsi = data.data.imsiDeviceDistribute;
-            this.camera = data.data.cameraDeviceDistribute;
-
-            data.data.imsiDeviceDistribute.deviceList.forEach((item, idx) => {
-              if (item.devicePos && item.devicePos.longitude && item.devicePos.latitude) {
+            if (this.deviceType == 'IMSI' && data.data.imsiDeviceDistribute.deviceList.length > 0) {
+              data.data.imsiDeviceDistribute.deviceList.forEach((item, idx) => {
+                if (item.devicePos && item.devicePos.longitude && item.devicePos.latitude) {
+                  let onLine = true;
+                  if (item.lineStatus === "OFF") {
+                    onLine = false;
+                  }
+                  let param = {
+                    value: [item.devicePos.longitude, item.devicePos.latitude, 1], placeName: item.placeName,
+                    deviceName: item.deviceName, deviceId: item.deviceId, type: '侦码设备', onLine: onLine
+                  };
+                  this.mapData.push(param);
+                }
+              });
+            } else if (this.deviceType == 'FACE' && data.data.cameraDeviceDistribute.deviceList.length > 0) {
+              data.data.cameraDeviceDistribute.deviceList.forEach((item, idx) => {
                 let onLine = true;
-                if (item.lineStatus === "OFF") {
+                if (item.status === 2) {
                   onLine = false;
                 }
                 let param = {
-                  name: item.city, value: [item.devicePos.longitude, item.devicePos.latitude, 1],
-                  deviceName: item.deviceName, deviceId: item.deviceId, type: '侦码设备', onLine: onLine,
-                  placeName: item.placeName
+                  value: [item.longitude, item.latitude, 1], deviceName: item.name, onLine: onLine,
+                  deviceId: item.cameraCode, type: '相机设备', placeName: item.placeName
                 };
-                if (this.query.code.length === 2) {
-                  this.mapData.push(param);
-                } else if (this.query.code.length === 1) {
-                  if (onLine === this.query.code[0]) {
-                    this.mapData.push(param);
-                  }
-                }
-              }
-            });
-            data.data.cameraDeviceDistribute.deviceList.forEach((item, idx) => {
-              let onLine = true;
-              if (item.status === 2) {
-                onLine = false;
-              }
-              let param = {
-                name: item.name, value: [item.longitude, item.latitude, 1], deviceName: item.name,
-                deviceId: item.cameraCode, onLine: onLine, type: '相机设备', placeName: item.placeName
-              };
-              if (this.query.camera.length === 2) {
                 this.mapData.push(param);
-              } else if (this.query.camera.length === 1) {
-                if (onLine === this.query.camera[0]) {
-                  this.mapData.push(param);
-                }
-              }
-            });
-
+              });
+            }
+            // console.log(this.mapData);
             this.deviceMap();
           }
         }).catch((err) => {
@@ -129,13 +89,14 @@
       },
       deviceMap() {
         var _this = this;
+        this.clearArea();
         if (this.bMap) {
           this.point = this.bMap.getCenter();
           this.zoom = this.bMap.getZoom();
         }
         if (!this.myChart) {
           var app = {};
-          this.myChart = echarts.init(document.getElementById('view-map'));
+          this.myChart = echarts.init(document.getElementById('device-map'));
           let option = {
             animation: false,
             tooltip: {
@@ -252,32 +213,12 @@
         } else {
           this.bMap.centerAndZoom(this.point, this.zoom);
         }
-        //点聚合
-        // this.getMarkNumber();
         //添加鼠标绘制工具监听事件，用于获取绘制结果
         this.drawingManager.addEventListener('overlaycomplete', this.overlaycomplete);
 
         _this.bMap.addEventListener("zoomend", this.zoomEvent);
         // _this.bMap.addEventListener("click", this.showInfo);
         _this.bMap.addEventListener("dragend", this.zoomEvent);
-      },
-      //点聚合功能
-      getMarkNumber() {
-        var markers = [];
-        for (var i = 0; i < this.mapData.length; i++) {
-          var pt = new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]);
-          var myIcon = new BMap.Icon(this.icon, new BMap.Size(2, 3));
-          markers.push(new BMap.Marker(pt, {icon: myIcon}));
-        }
-        //最简单的用法，生成一个marker数组，然后调用markerClusterer类即可。
-        var markerClusterer = new BMapLib.MarkerClusterer(this.bMap, {markers: markers});
-        // markers {Array} 要聚合的标记数组
-        // girdSize {Number} 聚合计算时网格的像素大小，默认60
-        // maxZoom {Number} 最大的聚合级别，大于该级别就不进行相应的聚合
-        // minClusterSize {Number} 最小的聚合数量，小于该数量的不能成为一个聚合，默认为2
-        // isAverangeCenter {Boolean} 聚合点的落脚位置是否是所有聚合在内点的平均值，默认为否，落脚在聚合内的第一个点
-        // styles {Array} 自定义聚合后的图标风格，请参考TextIconOverlay类
-        //鼠标绘制完成回调方法,获取各个点的经纬度
       },
       //生成多边形
       polygon(path) {
@@ -306,13 +247,7 @@
       },
       //添加鼠标绘制工具监听事件，用于获取绘制结果
       overlaycomplete(e) {
-        var allOverlay = this.bMap.getOverlays();
-        for (var i = 0; i < allOverlay.length; i++) {
-          if (allOverlay[i].toString().indexOf("Polygon") > 0 || allOverlay[i].toString().indexOf("Label") > 0
-            || allOverlay[i].toString().indexOf("Circle") > 0) {//删除折线
-            this.bMap.removeOverlay(allOverlay[i]);
-          }
-        }
+        this.clearArea();
         var path = e.overlay.getPath();//Array<Point> 返回多边型的点数组
 
         //生成多边形
@@ -320,18 +255,22 @@
         var num = 0;
         for (var k = 0; k < this.mapData.length; k++) {
           let isBol = this.InOrOutPolygon(this.mapData[k].value[0], this.mapData[k].value[1]);
+          if (isBol) {
+            this.deviceList.push(this.mapData[k].deviceId)
+          }
           num = (isBol ? num + 1 : num);
         }
         var opts = {
           position: this.ply.getBounds().getCenter(),    // 指定文本标注所在的地理位置
           offset: new BMap.Size(0, 0)    //设置文本偏移量
         };
-        var label = new BMap.Label("设备数量：" + num, opts);  // 创建文本标注对象
+        var label = new BMap.Label("设备总量：" + num, opts);  // 创建文本标注对象
         label.setStyle({
           color: "#fff", backgroundColor: "black", border: 'none', fontSize: "12px", borderRadius: '3px',
           opacity: 0.8, lineHeight: "20px", fontFamily: "微软雅黑", padding: '0 5px'
         });
         this.bMap.addOverlay(label);
+        this.$emit('getDeviceList', {dataType: this.dataType, deviceList: this.deviceList});
       },
       //地图拖拽/放大之后的中心点和放大倍数
       zoomEvent() {
@@ -343,30 +282,23 @@
       showInfo(e) {
         var circle = new BMap.Circle(e.point, 1000, this.styleOptions);
         this.bMap.addOverlay(circle);
+      },
+      //清除选中区域
+      clearArea() {
+        if (this.bMap) {
+          var allOverlay = this.bMap.getOverlays();
+          for (var i = 0; i < allOverlay.length; i++) {
+            if (allOverlay[i].toString().indexOf("Polygon") > 0 || allOverlay[i].toString().indexOf("Label") > 0
+              || allOverlay[i].toString().indexOf("Circle") > 0) {//删除折线
+              this.bMap.removeOverlay(allOverlay[i]);
+            }
+          }
+        }
+        this.deviceList = [];
       }
     },
     mounted() {
       this.deviceMap();
-      this.getMapData();
-      this.statusTask();
     }
   }
 </script>
-<style scoped>
-  .view-map {
-    position: absolute;
-    left: 200px;
-    right: 15px;
-    bottom: 20px;
-    top: 40px;
-    color: #fff;
-    font-size: 30px;
-  }
-
-  .content .view-top {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-  }
-</style>

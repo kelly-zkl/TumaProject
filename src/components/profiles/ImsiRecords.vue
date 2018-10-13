@@ -19,7 +19,7 @@
                     style="width: 160px"></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.regional" placeholder="归属地" size="medium" style="width: 160px"
+          <el-input v-model="query.regional" placeholder="IMSI归属地" size="medium" style="width: 160px"
                     :maxlength=20></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:queryg')">
@@ -31,7 +31,7 @@
         <el-form-item style="margin-bottom: 10px" v-if="activeItem == 'second'">
           <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" start-placeholder="开始日期"
                           end-placeholder="结束日期" value-format="timestamp" :picker-options="pickerBeginDate"
-                          size="medium" :default-time="['00:00:00', '23:59:59']">
+                          size="medium" :default-time="['00:00:00', '23:59:59']" @change="handleChange">
           </el-date-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
@@ -60,7 +60,7 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="netType" label="网络类型" max-width="150" min-width="100"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="归属地" max-width="200" min-width="150" prop="regional"
+        <el-table-column align="left" label="IMSI归属地" max-width="200" min-width="150" prop="regional"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160">
           <template slot-scope="scope">
@@ -113,6 +113,13 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      handleChange(val) {
+        if (!val || val.length == 0) {
+          this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+            new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+          this.getData();
+        }
       },
       handleClick(tab, event) {
         this.clearData();

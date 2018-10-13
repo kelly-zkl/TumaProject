@@ -16,7 +16,7 @@
                     :maxlength=30></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.regional" placeholder="归属地" size="medium" style="width: 160px"
+          <el-input v-model="query.regional" placeholder="IMSI归属地" size="medium" style="width: 160px"
                     :maxlength=20></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
@@ -26,7 +26,7 @@
           </el-select>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-if="activeItem=='H'">
-          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
+          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
                           start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                           :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                           :picker-options="pickerBeginDate">
@@ -57,7 +57,7 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="抓取IMSI" prop="imsi" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="归属地" prop="regional" min-width="150"
+        <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警场所" prop="placeName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -119,6 +119,13 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      handleChange(val) {
+        if (!val || val.length == 0) {
+          this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+            new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+          this.getData();
+        }
       },
       handleType(val, ev) {
         this.clearData();

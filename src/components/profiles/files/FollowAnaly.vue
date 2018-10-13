@@ -29,7 +29,7 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="isp" label="运营商" min-width="150" max-width="250"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="regional" label="归属地" min-width="150" max-width="250"
+        <el-table-column align="left" prop="regional" label="IMSI归属地" min-width="150" max-width="250"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="followCount" label="伴随次数" min-width="150" max-width="250"></el-table-column>
       </el-table>

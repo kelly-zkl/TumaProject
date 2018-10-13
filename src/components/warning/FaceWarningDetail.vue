@@ -33,10 +33,10 @@
               <el-form-item label="告警时间" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000">{{faceDetail.timeStr ? faceDetail.timeStr : '--'}}</span>
               </el-form-item>
-              <el-form-item label="告警地区" align="left" style="margin: 0;text-align: left">
+              <el-form-item label="场所地区" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000">{{faceDetail.area ? faceDetail.area : '--'}}</span>
               </el-form-item>
-              <el-form-item label="告警地点" align="left" style="margin: 0;text-align: left">
+              <el-form-item label="场所地点" align="left" style="margin: 0;text-align: left">
                 <span
                   style="font-size: 15px;color:#000">{{faceDetail.detailAddress ? faceDetail.detailAddress : '--'}}</span>
               </el-form-item>
@@ -56,7 +56,7 @@
       <el-row>
         <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
-            <el-tab-pane label="疑似人员" name="person"></el-tab-pane>
+            <el-tab-pane label="关联人员" name="person"></el-tab-pane>
             <el-tab-pane label="所有记录" name="list"></el-tab-pane>
           </el-tabs>
         </el-col>
@@ -64,9 +64,9 @@
       <div v-show="activeItem=='person'" style="padding: 20px 0">
         <div class="face-main">
           <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
-            <img :src="item.fileUrl?item.fileUrl:imgPath"/>
-            <el-form :model="item" align="left" label-width="60px" label-position="right"
-                     style="position: absolute;top: 15px;left:150px;text-align: left">
+            <img :src="item.faceUrl?item.faceUrl:imgPath"/>
+            <el-form :model="item" align="left" label-width="80px" label-position="right" size="small"
+                     style="position: absolute;top: 10px;left:150px;text-align: left">
               <el-form-item label="档案ID" style="margin:0">
                 <span style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
                 <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
@@ -74,8 +74,11 @@
               <el-form-item label="IMSI" style="margin:0">
                 <span style="font-size: 15px;color:#000">{{item.imsi?item.imsi:'--'}}</span>
               </el-form-item>
-              <el-form-item label="手机号" style="margin:0">
-                <span style="font-size: 15px;color:#000">{{item.phone?item.phone:'--'}}</span>
+              <el-form-item label="关联次数" style="margin:0">
+                <span style="font-size: 15px;color:#000">{{item.fnIn>=0?item.fnIn:'--'}}</span>
+              </el-form-item>
+              <el-form-item label="置信度" style="margin:0">
+                <span style="font-size: 15px;color:#000">{{item.weight?item.weight/10+'%':'--'}}</span>
               </el-form-item>
             </el-form>
           </div>
@@ -119,7 +122,7 @@
               </el-form-item>
             </el-form>
           </el-col>
-          <el-col :span="6" align="right" style="text-align: right" v-show="getButtonVial('route:query')">
+          <el-col :span="6" align="right" style="text-align: right" v-show="getButtonVial('route:query')&&false">
             <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="gotoPath()">查看轨迹</el-button>
           </el-col>
         </el-row>

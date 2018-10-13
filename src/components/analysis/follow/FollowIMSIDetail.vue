@@ -12,7 +12,7 @@
             <span style="font-size: 15px">{{isp === 0 ? '移动' : isp === 1 ? '联通' : isp === 2 ? '电信' : '未知'}}</span>
           </el-col>
           <el-col :span="8" align="left">
-            <span style="font-size: 14px;color: #999;margin:auto 20px;font-size: 14px">归属地</span>
+            <span style="font-size: 14px;color: #999;margin:auto 20px;font-size: 14px">IMSI归属地</span>
             <span style="font-size: 15px">{{regional}}</span>
           </el-col>
         </el-row>
@@ -34,7 +34,7 @@
             </el-date-picker>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model="query.regional" placeholder="归属地" style="width: 160px" size="medium"
+            <el-input v-model="query.regional" placeholder="IMSI归属地" style="width: 160px" size="medium"
                       :maxlength=20></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
@@ -58,7 +58,7 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="网络类型" prop="netType" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="归属地" prop="regional" min-width="125"
+          <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>

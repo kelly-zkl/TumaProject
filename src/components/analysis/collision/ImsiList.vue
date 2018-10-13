@@ -24,7 +24,7 @@
           </el-select>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.regional" placeholder="归属地" style="width: 160px" size="medium"
+          <el-input v-model="query.regional" placeholder="IMSI归属地" style="width: 160px" size="medium"
                     :maxlength=20></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
@@ -42,7 +42,7 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="网络类型" prop="netType" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="归属地" prop="regional" min-width="125"
+        <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="抓取时间" prop="uptime" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>

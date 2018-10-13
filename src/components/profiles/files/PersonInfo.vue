@@ -5,7 +5,7 @@
         <el-col :span="18" style="text-align: center" align="center">
           <div style="font-size:14px;text-align: center">基本信息</div>
         </el-col>
-        <el-col :span="6" style="text-align: right" align="right" v-show="false">
+        <el-col :span="6" style="text-align: right" align="right" v-show="getButtonVial('archives:updateDetails')">
           <el-button type="text" style="margin: 0;padding: 0" @click="clickModify()">修改基本信息</el-button>
         </el-col>
       </el-row>
@@ -31,9 +31,7 @@
                 <span style="font-size: 15px;color:#000">{{userInfo.sex==0 ? '男' : userInfo.sex==1 ?'女':'未知'}}</span>
               </el-form-item>
               <el-form-item label="年龄" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">
-                  {{userInfo.startAge?userInfo.endAge?userInfo.startAge==userInfo.endAge?userInfo.startAge:userInfo.startAge+'~'+userInfo.endAge:userInfo.endAge?userInfo.endAge:'--':'--'}}
-                </span>
+                <span style="font-size: 15px;color:#000">{{userInfo.age>=0?userInfo.age:'未知'}}</span>
               </el-form-item>
               <el-form-item label="身份证" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{userInfo.idCard ? userInfo.idCard : '--'}}</span>
@@ -49,9 +47,9 @@
               <el-form-item label="所属辖区" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{userInfo.area ? userInfo.area : '--'}}</span>
               </el-form-item>
-              <el-form-item label="所属名单" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{userInfo.blackClass ? userInfo.blackClass : '--'}}</span>
-              </el-form-item>
+              <!--<el-form-item label="所属名单" align="left" style="margin: 0">-->
+              <!--<span style="font-size: 15px;color:#000">{{userInfo.blackClass ? userInfo.blackClass : '&#45;&#45;'}}</span>-->
+              <!--</el-form-item>-->
             </el-col>
           </el-row>
         </el-form>
@@ -77,9 +75,10 @@
             <div v-else style="width:100%;color: #909399;font-size: 14px;text-align: center">暂无数据</div>
           </el-col>
           <el-col :span="12">
-            <el-col :span="24" align="center" v-for="item in imsiList" :key="item.imsi" v-if="imsiList.length>0">
+            <el-col :span="24" align="left" style="text-align: left;margin-left: 20px"
+                    v-for="item in imsiList" :key="item.imsi" v-if="imsiList.length>0">
               <el-button type="text" @click="gotoDetail(item)">
-                {{item.imsi}} {{item.regional}} {{item.ispDes}} {{'['+item.weightDes+']'}}
+                {{item.imsi}} {{'关联次数['+(item.fnIn>=0?item.fnIn:'--')+']'}} {{'置信度['+item.weightDes+']'}}
               </el-button>
             </el-col>
             <div v-else style="width:100%;color: #909399;font-size: 14px;text-align: center">暂无数据</div>
@@ -90,7 +89,7 @@
     <!--修改基本信息-->
     <el-dialog title="修改基本信息" :visible.sync="runModifyPerson" width="650px" center>
       <div class="block">
-        <el-form :model="person" label-position="right" label-width="80px">
+        <el-form :model="person" label-position="right" label-width="100px">
           <el-form-item label="姓名">
             <el-input v-model="person.name" auto-complete="off" :maxlength="10" placeholder="输入姓名"></el-input>
           </el-form-item>
@@ -114,8 +113,8 @@
                       placeholder="输入座机号,例：0123-12345678"></el-input>
           </el-form-item>
           <el-form-item label="所属辖区">
-            <el-cascader :options="provinceList" :props="props" change-on-select filterable
-                         v-model="selectedOptions2" placeholder="选择所属辖区" clearable>
+            <el-cascader :options="provinceList" :props="props" filterable clearable
+                         v-model="selectedOptions2" placeholder="选择所属辖区">
             </el-cascader>
           </el-form-item>
         </el-form>
@@ -161,7 +160,7 @@
       },
       clickModify() {
         let data = this.userInfo;
-        var age = !isNull(data.startAge) ? data.startAge : !isNull(data.endAge) ? data.endAge : '';
+        var age = !isNull(data.age) ? data.age : '';
         this.person = {
           faceId: data.faceId, telephone: data.telephone ? data.telephone : '',
           sex: !isNull(data.sex) ? data.sex : '', name: data.name ? data.name : '',
@@ -181,7 +180,7 @@
         if (!data.idCard) {
           delete this.person['idCard'];
         }
-        if (isNull(data.startAge) && isNull(data.endAge)) {
+        if (isNull(data.age)) {
           delete this.person['age'];
         }
         if (!data.telephone) {
@@ -225,17 +224,10 @@
             return;
           }
         }
-        if (this.selectedOptions2.length === 1) {
-          this.person.provinceCode = this.selectedOptions2[0];
-        } else if (this.selectedOptions2.length === 2) {
-          this.person.provinceCode = this.selectedOptions2[0];
-          this.person.cityCode = this.selectedOptions2[1];
-        } else if (this.selectedOptions2.length === 3) {
-          this.person.provinceCode = this.selectedOptions2[0];
-          this.person.cityCode = this.selectedOptions2[1];
-          this.person.areaCode = this.selectedOptions2[2];
+        if (this.selectedOptions2.length > 0) {
+          this.person.areaCode = this.selectedOptions2[this.selectedOptions2.length - 1];
         }
-        this.$post("/manager/user/updatePwdByAdmin", this.person, '修改成功').then(() => {
+        this.$post("archives/updateDetails", this.person, '修改成功').then(() => {
           this.getUserData();
           this.runModifyPerson = false;
         });

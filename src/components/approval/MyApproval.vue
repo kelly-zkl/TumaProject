@@ -39,11 +39,11 @@
       </el-form>
       <el-table :data="imsiList" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="编号" prop="recordId" min-width="220"
+        <el-table-column align="left" label="编号" prop="recordId" min-width="230"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="业务类型" prop="followType" width="130"
+        <el-table-column align="left" label="业务类型" prop="followType" width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="勤务等级" prop="staffLevel" width="120"
+        <el-table-column align="left" label="勤务等级" prop="staffLevel" width="110"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="申请人" prop="creatorName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>

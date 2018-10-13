@@ -46,6 +46,7 @@
                          :value="item.deviceId">
               </el-option>
             </el-select>
+            <el-button type="primary" size="medium" @click="selectDevice()" style="margin-left: 10px">地图选择</el-button>
           </el-form-item>
           <el-form-item label="日期" align="left" required>
             <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
@@ -100,10 +101,19 @@
           </div>
         </div>
       </el-dialog>
+      <!--在地图上选择设备-->
+      <el-dialog title="选择设备" :visible.sync="mapVisible">
+        <DeviceBmap @getDeviceList="getDeviceList" v-bind:deviceData="deviceData"></DeviceBmap>
+        <div class="block" style="margin-top: 20px">
+          <el-button @click="mapVisible = false">取消</el-button>
+          <el-button type="primary" @click="setDeviceList">确定</el-button>
+        </div>
+      </el-dialog>
     </section>
   </div>
 </template>
 <script>
+  import DeviceBmap from '../DeviceBmap';
 
   export default {
     data() {
@@ -124,6 +134,7 @@
       return {
         runTranslation: false,
         listLoading: false,
+        mapVisible: false,
         query: {page: 1, size: 10},
         followTask: {followType: "IMSI", interval: 120},
         cases: [],
@@ -131,6 +142,8 @@
         qTime: '',
         deviceList: [],
         imgUrl: '',
+        returnData: {},
+        deviceData: '',
         count: 0,
         vipList: [],
         cameras: [],
@@ -156,6 +169,25 @@
       }
     },
     methods: {
+      //地图选择设备，显示dialog
+      selectDevice() {
+        let param = {deviceType: this.followTask.followType, dataType: 'data1'};
+        console.log(param);
+        this.deviceData = JSON.stringify(param);
+        this.mapVisible = true;
+      },
+      //地图选择设备
+      setDeviceList() {
+        if (this.returnData.dataType == 'data1') {
+          this.followTask.deviceId = this.returnData.deviceList;
+        }
+        this.mapVisible = false;
+      },
+      //获得地图选择的设备
+      getDeviceList(data) {
+        this.returnData = data;
+        // console.log(data);
+      },
       //获取IMSI告警列表
       getData() {
         this.listLoading = true;
@@ -257,6 +289,9 @@
       this.getCases();
       this.getDevice();
       this.getCameras();
+    },
+    components: {
+      DeviceBmap
     }
   }
 </script>

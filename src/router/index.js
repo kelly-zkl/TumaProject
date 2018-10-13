@@ -86,13 +86,13 @@ export default new Router({
           ]
         },
         {
-          path: '/imsiRecords',
+          path: '/importPersons',
           component: FileHome,
           name: '档案',
           children: [
+            {path: '/importPersons', component: ImportPersons, name: '人员档案'},
             {path: '/imsiRecords', component: ImsiRecords, name: 'IMSI记录'},
             {path: '/catchRecords', component: CatchRecords, name: '抓拍记录'},
-            {path: '/importPersons', component: ImportPersons, name: '重点人员'},
             {path: '/normalPersons', component: NormalPersons, name: '普通人员'},
             {path: '/listManage', component: ListManage, name: '名单管理'},
             {path: '/personnelFiles', component: PersonnelFiles, name: '人员档案'},

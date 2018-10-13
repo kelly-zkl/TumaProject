@@ -18,7 +18,7 @@
           <el-form-item label="任务类型" align="left">
             <el-radio-group v-model="collisionType" @change="changeType">
               <el-radio label="IMSI">IMSI</el-radio>
-              <el-radio label="FACE">图像</el-radio>
+              <!--<el-radio label="FACE">图像</el-radio>-->
               <!--<el-radio label="MAC">MAC</el-radio>-->
             </el-radio-group>
           </el-form-item>
@@ -48,6 +48,8 @@
                              :value="item.deviceId">
                   </el-option>
                 </el-select>
+                <el-button type="primary" size="medium" @click="selectDevice('data1')" style="margin-left: 10px">地图选择
+                </el-button>
               </el-form-item>
               <el-form-item label="日期" align="left" style="margin: 10px 0 0 0" v-show="param1.dataFromMode == 'QUERY'">
                 <el-date-picker v-model="date1" type="datetimerange" range-separator="至" style="width: 300px"
@@ -90,6 +92,8 @@
                              :value="item.deviceId">
                   </el-option>
                 </el-select>
+                <el-button type="primary" size="medium" @click="selectDevice('data2')" style="margin-left: 10px">地图选择
+                </el-button>
               </el-form-item>
               <el-form-item label="日期" align="left" style="margin: 10px 0 0 0" v-show="param2.dataFromMode == 'QUERY'">
                 <el-date-picker v-model="date2" type="datetimerange" range-separator="至" style="width: 300px"
@@ -124,18 +128,27 @@
       </div>
       <div class="block" style="margin-top: 30px">
         <el-button type="primary" @click="createTask()">确认创建</el-button>
-        <el-button type="primary" plain @click="$router.go(-1)">取消</el-button>
       </div>
+      <!--在地图上选择设备-->
+      <el-dialog title="选择设备" :visible.sync="mapVisible">
+        <DeviceBmap @getDeviceList="getDeviceList" v-bind:deviceData="deviceData"></DeviceBmap>
+        <div class="block" style="margin-top: 20px">
+          <el-button @click="mapVisible = false">取消</el-button>
+          <el-button type="primary" @click="setDeviceList">确定</el-button>
+        </div>
+      </el-dialog>
     </section>
   </div>
 </template>
 
 <script>
   import {isNull} from "../../../assets/js/api";
+  import DeviceBmap from '../DeviceBmap';
 
   export default {
     data() {
       return {
+        mapVisible: false,
         collisionType: 'IMSI',
         collision: {taskName: '', collisionMode: "INTERSECT", caseId: ""},
         param1: {dataFromMode: "QUERY"},
@@ -147,10 +160,33 @@
         date1: '',
         time1: '',
         date2: '',
-        time2: ''
+        time2: '',
+        returnData: {},
+        deviceData: '',
       }
     },
     methods: {
+      //地图选择设备，显示dialog
+      selectDevice(val) {
+        let param = {deviceType: this.collisionType, dataType: val};
+        console.log(param);
+        this.deviceData = JSON.stringify(param);
+        this.mapVisible = true;
+      },
+      //地图选择设备
+      setDeviceList() {
+        if (this.returnData.dataType == 'data1') {
+          this.param1.deviceId = this.returnData.deviceList;
+        } else {
+          this.param2.deviceId = this.returnData.deviceList;
+        }
+        this.mapVisible = false;
+      },
+      //获得地图选择的设备
+      getDeviceList(data) {
+        this.returnData = data;
+        // console.log(data);
+      },
       changeType(val) {
         this.getTasks();
         if (val === 'IMSI') {
@@ -282,6 +318,9 @@
       this.getCameras();
       this.getTasks();
       this.getCases();
+    },
+    components: {
+      DeviceBmap
     }
   }
 </script>

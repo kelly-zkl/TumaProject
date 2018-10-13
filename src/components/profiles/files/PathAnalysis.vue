@@ -11,7 +11,7 @@
         <el-form-item label="记录类型">
           <el-checkbox-group v-model="line">
             <el-checkbox label="imsi">IMSI</el-checkbox>
-            <el-checkbox label="face">图像</el-checkbox>
+            <!--<el-checkbox label="face">图像</el-checkbox>-->
           </el-checkbox-group>
         </el-form-item>
         <el-form-item>
@@ -27,7 +27,7 @@
   export default {
     data() {
       return {
-        line: ['imsi', 'face'],
+        line: ['imsi'],//, 'face'
         qTime: [new Date((formatDate(new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         pickerBeginDate: {

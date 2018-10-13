@@ -34,11 +34,11 @@
       <div class="content" v-show="activeItem == 'IMSI'">
         <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model="query.imsi" placeholder="输入IMSI" size="medium" style="width: 160px"
+            <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 160px"
                       :maxlength=30></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model="query.regional" placeholder="输入归属地" size="medium" style="width: 160px"
+            <el-input v-model="query.regional" placeholder="IMSI归属地" size="medium" style="width: 160px"
                       :maxlength=20></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px" v-if="places">
@@ -77,7 +77,7 @@
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="抓取IMSI" prop="imsi" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="归属地" prop="regional" width="150"
+          <el-table-column align="left" label="IMSI归属地" prop="regional" width="150"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="告警场所" prop="placeName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -481,6 +481,7 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query1.faceUrl = res.data.fileUrl;
+            this.query.similarThreshold = 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.isSearch = true;
             this.getImgData();
@@ -494,6 +495,12 @@
       },
       //获取图像告警列表
       getImgData() {
+        if (this.query.faceUrl) {
+          if (!this.query.similarThreshold) {
+            this.$message.error('请输入相似度');
+            return;
+          }
+        }
         if (this.query.similarThreshold) {
           if (!doubleValid(this.query.similarThreshold)) {
             this.$message.error('相似度为0.1-99的数字');
