@@ -22,7 +22,7 @@
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
+            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
                             start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                             :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                             :picker-options="pickerBeginDate" style="width: 360px">
@@ -51,7 +51,7 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="操作" width="160">
+          <el-table-column align="left" label="操作" width="160" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoImsiDetail(scope.row)">查看详情</el-button>
             </template>
@@ -93,7 +93,7 @@
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
+            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
                             start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                             :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                             :picker-options="pickerBeginDate" style="width: 360px">
@@ -128,7 +128,7 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="操作" width="160">
+          <el-table-column align="left" label="操作" width="160" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoDetail(scope.row)">查看详情</el-button>
             </template>
@@ -169,7 +169,8 @@
         imgPath: require('../../../assets/img/icon_people.png'),
         queryImsi: {size: 100},
         query: {size: 100},
-        qTime: '',
+        qTime: [new Date((formatDate(new Date((new Date().getTime() - 30 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         places: [],
         count: 0,
@@ -198,8 +199,15 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      handleChange(val) {
+        if (!val || val.length == 0) {
+          this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 30 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        }
+      },
       handleType(val) {
-        this.qTime = '';
+        this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 30 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         this.isSearch = false;
         if (val.name === 'imsi') {
           this.queryImsi = {size: 100};
@@ -256,7 +264,8 @@
       //清除查询条件
       clearImsiData() {
         this.list10 = [];
-        this.qTime = '';
+        this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 30 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         this.queryImsi = {size: 100};
         this.isSearch = true;
         this.getImsiData();
@@ -366,7 +375,7 @@
           } else if ("100000" === data.code) {//执行中
             setTimeout(() => {
               this.getData();
-            }, 5000);
+            }, 1000);
           } else {
             this.list = [];
             this.list10 = [];
@@ -378,7 +387,8 @@
       //清除查询条件
       clearData() {
         this.list10 = [];
-        this.qTime = '';
+        this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 30 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         this.query = {size: 100};
         this.isSearch = true;
         delete this.query['imageUrl'];

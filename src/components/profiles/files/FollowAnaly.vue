@@ -20,7 +20,7 @@
           </el-tabs>
         </el-col>
         <el-col :span="12">
-          <el-button type="primary" size="medium" @click="getData()">查询</el-button>
+          <el-button type="primary" size="medium" @click="query.page=1;getData()">查询</el-button>
         </el-col>
       </el-row>
       <el-table :data="imsiList" class="center-block" v-loading="listLoading" stripe v-if="activeItem=='IMSI'">

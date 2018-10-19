@@ -47,7 +47,7 @@
             </el-date-picker>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
+            <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
           </el-form-item>
           <el-form-item>
             <el-button size="medium" @click="clearData()">重置</el-button>

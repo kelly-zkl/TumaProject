@@ -277,12 +277,6 @@
       var myCity = new BMap.LocalCity();
       myCity.get(myFun);
 
-      // var geolocation = new BMap.Geolocation();
-      // geolocation.getCurrentPosition(function (r) {
-      //   console.log(r);
-      //   _this.map.centerAndZoom(r.point, 14);
-      // }, {enableHighAccuracy: true});
-
       this.imsi = this.$route.query.imsi || 0;
       this.face = this.$route.query.face || 0;
 
@@ -303,13 +297,6 @@
           this.choose.face = pathFace[0];
         }
       }
-      // var pois = [
-      //   new BMap.Point(116.350658, 39.938285),
-      //   new BMap.Point(116.386446, 39.939281),
-      //   new BMap.Point(116.389034, 39.913828),
-      //   new BMap.Point(116.442501, 39.914603)
-      // ];
-      // this.pathLine(pois, 1);
       this.getLineData();
     }
   }

@@ -69,7 +69,7 @@
             <el-input v-model="query.count2" type="number" size="medium" style="width: 80px" :maxlength=5></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
+            <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button size="medium" @click="clearData()">重置</el-button>
@@ -89,7 +89,7 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="条件2出现次数" prop="imsiCount2" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="操作" width="130">
+          <el-table-column align="left" label="操作" width="130" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoImsi(scope.row.imsi)"
                          v-show="getButtonVial('collision:queryRecord')">查看IMSI
@@ -142,7 +142,7 @@
                              :max="99999" style="width: 100px" size="medium"></el-input-number>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
+            <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
           </el-form-item>
           <el-form-item>
             <el-button size="medium" @click="clearData()">重置</el-button>
@@ -165,7 +165,7 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="条件2出现次数" prop="faceCount2" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="操作" min-width="125" max-width="250">
+          <el-table-column align="left" label="操作" min-width="125" max-width="250" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoImage(scope.row.scensePicURL,scope.row.personID)"
                          v-show="getButtonVial('collision:queryRecord')">查看图像

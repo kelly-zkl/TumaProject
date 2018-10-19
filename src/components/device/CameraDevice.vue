@@ -20,7 +20,7 @@
               <!--</el-select>-->
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
+              <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()">重置</el-button>
@@ -32,17 +32,17 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="相机编码" prop="cameraCode" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="相机状态" prop="status" min-width="150"
+        <el-table-column align="left" label="设备标识" prop="name" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="相机状态" prop="status" min-width="120"
+                         max-width="150" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="安装地区" prop="areaCode" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="详细地址" prop="detailAddress" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="安装场所" prop="placeName" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备标识" prop="name" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="160">
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="runningSetPlace=true;addPlace=scope.row"
                        v-show="getButtonVial('camera:set:place')">设置场所

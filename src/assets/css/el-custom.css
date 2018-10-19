@@ -19,8 +19,8 @@
 
 .login-box .el-input__inner {
   background: rgba(0, 0, 0, 0);
-  border-color: #7d7d7d;
-  color: #fff;
+  border-color: #bbb;
+  color: #343434;
 }
 
 .login-box .el-input__inner:-ms-input-placeholder {

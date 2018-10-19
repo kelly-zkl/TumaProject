@@ -16,13 +16,13 @@
   export default {
     data() {
       return {
-        activeItem: 'person',
+        activeItem: 'person'
       }
     },
     methods: {
       handleType(val) {
 
-      },
+      }
     },
     mounted() {
     }

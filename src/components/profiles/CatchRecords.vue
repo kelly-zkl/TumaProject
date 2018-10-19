@@ -71,13 +71,13 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="抓取场所" prop="placeName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="抓取时间" prop="catchTime" width="170"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备标识" prop="deviceName" width="150"
-                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="抓取时间" prop="catchTime" min-width="170"
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="160">
+        <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('archives:getFaceRecordById')">
               查看详情
@@ -249,7 +249,7 @@
           } else if ("100000" === data.code) {//执行中
             setTimeout(() => {
               this.getData();
-            }, 5000);
+            }, 1000);
           } else {
             this.list = [];
             this.list10 = [];

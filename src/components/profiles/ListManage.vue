@@ -9,7 +9,7 @@
                         style="width: 200px" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
+              <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()">重置</el-button>
@@ -38,7 +38,7 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="人员数量" prop="caseName" min-width="120"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="350">
+        <el-table-column align="left" label="操作" width="350" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="sels = [];sels.push(scope.row);deleteList()">删除名单</el-button>
             <el-button type="text" @click="">编辑名单</el-button>

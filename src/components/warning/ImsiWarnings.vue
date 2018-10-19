@@ -69,7 +69,7 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <!--<el-table-column align="left" label="所属名单" prop="blackClass" min-width="150"-->
         <!--max-width="250" :formatter="formatterAddress"></el-table-column>-->
-        <el-table-column align="left" label="操作" width="160">
+        <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)"
                        v-show="getButtonVial('warning:getImsiWarning')">查看告警

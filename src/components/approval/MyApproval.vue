@@ -31,7 +31,7 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
+          <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearData()">重置</el-button>
@@ -56,7 +56,7 @@
                          :max-width="item.max" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="状态" prop="status" width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="200">
+        <el-table-column align="left" label="操作" width="200" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="handlePass(scope.row,0)"
                        v-show="activeItem=='EXECUTION' && getButtonVial('workflow:translation:approve')">通过

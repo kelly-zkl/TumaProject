@@ -22,7 +22,7 @@
           <el-input v-model="query.regional" placeholder="IMSI归属地" size="medium" style="width: 160px"
                     :maxlength=20></el-input>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:queryg')">
+        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
           <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
@@ -62,7 +62,7 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="IMSI归属地" max-width="200" min-width="150" prop="regional"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="160">
+        <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)"
                        v-show="getButtonVial('archives:getImsiRecordByImsi')">查看详情

@@ -16,7 +16,7 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" icon="search" @click.stop="getRoles" size="medium">搜索</el-button>
+              <el-button type="primary" icon="search" @click.stop="query.page=1;getRoles" size="medium">搜索</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button @click.stop="clearData" size="medium">重置</el-button>
@@ -41,7 +41,7 @@
                          max-width="300" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="state" label="状态" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="200">
+        <el-table-column align="left" label="操作" width="200" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="userole(scope.row)"
                        v-show="getButtonVial('manager:role:update') && scope.row.roleType==1">

@@ -14,6 +14,14 @@
                 </el-upload>
               </el-input>
             </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-input placeholder="人员编号" v-model="query.faceId" :maxlength="18"
+                        style="width: 180px" size="medium"></el-input>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="15"
+                        style="width: 180px" size="medium"></el-input>
+            </el-form-item>
             <el-form-item label="年龄" style="margin-bottom: 10px">
               <el-input-number v-model="query.startAge" controls-position="right" :min="1"
                                :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
@@ -28,19 +36,15 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="30"
-                        style="width: 180px" size="medium"></el-input>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="手机号" v-model="query.cellphone" :maxlength="11"
                         style="width: 180px" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="姓名" v-model="query.name" :maxlength="30"
+              <el-input placeholder="姓名" v-model="query.name" :maxlength="10"
                         style="width: 180px" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="身份证号" v-model="query.idCard" :maxlength="30"
+              <el-input placeholder="身份证号" v-model="query.idCard" :maxlength="18"
                         style="width: 180px" size="medium"></el-input>
             </el-form-item>
             <!--<el-form-item style="margin-bottom: 10px">-->
@@ -50,7 +54,7 @@
             <!--</el-select>-->
             <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
+              <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()">重置</el-button>
@@ -69,36 +73,38 @@
         <!--</el-button>-->
         <!--</el-col>-->
       </el-row>
-      <el-table :data="vipList" v-loading="listLoading" class="center-block" stripe>
+      <el-table :data="vipList" v-loading="listLoading" class="center-block" stripe @row-dblclick="rowClick">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="人员编号" prop="faceId" min-width="180"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="150"
-                         max-width="250" :formatter="formatterAddress">
+        <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="130"
+                         max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
             <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
                  @click="bigUrl=scope.row.faceUrl;runBigPic=true"
                  style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="年龄" prop="startAge" width="120"
+        <el-table-column align="left" label="年龄" prop="age" width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="IMSI[置信度]" prop="imsiList" width="220">
+        <el-table-column align="left" label="IMSI[置信度]" prop="imsiList" min-width="220" max-width="250">
           <template slot-scope="scope">
             <div v-for="item in scope.row.imsiList">
               <span>{{item.imsi}}<span style="color:#000;font-weight: bold">[{{item.weight / 10}}%]</span></span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="手机号" prop="phone" width="150"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="身份证号" prop="idCard" width="170"
-                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="手机号" prop="mobilePhone" min-width="150"
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="身份证号" prop="idCard" min-width="170"
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="姓名" prop="name" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="160">
+        <el-table-column align="left" label="建档时间" prop="createTime" min-width="170"
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="操作" width="150" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('archives:detail')">人员档案
             </el-button>
@@ -193,7 +199,6 @@
         listLoading: false,
         vipList: [],
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
-        imgUrl: '',
         runningAddPerson: false,
         runBigPic: false,
         addPerson: {},
@@ -252,6 +257,10 @@
           this.$message.error(res.msg);
         }
       },
+      rowClick(row, event, column) {
+        sessionStorage.setItem("query", JSON.stringify(this.query));
+        this.$router.push({path: '/personnelFiles', query: {faceId: row.faceId}});
+      },
       gotoDetail(row) {
         sessionStorage.setItem("query", JSON.stringify(this.query));
         this.$router.push({path: '/personnelFiles', query: {faceId: row.faceId}});
@@ -290,7 +299,7 @@
           } else if ("100000" === data.code) {//执行中
             setTimeout(() => {
               this.getData();
-            }, 5000);
+            }, 1000);
           } else {
             this.vipList = [];
             this.count = 0;
@@ -317,8 +326,10 @@
       formatterAddress(row, column) {
         if (column.property === 'sex') {
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
-        } else if (column.property === 'startAge') {
-          return row.startAge && row.endAge ? row.startAge + '~' + row.endAge : row.startAge ? row.startAge : row.endAge ? row.endAge : '--';
+        } else if (column.property === 'age') {
+          return row.age >= 0 ? row.age : '--';
+        } else if (column.property === 'createTime') {
+          return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

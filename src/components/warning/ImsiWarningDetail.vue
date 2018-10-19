@@ -200,8 +200,9 @@
       //进入人员档案
       gotoPerson(row) {
         if (row.personId) {
-          // sessionStorage.setItem("activeItem", this.activeItem);
           this.$router.push({path: '/personnelFiles', query: {faceId: row.personId}});
+          // let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.personId}});
+          // window.open(routeData.href, '_blank');
         }
       },
       changeStatus(status) {
@@ -231,10 +232,6 @@
           return;
         }
         let imsis = [this.imsi];
-
-        // sessionStorage.setItem("activeItem", this.activeItem);
-        // sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
-        // sessionStorage.setItem("query", JSON.stringify(this.query));
 
         sessionStorage.setItem("pathImsi", JSON.stringify(imsis));
         sessionStorage.setItem("pathTime", JSON.stringify(this.qTime));
@@ -370,18 +367,6 @@
       }
     },
     mounted() {
-      // let bol = JSON.parse(sessionStorage.getItem("query"));
-      // let tab = sessionStorage.getItem("activeItem");
-      // let time1 = JSON.parse(sessionStorage.getItem("qTime"));
-      // if (tab) {
-      //   this.activeItem = tab;
-      // }
-      // if (bol) {
-      //   this.query = JSON.parse(sessionStorage.getItem("query"));
-      // }
-      // if (time1) {
-      //   this.qTime = time1;
-      // }
       this.getPlaces();
       this.getImsiDetail();
       this.getPersons();

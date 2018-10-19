@@ -16,7 +16,7 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" icon="search" @click.stop="getMenus" size="medium">搜索
+              <el-button type="primary" icon="search" @click.stop="query.page=1;getMenus" size="medium">搜索
               </el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
@@ -52,7 +52,7 @@
                          max-width="300" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="status" label="状态" width="110"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="180">
+        <el-table-column align="left" label="操作" width="180" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="menuUse(scope.row)" v-show="getButtonVial('manager:permission:update')">
               {{scope.row.status == 0 ? '停用' : '启用'}}

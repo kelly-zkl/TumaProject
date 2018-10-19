@@ -202,6 +202,8 @@
       gotoPerson(row) {
         if (row.personId) {
           this.$router.push({path: '/personnelFiles', query: {faceId: row.personId}});
+          // let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.personId}});
+          // window.open(routeData.href, '_blank');
         }
       },
       //获取imsi详情

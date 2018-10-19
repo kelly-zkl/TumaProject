@@ -17,7 +17,7 @@
           <!--</el-button>-->
           <!--</el-form-item>-->
           <el-form-item class="lan-no">
-            <span style="font-size: 22px;color: #fefefe">登录后台</span>
+            <span style="font-size: 22px;color: #333">登录后台</span>
           </el-form-item>
           <el-form-item class="login-box">
             <el-input placeholder="账号" v-model="account.loginId" :maxlength="18"
@@ -128,12 +128,11 @@
         this.$post('/manager/permission/menuTree/' + JSON.parse(sessionStorage.getItem("user")).userId + '/2', {}).then((data) => {
           if (data.data) {
             sessionStorage.setItem("menu", JSON.stringify(data.data));
-//            if (data.data[0].permissionUrl) {
-//              this.$router.push(data.data[0].permissionUrl);
-//            } else if (data.data[0].childs) {
-//              this.$router.push(data.data[0].childs[0].permissionUrl);
-//            }
-            this.$router.push('/dataOverview');
+            if (data.data[0].permissionUrl) {
+              this.$router.push(data.data[0].permissionUrl);
+            } else if (data.data[0].childs) {
+              this.$router.push(data.data[0].childs[0].permissionUrl);
+            }
           }
         });
       },
@@ -166,210 +165,45 @@
     top: 0;
     bottom: 0;
     width: 100%;
+    min-width: 1366px;
     margin-left: -8px;
     background: url("../assets/img/bg_login.jpg") no-repeat;
     background-size: cover;
   }
 
-  @media screen and (min-width: 320px) and (max-width: 359px) {
-    .main-footer {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      margin: 0;
-      background: rgba(0, 0, 0, 0.6);
-      color: #ccc;
-      border-top: none;
-      font-size: 14px;
-      padding: 10px;
-    }
-
-    .main-header {
-      position: absolute;
-      top: 0;
-      width: 100%;
-      margin: 0;
-      background: rgba(0, 0, 0, 0.6);
-      border-top: none;
-      padding: 5px 20px;
-    }
-
-    .login-input {
-      position: absolute;
-      width: 270px;
-      height: 350px;
-      line-height: 350px;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 20px;
-      border-radius: 3px;
-      left: 50%;
-      margin-left: -155px;
-      top: 50%;
-      margin-top: -190px;
-    }
+  .main-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.6);
+    color: #ccc;
+    border-top: none;
+    font-size: 14px;
+    padding: 25px;
   }
 
-  @media screen and (min-width: 360px) and (max-width: 411px) {
-    .main-footer {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      margin: 0;
-      background: rgba(0, 0, 0, 0.6);
-      color: #ccc;
-      border-top: none;
-      font-size: 14px;
-      padding: 20px;
-    }
-
-    .main-header {
-      position: absolute;
-      top: 0;
-      width: 100%;
-      margin: 0;
-      background: rgba(0, 0, 0, 0.6);
-      border-top: none;
-      padding: 10px 20px;
-    }
-
-    .login-input {
-      position: absolute;
-      width: 300px;
-      height: 350px;
-      line-height: 350px;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 20px;
-      border-radius: 3px;
-      left: 50%;
-      margin-left: -170px;
-      top: 50%;
-      margin-top: -195px;
-    }
+  .main-header {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.6);
+    border-top: none;
+    padding: 20px 40px;
   }
 
-  @media screen and (min-width: 412px) and (max-width: 639px) {
-    .main-footer {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      margin: 0;
-      background: rgba(0, 0, 0, 0.6);
-      color: #ccc;
-      border-top: none;
-      font-size: 14px;
-      padding: 20px;
-    }
-
-    .main-header {
-      position: absolute;
-      top: 0;
-      width: 100%;
-      margin: 0;
-      background: rgba(0, 0, 0, 0.6);
-      border-top: none;
-      padding: 10px 20px;
-    }
-
-    .login-input {
-      position: absolute;
-      width: 320px;
-      height: 350px;
-      line-height: 350px;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 30px;
-      border-radius: 3px;
-      left: 50%;
-      margin-left: -190px;
-      top: 50%;
-      margin-top: -205px;
-    }
-  }
-
-  @media screen and (min-width: 640px) {
-    .main-footer {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      margin: 0;
-      background: rgba(0, 0, 0, 0.6);
-      color: #ccc;
-      border-top: none;
-      font-size: 14px;
-      padding: 25px;
-    }
-
-    .main-header {
-      position: absolute;
-      top: 0;
-      width: 100%;
-      margin: 0;
-      background: rgba(0, 0, 0, 0.6);
-      border-top: none;
-      padding: 20px 40px;
-    }
-
-    .login-input {
-      position: absolute;
-      width: 330px;
-      height: 350px;
-      line-height: 350px;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 30px 40px;
-      border-radius: 3px;
-      left: 50%;
-      margin-left: -205px;
-      top: 50%;
-      margin-top: -205px;
-    }
-  }
-
-  @media screen and (orientation: landscape) and (max-height: 639px) {
-    .main-footer {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      margin: 0;
-      background: rgba(0, 0, 0, 0.6);
-      color: #ccc;
-      border-top: none;
-      font-size: 14px;
-      padding: 10px;
-    }
-
-    .main-header {
-      position: absolute;
-      top: 0;
-      width: 100%;
-      margin: 0;
-      background: rgba(0, 0, 0, 0.6);
-      border-top: none;
-      padding: 5px 30px;
-    }
-
-    .login-input {
-      position: absolute;
-      width: 300px;
-      height: 250px;
-      line-height: 250px;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 20px;
-      border-radius: 3px;
-      left: 50%;
-      margin-left: -170px;
-      top: 50%;
-      margin-top: -140px;
-    }
-
-    .lan-no {
-      width: 0;
-      height: 0;
-      margin: 0;
-      padding: 0;
-      display: none;
-    }
-
-    .lan-margin {
-      margin-bottom: 0;
-    }
+  .login-input {
+    position: absolute;
+    width: 310px;
+    height: 350px;
+    line-height: 350px;
+    background: rgba(255, 255, 255, 1);
+    padding: 30px 40px;
+    border-radius: 3px;
+    left: 75%;
+    margin-left: -195px;
+    top: 50%;
+    margin-top: -205px;
   }
 </style>

@@ -143,7 +143,7 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="抓取时间" prop="createTime" min-width="170"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="场所" prop="placeName" min-width="150"
+          <el-table-column align="left" label="抓取场所" prop="placeName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -223,8 +223,9 @@
       //进入人员档案
       gotoPerson(row) {
         if (row.personId) {
-          // sessionStorage.setItem("activeItem", this.activeItem);
           this.$router.push({path: '/personnelFiles', query: {faceId: row.personId}});
+          // let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.personId}});
+          // window.open(routeData.href, '_blank');
         }
       },
       changeStatus(status) {
@@ -254,15 +255,6 @@
           return;
         }
         let faces = [this.faceId];
-        // this.sels.forEach((item) => {
-        //   if (this.faceId != item.faceId) {
-        //     faces.push(item.faceId);
-        //   }
-        // });
-        // sessionStorage.setItem("activeItem", this.activeItem);
-        // sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
-        // sessionStorage.setItem("query", JSON.stringify(this.query));
-
         sessionStorage.setItem("pathFace", JSON.stringify(faces));
         sessionStorage.setItem("pathTime", JSON.stringify(this.qTime));
         this.$router.push({path: '/pathLine', query: {face: 1}});
@@ -402,18 +394,6 @@
       }
     },
     mounted() {
-      // let bol = JSON.parse(sessionStorage.getItem("query"));
-      // let tab = sessionStorage.getItem("activeItem");
-      // let time1 = JSON.parse(sessionStorage.getItem("qTime"));
-      // if (tab) {
-      //   this.activeItem = tab;
-      // }
-      // if (bol) {
-      //   this.query = JSON.parse(sessionStorage.getItem("query"));
-      // }
-      // if (time1) {
-      //   this.qTime = time1;
-      // }
       this.getPlaces();
       this.getFaceDetail();
       this.getPersons();

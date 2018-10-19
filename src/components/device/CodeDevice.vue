@@ -34,7 +34,7 @@
                 <!--</el-select>-->
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
-                <el-button type="primary" @click.stop="getData()" size="medium">搜索</el-button>
+                <el-button type="primary" @click.stop="query.page=1;getData()" size="medium">搜索</el-button>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
                 <el-button @click.stop="clearData()" size="medium">重置</el-button>
@@ -47,7 +47,7 @@
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="deviceName" label="设备名称" min-width="150" max-width="250"
+          <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="placeName" label="安装场所" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
@@ -59,7 +59,7 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="lineStatus" label="在线状态" min-width="100"
                            max-width="120"></el-table-column>
-          <el-table-column align="left" label="操作" width="150">
+          <el-table-column align="left" label="操作" width="150" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click.stop="runningSetPlace=true;addPlace=scope.row"
                          v-show="getButtonVial('device:set:place')">设置场所
@@ -117,7 +117,7 @@
         listLoading: false,
         labelPosition: 'right',
         deviceList: [],
-        query: {page: 1, size: 10, deviceForm: '', deviceType: '', deviceName: ''},
+        query: {page: 1, size: 10},
         count: 0,
         runningSetPlace: false,
         addPlace: {deviceId: '', deviceName: '', deviceForm: '', deviceType: ''},
@@ -255,10 +255,7 @@
       },
       //搜索设备列表
       clearData() {
-        this.query = {
-          page: 1, size: 10, deviceForm: '', deviceType: '', deviceName: '',
-
-        };
+        this.query = {page: 1, size: 10};
         this.lineStatus = '';
         this.areaList = [];
         this.getData();
@@ -292,7 +289,6 @@
       }
     },
     mounted() {
-      sessionStorage.removeItem("deviceTab");
       this.getPlaces();
       this.getData();
       this.getDeviceTypeAndForm();

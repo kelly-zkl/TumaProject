@@ -57,7 +57,7 @@
                              :max="99999" style="width: 100px" size="medium"></el-input-number>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-button type="primary" size="medium" @click="getResult()">搜索</el-button>
+            <el-button type="primary" size="medium" @click="queryResult.page=1;getResult()">搜索</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button size="medium" @click="clearData()">重置</el-button>
@@ -77,7 +77,7 @@
                            max-width="250"></el-table-column>
           <el-table-column align="left" label="置信度" prop="confidenceLevel" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="操作" width="130">
+          <el-table-column align="left" label="操作" width="130" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoImsi(scope.row)" v-show="getButtonVial('follow:queryRecord')">查看IMSI
               </el-button>
@@ -114,7 +114,7 @@
                       :maxlength=20></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-button type="primary" size="medium" @click="getList()">搜索</el-button>
+            <el-button type="primary" size="medium" @click="queryRecord.page=1;getList()">搜索</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button size="medium" @click="clearData()">重置</el-button>
@@ -140,7 +140,7 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="抓取地点" prop="deviceName" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="操作" min-width="125" max-width="250">
+          <el-table-column align="left" label="操作" min-width="125" max-width="250" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoImsi(scope.row)" v-show="getButtonVial('follow:queryRecord')">查看IMSI
               </el-button>
@@ -173,7 +173,7 @@
                              :max="99999" style="width: 100px" size="medium"></el-input-number>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-button type="primary" size="medium" @click="getResult()">搜索</el-button>
+            <el-button type="primary" size="medium" @click="queryResult.page=1;getResult()">搜索</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button size="medium" @click="clearData()">重置</el-button>
@@ -233,7 +233,7 @@
             </el-date-picker>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-button type="primary" size="medium" @click="getList()">搜索</el-button>
+            <el-button type="primary" size="medium" @click="queryRecord.page=1;getList()">搜索</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button size="medium" @click="clearData()">重置</el-button>

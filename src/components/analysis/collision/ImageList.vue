@@ -27,7 +27,7 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
+          <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearData()">重置</el-button>
@@ -57,7 +57,7 @@
         </el-table-column>
         <el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" min-width="125" max-width="250">
+        <el-table-column align="left" label="操作" min-width="125" max-width="250" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoImage(scope.row.scensePicURL,scope.row.personID)"
                        v-show="getButtonVial('collision:queryRecord')">查看详情

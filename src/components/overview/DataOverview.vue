@@ -1,11 +1,11 @@
 <template>
-  <div>
-    <el-row :gutter="30" style="padding:10px 20px 10px 30px">
+  <div style="padding:10px 20px 10px 30px">
+    <el-row :gutter="30">
       <el-col :span="15" style="background: #21206C;border-radius: 6px;padding: 0">
         <el-row style="border-bottom: 3px #080652 solid;height: 60px;line-height: 60px">
           <el-col :span="24">
-          <span v-bind:class="activeItem== 'device'?'map-tap-active':'map-tap'"
-                @click="handleType('device')">设备分布实况</span>
+            <span v-bind:class="activeItem== 'device'?'map-tap-active':'map-tap'"
+                  @click="handleType('device')">设备分布实况</span>
             <span v-bind:class="activeItem== 'data'?'map-tap-active':'map-tap'"
                   @click="handleType('data')">实时数据热力图</span>
           </el-col>
@@ -117,41 +117,6 @@
 </template>
 <script>
   import echarts from "echarts";
-  import china from "echarts/map/js/china";
-  import anhui from "echarts/map/js/province/anhui";
-  import aomen from "echarts/map/js/province/aomen";
-  import beijing from "echarts/map/js/province/beijing";
-  import chongqing from "echarts/map/js/province/chongqing";
-  import fujian from "echarts/map/js/province/fujian";
-  import gansu from "echarts/map/js/province/gansu";
-  import guangdong from "echarts/map/js/province/guangdong";
-  import guangxi from "echarts/map/js/province/guangxi";
-  import guizhou from "echarts/map/js/province/guizhou";
-  import hainan from "echarts/map/js/province/hainan";
-  import hebei from "echarts/map/js/province/hebei";
-  import heilongjiang from "echarts/map/js/province/heilongjiang";
-  import henan from "echarts/map/js/province/henan";
-  import hubei from "echarts/map/js/province/hubei";
-  import hunan from "echarts/map/js/province/hunan";
-  import jiangsu from "echarts/map/js/province/jiangsu";
-  import jiangxi from "echarts/map/js/province/jiangxi";
-  import jilin from "echarts/map/js/province/jilin";
-  import liaoning from "echarts/map/js/province/liaoning";
-  import neimenggu from "echarts/map/js/province/neimenggu";
-  import ningxia from "echarts/map/js/province/ningxia";
-  import qinghai from "echarts/map/js/province/qinghai";
-  import shandong from "echarts/map/js/province/shandong";
-  import shanghai from "echarts/map/js/province/shanghai";
-  import shanxi from "echarts/map/js/province/shanxi";
-  import shanxi1 from "echarts/map/js/province/shanxi1";
-  import sichuan from "echarts/map/js/province/sichuan";
-  import taiwan from "echarts/map/js/province/taiwan";
-  import tianjin from "echarts/map/js/province/tianjin";
-  import xianggang from "echarts/map/js/province/xianggang";
-  import xinjiang from "echarts/map/js/province/xinjiang";
-  import xizang from "echarts/map/js/province/xizang";
-  import yunnan from "echarts/map/js/province/yunnan";
-  import zhejiang from "echarts/map/js/province/zhejiang";
   import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
 
   export default {
@@ -178,13 +143,15 @@
         hotPoint: null,//热力图的中心点
         hotZoom: 12,//热力图的放大倍数
         heatMap: null,//热力图的地图
+        heatmapOverlay: null,
         devicePieChart: null,//侦码设备饼状图
         cameraPieChart: null,//相机设备饼状图
         catchLineChart: null,//抓取数据折线图
         warningBarChart: null,//告警数据柱状图
         intervalid: null,//定时器
         icon: require('../../assets/img/icon.png'),
-        imgPath: require('../../assets/img/icon_people.png')
+        imgPath: require('../../assets/img/icon_people.png'),
+        geolocation: null,
       }
     },
     //页面关闭时停止更新设备在线状态
@@ -196,12 +163,12 @@
       statusTask() {
         if (!this.intervalid) {
           this.intervalid = setInterval(() => {
-            this.getHotSpot();
             this.getMapData();
+            this.getHotSpot();
             this.getWarningCount();
             this.getImsiList();
             this.getLineData();
-          }, 10 * 1000);
+          }, 20 * 1000);
         }
       },
       handleType(val) {
@@ -255,6 +222,7 @@
       },
       //数据热力图
       getHotSpot() {
+        this.hotSpots = [];
         this.$post('/home/getHotSpot', {}).then((data) => {//指定获取30分钟的数据
           if (data.code === '000000') {
             if (data.data && data.data.length > 0) {
@@ -272,29 +240,18 @@
       },
       getDataHeat() {
         var _this = this;
-        if (this.heatMap) {
-          this.hotPoint = this.heatMap.getCenter();
-          this.hotZoom = this.heatMap.getZoom();
-        }
         if (!this.heatMap) {
           this.heatMap = new BMap.Map("dataheat");// 创建地图实例
+
           this.heatMap.enableScrollWheelZoom(); // 允许滚轮缩放
           var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
           this.heatMap.setMapStyle({style: 'midnight'});
           this.heatMap.addControl(mapType);//左上角，默认地图控件
         } else {
-          this.heatMap.clearHotspots();//清空地图所有热区,添加新数据
-          var heatmapOverlay = new BMapLib.HeatmapOverlay({"radius": 40});
-          this.heatMap.addOverlay(heatmapOverlay);
-          heatmapOverlay.setDataSet({data: this.hotSpots, max: 2500});
-          // heatmapOverlay.setOptions({
-          //   gradient: {
-          //     0.45: "rgb(0,0,255)", 0.55: "rgb(0,255,255)", 0.7: "rgb(0,255,0)", 0.9: "yellow", 1.0: "rgb(255,0,0)"
-          //   }
-          // });
-          heatmapOverlay.show();//显示热力图
+          this.hotPoint = this.heatMap.getCenter();
+          this.hotZoom = this.heatMap.getZoom();
         }
-        //IP定位
+
         if (!this.hotPoint) {
           var point = new BMap.Point(116.331398, 39.897445);
           this.heatMap.centerAndZoom(point, this.hotZoom);
@@ -320,6 +277,22 @@
 
         this.heatMap.addEventListener("zoomend", zoom);
         this.heatMap.addEventListener("dragend", zoom);
+
+        this.heatMap.clearHotspots();//清空地图所有热区,添加新数据
+        if (!this.heatmapOverlay) {
+          this.heatmapOverlay = new BMapLib.HeatmapOverlay({"radius": 40});
+          this.heatMap.addOverlay(this.heatmapOverlay);
+          this.heatmapOverlay.show();//显示热力图
+        }
+
+        this.heatmapOverlay.setDataSet({data: this.hotSpots, max: 2500});
+
+        // heatmapOverlay.setOptions({
+        //   gradient: {
+        //     0.45: "rgb(0,0,255)", 0.55: "rgb(0,255,255)", 0.7: "rgb(0,255,0)", 0.9: "yellow", 1.0: "rgb(255,0,0)"
+        //   }
+        // });
+
       },
       //设备地图
       getMapData() {
@@ -490,7 +463,7 @@
           var myCity = new BMap.LocalCity();
           myCity.get(myFun);
         } else {
-          this.heatMap.centerAndZoom(this.mapPoint, this.mapZoom);
+          this.deviceMap.centerAndZoom(this.mapPoint, this.mapZoom);
         }
 
         function map() {
@@ -756,12 +729,12 @@
       this.getImsiFace();
       this.getWarning();
       //获取概览数据
-      this.getHotSpot();
       this.getMapData();
+      this.getHotSpot();
       this.getWarningCount();
       this.getImsiList();
       this.getLineData();
-      //定时请求数据==>30s请求一次
+      //定时请求数据==>10s请求一次
       this.statusTask();
     }
   }

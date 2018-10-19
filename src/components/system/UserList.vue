@@ -22,7 +22,8 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" icon="search" @click.stop="getUserList" size="medium">搜索</el-button>
+              <el-button type="primary" icon="search" @click.stop="query.page=1;getUserList" size="medium">搜索
+              </el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button @click.stop="clearData" size="medium">重置</el-button>
@@ -54,7 +55,7 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="locked" label="状态" width="80"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="120">
+        <el-table-column align="left" label="操作" width="120" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" style="margin-right: 10px" @click.stop="updateInfo(scope.row)"
                        v-show="getButtonVial('manager:user:update')">修改

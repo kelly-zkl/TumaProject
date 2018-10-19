@@ -284,14 +284,18 @@
       //退出
       loginOut() {
         this.$confirm('确认退出系统吗?', '提示', {type: 'info'}).then(() => {
-          sessionStorage.removeItem("user");
-          sessionStorage.removeItem("button");
-          sessionStorage.removeItem("menu");
-          sessionStorage.removeItem("query");
-          sessionStorage.removeItem("qTime");
-          sessionStorage.removeItem("activeItem");
-          sessionStorage.removeItem("index");
-          this.$router.push("/login");
+          this.$post('/manager/user/logout', {}, '退出成功').then((data) => {
+            if ('000000' == data.code) {
+              sessionStorage.removeItem("user");
+              sessionStorage.removeItem("button");
+              sessionStorage.removeItem("menu");
+              sessionStorage.removeItem("query");
+              sessionStorage.removeItem("qTime");
+              sessionStorage.removeItem("activeItem");
+              sessionStorage.removeItem("index");
+              this.$router.push("/login");
+            }
+          });
         }).catch(() => {
         });
       },

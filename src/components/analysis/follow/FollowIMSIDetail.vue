@@ -38,7 +38,7 @@
                       :maxlength=20></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-button type="primary" size="medium" @click="getList()">搜索</el-button>
+            <el-button type="primary" size="medium" @click="query.page=1;getList()">搜索</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button size="medium" @click="clearData()">重置</el-button>

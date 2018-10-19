@@ -8,7 +8,8 @@
               <el-input placeholder="组织名称" v-model="query.groupName" :maxlength="20" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" icon="search" @click.stop="getOrganizations" size="medium">搜索</el-button>
+              <el-button type="primary" icon="search" @click.stop="query.page=1;getOrganizations" size="medium">搜索
+              </el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button @click.stop="clearData" size="medium">重置</el-button>
@@ -35,7 +36,7 @@
                          max-width="300" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="createTime" label="创建时间" width="160"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="180">
+        <el-table-column align="left" label="操作" width="180" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click.stop="modifyOrganization(scope.row)"
                        v-show="getButtonVial('manager:group:update') && scope.row.groupId.length > 3
@@ -249,7 +250,7 @@
         }).catch((err) => {
           this.groups = [];
         });
-      },
+      }
     },
     mounted() {
       this.getAllGroups();
