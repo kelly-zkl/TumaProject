@@ -80,7 +80,7 @@ export default new Router({
           name: '告警',
           children: [
             {path: '/imsiWarnings', component: ImsiWarnings, name: 'IMSI告警'},
-            {path: '/catchWarnings', component: CatchWarnings, name: '抓拍告警'},
+            {path: '/catchWarnings', component: CatchWarnings, name: '图像告警'},
             {path: '/imsiWarningDetail', component: ImsiWarningDetail, name: 'IMSI告警详情'},
             {path: '/faceWarningDetail', component: FaceWarningDetail, name: '图像告警详情'}
           ]
@@ -92,7 +92,7 @@ export default new Router({
           children: [
             {path: '/importPersons', component: ImportPersons, name: '人员档案'},
             {path: '/imsiRecords', component: ImsiRecords, name: 'IMSI记录'},
-            {path: '/catchRecords', component: CatchRecords, name: '抓拍记录'},
+            {path: '/catchRecords', component: CatchRecords, name: '图像记录'},
             {path: '/normalPersons', component: NormalPersons, name: '普通人员'},
             {path: '/listManage', component: ListManage, name: '名单管理'},
             {path: '/personnelFiles', component: PersonnelFiles, name: '人员档案'},
@@ -111,12 +111,12 @@ export default new Router({
             {path: '/caseDetail', component: CaseDetail, name: '案件详情'},
             {path: '/collisionAnalysis', component: CollisionAnalysis, name: '碰撞分析'},
             {path: '/addCollision', component: AddCollision, name: '新建碰撞任务'},
-            {path: '/taskDetail', component: TaskDetail, name: '分析结果'},
+            {path: '/taskDetail', component: TaskDetail, name: '任务详情'},
             {path: '/collisionImsiRecords', component: CollisionImsiRecords, name: 'IMSI详情'},
             {path: '/collisionImageRecords', component: CollisionImageRecords, name: '图像详情'},
             {path: '/followAnalysis', component: FollowAnalysis, name: '伴随分析'},
             {path: '/addFollow', component: AddFollow, name: '新建伴随任务'},
-            {path: '/followResult', component: FollowResult, name: '分析结果'},
+            {path: '/followResult', component: FollowResult, name: '任务详情'},
             {path: '/followIMSIDetail', component: FollowIMSIDetail, name: 'IMSI详情'},
             {path: '/followImageDetail', component: FollowImageDetail, name: '图像详情'},
             {path: '/personControl', component: PersonControl, name: '人员布控'},

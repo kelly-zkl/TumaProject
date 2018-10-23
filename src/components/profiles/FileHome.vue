@@ -52,6 +52,7 @@
       //菜单激活回调
       handleActive(index, indexPath) {
         sessionStorage.removeItem("query");
+        sessionStorage.removeItem("page");
         sessionStorage.removeItem("qTime");
         sessionStorage.removeItem("activeItem");
       }

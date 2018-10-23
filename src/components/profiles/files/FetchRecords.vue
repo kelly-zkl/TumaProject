@@ -221,8 +221,8 @@
       //获取imsi列表
       getImsiData() {
         if (!!this.qTime) {
-          this.queryImsi.startTime = this.qTime[0] / 1000;
-          this.queryImsi.endTime = this.qTime[1] / 1000;
+          this.queryImsi.startTime = Math.round(this.qTime[0] / 1000);
+          this.queryImsi.endTime = Math.round(this.qTime[1] / 1000);
         }
         this.queryImsi.personId = this.faceId;
         this.listLoading = true;
@@ -292,12 +292,16 @@
       },
       //查看图像详情
       gotoImsiDetail(row) {
-        this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi}});
+        // this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi}});
+        let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: row.imsi}});
+        window.open(routeData.href, '_blank');
       },
       /**图像*/
       //查看图像详情
       gotoDetail(row) {
-        this.$router.push({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
+        // this.$router.push({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
+        let routeData = this.$router.resolve({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
+        window.open(routeData.href, '_blank');
       },
       //选择图片的文件格式验证
       beforeAvatarUpload(file) {
@@ -338,8 +342,8 @@
           }
         }
         if (!!this.qTime) {
-          this.query.startTime = this.qTime[0] / 1000;
-          this.query.endTime = this.qTime[1] / 1000;
+          this.query.startTime = Math.round(this.qTime[0] / 1000);
+          this.query.endTime = Math.round(this.qTime[1] / 1000);
         }
         this.query.personId = this.faceId;
 

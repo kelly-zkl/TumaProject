@@ -22,16 +22,16 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" icon="search" @click.stop="query.page=1;getUserList" size="medium">搜索
+              <el-button type="primary" icon="search" @click.stop="query.page=1;getUserList()" size="medium">搜索
               </el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button @click.stop="clearData" size="medium">重置</el-button>
+              <el-button @click.stop="clearData()" size="medium">重置</el-button>
             </el-form-item>
           </el-col>
           <el-col :span="4" align="right">
             <el-form-item>
-              <el-button type="primary" icon="el-icon-plus" @click="addInfo"
+              <el-button type="primary" icon="el-icon-plus" @click="addInfo()"
                          v-show="getButtonVial('manager:user:create')" size="medium">添加成员
               </el-button>
             </el-form-item>
@@ -170,7 +170,7 @@
         </el-form>
         <div class="block" style="margin-top: 20px">
           <el-button @click="modifyPswVisible = false">取消</el-button>
-          <el-button type="primary" @click="modifyPsw">确认修改</el-button>
+          <el-button type="primary" @click="modifyPsw()">确认修改</el-button>
         </div>
       </el-dialog>
       <!--重置密码-->
@@ -182,7 +182,7 @@
         </el-form>
         <div class="block" style="margin-top: 20px">
           <el-button @click="resetPswVisible = false">取消</el-button>
-          <el-button type="primary" @click="resetPsw">确认重置</el-button>
+          <el-button type="primary" @click="resetPsw()">确认重置</el-button>
         </div>
       </el-dialog>
     </section>

@@ -224,8 +224,8 @@
         }
         this.$refs['followTask'].validate((valid) => {
           if (valid) {
-            this.followTask.startDate = this.qTime[0] / 1000;
-            this.followTask.endDate = this.qTime[1] / 1000;
+            this.followTask.startDate = Math.round(this.qTime[0] / 1000);
+            this.followTask.endDate = Math.round(this.qTime[1] / 1000);
 
             this.followTask.caseName = this.getCaseName();
 
@@ -262,7 +262,7 @@
       },
       //获取案件列表
       getCases() {
-        this.$post('case/query', {page: 1, size: 999999}).then((data) => {
+        this.$post('case/query', {page: 1, size: 999999, status: 'EXECUTION'}).then((data) => {
           this.cases = data.data.list;
         }).catch((err) => {
           this.cases = [];

@@ -16,16 +16,16 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" icon="search" @click.stop="query.page=1;getMenus" size="medium">搜索
+              <el-button type="primary" icon="search" @click.stop="query.page=1;getMenus()" size="medium">搜索
               </el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button @click.stop="clearData" size="medium">重置</el-button>
+              <el-button @click.stop="clearData()" size="medium">重置</el-button>
             </el-form-item>
           </el-col>
           <el-col :span="4" align="right">
             <el-form-item>
-              <el-button type="primary" icon="el-icon-plus" @click="addMenu" size="medium"
+              <el-button type="primary" icon="el-icon-plus" @click="addMenu()" size="medium"
                          v-show="getButtonVial('manager:permission:create')">创建菜单
               </el-button>
             </el-form-item>

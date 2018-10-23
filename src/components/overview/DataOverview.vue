@@ -282,17 +282,15 @@
         if (!this.heatmapOverlay) {
           this.heatmapOverlay = new BMapLib.HeatmapOverlay({"radius": 40});
           this.heatMap.addOverlay(this.heatmapOverlay);
+          this.heatmapOverlay.setOptions({
+            gradient: {
+              0.125: "rgb(0,0,255)", 0.25: "rgb(0,255,0)", 0.5: "yellow", 1.0: "rgb(255,0,0)"
+            }
+          });
           this.heatmapOverlay.show();//显示热力图
         }
 
-        this.heatmapOverlay.setDataSet({data: this.hotSpots, max: 2500});
-
-        // heatmapOverlay.setOptions({
-        //   gradient: {
-        //     0.45: "rgb(0,0,255)", 0.55: "rgb(0,255,255)", 0.7: "rgb(0,255,0)", 0.9: "yellow", 1.0: "rgb(255,0,0)"
-        //   }
-        // });
-
+        this.heatmapOverlay.setDataSet({data: this.hotSpots, max: 4000});
       },
       //设备地图
       getMapData() {

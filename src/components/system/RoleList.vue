@@ -16,15 +16,15 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" icon="search" @click.stop="query.page=1;getRoles" size="medium">搜索</el-button>
+              <el-button type="primary" icon="search" @click.stop="query.page=1;getRoles()" size="medium">搜索</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button @click.stop="clearData" size="medium">重置</el-button>
+              <el-button @click.stop="clearData()" size="medium">重置</el-button>
             </el-form-item>
           </el-col>
           <el-col :span="4" align="right">
             <el-form-item>
-              <el-button type="primary" icon="el-icon-plus" @click="addrole" size="medium"
+              <el-button type="primary" icon="el-icon-plus" @click="addrole()" size="medium"
                          v-show="getButtonVial('manager:role:create')">创建角色
               </el-button>
             </el-form-item>

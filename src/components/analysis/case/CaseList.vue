@@ -91,8 +91,8 @@
             <el-form-item label="案件类型" prop="caseType">
               <el-input v-model="createCase.caseType" placeholder="案件类型" :maxlength=20></el-input>
             </el-form-item>
-            <el-form-item label="案发时间" prop="caseTime">
-              <el-date-picker v-model="createCase.caseTime" type="datetimerange" range-separator="至"
+            <el-form-item label="案发时间" prop="startTime">
+              <el-date-picker v-model="createCase.startTime" type="datetimerange" range-separator="至"
                               start-placeholder="案发开始日期" size="medium" end-placeholder="结束日期" clearable
                               :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                               :picker-options="pickerBeginDate" style="width: 100%"></el-date-picker>
@@ -156,7 +156,7 @@
         sels: [],
         caseList: [],
         caseArea: [],
-        createCase: {},
+        createCase: {startTime: []},
         defaultProps: [{value: 'caseNo', name: '案件编号', min: 150, max: 250},
           {value: 'caseName', name: '案件名称', min: 150, max: 250},
           {value: 'caseType', name: '案件类型', min: 150, max: 250},
@@ -173,18 +173,10 @@
             {required: true, message: '请输入案件名称', trigger: 'blur', maxlength: 30},
             {validator: nameValidator, trigger: "change,blur"}
           ],
-          caseType: [
-            {required: true, message: '请输入案件类型', trigger: 'blur'}
-          ],
-          caseArea: [
-            {required: true, message: '请选择案发地点', trigger: 'blur'}
-          ],
-          caseTime: [
-            {required: true, message: '请选择案发时间', trigger: 'blur'}
-          ],
-          caseAddress: [
-            {required: true, message: '请输入详细地点', trigger: 'blur'}
-          ]
+          caseType: [{required: true, message: '请输入案件类型', trigger: 'blur'}],
+          caseArea: [{required: true, message: '请选择案发地点', trigger: 'blur'}],
+          startTime: [{required: true, message: '请选择案发时间', trigger: 'blur'}],
+          caseAddress: [{required: true, message: '请输入详细地点', trigger: 'blur'}]
         },
         pickerBeginDate: {
           disabledDate: (time) => {
@@ -233,22 +225,23 @@
       },
       //创建新案件
       showCreate() {
-        this.createCase = {};
+        this.createCase = {startTime: []};
         this.runningCreateCase = true;
       },
       createNewCase() {
         this.$refs['createCase'].validate((valid) => {
           if (valid) {
-            this.createCase.caseToTime = this.createCase.caseTime[1] / 1000;
-            this.createCase.caseTime = this.createCase.caseTime[0] / 1000;
+            this.createCase.caseTime = Math.round(this.createCase.startTime[0] / 1000);
+            this.createCase.caseToTime = Math.round(this.createCase.startTime[1] / 1000);
 
             this.createCase.provinceCode = this.createCase.caseArea[0];
             this.createCase.cityCode = this.createCase.caseArea[1];
             this.createCase.areaCode = this.createCase.caseArea[2];
+            delete this.createCase['startTime'];
             delete this.createCase['caseArea'];
 
             this.$post("case/add", this.createCase, "创建成功").then((data) => {
-              this.createCase = {};
+              this.createCase = {startTime: []};
               this.runningCreateCase = false;
               this.getData();
             });
@@ -324,8 +317,8 @@
       },
       getData() {
         if (!!this.qTime) {
-          this.query.caseTime = this.qTime[0] / 1000;
-          this.query.caseToTime = this.qTime[1] / 1000;
+          this.query.caseTime = Math.round(this.qTime[0] / 1000);
+          this.query.caseToTime = Math.round(this.qTime[1] / 1000);
         }
         this.query.status = this.activeItem;
         this.listLoading = true;

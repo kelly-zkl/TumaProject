@@ -380,16 +380,20 @@
        */
       gotoDetail(task) {
         if (this.activeItem === 'IMSI') {
-          this.$router.push({path: '/imsiWarningDetail', query: {id: task.id, imsi: task.imsi}});
+          // this.$router.push({path: '/imsiWarningDetail', query: {id: task.id, imsi: task.imsi}});
+          let routeData = this.$router.resolve({path: '/imsiWarningDetail', query: {id: task.id, imsi: task.imsi}});
+          window.open(routeData.href, '_blank');
         } else {
-          this.$router.push({path: '/faceWarningDetail', query: {id: task.id, faceId: task.faceId}});
+          // this.$router.push({path: '/faceWarningDetail', query: {id: task.id, faceId: task.faceId}});
+          let routeData = this.$router.resolve({path: '/faceWarningDetail', query: {id: task.id, faceId: task.faceId}});
+          window.open(routeData.href, '_blank');
         }
       },
       //获取IMSI告警列表
       getData() {
         if (!!this.qTime) {
-          this.query.startTime = this.qTime[0] / 1000;
-          this.query.endTime = this.qTime[1] / 1000;
+          this.query.startTime = Math.round(this.qTime[0] / 1000);
+          this.query.endTime = Math.round(this.qTime[1] / 1000);
         }
 
         if (this.isSearch) {
@@ -491,7 +495,12 @@
         }
       },
       gotoImgDetail(task) {
-        this.$router.push({path: '/faceWarningDetail', query: {taskId: task.id, followType: task.followType}});
+        // this.$router.push({path: '/faceWarningDetail', query: {taskId: task.id, followType: task.followType}});
+        let routeData = this.$router.resolve({
+          path: '/faceWarningDetail',
+          query: {taskId: task.id, followType: task.followType}
+        });
+        window.open(routeData.href, '_blank');
       },
       //获取图像告警列表
       getImgData() {
@@ -513,8 +522,8 @@
           }
         }
         if (!!this.qTime) {
-          this.query.startTime = this.qTime[0] / 1000;
-          this.query.endTime = this.qTime[1] / 1000;
+          this.query.startTime = Math.round(this.qTime[0] / 1000);
+          this.query.endTime = Math.round(this.qTime[1] / 1000);
         }
 
         if (this.isSearch) {

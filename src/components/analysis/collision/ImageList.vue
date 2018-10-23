@@ -128,9 +128,12 @@
         param.page = 1;
         param.size = 100000;
         this.axios.post('/collision/export/record', param, {responseType: 'arraybuffer'}).then((res) => {
+          let fileName = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
           let blob = new Blob([res.data], {type: "application/vnd.ms-excel"});
-          let objectUrl = URL.createObjectURL(blob);
-          window.location.href = objectUrl;
+          let link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = fileName;
+          link.click();
         }).catch(function (res) {
         });
       },
@@ -142,18 +145,25 @@
       },
       //跳转图像记录页面
       gotoImage(pic, personID) {
-        this.$router.push({
+        // this.$router.push({
+        //   path: '/collisionImageRecords', query: {
+        //     taskId: this.taskId, personID: personID,
+        //     collisionType: this.collisionType, picUrl: pic
+        //   }
+        // });
+        let routeData = this.$router.resolve({
           path: '/collisionImageRecords', query: {
             taskId: this.taskId, personID: personID,
             collisionType: this.collisionType, picUrl: pic
           }
         });
+        window.open(routeData.href, '_blank');
       },
       //获取图像记录
       getData() {
         if (!!this.qTime) {
-          this.query.startTime = this.qTime[0] / 1000;
-          this.query.endTime = this.qTime[1] / 1000;
+          this.query.startTime = Math.round(this.qTime[0] / 1000);
+          this.query.endTime = Math.round(this.qTime[1] / 1000);
         } else {
           delete this.query['startTime'];
           delete this.query['endTime'];

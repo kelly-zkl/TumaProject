@@ -15,7 +15,7 @@
         <!--</el-radio-group>-->
         <!--</el-form-item>-->
         <el-form-item>
-          <el-button @click="getLineData" size="medium" type="primary">搜索</el-button>
+          <el-button @click="getLineData()" size="medium" type="primary">搜索</el-button>
         </el-form-item>
         <!--<el-form-item>-->
         <!--<el-button @click="runLineList=true" size="medium" type="primary" v-if="query.merge == false">轨迹回放</el-button>-->

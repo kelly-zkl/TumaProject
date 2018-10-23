@@ -158,8 +158,8 @@
       },
       getData() {
         if (!!this.qTime) {
-          this.query.startTime = this.qTime[0] / 1000;
-          this.query.endTime = this.qTime[1] / 1000;
+          this.query.startTime = Math.round(this.qTime[0] / 1000);
+          this.query.endTime = Math.round(this.qTime[1] / 1000);
         }
         if (this.activeItem === 'FINISH') {//终止
           this.query.applyStatus = 2;

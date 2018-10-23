@@ -156,9 +156,9 @@
       },
       //查看IMSI详情
       gotoDetail(row) {
-        this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi}});
-        // let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: row.imsi}});
-        // window.open(routeData.href, '_blank');
+        // this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi}});
+        let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: row.imsi}});
+        window.open(routeData.href, '_blank');
       },
       clickModify() {
         let data = this.userInfo;

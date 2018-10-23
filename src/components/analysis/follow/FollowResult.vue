@@ -374,20 +374,30 @@
           pathUrl = "/follow/export/record";
         }
         this.axios.post(pathUrl, param, {responseType: 'arraybuffer'}).then((res) => {
+          let fileName = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
           let blob = new Blob([res.data], {type: "application/vnd.ms-excel"});
-          let objectUrl = URL.createObjectURL(blob);
-          window.location.href = objectUrl;
+          let link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = fileName;
+          link.click();
         }).catch(function (res) {
         });
       },
       //跳转IMSI记录
       gotoImsi(imsi) {
-        this.$router.push({
+        // this.$router.push({
+        //   path: '/followIMSIDetail', query: {
+        //     taskId: this.taskId, regional: imsi.regional,
+        //     followType: this.followType, imsi: imsi.imsi, isp: imsi.isp,
+        //   }
+        // });
+        let routeData = this.$router.resolve({
           path: '/followIMSIDetail', query: {
             taskId: this.taskId, regional: imsi.regional,
             followType: this.followType, imsi: imsi.imsi, isp: imsi.isp,
           }
         });
+        window.open(routeData.href, '_blank');
       },
       //删除伴随任务
       deleteTask() {
@@ -449,8 +459,8 @@
       //所有记录
       getList() {
         if (!!this.qTime) {
-          this.queryRecord.endTime = this.qTime[1] / 1000;
-          this.queryRecord.startTime = this.qTime[0] / 1000;
+          this.queryRecord.startTime = Math.round(this.qTime[0] / 1000);
+          this.queryRecord.endTime = Math.round(this.qTime[1] / 1000);
         } else {
           delete this.queryRecord['qTime'];
         }

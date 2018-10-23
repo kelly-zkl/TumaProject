@@ -8,13 +8,13 @@
               <el-input v-model="query.taskName" placeholder="任务名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.ctype" placeholder="任务类型" style="width: 120px"
-                         size="medium" filterable clearable>
-                <el-option v-for="item in taskTypes" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
+            <!--<el-form-item style="margin-bottom: 10px">-->
+            <!--<el-select v-model="query.ctype" placeholder="任务类型" style="width: 120px"-->
+            <!--size="medium" filterable clearable>-->
+            <!--<el-option v-for="item in taskTypes" :key="item.value" :label="item.label" :value="item.value">-->
+            <!--</el-option>-->
+            <!--</el-select>-->
+            <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px">
               <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" size="medium"
                               :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
@@ -173,8 +173,8 @@
       //获取碰撞任务列表
       getData() {
         if (!!this.qTime) {
-          this.query.startTime = this.qTime[0] / 1000;
-          this.query.endTime = this.qTime[1] / 1000;
+          this.query.startTime = Math.round(this.qTime[0] / 1000);
+          this.query.endTime = Math.round(this.qTime[1] / 1000);
         }
         this.listLoading = true;
         this.$post('/collision/query', this.query).then((data) => {

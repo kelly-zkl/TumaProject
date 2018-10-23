@@ -269,7 +269,7 @@
       },
       //获取案件列表
       getCases() {
-        this.$post('/case/query', {page: 1, size: 999999}).then((data) => {
+        this.$post('/case/query', {page: 1, size: 999999, status: 'EXECUTION'}).then((data) => {
           this.cases = data.data.list;
         }).catch((err) => {
           this.cases = [];

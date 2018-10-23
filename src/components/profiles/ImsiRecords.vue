@@ -166,8 +166,8 @@
           }
         }
         if (this.qTime) {//时间戳的毫秒转化成秒
-          this.query.startTime = this.qTime[0] / 1000;
-          this.query.endTime = this.qTime[1] / 1000;
+          this.query.startTime = Math.round(this.qTime[0] / 1000);
+          this.query.endTime = Math.round(this.qTime[1] / 1000);
         }
 
         if (this.isSearch) {
@@ -258,6 +258,7 @@
       }
       if (bol) {
         this.query = JSON.parse(sessionStorage.getItem("query"));
+        delete this.query['pageTime'];
       }
       if (time1) {
         this.qTime = time1;

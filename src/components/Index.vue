@@ -38,7 +38,7 @@
             <!--<div class="item" style="text-align: center" @click="$router.push({path: '/platforms'})">-->
             <!--<i class="fa fa-retweet fa-2x" style="padding-top: 13px"></i>-->
             <!--</div>-->
-            <div class="item" style="text-align: center" @click="loginOut">
+            <div class="item" style="text-align: center" @click="loginOut()">
               <i class="fa fa-sign-out fa-2x" style="padding-top: 20px"></i>
             </div>
           </div>
@@ -96,7 +96,7 @@
           </el-form>
           <div slot="footer" class="dialog-footer" align="center">
             <!--<el-button type="warning" size="medium" @click="gotoImsiDetail">处理告警</el-button>-->
-            <el-button type="primary" size="medium" @click="gotoImsiDetail">查看人员信息</el-button>
+            <el-button type="primary" size="medium" @click="gotoImsiDetail()">查看人员信息</el-button>
           </div>
         </el-dialog>
       </transition>
@@ -130,7 +130,7 @@
           </div>
           <div slot="footer" class="dialog-footer" align="center">
             <!--<el-button type="warning" size="medium" @click="gotoFaceDetail">处理告警</el-button>-->
-            <el-button type="primary" size="medium" @click="gotoFaceDetail">查看人员信息</el-button>
+            <el-button type="primary" size="medium" @click="gotoFaceDetail()">查看人员信息</el-button>
           </div>
         </el-dialog>
       </transition>
@@ -225,6 +225,7 @@
         this.$router.push(item.permissionUrl);
         sessionStorage.removeItem("query");
         sessionStorage.removeItem("qTime");
+        sessionStorage.removeItem("page");
         sessionStorage.removeItem("activeItem");
         sessionStorage.removeItem("secItem");
       },

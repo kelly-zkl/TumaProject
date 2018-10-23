@@ -59,9 +59,12 @@
         param.page = 1;
         param.size = 100000;
         this.axios.post('/collision/export/regional', param, {responseType: 'arraybuffer'}).then((res) => {
+          let fileName = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
           let blob = new Blob([res.data], {type: "application/vnd.ms-excel"});
-          let objectUrl = URL.createObjectURL(blob);
-          window.location.href = objectUrl;
+          let link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = fileName;
+          link.click();
         }).catch(function (res) {
         });
       },

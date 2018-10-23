@@ -200,9 +200,9 @@
       //进入人员档案
       gotoPerson(row) {
         if (row.personId) {
-          this.$router.push({path: '/personnelFiles', query: {faceId: row.personId}});
-          // let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.personId}});
-          // window.open(routeData.href, '_blank');
+          // this.$router.push({path: '/personnelFiles', query: {faceId: row.personId}});
+          let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.personId}});
+          window.open(routeData.href, '_blank');
         }
       },
       changeStatus(status) {
@@ -235,7 +235,9 @@
 
         sessionStorage.setItem("pathImsi", JSON.stringify(imsis));
         sessionStorage.setItem("pathTime", JSON.stringify(this.qTime));
-        this.$router.push({path: '/pathLine', query: {imsi: 1}});
+        // this.$router.push({path: '/pathLine', query: {imsi: 1}});
+        let routeData = this.$router.resolve({path: '/pathLine', query: {imsi: 1}});
+        window.open(routeData.href, '_blank');
       },
       //全选
       selsChange(sels) {
@@ -253,8 +255,8 @@
       },
       getData() {
         if (!!this.qTime) {
-          this.query.startTime = this.qTime[0] / 1000;
-          this.query.endTime = this.qTime[1] / 1000;
+          this.query.startTime = Math.round(this.qTime[0] / 1000);
+          this.query.endTime = Math.round(this.qTime[1] / 1000);
         }
         if (this.isSearch) {
           this.list = [];

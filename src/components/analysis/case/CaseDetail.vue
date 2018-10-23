@@ -276,7 +276,12 @@
       },
       //跳转任务详情
       gotoCoDetail(id, collisionType) {
-        this.$router.push({path: '/taskDetail', query: {taskId: id, collisionType: collisionType[0]}});
+        // this.$router.push({path: '/taskDetail', query: {taskId: id, collisionType: collisionType[0]}});
+        let routeData = this.$router.resolve({
+          path: '/taskDetail',
+          query: {taskId: id, collisionType: collisionType[0]}
+        });
+        window.open(routeData.href, '_blank');
       },
       //删除碰撞任务
       deleteCoTask() {
@@ -393,8 +398,8 @@
       //伴随任务
       getFollows() {
         if (!!this.qTime) {
-          this.queryFollow.endTime = this.qTime[1] / 1000;
-          this.queryFollow.startTime = this.qTime[0] / 1000;
+          this.queryFollow.startTime = Math.round(this.qTime[0] / 1000);
+          this.queryFollow.endTime = Math.round(this.qTime[1] / 1000);
         } else {
           delete this.queryFollow['endTime'];
           delete this.queryFollow['startTime'];

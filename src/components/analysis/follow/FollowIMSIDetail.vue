@@ -157,8 +157,8 @@
       //imsi记录
       getList() {
         if (!!this.qTime) {
-          this.query.endTime = this.qTime[1] / 1000;
-          this.query.startTime = this.qTime[0] / 1000;
+          this.query.startTime = Math.round(this.qTime[0] / 1000);
+          this.query.endTime = Math.round(this.qTime[1] / 1000);
         } else {
           delete this.query['qTime'];
         }

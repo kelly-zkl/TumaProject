@@ -54,7 +54,7 @@
             <!--</el-select>-->
             <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
+              <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()">重置</el-button>
@@ -73,7 +73,7 @@
         <!--</el-button>-->
         <!--</el-col>-->
       </el-row>
-      <el-table :data="vipList" v-loading="listLoading" class="center-block" stripe @row-dblclick="rowClick">
+      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="人员编号" prop="faceId" min-width="180"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -112,9 +112,8 @@
         </el-table-column>
       </el-table>
       <div class="block" style="margin-top: 20px" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
-                       :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
-                       layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
+                       :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
       <!--查看大图-->
       <el-dialog title="查看大图" :visible.sync="runBigPic" width="500px" center>
@@ -187,7 +186,7 @@
   export default {
     data() {
       return {
-        query: {page: 1, size: 10},
+        query: {size: 100},
         provinceList: json,
         imgPath: require('../../assets/img/icon_people.png'),
         props: {value: 'o', label: 'n', children: 'c'},
@@ -196,8 +195,14 @@
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         areaList: [],
         count: 0,
+        list: [],
+        list10: [],
+        isShow: false,
+        isFirst: true,
+        isSearch: false,
+        firstPage: 0,
+        page: 1,
         listLoading: false,
-        vipList: [],
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         runningAddPerson: false,
         runBigPic: false,
@@ -257,12 +262,9 @@
           this.$message.error(res.msg);
         }
       },
-      rowClick(row, event, column) {
-        sessionStorage.setItem("query", JSON.stringify(this.query));
-        this.$router.push({path: '/personnelFiles', query: {faceId: row.faceId}});
-      },
       gotoDetail(row) {
         sessionStorage.setItem("query", JSON.stringify(this.query));
+        // sessionStorage.setItem("page", this.page);
         this.$router.push({path: '/personnelFiles', query: {faceId: row.faceId}});
       },
       //获取IMSI告警列表
@@ -290,36 +292,73 @@
             return;
           }
         }
+        if (this.isSearch) {
+          this.list = [];
+          this.list10 = [];
+          delete this.query['pageTime'];
+          this.isSearch = false;
+        }
         this.listLoading = true;
         this.$post('person/query', this.query, undefined, undefined, "login").then((data) => {
           if ("000000" === data.code) {
-            this.vipList = data.data.list;
-            this.count = data.data.count;
             this.listLoading = false;
+            if (this.query.pageTime && !this.isSearch) {
+              this.list = this.list.concat(data.data);
+            } else {
+              this.list = data.data;
+              this.page = 1;
+              this.firstPage = 0
+            }
+            this.list10 = this.list;
+            if (this.list.length - this.page * 10 >= 0) {
+              this.list10 = this.list10.slice((this.page * 10 - 10), (this.page * 10));
+            } else {
+              this.list10 = this.list10.slice((this.page * 10 - 10), this.list.length);
+            }
+            this.count = this.list.length;
+            if (this.list.length - this.firstPage === 100) {
+              this.isFirst = false;
+            } else {
+              this.isFirst = true;
+            }
           } else if ("100000" === data.code) {//执行中
             setTimeout(() => {
               this.getData();
             }, 1000);
           } else {
-            this.vipList = [];
-            this.count = 0;
-            this.$message.error(data.msg);
+            this.list = [];
+            this.list10 = [];
             this.listLoading = false;
+            this.$message.error(data.msg);
           }
         });
       },
-      //清除查询条件
-      clearData() {
-        this.query = {page: 1, size: 10};
-        delete this.query['faceUrl'];
-        this.getData();
-      },
       pageChange(index) {
-        this.query.page = index;
-        this.getData();
+        this.page = index;
+        if (!this.isFirst && this.list.length > this.firstPage) {
+          this.isFirst = true;
+        }
+        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
+          (this.list.length % 100 === 0 || this.list.length === this.couple)) {
+          this.firstPage = this.list.length;
+          this.query.pageTime = this.list[this.list.length - 1].createTime;
+          this.getData();
+        }
+        this.list10 = this.list;
+        if ((this.list.length - (index * 10)) >= 0) {
+          this.list10 = this.list10.slice((index * 10 - 10), (index * 10));
+        } else {
+          this.list10 = this.list10.slice((index * 10 - 10), this.list.length);
+        }
       },
       handleSizeChange(val) {
-        this.query.size = val;
+      },
+      //清除查询条件
+      clearData() {
+        this.list10 = [];
+        this.query = {size: 100};
+        this.isSearch = true;
+        delete this.query['faceUrl'];
         this.getData();
       },
       //格式化内容   有数据就展示，没有数据就显示--
@@ -337,9 +376,15 @@
     },
     mounted() {
       let bol = JSON.parse(sessionStorage.getItem("query"));
+      // let page = sessionStorage.getItem("page");
       if (bol) {
         this.query = JSON.parse(sessionStorage.getItem("query"));
+        delete this.query['pageTime'];
       }
+      // if (page) {//对一个数进行上舍入。
+      //   this.page = parseInt(page);
+      //   this.query.size = Math.ceil(page / 10) * 100;
+      // }
       this.getData();
     }
   }

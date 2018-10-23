@@ -276,12 +276,19 @@
         param.size = 100000;
         if ((this.activeType === 'IMSI' && this.activeItem === 'first') || (this.activeType === 'FACE' && this.imageItem === 'image')) {
           this.axios.post('/collision/export/analyze', param, {responseType: 'arraybuffer'}).then((res) => {
-//            let fileName = res.headers['content-disposition'].match(/fushun(\S*)xls/)[0];
-//            fileDownload(res.data, fileName);
             //如果用方法一 ，这里需要安装 npm install js-file-download --save ,然后引用 var fileDownload = require('js-file-download')，使用详情见github;
+            // let fileName = res.headers['content-disposition'].match(/fushun(\S*)xls/)[0];
+            // fileDownload(res.data, fileName);
+            //方法二
+            let fileName = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
             let blob = new Blob([res.data], {type: "application/vnd.ms-excel"});
-            let objectUrl = URL.createObjectURL(blob);
-            window.location.href = objectUrl;
+            let link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+            link.click();
+            // let objectUrl = URL.createObjectURL(blob);无法设置下载的文件名(乱码)
+            // window.location.download = fileName;
+            // window.location.href = objectUrl;
           }).catch(function (res) {
           });
         } else if (this.activeType === 'IMSI' && this.activeItem === 'second') {
@@ -296,21 +303,35 @@
       },
       //跳转IMSI记录
       gotoImsi(imsi) {
-        this.$router.push({
+        // this.$router.push({
+        //   path: '/collisionImsiRecords', query: {
+        //     taskId: this.taskId,
+        //     collisionType: this.collisionType, imsi: imsi
+        //   }
+        // });
+        let routeData = this.$router.resolve({
           path: '/collisionImsiRecords', query: {
             taskId: this.taskId,
             collisionType: this.collisionType, imsi: imsi
           }
         });
+        window.open(routeData.href, '_blank');
       },
       //跳转图像记录页面
       gotoImage(pic, personID) {
-        this.$router.push({
+        // this.$router.push({
+        //   path: '/collisionImageRecords', query: {
+        //     taskId: this.taskId, personID: personID,
+        //     collisionType: this.collisionType, picUrl: pic
+        //   }
+        // });
+        let routeData = this.$router.resolve({
           path: '/collisionImageRecords', query: {
             taskId: this.taskId, personID: personID,
             collisionType: this.collisionType, picUrl: pic
           }
         });
+        window.open(routeData.href, '_blank');
       },
       pageChange(index) {
         this.query.page = index;

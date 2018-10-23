@@ -117,7 +117,11 @@
           this.$message.error('请选择时间段');
           return;
         }
-        let param = {startDate: this.qTime[0] / 1000, endDate: this.qTime[1] / 1000, faceId: this.faceId};
+
+        let param = {
+          startDate: Math.round(this.qTime[0] / 1000), endDate: Math.round(this.qTime[1] / 1000),
+          faceId: this.faceId
+        };
         this.$post('follow/add/forPerson', param, "分析成功").then((data) => {
           if ('000000' === data.code) {
             this.getData();
