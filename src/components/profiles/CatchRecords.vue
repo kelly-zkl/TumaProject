@@ -65,9 +65,9 @@
                  style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="年龄" prop="age" width="120"
+        <el-table-column align="left" label="年龄" prop="age" min-width="60" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="性别" prop="sex" width="120"
+        <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="抓取场所" prop="placeName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>

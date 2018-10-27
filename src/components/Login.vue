@@ -4,7 +4,7 @@
       <el-col :span="24" class="main-header" align="left">
         <div align="left" style="display: flex;height: 40px;align-items: center">
           <img src="../assets/img/icon_logo.png" style="display:inline-block;height: 34px">
-          <div style="display:inline-block;font-size: 22px;;margin-left: 10px;color: #fff;letter-spacing:3px">
+          <div style="display:inline-block;font-size: 22px;margin-left: 10px;color: #fff;letter-spacing:3px">
             图码联侦实战布控平台
           </div>
         </div>
@@ -92,6 +92,8 @@
               }
               localStorage.setItem("user", JSON.stringify(user));
               sessionStorage.setItem("user", JSON.stringify(data.data));
+              sessionStorage.setItem("face", JSON.stringify({id: ''}));
+              sessionStorage.setItem("imsi", JSON.stringify({id: ''}));
               this.getMenuTree();
               this.getButton();
             }

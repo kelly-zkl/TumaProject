@@ -85,9 +85,9 @@
                  style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="年龄" prop="age" width="120"
+        <el-table-column align="left" label="年龄" prop="age" min-width="60" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="性别" prop="sex" width="120"
+        <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="IMSI[置信度]" prop="imsiList" min-width="220" max-width="250">
           <template slot-scope="scope">
@@ -96,11 +96,11 @@
             </div>
           </template>
         </el-table-column>
+        <el-table-column align="left" label="姓名" prop="name" min-width="150"
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="手机号" prop="mobilePhone" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="身份证号" prop="idCard" min-width="170"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="姓名" prop="name" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="建档时间" prop="createTime" min-width="170"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -267,7 +267,7 @@
         // sessionStorage.setItem("page", this.page);
         this.$router.push({path: '/personnelFiles', query: {faceId: row.faceId}});
       },
-      //获取IMSI告警列表
+      //获取档案人员列表
       getData() {
         if (this.query.faceUrl) {
           if (!this.query.similarThreshold) {

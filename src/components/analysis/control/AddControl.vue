@@ -2,29 +2,22 @@
   <div>
     <section class="content">
       <el-form ref="controlTask" :model="controlTask" label-position="left" label-width="120px" :rules="rules">
-        <h5 class="add-label" style="margin-top: 0">关联案件</h5>
+        <h5 class="add-label" style="margin-top: 0">任务基本信息</h5>
         <div class="add-appdiv">
-          <el-form-item label="设置案件" align="left" style="margin:0" prop="caseId">
+          <el-form-item label="任务名称" align="left">
+            <el-input v-model="controlTask.taskName" placeholder="请输入任务名称" style="width: 300px"
+                      :maxlength=20></el-input>
+          </el-form-item>
+          <el-form-item label="关联案件" align="left" style="margin:0" prop="caseId">
             <el-select v-model="controlTask.caseId" placeholder="选择案件" filterable clearable>
               <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
         </div>
-        <h5 class="add-label">设置布控场所</h5>
+        <h5 class="add-label">设置布控</h5>
         <div class="add-appdiv">
-          <el-form-item label="设置场所" align="left" style="margin:0" prop="placeList">
-            <el-select v-model="controlTask.placeList" placeholder="布控场所" size="medium" filterable multiple clearable
-                       collapse-tags>
-              <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
-              </el-option>
-            </el-select>
-            <el-button type="primary" size="medium" @click="mapVisible=true" style="margin-left: 10px">地图选择</el-button>
-          </el-form-item>
-        </div>
-        <h5 class="add-label">设置布控人员</h5>
-        <div class="add-appdiv">
-          <el-form-item label="特征布控" align="left" style="margin: 0">
+          <el-form-item label="特征布控" align="left">
             <el-upload :action="uploadUrl" list-type="picture-card" :before-remove="beforeRemove"
                        :on-change="handleChange" :limit="20">
               <div class="el-upload__text" style="color: #777">上传头像</div>
@@ -44,9 +37,23 @@
               </el-col>
             </el-row>
           </el-form-item>
+          <el-form-item label="布控场所" align="left" style="margin:0" prop="placeList">
+            <el-select v-model="controlTask.placeList" placeholder="布控场所" size="medium" filterable multiple clearable
+                       collapse-tags>
+              <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
+              </el-option>
+            </el-select>
+            <el-button type="primary" size="medium" @click="mapVisible=true" style="margin-left: 10px">地图选择</el-button>
+          </el-form-item>
         </div>
-        <h5 class="add-label">设置布控周期</h5>
+        <h5 class="add-label">设置布控有效期</h5>
         <div class="add-appdiv">
+          <el-form-item label="布控有效期" align="left" prop="startDate">
+            <el-date-picker v-model="controlTask.startDate" type="datetimerange" range-separator="至"
+                            start-placeholder="开始日期" end-placeholder="结束日期" clearable
+                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp" format="yyyy-MM-dd">
+            </el-date-picker>
+          </el-form-item>
           <el-form-item label="重复周期" align="left" required>
             <el-radio-group v-model="controlTask.cycleType" size="medium">
               <el-radio-button label="EVERYDAY">每天</el-radio-button>
@@ -68,15 +75,6 @@
                             end-placeholder="结束时间" placeholder="选择时间范围" v-show="controlTask.intervalType=='CUSTOM'"
                             size="medium" style="margin-left: 10px" value-format="HH:mm:ss">
             </el-time-picker>
-          </el-form-item>
-        </div>
-        <h5 class="add-label">设置布控有效期</h5>
-        <div class="add-appdiv">
-          <el-form-item label="布控有效期" style="margin:0" align="left" prop="startDate">
-            <el-date-picker v-model="controlTask.startDate" type="datetimerange" range-separator="至"
-                            start-placeholder="开始日期" end-placeholder="结束日期" clearable
-                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp" format="yyyy-MM-dd">
-            </el-date-picker>
           </el-form-item>
         </div>
       </el-form>
@@ -126,15 +124,10 @@
         weeks: [{label: '周一', value: 0}, {label: '周二', value: 1}, {label: '周三', value: 2}, {label: '周四', value: 3},
           {label: '周五', value: 4}, {label: '周六', value: 5}, {label: '周日', value: 6}],
         rules: {
-          caseId: [
-            {required: true, message: '请选择案件', trigger: 'blur'}
-          ],
-          placeList: [
-            {required: true, message: '请选择布控场所', trigger: 'blur'}
-          ],
-          startDate: [
-            {required: true, message: '请选择布控有效期', trigger: 'blur'}
-          ]
+          taskName: [{required: true, message: '请输入任务名称', trigger: 'blur'}],
+          caseId: [{required: true, message: '请选择案件', trigger: 'blur'}],
+          placeList: [{required: true, message: '请选择布控场所', trigger: 'blur'}],
+          startDate: [{required: true, message: '请选择布控有效期', trigger: 'blur'}]
         }
       }
     },

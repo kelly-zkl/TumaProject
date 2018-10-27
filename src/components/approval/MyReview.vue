@@ -206,7 +206,7 @@
         } else if (column.property === 'followType') {
           return "IMSI翻码";
         } else if (column.property === 'status') {
-          return row.status == 1 ? '待审批' : row.status == 0 ? '已完成' : row.status == 2 ? '终止' : row.status == 3 ? '待翻码' : '--';
+          return row.status == 0 ? '已完成' : row.status == 1 ? '待审批' : row.status == 2 ? '终止' : row.status == 3 ? '待翻码' : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

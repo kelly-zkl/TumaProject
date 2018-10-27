@@ -3,21 +3,25 @@
     <section class="content">
       <div class="add-appdiv" style="margin-bottom: 15px">
         <el-row>
-          <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
+          <el-col :span="5" align="left" style="border-right: 1px #e5e5e5 solid">
             <p style="font-size: 14px;color: #999;margin: 0 20px">布控编号</p>
+            <p style="font-size: 15px;margin: 5px 20px 0 20px">{{task.taskNo}}</p>
+          </el-col>
+          <el-col :span="5" align="left" style="border-right: 1px #e5e5e5 solid">
+            <p style="font-size: 14px;color: #999;margin: 0 20px">布控名称</p>
             <p style="font-size: 15px;margin: 5px 20px 0 20px">{{task.taskName}}</p>
           </el-col>
-          <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
+          <el-col :span="5" align="left" style="border-right: 1px #e5e5e5 solid">
             <p style="font-size: 14px;color: #999;margin: 0 20px">有效期</p>
             <p style="font-size: 15px;margin: 5px 20px 0 20px">{{task.startStr + "~" + task.endStr}}</p>
           </el-col>
-          <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
+          <el-col :span="5" align="left" style="border-right: 1px #e5e5e5 solid">
             <p style="font-size: 14px;color: #999;margin: 0 20px">布控状态</p>
             <p style="font-size: 15px;margin: 5px 20px 0 20px">
               {{task.taskStatus == 'EXECUTION' ? '进行中' : task.taskStatus == 'FINISH' ? '已结束' : '异常'}}
             </p>
           </el-col>
-          <el-col :span="6" align="right">
+          <el-col :span="4" align="right">
             <el-button type="text" @click="runTaskDetail = true">查看任务</el-button>
             <el-button type="text" @click="deleteTask()" v-show="getButtonVial('disposition:delete')">删除任务</el-button>
           </el-col>
@@ -210,7 +214,8 @@
     <el-dialog title="布控详情" width="750px" :visible.sync="runTaskDetail">
       <div class="block gray-form">
         <el-form label-width="100px" :model="task" label-position="right" style="margin-right: 20px">
-          <el-form-item label="布控编号" align="left" style="margin: 0">{{task.taskName}}</el-form-item>
+          <el-form-item label="布控编号" align="left" style="margin: 0">{{task.taskNo}}</el-form-item>
+          <el-form-item label="布控名称" align="left" style="margin: 0">{{task.taskName}}</el-form-item>
           <el-form-item label="布控人员" align="left" style="margin: 0">
             <div class="face-main" v-if="task.featureList">
               <div class="face-item" v-for="item in task.featureList" :key="item.imageId">

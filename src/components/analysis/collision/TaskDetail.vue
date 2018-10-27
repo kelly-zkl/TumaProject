@@ -232,6 +232,8 @@
   import imsiList from '../collision/ImsiList.vue';
   import imageList from '../collision/ImageList.vue';
 
+  var fileDownload = require('js-file-download');
+
   export default {
     data() {
       return {
@@ -276,19 +278,9 @@
         param.size = 100000;
         if ((this.activeType === 'IMSI' && this.activeItem === 'first') || (this.activeType === 'FACE' && this.imageItem === 'image')) {
           this.axios.post('/collision/export/analyze', param, {responseType: 'arraybuffer'}).then((res) => {
-            //如果用方法一 ，这里需要安装 npm install js-file-download --save ,然后引用 var fileDownload = require('js-file-download')，使用详情见github;
-            // let fileName = res.headers['content-disposition'].match(/fushun(\S*)xls/)[0];
-            // fileDownload(res.data, fileName);
-            //方法二
-            let fileName = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
-            let blob = new Blob([res.data], {type: "application/vnd.ms-excel"});
-            let link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = fileName;
-            link.click();
-            // let objectUrl = URL.createObjectURL(blob);无法设置下载的文件名(乱码)
-            // window.location.download = fileName;
-            // window.location.href = objectUrl;
+            let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
+            let fileName = decodeURIComponent(fileStr);
+            fileDownload(res.data, fileName);
           }).catch(function (res) {
           });
         } else if (this.activeType === 'IMSI' && this.activeItem === 'second') {

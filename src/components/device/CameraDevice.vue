@@ -63,7 +63,7 @@
             <el-form-item label="设备ID" prop="cameraCode" required>
               <el-input v-model="addPlace.cameraCode" auto-complete="off" readonly></el-input>
             </el-form-item>
-            <el-form-item label="设备名称" prop="name" required>
+            <el-form-item label="设备标识" prop="name" required>
               <el-input v-model="addPlace.name" auto-complete="off" readonly></el-input>
             </el-form-item>
             <el-form-item label="选择场所" prop="placeId" required>
@@ -99,8 +99,6 @@
         query: {page: 1, size: 10},
         provinceList: json,
         props: {value: 'o', label: 'n', children: 'c'},
-        statuses: [{label: '全部', value: ''}, {label: '待处理', value: '1'}, {label: '处理中', value: '2'},
-          {label: '已处理', value: '3'}, {label: '误报', value: '4'}],
         areaList: [],
         count: 0,
         listLoading: false,
@@ -229,10 +227,6 @@
           return row.status === 0 ? '正常' : row.status === 1 ? '故障' : row.status === 2 ? '已下线' : '--';
         } else if (column.property === 'areaCode') {
           return row.areaCode ? this.getAreaLable(row.areaCode) : '--';
-        } else if (column.property === 'status') {
-          return row.status === 'UNHANDLED' ? '未处理' : row.status === 'EXECUTION' ? '进行中' : row.status === 'HANDLED' ? '已结案' : '--';
-        } else if (column.property === 'followCount') {
-          return row.followCount === 0 ? 0 : row.followCount;
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

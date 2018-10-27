@@ -80,7 +80,7 @@
             <el-form-item label="设备ID" prop="deviceId">
               <el-input v-model="addPlace.deviceId" auto-complete="off" readonly></el-input>
             </el-form-item>
-            <el-form-item label="设备名称" prop="deviceName">
+            <el-form-item label="设备标识" prop="deviceName">
               <el-input v-model="addPlace.deviceName" auto-complete="off" readonly></el-input>
             </el-form-item>
             <el-form-item label="选择场所" prop="placeId">
@@ -262,15 +262,7 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'groupId') {
-          for (let item of this.groups) {
-            if (item.groupId === row.groupId) {
-              return item.groupName;
-            }
-          }
-        } else {
-          return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
-        }
+        return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
       },
       //获取场所列表
       getPlaceName(id) {

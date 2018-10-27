@@ -23,6 +23,10 @@
       <el-form :inline="true" :model="query" align="left" style="margin-top: 15px"
                v-show="getButtonVial('disposition:query')">
         <el-form-item style="margin-bottom: 10px">
+          <el-input v-model="query.taskName" placeholder="任务名称" size="medium" style="width: 160px"
+                    :maxlength=30></el-input>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
           <el-input v-model="query.caseName" placeholder="案件名称" size="medium" style="width: 160px"
                     :maxlength=30></el-input>
         </el-form-item>
@@ -42,7 +46,9 @@
       <el-table :data="controlList" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="布控编号" prop="taskName" min-width="150"
+        <el-table-column align="left" label="布控编号" prop="taskNo" min-width="150"
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="任务名称" prop="taskName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="有效期" prop="startTime" min-width="250"
                          max-width="450" :formatter="formatterAddress"></el-table-column>
@@ -64,7 +70,7 @@
         </el-table-column>
       </el-table>
       <div class="block" style="margin-top: 20px" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
@@ -105,6 +111,7 @@
         this.sels = sels;
       },
       handleType(val) {
+        this.query.page = 1;
         this.getData();
       },
       //结束布控
@@ -145,14 +152,12 @@
       //跳转增加布控
       addControl() {
         sessionStorage.setItem("activeItem", this.activeItem);
-        sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
         sessionStorage.setItem("query", JSON.stringify(this.query));
         this.$router.push('/addControl');
       },
       //跳转布控详情页
       gotoDetail(task) {
         sessionStorage.setItem("activeItem", this.activeItem);
-        sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
         sessionStorage.setItem("query", JSON.stringify(this.query));
         this.$router.push({path: '/controlDetail', query: {taskId: task.id}});
       },
@@ -178,8 +183,9 @@
         this.getData();
       },
       pageChange(index) {
-        this.query.page = index;
-        this.getData();
+        let _this = this;
+        _this.query.page = index;
+        _this.getData();
       },
       handleSizeChange(val) {
         this.query.size = val;
@@ -211,8 +217,22 @@
       }
     },
     mounted() {
+      let bol = JSON.parse(sessionStorage.getItem("query"));
+      let tab = sessionStorage.getItem("activeItem");
+      if (tab) {
+        this.activeItem = tab;
+      }
+      if (bol) {
+        let item = Object.assign({}, bol);
+        this.query = Object.assign({}, bol);
+        console.log(bol);
+        let page = item.page;
+        console.log(this.query);
+        this.pageChange(page);
+      } else {
+        this.getData();
+      }
       this.getPlaces();
-      this.getData();
     }
   }
 </script>

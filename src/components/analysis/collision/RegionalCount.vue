@@ -34,6 +34,8 @@
 <script>
   import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
 
+  var fileDownload = require('js-file-download');
+
   export default {
     data() {
       return {
@@ -59,12 +61,9 @@
         param.page = 1;
         param.size = 100000;
         this.axios.post('/collision/export/regional', param, {responseType: 'arraybuffer'}).then((res) => {
-          let fileName = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
-          let blob = new Blob([res.data], {type: "application/vnd.ms-excel"});
-          let link = document.createElement('a');
-          link.href = URL.createObjectURL(blob);
-          link.download = fileName;
-          link.click();
+          let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
+          let fileName = decodeURIComponent(fileStr);
+          fileDownload(res.data, fileName);
         }).catch(function (res) {
         });
       },

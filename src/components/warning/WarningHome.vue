@@ -16,7 +16,7 @@
           <span style="color: #999;font-size: 14px;vertical-align: middle;">当前位置：</span>
           <el-breadcrumb separator-class="el-icon-arrow-right" class="bread-bar">
             <el-breadcrumb-item v-for="item in $route.matched" v-if="item.name && item.path"
-                                :key="item.name">{{ item.name}}
+                                :key="item.name" :to="{ path: item.path}">{{ item.name}}
             </el-breadcrumb-item>
           </el-breadcrumb>
         </el-col>
@@ -58,6 +58,7 @@
     },
     mounted() {
       sessionStorage.setItem("index", 2);
+      this.$emit('handleSelectTab', 2);
       let val = JSON.parse(sessionStorage.getItem("menu")) || [];
       if (val.length > 0) {
         val.forEach((item) => {

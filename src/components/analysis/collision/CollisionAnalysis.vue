@@ -127,10 +127,12 @@
       },
       //跳转新建碰撞条件
       gotoAdd() {
+        sessionStorage.setItem("query", JSON.stringify(this.query));
         this.$router.push({path: '/addCollision'});
       },
       //跳转任务详情
       gotoDetail(id, collisionType) {
+        sessionStorage.setItem("query", JSON.stringify(this.query));
         this.$router.push({path: '/taskDetail', query: {taskId: id, collisionType: collisionType[0]}});
       },
       pageChange(index) {
@@ -188,6 +190,10 @@
       }
     },
     mounted() {
+      let bol = JSON.parse(sessionStorage.getItem("query"));
+      if (bol) {
+        this.query = JSON.parse(sessionStorage.getItem("query"));
+      }
       this.getData();
     }
   }

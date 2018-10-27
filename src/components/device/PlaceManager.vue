@@ -57,8 +57,9 @@
             <el-button type="text" @click="sels = [];sels.push(scope.row);deletePlace()"
                        v-show="getButtonVial('place:delete')">删除
             </el-button>
-            <el-button type="text" @click="updateInfo(scope.row)"
-                       v-show="getButtonVial('place:update')">修改
+            <el-button type="text" @click="updateInfo(scope.row)" v-show="getButtonVial('place:update')">修改
+            </el-button>
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('place:get')">查看
             </el-button>
           </template>
         </el-table-column>
@@ -213,11 +214,60 @@
             {required: true, message: '请输入详细地址', trigger: 'blur'}
           ]
         },
+        runningPlaceType: false,
+        placeTypeAdd: '',
+        placeTypes: []
       }
     },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      gotoDetail(row) {
+        sessionStorage.setItem("qTime", JSON.stringify(this.areaList));
+        sessionStorage.setItem("query", JSON.stringify(this.query));
+        this.$router.push({path: '/placeDetail', query: {id: row.id}});
+      },
+      //场所类型
+      showPlaceType() {
+        this.placeTypeAdd = '';
+        this.runningPlaceType = true;
+        this.getPlaceType();
+      },
+      getPlaceType() {
+        this.placeTypes = [];
+        this.$post('/get/placeType', {}).then((data) => {
+          if ("000000" === data.code) {
+            if (data.data.value && data.data.value.length > 0) {
+              this.placeTypes = data.data.value;
+            }
+          }
+        }).catch((err) => {
+          this.placeTypes = [];
+        });
+      },
+      addPlaceType() {
+        if (this.placeTypeAdd.length == 0) {
+          this.$message.error('请输入场所类型');
+          return;
+        }
+        this.$post('/add/placeType', {label: this.placeTypeAdd, value: '0'}, '添加成功').then((data) => {
+          if ("000000" === data.code) {
+            this.getPlaceType();
+          }
+        }).catch((err) => {
+        });
+      },
+      deletePlaceType(row) {
+        this.$confirm('确认删除该场所类型?', '提示', {type: 'info'}).then(() => {
+          this.$post('/remove/placeType', {label: row.label, value: row.value}, '操作成功').then((data) => {
+            if ("000000" === data.code) {
+              this.getPlaceType();
+            }
+          }).catch((err) => {
+          });
+        }).catch(() => {
+        });
       },
       //删除场所
       deletePlace() {
@@ -493,6 +543,14 @@
       }
     },
     mounted() {
+      let bol = JSON.parse(sessionStorage.getItem("query"));
+      let time1 = JSON.parse(sessionStorage.getItem("qTime"));
+      if (bol) {
+        this.query = JSON.parse(sessionStorage.getItem("query"));
+      }
+      if (time1) {
+        this.areaList = time1;
+      }
       this.getOrganizations();
       this.getData();
     },

@@ -1,33 +1,30 @@
 <template>
   <div>
     <section class="content">
-      <el-form ref="followTask" :model="followTask" label-position="right" label-width="100px" :rules="rules">
-        <h5 class="add-label" style="margin-top: 0">关联案件</h5>
+      <el-form ref="followTask" :model="followTask" label-position="right" label-width="120px" :rules="rules">
+        <h5 class="add-label" style="margin-top: 0">任务基本信息</h5>
         <div class="add-appdiv">
-          <el-form-item label="设置案件" align="left" style="margin:0" prop="caseId">
+          <el-form-item label="任务名称" align="left" prop="taskName">
+            <el-input v-model="followTask.taskName" placeholder="请输入任务名称" style="width: 400px" :maxlength=30></el-input>
+          </el-form-item>
+          <!--<el-form-item label="任务类型" align="left" prop="followType">-->
+          <!--<el-radio-group v-model="followTask.followType">-->
+          <!--<el-radio label="IMSI">IMSI</el-radio>-->
+          <!--<el-radio label="FACE">图像</el-radio>-->
+          <!--<el-radio label="MAC">MAC</el-radio>-->
+          <!--</el-radio-group>-->
+          <!--</el-form-item>-->
+          <el-form-item label="关联案件" align="left" style="margin:0" prop="caseId">
             <el-select v-model="followTask.caseId" placeholder="选择案件" filterable clearable>
               <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
         </div>
-        <h5 class="add-label">设置伴随任务</h5>
-        <div class="add-appdiv">
-          <el-form-item label="任务名称" align="left" prop="taskName">
-            <el-input v-model="followTask.taskName" placeholder="请输入任务名称" style="width: 400px" :maxlength=30></el-input>
-          </el-form-item>
-          <el-form-item label="任务类型" align="left" style="margin:0" prop="followType">
-            <el-radio-group v-model="followTask.followType">
-              <el-radio label="IMSI">IMSI</el-radio>
-              <!--<el-radio label="FACE">图像</el-radio>-->
-              <!--<el-radio label="MAC">MAC</el-radio>-->
-            </el-radio-group>
-          </el-form-item>
-        </div>
-        <h5 class="add-label">设置分析条件</h5>
+        <h5 class="add-label">设置伴随条件</h5>
         <div class="add-appdiv">
           <el-form-item label="分析对象" align="left" prop="followTarget">
-            <el-input v-model="followTask.followTarget" placeholder="请输入分析对象"
+            <el-input v-model="followTask.followTarget" placeholder="输入IMSI"
                       style="width: 500px" :maxlength=50 v-if="followTask.followType == 'IMSI'"></el-input>
             <img :src="imgUrl" v-if="imgUrl && followTask.followType == 'FACE'"
                  style="max-width: 90px;max-height:90px;border-radius: 6px">
@@ -35,7 +32,7 @@
                        @click="runTranslation=true;query={page: 1, size: 10};getData()">选择档案人员
             </el-button>
           </el-form-item>
-          <el-form-item label="设备" align="left">
+          <el-form-item label="出现设备" align="left">
             <el-select v-model="followTask.deviceId" placeholder="请选择设备" size="medium"
                        v-if="followTask.followType == 'FACE'" multiple collapse-tags>
               <el-option v-for="item in cameras" :key="item.cameraCode" :label="item.name" :value="item.cameraCode">
@@ -48,17 +45,20 @@
             </el-select>
             <el-button type="primary" size="medium" @click="selectDevice()" style="margin-left: 10px">地图选择</el-button>
           </el-form-item>
-          <el-form-item label="日期" align="left" required>
+          <el-form-item label="日期范围" align="left" required>
             <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                             start-placeholder="开始日期" end-placeholder="结束日期" clearable
                             :default-time="['00:00:00', '23:59:59']" value-format="timestamp">
             </el-date-picker>
           </el-form-item>
-          <el-form-item label="时间间隔" align="left" prop="interval" style="margin: 0">
-            <el-input v-model.number="followTask.interval" placeholder="请输入时间间隔" type="number"
-                      style="width: 400px" :maxlength=5>
-              <template slot="append">秒</template>
-            </el-input>
+          <el-form-item label="伴随时间间隔" align="left" prop="interval" style="margin: 0">
+            <el-tooltip class="item" effect="dark" placement="bottom">
+              <div slot="content">伴随时间间隔是指，在抓取IMSI的时间点,<br/>前后n秒内抓取的其它IMSI，都可视为伴随IMSI</div>
+              <el-input v-model.number="followTask.interval" placeholder="请输入时间间隔" type="number"
+                        style="width: 400px" :maxlength=5>
+                <template slot="append">秒</template>
+              </el-input>
+            </el-tooltip>
           </el-form-item>
         </div>
       </el-form>

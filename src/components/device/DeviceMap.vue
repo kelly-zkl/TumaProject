@@ -317,16 +317,33 @@
 
         //生成多边形
         this.polygon(path);
-        var num = 0;
+        var num1 = 0, num2 = 0, num3 = 0, num4 = 0;
         for (var k = 0; k < this.mapData.length; k++) {
-          let isBol = this.InOrOutPolygon(this.mapData[k].value[0], this.mapData[k].value[1]);
-          num = (isBol ? num + 1 : num);
+          let device = this.mapData[k];
+          let isBol = this.InOrOutPolygon(device.value[0], device.value[1]);
+          if (device.type == '侦码设备') {//侦码
+            if (device.onLine) {//在线
+              num1 = (isBol ? num1 + 1 : num1);
+            } else {
+              num2 = (isBol ? num2 + 1 : num2);
+            }
+          }
+          if (device.type == '相机设备') {//相机
+            if (device.onLine) {//在线
+              num3 = (isBol ? num3 + 1 : num3);
+            } else {
+              num4 = (isBol ? num4 + 1 : num4);
+            }
+          }
         }
         var opts = {
           position: this.ply.getBounds().getCenter(),    // 指定文本标注所在的地理位置
           offset: new BMap.Size(0, 0)    //设置文本偏移量
         };
-        var label = new BMap.Label("设备数量：" + num, opts);  // 创建文本标注对象
+        let str = "<span style='color: #fff;font-size: 12px;word-break:normal;white-space:pre-warp;word-wrap:break-word'>" +
+          "侦码(" + (num1 + num2) + "):在线" + num1 + "、离线" + num2 + "<br/>相机(" + (num3 + num4) + "):在线" + num3 + "、离线" + num4 + "</span>";
+        // let str = "侦码(" + (num1 + num2) + "):在线" + num1 + "、离线" + num2 + "，相机(" + (num3 + num4) + "):在线" + num3 + "、离线" + num4;
+        var label = new BMap.Label(str, opts);  // 创建文本标注对象
         label.setStyle({
           color: "#fff", backgroundColor: "black", border: 'none', fontSize: "12px", borderRadius: '3px',
           opacity: 0.8, lineHeight: "20px", fontFamily: "微软雅黑", padding: '0 5px'

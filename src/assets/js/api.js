@@ -134,7 +134,7 @@ export const globalValidImg = (file, msg) => {
   }
   const isLt1M = file.size / 1024 / 1024 < 2;
   if (!isJPG) {
-    msg.error('上传图片只能是 JPG,jpg或者png格式!');
+    msg.error('上传图片只能是jpeg,jpg或者png格式!');
   } else if (!isLt1M) {
     msg.error('上传图片大小不能超过 2MB!');
   }
@@ -147,12 +147,11 @@ export const globalValidZIP = (file, msg) => {
   if (file.name.indexOf('.rar') > 0 || file.name.indexOf('.zip') > 0 || file.name.indexOf('.cab') > 0
     || file.name.indexOf('.arj') > 0 || file.name.indexOf('.lzh') > 0 || file.name.indexOf('.ace') > 0
     || file.name.indexOf('.7-zip') > 0 || file.name.indexOf('.tar') > 0 || file.name.indexOf('.gzip') > 0
-    || file.name.indexOf('.uue') > 0 || file.name.indexOf('.bz2') > 0 || file.name.indexOf('.jar') > 0
-    || file.name.indexOf('.iso') > 0 || file.name.indexOf('.z') || file.name.indexOf('.img') > 0) {
+    || file.name.indexOf('.uue') > 0 || file.name.indexOf('.bz2') > 0 || file.name.indexOf('.jar') > 0) {
     isZIP = true;
   }
   if (!isZIP) {
-    msg.error('上传文件只能是压缩文件和.img文件!');
+    msg.error('上传文件只能是压缩文件!');
   }
   if (!isLt100M) {
     msg.error('上传文件大小不能超过 100MB!');

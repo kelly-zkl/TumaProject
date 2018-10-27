@@ -126,6 +126,7 @@
       },
       //新建伴随任务
       addFollowTask() {
+        sessionStorage.setItem("query", JSON.stringify(this.query));
         this.$router.push({path: '/addFollow'})
       },
       //全选  ==>  删除/结案
@@ -133,6 +134,7 @@
         this.sels = sels;
       },
       gotoDetail(task) {
+        sessionStorage.setItem("query", JSON.stringify(this.query));
         this.$router.push({path: '/followResult', query: {taskId: task.id, followType: task.followType}});
       },
       //清除查询条件
@@ -180,6 +182,10 @@
       }
     },
     mounted() {
+      let bol = JSON.parse(sessionStorage.getItem("query"));
+      if (bol) {
+        this.query = JSON.parse(sessionStorage.getItem("query"));
+      }
       this.getData();
     }
   }

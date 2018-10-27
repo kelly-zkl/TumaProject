@@ -47,7 +47,7 @@
       <el-main style="background: #060450;border-top: 3px #02023F solid;width: 100%;padding: 0;margin: 0">
         <el-col :span="24" style="padding: 0;margin: 0">
           <transition name="fade" mode="out-in">
-            <router-view @handleSelectItem="handleSelectItem"></router-view>
+            <router-view @handleSelectTab="handleSelectTab"></router-view>
           </transition>
         </el-col>
       </el-main>
@@ -68,6 +68,7 @@
         </el-dialog>
       </transition>
     </div>
+    <!--<audio id='audio' :src='warning'></audio>-->
     <!--IMSI告警 :close-on-click-modal="false"-->
     <div class="warning">
       <transition name="fade" mode="out-in" appear>
@@ -185,6 +186,7 @@
         runImsiWarning: false,
         runFaceWarning: false,
         runModifyPsw: false,
+        warning: require('../assets/warning.mp3'),
         imgPath: require('../assets/img/icon_people.png'),
         userName: JSON.parse(sessionStorage.getItem("user")).realName || '',
         userId: JSON.parse(sessionStorage.getItem("user")).userId,
@@ -211,15 +213,20 @@
       clearInterval(this.intervalid);
     },
     methods: {
-      //IMSI/图像告警
+      //IMSI/图像告警-->10s请求一次
       statusTask() {
         if (!this.intervalid) {
           this.intervalid = setInterval(() => {
             this.getImsiWarning();
             this.getFaceWarning();
-          }, 10000);
+          }, 10 * 1000);
         }
       },
+      //页面变化-->导航栏选中状态变化
+      handleSelectTab(val) {
+        this.indx = val;
+      },
+      //上方导航栏点击切换页面
       handleSelectItem(item) {
         this.indx = item.orders;
         this.$router.push(item.permissionUrl);
@@ -228,16 +235,23 @@
         sessionStorage.removeItem("page");
         sessionStorage.removeItem("activeItem");
         sessionStorage.removeItem("secItem");
+        sessionStorage.removeItem("pathTime");//轨迹
+        sessionStorage.removeItem("pathImsi");
+        sessionStorage.removeItem("pathFace");
       },
       getImsiWarning() {
+        this.imsiWarning = JSON.parse(sessionStorage.getItem("imsi"));
         this.$post("warning/get/listImsiToday", {size: 1}).then((data) => {
           if (data.data && data.data.length > 0) {
             let imsi = data.data[0];
             // console.log(new Date().getTime() - imsi.createTime * 1000);
-            if ((new Date().getTime() - imsi.createTime * 1000) >= -120 * 1000 && (new Date().getTime() - imsi.createTime * 1000) <= 120 * 1000) {//10s内的数据
+            if ((new Date().getTime() - imsi.createTime * 1000) >= -20 * 1000 && (new Date().getTime() - imsi.createTime * 1000) <= 20 * 1000) {//20s内的数据
               // console.log(this.imsiWarning.id);
               if (this.imsiWarning.id !== imsi.id) {
                 // console.log(imsi.id);
+                sessionStorage.setItem("imsi", JSON.stringify(imsi));
+                // var audio = document.getElementById('audio');
+                // audio.play();
                 this.imsiWarning = imsi;
                 this.imsiWarning.timeStr = formatDate(new Date(this.imsiWarning.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
                 this.runFaceWarning = false;
@@ -251,14 +265,18 @@
         });
       },
       getFaceWarning() {
+        this.faceWarning = JSON.parse(sessionStorage.getItem("face"));
         this.$post("warning/get/listFaceToday", {size: 1}).then((data) => {
           if (data.data && data.data.length > 0) {
             let face = data.data[0];
             // console.log(new Date().getTime() - face.createTime * 1000);
-            if ((new Date().getTime() - face.createTime * 1000) >= -120 * 1000 && (new Date().getTime() - face.createTime * 1000) <= 120 * 1000) {//10s内的数据
+            if ((new Date().getTime() - face.createTime * 1000) >= -20 * 1000 && (new Date().getTime() - face.createTime * 1000) <= 20 * 1000) {//20s内的数据
               // console.log(this.faceWarning.id);
               if (this.faceWarning.id !== face.id) {
                 // console.log(face.id);
+                sessionStorage.setItem("face", JSON.stringify(face));
+                // var audio = document.getElementById('audio');
+                // audio.play();
                 this.faceWarning = face;
                 this.faceWarning.timeStr = formatDate(new Date(this.faceWarning.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
                 this.runImsiWarning = false;
@@ -294,6 +312,8 @@
               sessionStorage.removeItem("qTime");
               sessionStorage.removeItem("activeItem");
               sessionStorage.removeItem("index");
+              sessionStorage.removeItem("face");
+              sessionStorage.removeItem("imsi");
               this.$router.push("/login");
             }
           });
@@ -343,6 +363,8 @@
 
       this.userId = JSON.parse(sessionStorage.getItem("user")).userId;
       this.menu = JSON.parse(sessionStorage.getItem("menu")) || [];
+      // var audio = document.getElementById('audio');
+      // audio.play();
 
       this.statusTask();
     }

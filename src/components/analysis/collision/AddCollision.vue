@@ -2,25 +2,23 @@
   <div>
     <section class="content">
       <el-form ref="collision" :model="collision">
-        <h5 class="add-label" style="margin-top: 0">关联案件</h5>
+        <h5 class="add-label" style="margin-top: 0">任务基本信息</h5>
         <div class="add-appdiv">
+          <el-form-item label="任务名称" align="left">
+            <el-input v-model="collision.taskName" placeholder="请输入任务名称" style="width: 300px" :maxlength=20></el-input>
+          </el-form-item>
+          <!--<el-form-item label="任务类型" align="left">-->
+          <!--<el-radio-group v-model="collisionType" @change="changeType">-->
+          <!--<el-radio label="IMSI">IMSI</el-radio>-->
+          <!--<el-radio label="FACE">图像</el-radio>-->
+          <!--<el-radio label="MAC">MAC</el-radio>-->
+          <!--</el-radio-group>-->
+          <!--</el-form-item>-->
           <el-form-item label="设置案件" align="left" style="margin:0" prop="caseId">
             <el-select v-model="collision.caseId" placeholder="选择案件" filterable clearable>
               <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
               </el-option>
             </el-select>
-          </el-form-item>
-        </div>
-        <div class="add-appdiv" style="margin-top:30px">
-          <el-form-item label="任务名称" align="left">
-            <el-input v-model="collision.taskName" placeholder="请输入任务名称" style="width: 300px" :maxlength=20></el-input>
-          </el-form-item>
-          <el-form-item label="任务类型" align="left">
-            <el-radio-group v-model="collisionType" @change="changeType">
-              <el-radio label="IMSI">IMSI</el-radio>
-              <!--<el-radio label="FACE">图像</el-radio>-->
-              <!--<el-radio label="MAC">MAC</el-radio>-->
-            </el-radio-group>
           </el-form-item>
         </div>
       </el-form>
@@ -118,11 +116,16 @@
         </el-row>
         <el-form style="margin-top: 10px">
           <el-form-item label="数据组合方式" align="left" style="margin: 0">
-            <el-radio-group v-model="collision.collisionMode" size="medium">
-              <el-radio-button label="INTERSECT">交集</el-radio-button>
-              <el-radio-button label="UNION">并集</el-radio-button>
-              <el-radio-button label="SUBTRACT">差集</el-radio-button>
-            </el-radio-group>
+            <el-tooltip class="item" effect="dark" placement="bottom">
+              <div slot="content">交集：条件1的记录与条件2的记录里都出现的IMSI<br/>
+                并集：条件1的记录与条件2的记录里分别出现的IMSI<br/>差集：条件1的记录里出现，条件2的记录里未出现的IMSI
+              </div>
+              <el-radio-group v-model="collision.collisionMode" size="medium">
+                <el-radio-button label="INTERSECT">交集</el-radio-button>
+                <el-radio-button label="UNION">并集</el-radio-button>
+                <el-radio-button label="SUBTRACT">差集</el-radio-button>
+              </el-radio-group>
+            </el-tooltip>
           </el-form-item>
         </el-form>
       </div>
@@ -158,9 +161,9 @@
         records: [],
         cases: [],
         date1: '',
-        time1: '',
+        time1: ['00:00:00', '23:59:59'],
         date2: '',
-        time2: '',
+        time2: ['00:00:00', '23:59:59'],
         returnData: {},
         deviceData: '',
       }

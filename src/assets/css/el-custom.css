@@ -262,7 +262,8 @@
   background: #E9ECF1;
 }
 
-.warning .el-dialog__header {
+/**所有的弹窗标题靠左*/
+.el-dialog__header {
   text-align: left;
   padding-bottom: 15px;
 }

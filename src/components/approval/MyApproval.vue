@@ -6,7 +6,7 @@
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="待审批" name="EXECUTION"></el-tab-pane>
             <el-tab-pane label="已审批" name="FINISH"></el-tab-pane>
-            <el-tab-pane label="超时、撤销" name="CANCEL"></el-tab-pane>
+            <el-tab-pane label="超时 | 撤销" name="CANCEL"></el-tab-pane>
           </el-tabs>
         </el-col>
         <el-col :span="8" align="right" v-show="getButtonVial('workflow:translation:apply')">
@@ -203,7 +203,7 @@
         } else if (column.property === 'followType') {
           return "IMSI翻码";
         } else if (column.property === 'status') {
-          return row.status == 1 ? '待审批' : row.status == 0 ? '已审批' : row.status == 2 ? '超时/撤销' : row.status == 3 ? '已审批' : '--';
+          return row.status == 0 ? '已完成' : row.status == 1 ? '待审批' : row.status == 2 ? '终止' : row.status == 3 ? '待翻码' : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

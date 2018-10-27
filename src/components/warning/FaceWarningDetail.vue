@@ -56,39 +56,39 @@
       <el-row>
         <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
-            <el-tab-pane label="关联人员" name="person"></el-tab-pane>
+            <el-tab-pane label="疑似人员" name="person"></el-tab-pane>
             <el-tab-pane label="所有记录" name="list"></el-tab-pane>
           </el-tabs>
         </el-col>
       </el-row>
       <div v-show="activeItem=='person'" style="padding: 20px 0">
-        <div class="face-main">
-          <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
-            <img :src="item.faceUrl?item.faceUrl:imgPath"/>
-            <el-form :model="item" align="left" label-width="80px" label-position="right" size="small"
-                     style="position: absolute;top: 10px;left:150px;text-align: left">
-              <el-form-item label="档案ID" style="margin:0">
-                <span style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
-                <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
-              </el-form-item>
-              <el-form-item label="IMSI" style="margin:0">
-                <span style="font-size: 15px;color:#000">{{item.imsi?item.imsi:'--'}}</span>
-              </el-form-item>
-              <el-form-item label="关联次数" style="margin:0">
-                <span style="font-size: 15px;color:#000">{{item.fnIn>=0?item.fnIn:'--'}}</span>
-              </el-form-item>
-              <el-form-item label="置信度" style="margin:0">
-                <span style="font-size: 15px;color:#000">{{item.weight?item.weight/10+'%':'--'}}</span>
-              </el-form-item>
-            </el-form>
-          </div>
-          <span v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px">暂无数据</span>
-          <el-row style="width: 100%" v-if="persons.length>=num">
-            <el-col :span="24" style="text-align: center" align="center">
-              <el-button type="text" @click="loadMore()">加载更多</el-button>
-            </el-col>
-          </el-row>
-        </div>
+        <el-row v-loading="listLoading">
+          <el-col :span="24">
+            <div class="face-main">
+              <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
+                <img :src="item.faceUrl?item.faceUrl:imgPath"/>
+                <el-form :model="item" align="left" label-width="80px" label-position="right"
+                         style="position: absolute;top: 10px;left:150px;text-align: left">
+                  <el-form-item label="档案ID" style="margin:0">
+                    <span
+                      style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
+                    <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
+                  </el-form-item>
+                  <el-form-item label="相似度" style="margin:0">
+                    <span
+                      style="font-size: 15px;color:#000">{{item.similarThreshold<0?'--':item.similarThreshold}}</span>
+                  </el-form-item>
+                </el-form>
+              </div>
+              <span v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px">暂无数据</span>
+              <!--<el-row style="width: 100%" v-if="persons.length>=num">-->
+              <!--<el-col :span="24" style="text-align: center" align="center">-->
+              <!--<el-button type="text" @click="loadMore()">加载更多</el-button>-->
+              <!--</el-col>-->
+              <!--</el-row>-->
+            </div>
+          </el-col>
+        </el-row>
       </div>
       <div v-show="activeItem=='list'">
         <el-row style="margin-top: 15px">
@@ -123,11 +123,10 @@
             </el-form>
           </el-col>
           <el-col :span="6" align="right" style="text-align: right" v-show="getButtonVial('route:query')&&false">
-            <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="gotoPath()">查看轨迹</el-button>
+            <el-button type="primary" size="medium" @click="gotoPath()">查看轨迹</el-button>
           </el-col>
         </el-row>
-        <el-table :data="list10" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
-          <el-table-column type="selection" width="45" align="left"></el-table-column>
+        <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="人员图像" prop="fileUrl" min-width="125" max-width="250">
             <template slot-scope="scope">
@@ -191,7 +190,6 @@
         page: 1,
         listLoading: false,
         num: 10,
-        sels: [],
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -244,6 +242,7 @@
           if (code != 0) {
             this.faceDetail.area = this.getAreaLable(code);
           }
+          this.getPersons();
         }).catch((err) => {
           this.$message.error(err);
         });
@@ -261,15 +260,24 @@
         let routeData = this.$router.resolve({path: '/pathLine', query: {face: 1}});
         window.open(routeData.href, '_blank');
       },
-      //全选
-      selsChange(sels) {
-        this.sels = sels;
-      },
       //根据imsi查找指定的对应人员
       getPersons() {
-        this.$post('common/face/listFaceByFaceId', {id: this.faceId, num: this.num}).then((data) => {
-          if (data.data && data.data.length > 0) {
-            this.persons = data.data;
+        this.listLoading = true;
+        this.$post('common/listPersonByUrl', {type: "faceWarning", url: this.faceDetail.faceUrl},
+          undefined, undefined, "login").then((data) => {
+          if ("000000" === data.code) {
+            this.listLoading = false;
+            if (data.data && data.data.length > 0) {
+              this.persons = data.data;
+            }
+          } else if ("100000" === data.code) {//执行中
+            setTimeout(() => {
+              this.getPersons();
+            }, 1000);
+          } else {
+            this.persons = [];
+            this.listLoading = false;
+            this.$message.error(data.msg);
           }
         }).catch((err) => {
           this.$message.error(err);
@@ -398,7 +406,6 @@
     mounted() {
       this.getPlaces();
       this.getFaceDetail();
-      this.getPersons();
     }
   }
 </script>

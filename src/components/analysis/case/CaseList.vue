@@ -8,8 +8,11 @@
             <el-tab-pane label="已结案" name="HANDLED"></el-tab-pane>
           </el-tabs>
         </el-col>
-        <el-col :span="8" align="right" v-show="getButtonVial('case:add')">
-          <el-button type="primary" size="medium" @click="showCreate()">创建新案件</el-button>
+        <el-col :span="8" align="right">
+          <el-button type="primary" size="medium" @click="showCaseType()">管理案件属性</el-button>
+          <el-button type="primary" size="medium" @click="showCreate()"
+                     v-show="getButtonVial('case:add')">创建新案件
+          </el-button>
         </el-col>
       </el-row>
       <el-row style="padding-top: 15px">
@@ -20,8 +23,10 @@
                         :maxlength=20></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-input v-model="query.caseType" placeholder="案件类型" size="medium" style="width: 160px"
-                        :maxlength=20></el-input>
+              <el-select v-model="query.caseType" placeholder="案件类型" size="medium" filterable clearable>
+                <el-option v-for="item in caseTypes" :key="item.idx" :label="item.label" :value="item.label">
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-cascader :options="provinceList" :props="props" @change="areaChange" change-on-select
@@ -89,7 +94,10 @@
               <el-input v-model="createCase.caseName" auto-complete="off" :maxlength="20"></el-input>
             </el-form-item>
             <el-form-item label="案件类型" prop="caseType">
-              <el-input v-model="createCase.caseType" placeholder="案件类型" :maxlength=20></el-input>
+              <el-select v-model="createCase.caseType" placeholder="案件类型" filterable clearable style="width: 100%">
+                <el-option v-for="item in caseTypes" :key="item.idx" :label="item.label" :value="item.label">
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="案发时间" prop="startTime">
               <el-date-picker v-model="createCase.startTime" type="datetimerange" range-separator="至"
@@ -114,6 +122,23 @@
             <el-button @click="runningCreateCase = false">取消</el-button>
             <el-button type="primary" @click="createNewCase()">确认创建</el-button>
           </div>
+        </div>
+      </el-dialog>
+      <!--管理案件属性-->
+      <el-dialog title="案件属性管理" :visible.sync="runningCaseType" :width="dialogWidth" center>
+        <div class="block">
+          <el-input v-model="caseTypeAdd" placeholder="输入属性" style="width: 400px" :maxlength=20>
+            <el-button slot="append" type="primary" @click="addCaseType()">添加</el-button>
+          </el-input>
+          <el-table :data="caseTypes" class="center-block" stripe>
+            <el-table-column align="left" type="index" label="序号" width="120"></el-table-column>
+            <el-table-column align="left" :formatter="formatterAddress" prop="label" label="属性"></el-table-column>
+            <el-table-column align="left" label="操作" width="180" fixed="right">
+              <template slot-scope="scope">
+                <el-button type="text" @click="deleteCaseType(scope.row)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
         </div>
       </el-dialog>
     </section>
@@ -143,15 +168,17 @@
       return {
         activeItem: 'EXECUTION',
         runningCreateCase: false,
+        runningCaseType: false,
         listLoading: false,
-        dialogWidth: isPC() ? '40%' : '90%',
+        dialogWidth: '600px',
         labelWidth: isPC() ? '100px' : '80px',
         props: {value: 'o', label: 'n', children: 'c'},
         areaList: [],
+        caseTypeAdd: '',
         provinceList: json,
         qTime: '',
         query: {page: 1, size: 10, status: 'EXECUTION'},
-        caseTypes: [{value: '1', label: '盗窃'}, {value: '2', label: '抢劫'}, {value: '3', label: '吸毒'}],
+        caseTypes: [],
         count: 0,
         sels: [],
         caseList: [],
@@ -191,6 +218,50 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      //案件属性
+      showCaseType() {
+        this.caseTypeAdd = '';
+        this.runningCaseType = true;
+        this.getCaseType();
+      },
+      getCaseType() {
+        this.caseTypes = [];
+        this.$post('lookup/get/caseType', {}).then((data) => {
+          if ("000000" === data.code) {
+            if (data.data.items && data.data.items.length > 0) {
+              data.data.items.forEach((item, idx) => {
+                let label = {label: item.label, idx: idx};
+                this.caseTypes.push(label);
+              });
+            }
+          }
+        }).catch((err) => {
+        });
+      },
+      addCaseType() {
+        if (this.caseTypeAdd.length == 0) {
+          this.$message.error('请输入案件类型');
+          return;
+        }
+        this.$post('lookup/add/caseType', {label: this.caseTypeAdd}, '添加成功').then((data) => {
+          if ("000000" === data.code) {
+            this.caseTypeAdd = '';
+            this.getCaseType();
+          }
+        }).catch((err) => {
+        });
+      },
+      deleteCaseType(row) {
+        this.$confirm('确认删除该案件属性?', '提示', {type: 'info'}).then(() => {
+          this.$post('lookup/remove/caseType', {label: row.label}, '操作成功').then((data) => {
+            if ("000000" === data.code) {
+              this.getCaseType();
+            }
+          }).catch((err) => {
+          });
+        }).catch(() => {
+        });
       },
       //全选  ==>  删除/结案
       selsChange(sels) {
@@ -361,6 +432,7 @@
       if (time1) {
         this.qTime = time1;
       }
+      this.getCaseType();
       this.getData();
     }
   }

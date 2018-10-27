@@ -70,7 +70,7 @@
                 <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
               </el-form-item>
               <el-form-item label="关联次数" style="margin:0">
-                <span style="font-size: 15px;color:#000">{{item.fnIn>=0?item.fnIn:'--'}}</span>
+                <span style="font-size: 15px;color:#000">{{item.fnIn<0?'--':item.fnIn}}</span>
               </el-form-item>
               <el-form-item label="置信度" style="margin:0">
                 <span style="font-size: 15px;color:#000">{{item.weight?item.weight/10+'%':'--'}}</span>
@@ -112,13 +112,11 @@
             </el-form>
           </el-col>
           <el-col :span="6" align="right" v-show="getButtonVial('route:query')">
-            <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="gotoPath()"
-                       v-show="getButtonVial('place:query')">查看轨迹
+            <el-button type="primary" size="medium" @click="gotoPath()" v-show="getButtonVial('place:query')">查看轨迹
             </el-button>
           </el-col>
         </el-row>
-        <el-table :data="list10" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
-          <el-table-column type="selection" width="45" align="left"></el-table-column>
+        <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="抓取时间" prop="uptime" width="200"
                            :formatter="formatterAddress"></el-table-column>
@@ -155,6 +153,7 @@
         provinceList: json,
         imgPath: require('../../assets/img/icon_people.png'),
         imsi: this.$route.query.imsi || '',
+        id: this.$route.query.id || '',
         qTime: '',
         imsiDetail: {},
         persons: [],
@@ -169,7 +168,6 @@
         firstPage: 0,
         page: 1,
         num: 10,
-        sels: [],
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -208,7 +206,11 @@
       },
       //获取imsi详情
       getImsiDetail() {
-        this.$post('archives/getImsiRecordByImsi/' + this.imsi, {}).then((data) => {
+        let url = 'archives/getImsiRecordByImsi/' + this.imsi;
+        if (this.id.length != 0) {
+          url = 'archives/getImsiRecordById/' + this.id;
+        }
+        this.$post(url, {}).then((data) => {
           this.imsiDetail = data.data;
           this.imsiDetail.timeStr = formatDate(new Date(this.imsiDetail.uptime * 1000), 'yyyy-MM-dd hh:mm:ss');
           let code = (this.imsiDetail.areaCode ? this.imsiDetail.areaCode : this.imsiDetail.cityCode ? this.imsiDetail.cityCode : this.imsiDetail.provinceCode ? this.imsiDetail.provinceCode : 0);
@@ -241,10 +243,6 @@
         // this.$router.push({path: '/pathLine', query: {imsi: 1}});
         let routeData = this.$router.resolve({path: '/pathLine', query: {imsi: 1}});
         window.open(routeData.href, '_blank');
-      },
-      //全选
-      selsChange(sels) {
-        this.sels = sels;
       },
       getData() {
         if (!!this.qTime) {

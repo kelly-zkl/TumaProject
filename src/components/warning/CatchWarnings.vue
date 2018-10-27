@@ -67,36 +67,35 @@
       </el-form>
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150"
-                         max-width="300" :formatter="formatterAddress">
+        <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150">
           <template slot-scope="scope">
             <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath"
                  @click="bigUrl=scope.row.sceneUrl;runBigPic=true"
                  style="max-height:70px;border-radius: 6px"/>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="年龄" prop="age" width="120"
+        <el-table-column align="left" label="年龄" prop="age" min-width="60" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="性别" prop="sex" width="120"
+        <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警场所" prop="placeName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="告警时间" prop="createTime" width="170"
+        <el-table-column align="left" label="告警时间" prop="createTime" min-width="170"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="告警状态" prop="status" width="150"
+        <el-table-column align="left" label="告警状态" prop="status" min-width="80" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="布控人员图像" prop="faceUrl" min-width="150"
-                         max-width="250" :formatter="formatterAddress">
+        <el-table-column align="left" label="布控人员图像" prop="faceUrl" min-width="120"
+                         max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
             <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
                  @click="bigUrl=scope.row.faceUrl;runBigPic=true"
                  style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="80" max-width="120"
+                         :formatter="formatterAddress"></el-table-column>
         <!--<el-table-column align="left" label="所属名单" prop="blackClass" min-width="150"-->
         <!--max-width="250" :formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" label="操作" width="160" fixed="right">

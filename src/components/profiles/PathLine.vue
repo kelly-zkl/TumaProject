@@ -1,7 +1,7 @@
 <template>
   <div>
     <section>
-      <el-form :model="query" style="margin: 0;text-align: left" :inline="true">
+      <el-form :model="query" style="text-align: left" :inline="true">
         <el-form-item label="时间范围">
           <el-date-picker v-model="cTime" type="datetimerange" range-separator="至" start-placeholder="开始日期"
                           end-placeholder="结束日期" value-format="timestamp" :picker-options="pickerBeginDate"
@@ -17,43 +17,54 @@
         <el-form-item>
           <el-button @click="getLineData()" size="medium" type="primary">搜索</el-button>
         </el-form-item>
-        <!--<el-form-item>-->
-        <!--<el-button @click="runLineList=true" size="medium" type="primary" v-if="query.merge == false">轨迹回放</el-button>-->
-        <!--</el-form-item>-->
+        <el-form-item>
+          <el-button @click="runLineList=true" size="medium" type="primary" v-show="query.merge == false">轨迹回放
+          </el-button>
+        </el-form-item>
       </el-form>
-      <el-row v-if="query.merge == false">
-        <el-col style="text-align: left;" align="left" :span="24">
+      <el-row v-show="query.merge == false" style="margin: 0;padding: 0">
+        <el-col style="text-align: left;margin: 0;padding: 0" align="left" :span="24">
           <!--<el-radio-group v-model="choose.face" @change="handleFace">-->
           <!--<el-radio v-for="item in faces" :key="item" :label="item">{{item}}</el-radio>-->
           <!--</el-radio-group>faces.length>0&&-->
-          <el-radio-group v-model="choose.imsi" @change="handleImsi">
+          <el-radio-group v-model="choose.imsi" @change="handleImsi" style="margin: 0;padding: 0">
             <el-radio v-for="item in imsis" :key="item" :label="item">{{item}}</el-radio>
           </el-radio-group>
         </el-col>
       </el-row>
       <div class="view-map" id="path"
-           v-bind:style="query.merge == false&&imsis.length>0?'top: 160px':'top: 100px'"></div>
+           v-bind:style="query.merge == false&&imsis.length>0?'top: 150px':'top: 100px'"></div>
+      <div class="view-list" v-bind:style="query.merge == false&&imsis.length>0?'top: 150px':'top: 100px'">
+        <div style="color: #999;font-size: 14px;margin-top: 15px">对应IMSI</div>
+        <div style="color: #333;font-size: 14px">{{choose.imsi}}</div>
+        <div style="border-top: #6699FF 3px solid;margin-top: 15px">
+          <div style="font-size: 14px;color: #333;text-align: center;padding: 10px">侦码记录</div>
+          <div v-for="(item,idx) in records">
+            <div
+              style="margin-bottom: 10px;text-align: left;display: flex;height: 60px;align-items: center">
+              <div style="display: inline-block;width: 24px;height: 24px;text-align: center;margin: 0 10px">
+                <div
+                  style="width: 22px;height: 24px;line-height:24px;border-radius: 12px;background:#6699FF;color: #fff;font-size: 13px;text-align: center">
+                  {{idx+1}}
+                </div>
+              </div>
+              <div style="display: inline-block;text-align: left">
+                <div><span class="item-label">IMSI</span><span class="item-content">{{choose.imsi}}</span></div>
+                <div><span class="item-label">场所</span><span
+                  class="item-content">{{item.placeName?item.placeName:'--'}}</span></div>
+                <div><span class="item-label">时间</span><span class="item-content">{{item.timeStr}}</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
     <!--轨迹列表-->
     <el-dialog title="轨迹列表" :visible.sync="runLineList" width="500px" center>
-      <div class="block">
-        <el-row>
-          <el-col :span="24" align="center" v-for="item in pathLines" :key="item.value"
-                  style="text-align: center;border-bottom: 1px #ddd solid" @click.stop="luShu(item)">
-            <el-form :model="item" align="left" label-width="80px" label-position="left">
-              <el-form-item label="类型" style="margin:0">
-                <span
-                  style="font-size: 14px;color:#000">{{item.type=='imsi' ? 'IMSI':item.type=='image'?'图像': '合并'}}</span>
-              </el-form-item>
-              <el-form-item label="IMSI" style="margin:0" v-if="item.type=='imsi'">
-                <span style="font-size: 14px;color:#000">{{item.value ? item.value : '--'}}</span>
-              </el-form-item>
-              <el-form-item label="人员ID" style="margin:0" v-if="item.type=='image'">
-                <span style="font-size: 14px;color:#000">{{item.value ? item.value : '--'}}</span>
-              </el-form-item>
-            </el-form>
-          </el-col>
-        </el-row>
+      <div class="block" v-for="item in pathLines" :key="item.value">
+        <el-button type="text" @click="luShu(item)" style="text-align: left">
+          {{item.type=='imsi' ? 'IMSI：'+item.value:item.type=='image'?'人员ID：'+item.value: '合并：'+item.value}}
+        </el-button>
       </div>
     </el-dialog>
   </div>
@@ -76,6 +87,7 @@
         pathLines: [],
         faces: [],
         imsis: [],
+        records: [],
         isCenter: false,
         choose: {imsi: '', face: ''},//
         pickerBeginDate: {
@@ -90,9 +102,9 @@
     },
     //页面关闭时删除时间、imsi和图像的缓存
     beforeDestroy() {
-      sessionStorage.removeItem("pathTime");
-      sessionStorage.removeItem("pathImsi");
-      sessionStorage.removeItem("pathFace");
+      // sessionStorage.removeItem("pathTime");
+      // sessionStorage.removeItem("pathImsi");
+      // sessionStorage.removeItem("pathFace");
     },
     methods: {
       //切换模式
@@ -115,7 +127,7 @@
                 if (i == 0 && !this.isCenter) {
                   this.isCenter = true;
                   var point = new BMap.Point(item.locs[i].lon, item.locs[i].lat);
-                  this.map.centerAndZoom(point, 12);
+                  this.map.centerAndZoom(point, 14);
                 }
                 pois.push(new BMap.Point(item.locs[i].lon, item.locs[i].lat));
               }
@@ -133,14 +145,18 @@
         this.pathLines.forEach((item) => {
           if (item.value == this.choose.imsi) {
             var pois = [];
+            this.records = [];
             if (item.locs && item.locs.length > 0) {
               for (var i = 0; i < item.locs.length; i++) {
+                let recData = item.locs[i];
                 if (i == 0 && !this.isCenter) {
                   this.isCenter = true;
                   var point = new BMap.Point(item.locs[i].lon, item.locs[i].lat);
-                  this.map.centerAndZoom(point, 12);
+                  this.map.centerAndZoom(point, 14);
                 }
                 pois.push(new BMap.Point(item.locs[i].lon, item.locs[i].lat));
+                recData.timeStr = formatDate(new Date(recData.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+                this.records.push(recData);
               }
               this.pathLine(pois, 1);
             }
@@ -157,13 +173,30 @@
         }
         this.$post('route/query', this.query).then((data) => {
           this.pathLines = data.data.routeList;
+          let pos = [{lon: 116.350658, lat: 39.938285}, {lon: 116.386446, lat: 39.939281},
+            {lon: 116.389034, lat: 39.913828}, {lon: 116.442501, lat: 39.914603}];
+          // this.pathLines[0].locs = pos;
+          let imsi = {locs: []}, face = {locs: []};
+          this.pathLines.forEach((item) => {
+            if (item.value == this.choose.imsi) {
+              imsi = item;
+            }
+            if (item.value == this.choose.face) {
+              face = item;
+            }
+          });
+          if (imsi.locs.length == 0 && face.locs.length == 0) {
+            this.setMapCenter();
+          }
           if (this.query.merge) {//合并轨迹
             let item = this.pathLines[0];
             var pois = [];
-            for (var i = 0; i < item.locs.length; i++) {
-              pois.push(new BMap.Point(item.locs[i].lon, item.locs[i].lat));
+            if (item.locs.length > 0) {
+              for (var i = 0; i < item.locs.length; i++) {
+                pois.push(new BMap.Point(item.locs[i].lon, item.locs[i].lat));
+              }
+              this.pathLine(pois, 1);
             }
-            this.pathLine(pois, 1);
           } else {
             // this.faceLine();
             this.imsiLine();
@@ -189,7 +222,6 @@
           strokeOpacity: 1,//折线的透明度，取值范围0 - 1
           strokeColor: type == 0 ? "#FF6600" : '#6699FF' //折线颜色#6699FF#325EDA
         });
-        this.map.addOverlay(polyline);
         for (var i = 0; i < pois.length; i++) {
           var pt = pois[i];
           var myIcon = new BMap.Icon(type == 0 ? this.icon1 : this.icon2, new BMap.Size(23, 25));
@@ -203,6 +235,19 @@
           marker2.setLabel(label);//显示地理名称 a
           this.map.addOverlay(marker2);
         }
+        this.map.addOverlay(polyline);
+      },
+      //设置地图中心点
+      setMapCenter() {
+        let _this = this;
+
+        function myFun(result) {
+          var cityName = result.name;
+          _this.map.setCenter(cityName);
+        }
+
+        var myCity = new BMap.LocalCity();
+        myCity.get(myFun);
       },
       //删除地图上的覆盖物
       deleteOverlay() {
@@ -219,8 +264,12 @@
       //轨迹回放
       luShu(line) {
         this.runLineList = false;
-        console.log(line);
+        // console.log(line);
         // this.deleteOverlay();
+        if (line.locs.length == 0) {
+          return;
+        }
+        this.map.clearOverlays();
         var pois = [];
         var type = 1;
         if (line.type == 'imsi') {
@@ -240,7 +289,7 @@
           defaultContent: "",//"从天安门到百度大厦"
           autoView: true,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
           icon: new BMap.Icon('http://lbsyun.baidu.com/jsdemo/img/Mario.png', new BMap.Size(52, 26), {anchor: new BMap.Size(27, 13)}),
-          speed: 500,
+          speed: 1000,
           enableRotation: true,//是否设置marker随着道路的走向进行旋转
           landmarkPois: [
             // {lng: 116.386446, lat: 39.939281, html: '加油站', pauseTime: 2},
@@ -261,21 +310,12 @@
       }
     },
     mounted() {
-      let _this = this;
       this.map = new BMap.Map("path");
       this.map.enableScrollWheelZoom(true);
       this.map.enableDragging();
 
       var point = new BMap.Point(116.331398, 39.897445);
       this.map.centerAndZoom(point, 12);
-
-      function myFun(result) {
-        var cityName = result.name;
-        _this.map.setCenter(cityName);
-      }
-
-      var myCity = new BMap.LocalCity();
-      myCity.get(myFun);
 
       this.imsi = this.$route.query.imsi || 0;
       this.face = this.$route.query.face || 0;
@@ -308,7 +348,31 @@
     right: 15px;
     bottom: 20px;
     top: 100px;
-    color: #fff;
-    font-size: 30px;
+  }
+
+  .view-list {
+    position: absolute;
+    right: 15px;
+    bottom: 20px;
+    top: 100px;
+    background: #fff;
+    width: 300px;
+    overflow-y: scroll;
+    -moz-box-shadow: -6px 6px 12px rgba(40, 40, 40, .5); /*firefox*/
+    -webkit-box-shadow: -6px 6px 12px rgba(40, 40, 40, .5); /*webkit*/
+    box-shadow: -6px 6px 12px rgba(40, 40, 40, .5); /*opera或ie9*/
+  }
+
+  .item-label {
+    font-size: 13px;
+    color: #999;
+    margin-right: 10px;
+  }
+
+  .item-content {
+    font-size: 13px;
+    color: #333;
+    margin-right: 10px;
+    white-space: nowrap;
   }
 </style>

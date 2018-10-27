@@ -73,7 +73,7 @@
                 <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
               </el-form-item>
               <el-form-item label="关联次数" style="margin:0">
-                <span style="font-size: 15px;color:#000">{{item.fnIn>=0?item.fnIn:'--'}}</span>
+                <span style="font-size: 15px;color:#000">{{item.fnIn<0?'--':item.fnIn}}</span>
               </el-form-item>
               <el-form-item label="置信度" style="margin:0">
                 <span style="font-size: 15px;color:#000">{{item.weight?item.weight/10+'%':'--'}}</span>
@@ -115,13 +115,12 @@
             </el-form>
           </el-col>
           <el-col :span="6" align="right" style="text-align: right" v-show="getButtonVial('route:query')">
-            <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="gotoPath()"
+            <el-button type="primary" size="medium" @click="gotoPath()"
                        v-show="getButtonVial('warning:getImsiWarning')">查看轨迹
             </el-button>
           </el-col>
         </el-row>
-        <el-table :data="list10" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
-          <el-table-column type="selection" width="45" align="left"></el-table-column>
+        <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="抓取时间" prop="uptime" min-width="200"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -168,7 +167,6 @@
         firstPage: 0,
         page: 1,
         num: 10,
-        sels: [],
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -238,10 +236,6 @@
         // this.$router.push({path: '/pathLine', query: {imsi: 1}});
         let routeData = this.$router.resolve({path: '/pathLine', query: {imsi: 1}});
         window.open(routeData.href, '_blank');
-      },
-      //全选
-      selsChange(sels) {
-        this.sels = sels;
       },
       //根据imsi查找指定的对应人员
       getPersons() {

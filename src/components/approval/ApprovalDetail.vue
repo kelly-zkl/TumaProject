@@ -121,6 +121,9 @@
               this.active = index
             }
           });
+          if (this.show == 3 && this.approval.ccReadStatus == 1) {
+            this.updateStatus();
+          }
         }).catch((err) => {
           this.$message.error(err);
         });

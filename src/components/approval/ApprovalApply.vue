@@ -2,6 +2,17 @@
   <div>
     <section>
       <el-form ref="approval" :model="approval" label-position="left" label-width="100px" :rules="rules">
+        <h5 class="add-label" style="margin-top: 0">流程说明</h5>
+        <div class="add-appdiv">
+          <el-steps :active="active" finish-status="success" align-center>
+            <el-step title="发起申请"></el-step>
+            <el-step title="上级审核"></el-step>
+            <el-step title="情指勤指挥中心审阅"></el-step>
+            <el-step title="情指勤合成作战室审阅"></el-step>
+            <el-step title="技侦翻码"></el-step>
+            <el-step title="翻码返回"></el-step>
+          </el-steps>
+        </div>
         <h5 class="add-label" style="margin-top: 0">业务申请</h5>
         <div class="add-appdiv">
           <el-form-item label="业务类型" align="left">IMSI翻码</el-form-item>
@@ -43,17 +54,6 @@
           <el-form-item label="备注" align="left" style="margin: 0">
             <el-input type="textarea" :rows="3" placeholder="请输入内容" v-model="approval.remark"></el-input>
           </el-form-item>
-        </div>
-        <h5 class="add-label" style="margin-top: 0">流程说明</h5>
-        <div class="add-appdiv">
-          <el-steps :active="active" finish-status="success" align-center>
-            <el-step title="发起申请"></el-step>
-            <el-step title="上级审核"></el-step>
-            <el-step title="情指勤指挥中心审阅"></el-step>
-            <el-step title="情指勤合成作战室审阅"></el-step>
-            <el-step title="技侦翻码"></el-step>
-            <el-step title="翻码返回"></el-step>
-          </el-steps>
         </div>
       </el-form>
       <div class="block" style="margin-top: 30px">
