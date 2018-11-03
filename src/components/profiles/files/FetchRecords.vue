@@ -58,7 +58,7 @@
           </el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleImsiSizeChange" @current-change="imsiPageChange" :current-page="page"
+          <el-pagination @size-change="handleImsiSizeChange" @current-change="imsiPageChange" :current-page.sync="page"
                          :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
       </div>
@@ -135,7 +135,7 @@
           </el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                          :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
       </div>
@@ -331,6 +331,12 @@
           }
         }
         if (this.query.similarThreshold) {
+          if (!this.query.faceUrl) {
+            this.$message.error('请上传头像');
+            return;
+          }
+        }
+        if (this.query.similarThreshold) {
           if (!doubleValid(this.query.similarThreshold)) {
             this.$message.error('相似度为0.1-99的数字');
             return;
@@ -383,6 +389,7 @@
           } else {
             this.list = [];
             this.list10 = [];
+            this.count = 0;
             this.listLoading = false;
             this.$message.error(data.msg);
           }
@@ -425,11 +432,11 @@
         } else if (column.property === 'catchTime') {
           return row.catchTime ? formatDate(new Date(row.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'isp') {
-          return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '未知';
+          return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '--';
         } else if (column.property === 'sex') {
-          return row.sex === 0 ? '男' : row.sex === 1 ? '女' : '--';
+          return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
         } else if (column.property === 'age' || column.property === 'similarThreshold') {
-          return row[column.property] < 0 ? '未知' : row[column.property];
+          return row[column.property] < 0 ? '--' : row[column.property];
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

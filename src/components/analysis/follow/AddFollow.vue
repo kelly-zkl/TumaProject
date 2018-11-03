@@ -25,7 +25,7 @@
         <div class="add-appdiv">
           <el-form-item label="分析对象" align="left" prop="followTarget">
             <el-input v-model="followTask.followTarget" placeholder="输入IMSI"
-                      style="width: 500px" :maxlength=50 v-if="followTask.followType == 'IMSI'"></el-input>
+                      style="width: 500px" :maxlength=15 v-if="followTask.followType == 'IMSI'"></el-input>
             <img :src="imgUrl" v-if="imgUrl && followTask.followType == 'FACE'"
                  style="max-width: 90px;max-height:90px;border-radius: 6px">
             <el-button type="primary" v-if="followTask.followType == 'FACE'"
@@ -43,12 +43,15 @@
                          :value="item.deviceId">
               </el-option>
             </el-select>
+            <el-button type="primary" size="medium" style="margin-left: 10px" @click="showDialog()">选择
+            </el-button>
             <el-button type="primary" size="medium" @click="selectDevice()" style="margin-left: 10px">地图选择</el-button>
           </el-form-item>
           <el-form-item label="日期范围" align="left" required>
             <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                             start-placeholder="开始日期" end-placeholder="结束日期" clearable
-                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp">
+                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                            :picker-options="pickerBeginDate">
             </el-date-picker>
           </el-form-item>
           <el-form-item label="伴随时间间隔" align="left" prop="interval" style="margin: 0">
@@ -66,7 +69,7 @@
         <el-button type="primary" @click="createFollowTask()">确认分析</el-button>
       </div>
       <!--档案列表-->
-      <el-dialog title="录入翻码" :visible.sync="runTranslation" center>
+      <el-dialog title="选择档案人员" :visible.sync="runTranslation" center>
         <div class="block">
           <el-table :data="vipList" v-loading="listLoading" class="center-block" stripe
                     highlight-current-row @current-change="handleCurrentChange">
@@ -80,22 +83,24 @@
                      style="max-width: 90px;max-height:90px;border-radius: 6px"/>
               </template>
             </el-table-column>
-            <el-table-column align="left" label="年龄" prop="age" width="120"></el-table-column>
-            <el-table-column align="left" label="性别" prop="sex" width="120"
-                             :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="IMSI" prop="imsiList" min-width="200"
-                             max-width="300" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="手机号" prop="phone" width="150"
-                             :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="身份证" prop="idCard" width="170"
-                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" label="IMSI[置信度]" prop="imsiList" min-width="220" max-width="250">
+              <template slot-scope="scope">
+                <div v-for="item in scope.row.imsiList">
+                  <span>{{item.imsi}}<span style="color:#000;font-weight: bold">[{{item.weight / 10}}%]</span></span>
+                </div>
+              </template>
+            </el-table-column>
             <el-table-column align="left" label="姓名" prop="name" min-width="150"
                              max-width="250" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="所属名单" prop="blackClass" width="150"
-                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" label="手机号" prop="mobilePhone" min-width="150"
+                             max-width="250" :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" label="身份证号" prop="idCard" min-width="170"
+                             max-width="250" :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" label="建档时间" prop="createTime" min-width="170"
+                             max-width="250" :formatter="formatterAddress"></el-table-column>
           </el-table>
           <div class="block" style="margin-top: 20px" align="right">
-            <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
+            <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                            :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                            layout="total, sizes, prev, pager, next, jumper"></el-pagination>
           </div>
@@ -109,11 +114,122 @@
           <el-button type="primary" @click="setDeviceList">确定</el-button>
         </div>
       </el-dialog>
+      <!--选择设备-->
+      <el-dialog title="选择设备" :visible.sync="dialogDevice" width="950px">
+        <el-form :inline="true" :model="queryDevice" align="left">
+          <el-form-item style="margin-bottom: 10px">
+            <el-input placeholder="设备标识/ID" v-model="queryDevice.deviceName" :maxlength="30" size="medium"></el-input>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-cascader :options="provinceList" :props="props" @change="areaChange" change-on-select
+                         v-model="areaList" placeholder="全部地区" size="medium" filterable clearable>
+            </el-cascader>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-select v-model="queryDevice.deviceType" placeholder="全部类型" size="medium" filterable clearable>
+              <el-option v-for="item in deviceTypes" :key="item.code" :label="item.name" :value="item.code">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-select v-model="queryDevice.deviceForm" placeholder="全部形态" size="medium" filterable clearable>
+              <el-option v-for="item in deviceForms" :key="item.code" :label="item.name" :value="item.code">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-input placeholder="安装场所" v-model="queryDevice.placeName" :maxlength="30" size="medium"></el-input>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-button type="primary" @click.stop="queryDevice.page=1;getData1()" size="medium">搜索</el-button>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-button @click.stop="clearData()" size="medium">重置</el-button>
+          </el-form-item>
+        </el-form>
+        <el-table ref="deviceTable" :data="device1" v-loading="listLoading" class="center-block"
+                  @selection-change="selsChange" stripe>
+          <el-table-column type="selection" width="45" align="left"></el-table-column>
+          <el-table-column align="left" prop="deviceId" label="设备ID" min-width="100" max-width="250"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="deviceName" label="设备标识" min-width="100" max-width="250"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="placeName" label="安装场所" min-width="110" max-width="250"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="deviceTypeVal" label="类型" min-width="110" max-width="250"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="deviceFormVal" label="形态" min-width="125" max-width="250"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="detailAddress" label="位置" min-width="125" max-width="250"
+                           :formatter="formatterAddress"></el-table-column>
+        </el-table>
+        <div class="block" style="margin-top: 20px">
+          <el-pagination
+            @size-change="handleSizeChange1" @current-change="pageChange1" :current-page.sync="queryDevice.page"
+            background
+            :page-sizes="[10, 15, 20, 30]" :page-size="queryDevice.size"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="countDevice"></el-pagination>
+        </div>
+        <div class="block" style="margin-top: 20px">
+          <el-button type="primary" @click="confirmChoose()" :disabled="sels.length == 0">确认选择</el-button>
+        </div>
+      </el-dialog>
+      <!--选择设备-->
+      <el-dialog title="选择设备" :visible.sync="dialogCamera" width="950px">
+        <el-form :inline="true" :model="queryDevice" align="left">
+          <el-form-item style="margin-bottom: 10px">
+            <el-input v-model="queryDevice.cameraCode" placeholder="相机编码" size="medium" :maxlength=30></el-input>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-cascader :options="provinceList" :props="props" @change="areaChange" change-on-select
+                         v-model="areaList" placeholder="全部地区" size="medium" filterable clearable>
+            </el-cascader>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-input placeholder="安装场所" v-model="queryDevice.placeName" :maxlength="30" size="medium"></el-input>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-button type="primary" size="medium" @click="queryDevice.page=1;getData2()">搜索</el-button>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-button size="medium" @click="clearData1()">重置</el-button>
+          </el-form-item>
+        </el-form>
+        <el-table :data="cameras1" v-loading="listLoading" class="center-block" @selection-change="selsChange" stripe>
+          <el-table-column type="selection" width="45" align="left"></el-table-column>
+          <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
+          <el-table-column align="left" label="相机编码" prop="cameraCode" min-width="150"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="设备标识" prop="name" min-width="150"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="相机状态" prop="status" width="100"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="安装地区" prop="areaCode" min-width="150"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="详细地址" prop="detailAddress" min-width="150"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="安装场所" prop="placeName" min-width="150"
+                           max-width="200" :formatter="formatterAddress"></el-table-column>
+        </el-table>
+        <div class="block" style="margin-top: 20px" align="right">
+          <el-pagination @size-change="handleSizeChange1" @current-change="pageChange1"
+                         :current-page.sync="queryDevice.page"
+                         :page-sizes="[10, 15, 20, 30]" :page-size="queryDevice.size" :total="countDevice" background
+                         layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+        </div>
+        <div class="block" style="margin-top: 20px">
+          <el-button type="primary" @click="confirmChoose()" :disabled="sels.length == 0">确认选择</el-button>
+        </div>
+      </el-dialog>
     </section>
   </div>
 </template>
 <script>
   import DeviceBmap from '../DeviceBmap';
+  import json from '../../../assets/city.json';
+  import {globalValidExcel, noSValidator, noValidator} from "../../../assets/js/api";
+  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -125,8 +241,8 @@
         }
       };
       let noValidator = (rule, value, callback) => {
-        if (!/[a-zA-Z0-9_]$/.test(value)) {
-          callback(new Error("由英文字母、数字、下划线组成"));
+        if (!/[0-9]{15}$/.test(value)) {
+          callback(new Error("请输入正确的IMSI"));
         } else {
           callback();
         }
@@ -152,7 +268,7 @@
             {required: true, message: '请选择案件', trigger: 'blur'}
           ],
           followTarget: [
-            {required: true, message: '请输入分析对象', trigger: 'blur'},
+            {required: true, message: '请输入IMSI', trigger: 'blur'},
             {validator: noValidator, trigger: "change,blur"}
           ],
           followType: [
@@ -165,6 +281,27 @@
             {required: true, message: '请输入任务名称', trigger: 'blur'},
             {validator: nameValidator, trigger: "change,blur"}
           ]
+        },
+        dialogDevice: false,
+        dialogCamera: false,
+        props: {value: 'o', label: 'n', children: 'c'},
+        areaList: [],
+        provinceList: json,
+        device1: [],
+        cameras1: [],
+        queryDevice: {page: 1, size: 10},
+        countDevice: 0,
+        deviceTypes: [],
+        places: [],
+        deviceForms: [],
+        sels: [],
+        pickerBeginDate: {
+          disabledDate: (time) => {
+            let beginDateVal = new Date().getTime();
+            if (beginDateVal) {
+              return beginDateVal < time.getTime();
+            }
+          }
         }
       }
     },
@@ -188,11 +325,11 @@
         this.returnData = data;
         // console.log(data);
       },
-      //获取IMSI告警列表
+      //获取档案列表
       getData() {
         this.listLoading = true;
         this.$post('person/query', this.query).then((data) => {
-          this.vipList = data.data.list;
+          this.vipList = data.data;
           this.count = data.data.count;
           setTimeout(() => {
             this.listLoading = false;
@@ -218,14 +355,19 @@
       },
       //创建伴随任务
       createFollowTask() {
-        if (this.qTime.length === 0) {
-          this.$message.error('请选择日期');
-          return;
-        }
         this.$refs['followTask'].validate((valid) => {
           if (valid) {
+            if (this.qTime.length === 0) {
+              this.$message.error('请选择日期');
+              return;
+            }
             this.followTask.startDate = Math.round(this.qTime[0] / 1000);
             this.followTask.endDate = Math.round(this.qTime[1] / 1000);
+            let bol = ((this.followTask.endDate - this.followTask.startDate) > 60 * 60 * 24 * 30);
+            if (bol) {
+              this.$message.error('日期范围不能超过30天');
+              return;
+            }
 
             this.followTask.caseName = this.getCaseName();
 
@@ -272,17 +414,177 @@
       formatterAddress(row, column) {
         if (column.property === 'sex') {
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
-        } else if (column.property === 'imsiList') {
-          let imsi = [];
-          row.imsiList.forEach((item) => {
-            imsi.push(item.imsi + '[' + item.weight / 10 + '%]')
-          });
-          return imsi.join("，");
-        } else if (column.property === 'startAge') {
-          return row.startAge && row.endAge ? row.startAge + '~' + row.endAge : row.startAge ? row.startAge : row.endAge ? row.endAge : '--';
+        } else if (column.property === 'age') {
+          return row.age >= 0 ? row.age : '--';
+        } else if (column.property === 'createTime') {
+          return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
+        } else if (column.property === 'status') {
+          return row.status === 0 ? '正常' : row.status === 1 ? '故障' : row.status === 2 ? '已下线' : '--';
+        } else if (column.property === 'areaCode') {
+          return row.areaCode ? this.getAreaLable(row.areaCode) : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
+      },
+      //设备当前页全选
+      selsChange(sels) {
+        this.sels = sels;
+        console.log(sels);
+      },
+      confirmChoose() {
+        if (this.followTask.followType == 'IMSI') {
+          let arr = [];
+          this.sels.forEach((item) => {
+            arr.push(item.deviceId)
+          });
+          this.followTask.deviceId = arr;
+        } else {
+          let arr = [];
+          this.sels.forEach((item) => {
+            arr.push(item.cameraCode)
+          });
+          this.followTask.deviceId = arr;
+        }
+        this.dialogCamera = false;
+        this.dialogDevice = false;
+      },
+      showDialog(val) {
+        this.dataType = val;
+        this.queryDevice = {page: 1, size: 10};
+        this.sels = [];
+        this.areaList = [];
+        if (this.followTask.followType == 'IMSI') {
+          this.getData1();
+          this.dialogDevice = true;
+        } else {
+          this.getData2();
+          this.dialogCamera = true;
+        }
+      },
+      //获取设备列表
+      getData1() {
+        if (this.queryDevice.deviceName) {
+          if (noSValidator(this.queryDevice.deviceName)) {
+            this.$message.error('请输入正确的设备标识/ID');
+            return;
+          }
+        }
+        this.listLoading = true;
+        this.$post("device/query", this.queryDevice).then((data) => {
+          this.device1 = data.data.list;
+          this.countDevice = data.data.count;
+          setTimeout(() => {
+            this.listLoading = false;
+          }, 500);
+        }).catch((err) => {
+          this.listLoading = false;
+          this.device1 = [];
+          this.$message.error(err);
+        });
+      },
+      //获取相机设备列表
+      getData2() {
+        if (this.queryDevice.cameraCode) {
+          if (noSValidator(this.queryDevice.cameraCode)) {
+            this.$message.error('请输入正确的相机编码');
+            return;
+          }
+        }
+        this.listLoading = true;
+
+        this.$post("camera/query", this.queryDevice).then((data) => {
+          this.cameras1 = data.data.list;
+          this.countDevice = data.data.count;
+          setTimeout(() => {
+            this.listLoading = false;
+          }, 500);
+        }).catch((err) => {
+          this.listLoading = false;
+          this.cameras1 = [];
+          this.$message.error(err);
+        });
+      },
+      pageChange1(index) {
+        this.queryDevice.page = index;
+        if (this.followTask.followType == 'IMSI') {
+          this.getData1();
+        } else {
+          this.getData2();
+        }
+      },
+      handleSizeChange1(val) {
+        this.queryDevice.size = val;
+        if (this.followTask.followType == 'IMSI') {
+          this.getData1();
+        } else {
+          this.getData2();
+        }
+      },
+      //搜索设备列表
+      clearData1() {
+        this.queryDevice = {page: 1, size: 10};
+        this.areaList = [];
+        if (this.followTask.followType == 'IMSI') {
+          this.getData1();
+        } else {
+          this.getData2();
+        }
+      },
+      //省市县变化
+      areaChange(value) {
+        this.areaList = value;
+        this.queryDevice.provinceCode = '';
+        this.queryDevice.cityCode = '';
+        this.queryDevice.areaCode = '';
+        if (value.length === 1) {
+          this.queryDevice.provinceCode = value[0];
+        } else if (value.length === 2) {
+          this.queryDevice.cityCode = value[1];
+        } else if (value.length === 3) {
+          this.queryDevice.areaCode = value[2];
+        } else if (value.length === 4) {
+          this.queryDevice.areaCode = value[2];
+        }
+      },
+      //获取设备类型和形态
+      getDeviceTypeAndForm() {
+        this.$post('device/get/deviceType').then((data) => {
+          if (data.code === '000000' && data.data) {
+            this.deviceTypes = data.data;
+          }
+        });
+
+        this.$post('device/get/deviceForm').then((data) => {
+          if (data.code === '000000' && data.data) {
+            this.deviceForms = data.data;
+          }
+        });
+      },
+      //获得省市县
+      getAreaLable(code) {
+        let lable = '';
+        this.provinceList.forEach((province) => {
+          if (province.c) {
+            province.c.forEach((city) => {
+              if (city.c) {//省级+市级+县级
+                city.c.forEach((country) => {
+                  if (code === country.o) {
+                    lable = province.n + city.n + country.n;
+                  }
+                })
+              } else {//省级+市级
+                if (code === city.o) {
+                  lable = province.n + city.n;
+                }
+              }
+            })
+          } else {//只包含省级
+            if (code === province.o) {
+              lable = province.n;
+            }
+          }
+        });
+        return lable;
       }
     },
     mounted() {

@@ -21,7 +21,7 @@
               </el-form-item>
               <el-form-item label="运营商" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000">
-                  {{imsiDetail.isp == 0 ? '移动' : imsiDetail.isp == 1 ? '联通' : imsiDetail.isp == 2 ? '电信' : '未知'}}
+                  {{imsiDetail.isp == 0 ? '移动' : imsiDetail.isp == 1 ? '联通' : imsiDetail.isp == 2 ? '电信' : '--'}}
                 </span>
               </el-form-item>
               <el-form-item label="IMSI归属地" align="left" style="margin: 0;text-align: left">
@@ -63,30 +63,35 @@
         </el-col>
       </el-row>
       <div v-show="activeItem=='person'" style="padding: 20px 0">
-        <div class="face-main">
-          <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
-            <img :src="item.faceUrl?item.faceUrl:imgPath"/>
-            <el-form :model="item" align="left" label-width="80px" label-position="right"
-                     style="position: absolute;top: 15px;left:150px;text-align: left">
-              <el-form-item label="档案ID" style="margin:0">
-                <span style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
-                <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
-              </el-form-item>
-              <el-form-item label="关联次数" style="margin:0">
-                <span style="font-size: 15px;color:#000">{{item.fnIn<0?'--':item.fnIn}}</span>
-              </el-form-item>
-              <el-form-item label="置信度" style="margin:0">
-                <span style="font-size: 15px;color:#000">{{item.weight?item.weight/10+'%':'--'}}</span>
-              </el-form-item>
-            </el-form>
-          </div>
-          <span v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px">暂无数据</span>
-          <el-row style="width: 100%" v-if="persons.length>=num">
-            <el-col :span="24" style="text-align: center" align="center">
-              <el-button type="text" @click="loadMore()">加载更多</el-button>
-            </el-col>
-          </el-row>
-        </div>
+        <el-row v-loading="listLoading" style="margin: 0;padding: 0">
+          <el-col :span="24" style="margin: 0;padding: 0">
+            <div class="face-main">
+              <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
+                <img :src="item.faceUrl?item.faceUrl:imgPath"/>
+                <el-form :model="item" align="left" label-width="80px" label-position="right"
+                         style="position: absolute;top: 15px;left:150px;text-align: left">
+                  <el-form-item label="档案ID" style="margin:0">
+                    <span
+                      style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
+                    <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
+                  </el-form-item>
+                  <el-form-item label="关联次数" style="margin:0">
+                    <span style="font-size: 15px;color:#000">{{item.fnIn<0?'--':item.fnIn}}</span>
+                  </el-form-item>
+                  <el-form-item label="置信度" style="margin:0">
+                    <span style="font-size: 15px;color:#000">{{item.weight?item.weight/10+'%':'--'}}</span>
+                  </el-form-item>
+                </el-form>
+              </div>
+              <span v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px">暂无数据</span>
+              <el-row style="width: 100%" v-if="persons.length>=num">
+                <el-col :span="24" style="text-align: center" align="center">
+                  <el-button type="text" @click="loadMore()">加载更多</el-button>
+                </el-col>
+              </el-row>
+            </div>
+          </el-col>
+        </el-row>
       </div>
       <div v-show="activeItem=='list'">
         <el-row style="margin-top: 15px">
@@ -132,7 +137,7 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                          :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
       </div>
@@ -225,7 +230,7 @@
       },
       //查看轨迹
       gotoPath() {
-        if (this.qTime.length === 0) {
+        if (!this.qTime || this.qTime.length === 0) {
           this.$message.error('请选择时间范围');
           return;
         }
@@ -239,11 +244,14 @@
       },
       //根据imsi查找指定的对应人员
       getPersons() {
+        this.listLoading = true;
         this.$post('common/imsi/listFace', {imsi: this.imsi, num: this.num}).then((data) => {
+          this.listLoading = false;
           if (data.data && data.data.length > 0) {
             this.persons = data.data;
           }
         }).catch((err) => {
+          this.listLoading = false;
           this.$message.error(err);
         });
       },
@@ -382,6 +390,8 @@
     width: calc(50% - 42px);
     height: 122px;
     border: 1px #D7D7D7 solid;
+    border-radius: 8px;
+    background: #fff;
     padding: 15px;
     margin-bottom: 20px;
     position: relative;

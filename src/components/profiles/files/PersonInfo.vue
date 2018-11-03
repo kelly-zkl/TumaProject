@@ -28,10 +28,10 @@
                 <span style="font-size: 15px;color:#000">{{userInfo.name ? userInfo.name : '--'}}</span>
               </el-form-item>
               <el-form-item label="性别" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{userInfo.sex==0 ? '男' : userInfo.sex==1 ?'女':'未知'}}</span>
+                <span style="font-size: 15px;color:#000">{{userInfo.sex==0 ? '男' : userInfo.sex==1 ?'女':'--'}}</span>
               </el-form-item>
               <el-form-item label="年龄" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{userInfo.age>=0?userInfo.age:'未知'}}</span>
+                <span style="font-size: 15px;color:#000">{{userInfo.age>=0?userInfo.age:'--'}}</span>
               </el-form-item>
               <el-form-item label="身份证" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{userInfo.idCard ? userInfo.idCard : '--'}}</span>

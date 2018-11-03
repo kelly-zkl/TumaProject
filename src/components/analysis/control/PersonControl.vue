@@ -52,8 +52,14 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="有效期" prop="startTime" min-width="250"
                          max-width="450" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="布控状态" prop="taskStatus" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="布控状态" prop="taskStatus" min-width="125" max-width="250">
+          <template slot-scope="scope">
+            <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已完成</span>
+            <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
+            <span style="color:#D76F31" v-show="scope.row.taskStatus == 'WAIT'">等待中</span>
+            <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">进行中</span>
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="关联案件" prop="caseName" width="150"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="230" fixed="right">
@@ -159,6 +165,8 @@
       gotoDetail(task) {
         sessionStorage.setItem("activeItem", this.activeItem);
         sessionStorage.setItem("query", JSON.stringify(this.query));
+        // let routeData = this.$router.resolve({path: '/controlDetail', query: {taskId: task.id}});
+        // window.open(routeData.href, '_blank');
         this.$router.push({path: '/controlDetail', query: {taskId: task.id}});
       },
       //获取布控列表

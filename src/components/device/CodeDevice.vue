@@ -6,7 +6,7 @@
           <el-row>
             <el-col :span="24" align="left">
               <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('device:query')">
-                <el-input placeholder="设备名称/ID" v-model="query.deviceName" :maxlength="30"
+                <el-input placeholder="设备标识/ID" v-model="query.deviceName" :maxlength="30"
                           @change="changeDevice" size="medium"></el-input>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
@@ -26,7 +26,7 @@
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
+              <el-form-item style="margin-bottom: 10px">
                 <el-input placeholder="安装场所" v-model="query.placeName" :maxlength="30" size="medium"></el-input>
                 <!--<el-select v-model="query.placeId" placeholder="安装场所" size="medium" filterable clearable>-->
                 <!--<el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">-->
@@ -68,7 +68,7 @@
           </el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px">
-          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                          background :page-sizes="[10, 15, 20, 30]" :page-size="query.size"
                          layout="total, sizes, prev, pager, next, jumper" :total="count"></el-pagination>
         </div>
@@ -204,7 +204,7 @@
       changeDevice(val) {
         if (noSValidator(val)) {
           val = val.substr(0, val.length - 2);
-          this.$message.error('请输入正确的设备名称/ID');
+          this.$message.error('请输入正确的设备标识/ID');
         }
       },
       //设置场所
@@ -226,7 +226,7 @@
       getData() {
         if (this.query.deviceName) {
           if (noSValidator(this.query.deviceName)) {
-            this.$message.error('请输入正确的设备名称/ID');
+            this.$message.error('请输入正确的设备标识/ID');
             return;
           }
         }

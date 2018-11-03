@@ -62,7 +62,7 @@
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="抓取时间" prop="createTime" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备名称" prop="deviceName" min-width="125"
+        <el-table-column align="left" label="设备标识" prop="deviceName" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="设备类型" min-width="125" max-width="250">
           <template slot-scope="scope">
@@ -73,7 +73,7 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
       </el-table>
       <div class="block" style="margin-top: 20px" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
@@ -143,7 +143,7 @@
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'sex') {
-          return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '未知';
+          return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {

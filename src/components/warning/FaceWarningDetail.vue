@@ -23,10 +23,10 @@
               <img :src="faceDetail.faceUrl?faceDetail.faceUrl:imgPath"
                    style="height: 160px;width: 160px;border: 1px #D7D7D7 dashed;border-radius: 8px"/>
               <el-form-item label="年龄" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{faceDetail.age<0?'未知':faceDetail.age}}</span>
+                <span style="font-size: 15px;color:#000">{{faceDetail.age<0?'--':faceDetail.age}}</span>
               </el-form-item>
               <el-form-item label="性别" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{faceDetail.sex == 0 ? '男' : faceDetail.sex == 1 ? '女' : '未知'}}</span>
+                <span style="font-size: 15px;color:#000">{{faceDetail.sex == 0 ? '男' : faceDetail.sex == 1 ? '女' : '--'}}</span>
               </el-form-item>
             </el-col>
             <el-col :span="8">
@@ -71,8 +71,8 @@
                          style="position: absolute;top: 10px;left:150px;text-align: left">
                   <el-form-item label="档案ID" style="margin:0">
                     <span
-                      style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
-                    <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
+                      style="font-size: 15px;color:#000;margin-right: 20px">{{item.faceId?item.faceId:'--'}}</span>
+                    <el-button type="text" @click="gotoPerson(item)" v-if="item.faceId">查看人员</el-button>
                   </el-form-item>
                   <el-form-item label="相似度" style="margin:0">
                     <span
@@ -155,7 +155,7 @@
           <!--</el-table-column>-->
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                          :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
       </div>
@@ -249,7 +249,7 @@
       },
       //查看轨迹
       gotoPath() {
-        if (this.qTime.length === 0) {
+        if (!this.qTime || this.qTime.length === 0) {
           this.$message.error('请选择时间范围');
           return;
         }
@@ -363,7 +363,7 @@
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'age' || column.property === 'similarThreshold') {
-          return row[column.property] < 0 ? '未知' : row[column.property];
+          return row[column.property] < 0 ? '--' : row[column.property];
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
@@ -422,6 +422,8 @@
     width: calc(50% - 42px);
     height: 122px;
     border: 1px #D7D7D7 solid;
+    border-radius: 8px;
+    background: #fff;
     padding: 15px;
     margin-bottom: 20px;
     position: relative;

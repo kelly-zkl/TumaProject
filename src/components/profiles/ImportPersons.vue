@@ -36,7 +36,7 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="手机号" v-model="query.cellphone" :maxlength="11"
+              <el-input placeholder="手机号" v-model="query.mobilePhone" :maxlength="11"
                         style="width: 180px" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
@@ -47,12 +47,6 @@
               <el-input placeholder="身份证号" v-model="query.idCard" :maxlength="18"
                         style="width: 180px" size="medium"></el-input>
             </el-form-item>
-            <!--<el-form-item style="margin-bottom: 10px">-->
-            <!--<el-select v-model="query.blackPersonType" placeholder="所属名单" size="medium" style="width: 150px">-->
-            <!--<el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">-->
-            <!--</el-option>-->
-            <!--</el-select>-->
-            <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
             </el-form-item>
@@ -61,17 +55,6 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <!--<el-col :span="6" align="right">-->
-        <!--<el-button type="primary" size="medium" style="margin-bottom: 10px"-->
-        <!--@click="$router.push('/listData')">名单入库-->
-        <!--</el-button>-->
-        <!--<el-button type="primary" size="medium" style="margin-bottom: 10px"-->
-        <!--@click="$router.push('/listManage')">名单管理-->
-        <!--</el-button>-->
-        <!--<el-button type="primary" size="medium" style="margin-bottom: 10px"-->
-        <!--@click="runningAddPerson=true;addPerson={}">添加人员-->
-        <!--</el-button>-->
-        <!--</el-col>-->
       </el-row>
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
@@ -112,7 +95,7 @@
         </el-table-column>
       </el-table>
       <div class="block" style="margin-top: 20px" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                        :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
       <!--查看大图-->
@@ -128,59 +111,12 @@
           </div>
         </div>
       </el-dialog>
-      <!--添加人员-->
-      <el-dialog title="名单录入" :visible.sync="runningAddPerson" width="600px" center class="dialog">
-        <el-form :model="addPerson" align="left" label-width="120px" label-position="right" :rules="rules"
-                 ref="addPerson">
-          <el-form-item label="对应头像" prop="img" style="margin: 0">
-            <el-upload :action="uploadUrl" :show-file-list="false"
-                       :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <img src="../../assets/img/icon_people.png" class="avatar" v-else>
-            </el-upload>
-            <span style="color:#999">只能上传jpeg/jpg/png文件，且不超过2M</span>
-          </el-form-item>
-          <el-form-item label="年龄" prop="age">
-            <el-input placeholder="输入年龄" v-model="addPerson.age" :maxlength="3" type="number"></el-input>
-          </el-form-item>
-          <el-form-item label="性别" prop="sex">
-            <el-select v-model="addPerson.sex" placeholder="选择性别">
-              <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="姓名" prop="name">
-            <el-input placeholder="输入姓名" v-model="addPerson.name" :maxlength="20"></el-input>
-          </el-form-item>
-          <el-form-item label="IMSI" prop="imsi">
-            <el-input placeholder="输入IMSI" v-model="addPerson.imsi" :maxlength="50"></el-input>
-          </el-form-item>
-          <el-form-item label="手机号" prop="phone">
-            <el-input placeholder="输入手机号" v-model="addPerson.phone" :maxlength="11"></el-input>
-          </el-form-item>
-          <el-form-item label="身份证号" prop="idNumber">
-            <el-input placeholder="输入身份证号" v-model="addPerson.idNumber" :maxlength="18"></el-input>
-          </el-form-item>
-          <el-form-item label="所属名单" prop="pType">
-            <el-select v-model="addPerson.pType" placeholder="名单">
-              <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="备注">
-            <el-input placeholder="备注" v-model="addPerson.phone" :maxlength="200" type="textarea"></el-input>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer" align="center">
-          <el-button type="primary" @click="confirmAdd()">确认添加</el-button>
-        </div>
-      </el-dialog>
     </section>
   </div>
 </template>
 <script>
   import json from '../../assets/city.json';
-  import {globalValidImg, doubleValid, mobileValidator} from "../../assets/js/api";
+  import {globalValidImg, doubleValid, mobileValidator, mobileValidator2} from "../../assets/js/api";
   import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
 
   export default {
@@ -204,10 +140,8 @@
         page: 1,
         listLoading: false,
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
-        runningAddPerson: false,
         runBigPic: false,
         addPerson: {},
-        imageUrl: '',
         bigUrl: '',
         rules: {
           img: [{required: true, message: '请选择头像', trigger: 'blur'}],
@@ -233,17 +167,6 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
-      //添加名单
-      confirmAdd() {
-        this.$refs['addPerson'].validate((valid) => {
-          if (valid) {
-            this.runningAddPerson = false;
-          }
-        })
-      },
-      handleAvatarSuccess(res, file) {
-        this.imageUrl1 = URL.createObjectURL(file.raw);
-      },
       beforeAvatarUpload(file) {
         if (globalValidImg(file, this.$message)) {
         }
@@ -265,6 +188,8 @@
       gotoDetail(row) {
         sessionStorage.setItem("query", JSON.stringify(this.query));
         // sessionStorage.setItem("page", this.page);
+        // let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.faceId}});
+        // window.open(routeData.href, '_blank');
         this.$router.push({path: '/personnelFiles', query: {faceId: row.faceId}});
       },
       //获取档案人员列表
@@ -272,6 +197,12 @@
         if (this.query.faceUrl) {
           if (!this.query.similarThreshold) {
             this.$message.error('请输入相似度');
+            return;
+          }
+        }
+        if (this.query.similarThreshold) {
+          if (!this.query.faceUrl) {
+            this.$message.error('请上传头像');
             return;
           }
         }
@@ -286,8 +217,8 @@
             }
           }
         }
-        if (this.query.cellphone) {
-          if (!mobileValidator(this.query.cellphone)) {
+        if (this.query.mobilePhone) {
+          if (!mobileValidator2(this.query.mobilePhone)) {
             this.$message.error('请输入正确的手机号码');
             return;
           }
@@ -328,6 +259,7 @@
           } else {
             this.list = [];
             this.list10 = [];
+            this.count = 0;
             this.listLoading = false;
             this.$message.error(data.msg);
           }

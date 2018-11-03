@@ -65,10 +65,8 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警时间" prop="createTime" min-width="170"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="告警状态" prop="status" min-width="150"
+        <el-table-column align="left" label="告警状态" prop="status" min-width="100"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <!--<el-table-column align="left" label="所属名单" prop="blackClass" min-width="150"-->
-        <!--max-width="250" :formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)"
@@ -78,7 +76,7 @@
         </el-table-column>
       </el-table>
       <div class="block" style="margin-top: 20px" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                        :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
     </section>
@@ -140,6 +138,8 @@
         sessionStorage.setItem("activeItem", this.activeItem);
         sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
         sessionStorage.setItem("query", JSON.stringify(this.query));
+        // let routeData = this.$router.resolve({path: '/imsiWarningDetail', query: {id: row.id, imsi: row.imsi}});
+        // window.open(routeData.href, '_blank');
         this.$router.push({path: '/imsiWarningDetail', query: {id: row.id, imsi: row.imsi}});
       },
       //获取IMSI告警列表

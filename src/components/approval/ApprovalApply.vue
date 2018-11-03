@@ -30,8 +30,7 @@
               <el-radio-button v-for="item in ways" :label="item.value" :key="item.value">{{item.label}}
               </el-radio-button>
             </el-radio-group>
-            <span style="color: #fff;font-size: 14px;margin-left: 20px;background: #F60"
-                  v-if="way == '2'">IMSI数量不要超过20个</span>
+            <span style="color: #888;font-size: 14px;margin-left: 20px" v-if="way == '2'">IMSI数量最多可添加20个</span>
           </el-form-item>
           <el-form-item label="选择人员" align="left" style="margin: 0" v-if="way == '1'">
             <el-button type="primary" size="medium" icon="el-icon-plus">从名单中选择人员</el-button>

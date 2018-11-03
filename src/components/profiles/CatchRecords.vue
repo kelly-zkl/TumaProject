@@ -86,7 +86,7 @@
         </el-table-column>
       </el-table>
       <div class="block" style="margin-top: 20px" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                        :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
       <!--查看大图-->
@@ -167,6 +167,8 @@
         sessionStorage.setItem("activeItem", this.activeItem);
         sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
         sessionStorage.setItem("query", JSON.stringify(this.query));
+        // let routeData = this.$router.resolve({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
+        // window.open(routeData.href, '_blank');
         this.$router.push({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
       },
       //批量导入设备的文件格式验证
@@ -198,6 +200,12 @@
         if (this.query.faceUrl) {
           if (!this.query.similarThreshold) {
             this.$message.error('请输入相似度');
+            return;
+          }
+        }
+        if (this.query.similarThreshold) {
+          if (!this.query.faceUrl) {
+            this.$message.error('请上传头像');
             return;
           }
         }
@@ -253,6 +261,7 @@
           } else {
             this.list = [];
             this.list10 = [];
+            this.count = 0;
             this.listLoading = false;
             this.$message.error(data.msg);
           }
@@ -300,7 +309,7 @@
         } else if (column.property === 'catchTime') {
           return row.catchTime ? formatDate(new Date(row.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'age' || column.property === 'similarThreshold') {
-          return row[column.property] < 0 ? '未知' : row[column.property];
+          return row[column.property] < 0 ? '--' : row[column.property];
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

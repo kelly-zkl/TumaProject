@@ -81,18 +81,16 @@
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="抓取IMSI" prop="imsi" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="IMSI归属地" prop="regional" width="150"
-                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="150"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="告警场所" prop="placeName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="告警时间" prop="createTime" width="170"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="告警状态" prop="status" width="150"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="所属名单" prop="blackClass" min-width="150"
+          <el-table-column align="left" label="告警时间" prop="createTime" min-width="170"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="告警状态" prop="status" width="120"
+                           :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="160" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoDetail(scope.row)"
@@ -102,7 +100,7 @@
           </el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                          :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
       </div>
@@ -164,25 +162,24 @@
         </el-form>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150"
-                           max-width="300" :formatter="formatterAddress">
+          <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150">
             <template slot-scope="scope">
               <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath"
                    @click="bigUrl=scope.row.sceneUrl;runBigPic=true"
                    style="max-height:70px;border-radius: 6px"/>
             </template>
           </el-table-column>
-          <el-table-column align="left" label="年龄" prop="age" width="120"
+          <el-table-column align="left" label="年龄" prop="age" min-width="60" max-width="120"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="性别" prop="sex" width="120"
+          <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="120"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="告警场所" prop="placeName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="告警时间" prop="createTime" width="170"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="告警状态" prop="status" width="150"
+          <el-table-column align="left" label="告警时间" prop="createTime" min-width="170"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="告警状态" prop="status" width="120"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="布控人员图像" prop="faceUrl" min-width="150"
                            max-width="250" :formatter="formatterAddress">
@@ -192,10 +189,8 @@
                    style="max-width: 90px;max-height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
-          <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="所属名单" prop="blackClass" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="相似度" prop="similarThreshold" width="150"
+                           :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="160" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoDetail(scope.row)"
@@ -205,7 +200,7 @@
           </el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleImgSizeChange" @current-change="pageImgChange" :current-page="page"
+          <el-pagination @size-change="handleImgSizeChange" @current-change="pageImgChange" :current-page.sync="page"
                          :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
       </div>
@@ -468,7 +463,9 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'status') {
+        if (column.property === 'sex') {
+          return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
+        } else if (column.property === 'status') {
           return row.status === 0 ? '待处理' : row.status === 1 ? '处理中' : row.status === 2 ? '已处理' : row.status === 3 ? '误报' : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
@@ -512,6 +509,12 @@
         if (this.query.faceUrl) {
           if (!this.query.similarThreshold) {
             this.$message.error('请输入相似度');
+            return;
+          }
+        }
+        if (this.query.similarThreshold) {
+          if (!this.query.faceUrl) {
+            this.$message.error('请上传头像');
             return;
           }
         }
@@ -568,6 +571,7 @@
           } else {
             this.list = [];
             this.list10 = [];
+            this.count = 0;
             this.listLoading = false;
             this.$message.error(data.msg);
           }

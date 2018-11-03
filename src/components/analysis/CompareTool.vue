@@ -19,8 +19,12 @@
               <img :src="image1?image1:imageUrl1" class="avatar">
             </el-upload>
           </el-col>
-          <el-col :span="8" align="center" style="text-align: center">
+          <el-col :span="8" align="center" v-loading="listLoading" style="text-align: center">
             <h2 style="height: 222px;margin: 0;line-height: 222px;color: #ff0000;font-size: 35px">{{similarity}}%</h2>
+            <el-button type="primary" @click="changeImage()" v-show="image1.length > 0 && image2.length > 0">
+              <i class="fa fa-exchange fa-lg" style="margin-right: 5px"></i>
+              交换头像
+            </el-button>
           </el-col>
           <el-col :span="8" align="left" style="text-align: left">
             <el-upload
@@ -41,6 +45,7 @@
   export default {
     data() {
       return {
+        listLoading: false,
         uploadUrl: '',
         imageUrl1: require('../../assets/img/icon_people.png'),
         imageUrl2: require('../../assets/img/icon_people.png'),
@@ -50,6 +55,15 @@
       }
     },
     methods: {
+      //切换头像
+      changeImage() {
+        if (this.image1.length > 0 && this.image2.length > 0) {
+          let img = this.image1;
+          this.image1 = this.image2;
+          this.image2 = img;
+          this.compareFace();
+        }
+      },
       /**第一张头像*/
       handleAvatarSuccess1(res, file) {
         // console.log(res);
@@ -100,7 +114,9 @@
         url2 = url2.substring(url2.indexOf('base64,') + 7);
         param.imageA = url1;
         param.imageB = url2;
+        // this.listLoading = true;
         axios.post("collision/facecompare", param).then((res) => {
+          this.listLoading = false;
           if (res.status == 200) {
             let data = JSON.parse(res.data);
             // console.log(data);
@@ -134,10 +150,10 @@
 
   .bg-compare {
     padding: 100px;
-    position: absolute;
-    top: 100px;
-    right: 15px;
-    left: 200px;
+    /*position: absolute;*/
+    /*top: 100px;*/
+    /*right: 15px;*/
+    /*left: 200px;*/
   }
 
   .avatar {

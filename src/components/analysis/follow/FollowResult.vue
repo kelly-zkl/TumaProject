@@ -85,8 +85,9 @@
           </el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="queryResult.page"
-                         :page-sizes="[10, 15, 20, 30]" :page-size="queryResult.size" :total="count1" background
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange"
+                         :current-page.sync="queryResult.page" :page-sizes="[10, 15, 20, 30]"
+                         :page-size="queryResult.size" :total="count1" background
                          layout="total, sizes, prev, pager, next, jumper"></el-pagination>
         </div>
       </div>
@@ -148,8 +149,9 @@
           </el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="queryRecord.page"
-                         :page-sizes="[10, 15, 20, 30]" :page-size="queryRecord.size" :total="count2" background
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange"
+                         :current-page.sync="queryRecord.page" :page-sizes="[10, 15, 20, 30]"
+                         :page-size="queryRecord.size" :total="count2" background
                          layout="total, sizes, prev, pager, next, jumper"></el-pagination>
         </div>
       </div>
@@ -203,8 +205,9 @@
           <!--</el-table-column>-->
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="queryResult.page"
-                         :page-sizes="[10, 15, 20, 30]" :page-size="queryResult.size" :total="count1" background
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange"
+                         :current-page.sync="queryResult.page" :page-sizes="[10, 15, 20, 30]"
+                         :page-size="queryResult.size" :total="count1" background
                          layout="total, sizes, prev, pager, next, jumper"></el-pagination>
         </div>
       </div>
@@ -267,8 +270,9 @@
           <!--</el-table-column>-->
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="queryRecord.page"
-                         :page-sizes="[10, 15, 20, 30]" :page-size="queryRecord.size" :total="count2" background
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange"
+                         :current-page.sync="queryRecord.page" :page-sizes="[10, 15, 20, 30]"
+                         :page-size="queryRecord.size" :total="count2" background
                          layout="total, sizes, prev, pager, next, jumper"></el-pagination>
         </div>
       </div>
@@ -279,6 +283,11 @@
         <el-form label-width="100px" :model="task" label-position="right" style="margin-right: 20px">
           <el-form-item label="任务名称" align="left" style="margin: 0">{{task.taskName}}</el-form-item>
           <el-form-item label="关联案件" align="left" style="margin: 0">{{task.caseName}}</el-form-item>
+          <el-form-item label="设备ID" align="left" style="margin: 0">
+            <el-row>
+              <el-col :span="24">{{task.device}}</el-col>
+            </el-row>
+          </el-form-item>
           <el-form-item label="创建时间" align="left" style="margin: 0">{{task.timeStr}}</el-form-item>
           <el-form-item label="任务类型" align="left" style="margin: 0">
             {{task.followType == 'IMSI' ? 'IMSI' : task.followType == 'FACE' ? '图像' : 'MAC'}}
@@ -480,9 +489,9 @@
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'sex') {//0为男，1为女
-          return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '未知';
+          return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
         } else if (column.property === 'isp') {
-          return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '未知';
+          return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '--';
         } else if (column.property === 'netType') {//网络类型 --> 根据运营商判断
           return this.getNetType(row.isp);
         } else if (column.property === 'upTime') {
@@ -496,7 +505,7 @@
         }
       },
       getNetType(isp) {
-        let moduleId = "未知";
+        let moduleId = "--";
         switch (isp) {
           case 0:
             moduleId = "CMCC";
@@ -516,6 +525,10 @@
       getTaskDetail() {
         this.$post('/follow/get/' + this.taskId, {}).then((data) => {
           this.task = data.data;
+          this.task.device = '--';
+          if (this.task.deviceId && this.task.deviceId.length > 0) {
+            this.task.device = this.task.deviceId.join("，");
+          }
           this.task.timeStr = formatDate(new Date(this.task.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
           this.task.startStr = formatDate(new Date(this.task.startDate * 1000), 'yyyy-MM-dd hh:mm:ss');
           this.task.endStr = formatDate(new Date(this.task.endDate * 1000), 'yyyy-MM-dd hh:mm:ss');

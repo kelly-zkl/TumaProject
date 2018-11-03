@@ -4,7 +4,7 @@
       <el-header style="background: #060450;color:#fff" height="70px">
         <div style="display: flex;flex-direction: row;height: 70px;width: 100%">
           <div align="left" style="display: flex;height: 70px;align-items: center">
-            <img src="../assets/img/icon_logo.png" style="display:inline-block;height: 34px">
+            <img src="../assets/img/icon_logo.png" style="display:inline-block;height: 34px;width: 34px">
             <div style="display:inline-block;font-size: 18px;;margin-left: 10px;letter-spacing:3px">
               图码联侦实战布控平台
             </div>
@@ -68,7 +68,7 @@
         </el-dialog>
       </transition>
     </div>
-    <!--<audio id='audio' :src='warning'></audio>-->
+    <audio id='audio' :src='warning'></audio>
     <!--IMSI告警 :close-on-click-modal="false"-->
     <div class="warning">
       <transition name="fade" mode="out-in" appear>
@@ -80,7 +80,7 @@
             </el-form-item>
             <el-form-item label="运营商" style="margin:0">
               <span style="font-size: 15px;color:#000">
-                {{imsiWarning.isp == 0 ? '移动' : imsiWarning.isp == 1 ? '联通' : imsiWarning.isp == 2 ? '电信' : '未知'}}
+                {{imsiWarning.isp == 0 ? '移动' : imsiWarning.isp == 1 ? '联通' : imsiWarning.isp == 2 ? '电信' : '--'}}
               </span>
             </el-form-item>
             <el-form-item label="告警时间" style="margin:0">
@@ -111,11 +111,11 @@
             <el-form :model="faceWarning" align="left" label-width="80px" label-position="left"
                      style="display:inline-block;position: absolute;top: 20px">
               <el-form-item label="年龄" style="margin:0">
-                <span style="font-size: 15px;color:#000">{{faceWarning.age<0?'未知':faceWarning.age}}</span>
+                <span style="font-size: 15px;color:#000">{{faceWarning.age<0?'--':faceWarning.age}}</span>
               </el-form-item>
               <el-form-item label="性别" style="margin:0">
                 <span style="font-size: 15px;color:#000">
-                  {{faceWarning.sex == 0 ? '男' : faceWarning.sex == 1 ? '女' : '未知'}}
+                  {{faceWarning.sex == 0 ? '男' : faceWarning.sex == 1 ? '女' : '--'}}
                 </span>
               </el-form-item>
               <el-form-item label="告警时间" style="margin:0">
@@ -195,6 +195,7 @@
         faceWarning: {id: ''},
         menu: [],
         intervalid: null,
+        audio: null,
         rules: {
           password1: [
             {required: true, message: '请输入新密码', trigger: 'blur'},
@@ -210,6 +211,7 @@
     },
     //页面关闭时停止更新设备在线状态
     beforeDestroy() {
+      this.audio = null;
       clearInterval(this.intervalid);
     },
     methods: {
@@ -245,13 +247,12 @@
           if (data.data && data.data.length > 0) {
             let imsi = data.data[0];
             // console.log(new Date().getTime() - imsi.createTime * 1000);
-            if ((new Date().getTime() - imsi.createTime * 1000) >= -20 * 1000 && (new Date().getTime() - imsi.createTime * 1000) <= 20 * 1000) {//20s内的数据
+            if ((new Date().getTime() - imsi.createTime * 1000) >= -30 * 1000 && (new Date().getTime() - imsi.createTime * 1000) <= 30 * 1000) {//30s内的数据
               // console.log(this.imsiWarning.id);
               if (this.imsiWarning.id !== imsi.id) {
                 // console.log(imsi.id);
                 sessionStorage.setItem("imsi", JSON.stringify(imsi));
-                // var audio = document.getElementById('audio');
-                // audio.play();
+                this.audio.play();
                 this.imsiWarning = imsi;
                 this.imsiWarning.timeStr = formatDate(new Date(this.imsiWarning.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
                 this.runFaceWarning = false;
@@ -270,13 +271,12 @@
           if (data.data && data.data.length > 0) {
             let face = data.data[0];
             // console.log(new Date().getTime() - face.createTime * 1000);
-            if ((new Date().getTime() - face.createTime * 1000) >= -20 * 1000 && (new Date().getTime() - face.createTime * 1000) <= 20 * 1000) {//20s内的数据
+            if ((new Date().getTime() - face.createTime * 1000) >= -30 * 1000 && (new Date().getTime() - face.createTime * 1000) <= 30 * 1000) {//30s内的数据
               // console.log(this.faceWarning.id);
               if (this.faceWarning.id !== face.id) {
                 // console.log(face.id);
                 sessionStorage.setItem("face", JSON.stringify(face));
-                // var audio = document.getElementById('audio');
-                // audio.play();
+                this.audio.play();
                 this.faceWarning = face;
                 this.faceWarning.timeStr = formatDate(new Date(this.faceWarning.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
                 this.runImsiWarning = false;
@@ -363,8 +363,7 @@
 
       this.userId = JSON.parse(sessionStorage.getItem("user")).userId;
       this.menu = JSON.parse(sessionStorage.getItem("menu")) || [];
-      // var audio = document.getElementById('audio');
-      // audio.play();
+      this.audio = document.getElementById('audio');
 
       this.statusTask();
     }

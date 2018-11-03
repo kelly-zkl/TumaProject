@@ -36,6 +36,10 @@
                         style="width: 180px" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
+              <el-input placeholder="手机号" v-model="query.mobilePhone" :maxlength="11"
+                        style="width: 180px" size="medium"></el-input>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="所属名单" v-model="query.blackClass" :maxlength="30" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
@@ -94,7 +98,7 @@
         </el-table-column>
       </el-table>
       <div class="block" style="margin-top: 20px" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                        :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
       <!--查看大图-->
@@ -145,8 +149,8 @@
           <el-form-item label="姓名" prop="name">
             <el-input placeholder="输入姓名" v-model="modifyPerson.name" :maxlength="20"></el-input>
           </el-form-item>
-          <el-form-item label="身份证号" prop="idNumber">
-            <el-input placeholder="输入身份证号" v-model="modifyPerson.idNumber" :maxlength="18"></el-input>
+          <el-form-item label="身份证号" prop="idCard">
+            <el-input placeholder="输入身份证号" v-model="modifyPerson.idCard" :maxlength="18"></el-input>
           </el-form-item>
           <el-form-item label="年龄">
             <el-input placeholder="输入年龄" v-model="modifyPerson.age" :maxlength="3" type="number"></el-input>
@@ -171,7 +175,7 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer" align="center">
-          <el-button type="primary" @click="confirmModify()">确认添加</el-button>
+          <el-button type="primary" @click="confirmModify()">确认修改</el-button>
         </div>
       </el-dialog>
       <!--批量导入-->
@@ -195,7 +199,8 @@
             </el-col>
           </el-row>
           <div slot="footer" class="dialog-footer" align="center" style="margin-top: 30px">
-            <el-button type="primary" @click="importDevice" v-show="!fileFlag">确认导入</el-button>
+            <el-button type="primary" @click="importDevice" v-show="!fileFlag">确认导入
+            </el-button>
             <el-button type="primary" @click="abortUpload" v-show="fileFlag&&fileUploadPercent!=100">取消导入</el-button>
           </div>
         </div>
@@ -204,7 +209,7 @@
       <el-dialog title="批量导入" :visible.sync="runningImportNumber" width="600px" center>
         <span>已检测到人员 {{totalNum}} 个，导入成功 <span style="color: green">{{successNum}}</span> 个，失败 <span style="color: red">{{failNum}}</span> 个</span>
         <div slot="footer" class="dialog-footer" align="center">
-          <el-button type="primary" @click="runningImportNumber = false;runningImportResult = true">查看失败文件</el-button>
+          <el-button type="primary" @click="runningImportResult = true">查看失败文件</el-button>
           <el-button type="primary" @click="runningImportNumber = false">关闭</el-button>
         </div>
       </el-dialog>
@@ -228,7 +233,7 @@
                            :formatter="formatterAddress"></el-table-column>
         </el-table>
         <div slot="footer" class="dialog-footer" align="center">
-          <el-button type="primary" @click="runningImports=false;runningImportResult = false">关闭</el-button>
+          <el-button type="primary" @click="runningImportNumber=false;runningImportResult=false">关闭</el-button>
         </div>
       </el-dialog>
     </section>
@@ -236,7 +241,7 @@
 </template>
 <script>
   import {
-    globalValidImg, nameValidator, numValid, mobileValidator, doubleValid,
+    globalValidImg, nameValidator, numValid, mobileValidator, doubleValid, mobileValidator2,
     userCardValid, globalValidZIP
   } from "../../assets/js/api";
   import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
@@ -272,7 +277,7 @@
         successNum: 0,
         failNum: 0,
         sels: [],
-        sexs: [{value: '0', label: '男'}, {value: '2', label: '女'}],
+        sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         listTypes: [{value: '0', label: '重点人员'}, {value: '2', label: '普通人员'}],
         rules: {
           faceUrl: [{required: true, message: '请选择头像', trigger: 'blur'}],
@@ -280,7 +285,7 @@
           // sex: [{required: true, message: '请选择性别', trigger: 'blur'}],
           name: [{required: true, message: '请输入姓名', trigger: 'blur'}],
           // phone: [{required: true, message: '请输入手机号', trigger: 'blur'}],
-          idNumber: [{required: true, message: '请输入身份证号', trigger: 'blur'}],
+          idCard: [{required: true, message: '请输入身份证号', trigger: 'blur'}],
           // pType: [{required: true, message: '请选择所属名单', trigger: 'blur'}]
         },
         fileFlag: false,
@@ -294,7 +299,7 @@
       },
       showModify(row) {
         this.modifyPerson = {
-          faceUrl: row.faceUrl, name: row.name, idNumber: row.idNumber, faceId: row.faceId,
+          faceUrl: row.faceUrl, name: row.name, idCard: row.idCard, faceId: row.faceId,
           age: row.age, sex: row.sex, mobilePhone: row.mobilePhone, remark: row.remark
         };
         this.runningModifyPerson = true
@@ -307,9 +312,8 @@
       },
       //上传进度
       uploadFileProcess(event, file, fileList) {
-        // console.log(file);
         this.fileFlag = true;
-        this.fileUploadPercent = file.percentage;
+        this.fileUploadPercent = event.percent;
       },
       //批量导入设备的文件格式验证
       handleChange(file) {
@@ -327,9 +331,15 @@
         this.importList = [];
         this.importFile = file.name;
         if (res.code === '000000') {
-          this.fileFlag = false;
-          this.fileUploadPercent = 0;
-          this.runningImportNumber = true;
+          this.$message({message: "导入成功", type: 'success'});
+          setTimeout(() => {
+            this.runningImports = false;
+            this.fileFlag = false;
+            this.fileUploadPercent = 0;
+          }, 1000);
+          setTimeout(() => {
+            this.runningImportNumber = true;
+          }, 2000);
           this.totalNum = res.data.totalNum;
           this.successNum = res.data.successNum;
           this.failNum = res.data.failNum;
@@ -351,6 +361,8 @@
       },
       gotoDetail(row) {
         sessionStorage.setItem("query", JSON.stringify(this.query));
+        // let routeData = this.$router.resolve({path: '/vipDetail', query: {faceId: row.faceId}});
+        // window.open(routeData.href, '_blank');
         this.$router.push({path: '/vipDetail', query: {faceId: row.faceId}});
       },
       showList() {
@@ -430,7 +442,7 @@
         }
         this.runningModifyPerson = false;
         this.$post("archives/updateDetails", this.modifyPerson, '修改成功').then(() => {
-          this.getPersonDetail();
+          this.getData();
           this.runningModifyPerson = false;
         });
       },
@@ -481,6 +493,12 @@
           }
         }
         if (this.query.similarThreshold) {
+          if (!this.query.faceUrl) {
+            this.$message.error('请上传头像');
+            return;
+          }
+        }
+        if (this.query.similarThreshold) {
           if (!doubleValid(this.query.similarThreshold)) {
             this.$message.error('相似度为0.1-99的数字');
             return;
@@ -491,8 +509,8 @@
             }
           }
         }
-        if (this.query.cellphone) {
-          if (!mobileValidator(this.query.cellphone)) {
+        if (this.query.mobilePhone) {
+          if (!mobileValidator2(this.query.mobilePhone)) {
             this.$message.error('请输入正确的手机号码');
             return;
           }
@@ -533,6 +551,7 @@
           } else {
             this.list = [];
             this.list10 = [];
+            this.count = 0;
             this.listLoading = false;
             this.$message.error(data.msg);
           }

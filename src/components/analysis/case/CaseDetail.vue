@@ -133,8 +133,8 @@
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange"
-                         :current-page="queryCollision.page"
-                         :page-sizes="[10, 15, 20, 30]" :page-size="queryCollision.size" :total="count1" background
+                         :current-page.sync="queryCollision.page" :page-sizes="[10, 15, 20, 30]"
+                         :page-size="queryCollision.size" :total="count1" background
                          layout="total, sizes, prev, pager, next, jumper"></el-pagination>
         </div>
       </div>
@@ -201,8 +201,9 @@
           </el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="queryFollow.page"
-                         :page-sizes="[10, 15, 20, 30]" :page-size="queryFollow.size" :total="count2" background
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange"
+                         :current-page.sync="queryFollow.page" :page-sizes="[10, 15, 20, 30]"
+                         :page-size="queryFollow.size" :total="count2" background
                          layout="total, sizes, prev, pager, next, jumper"></el-pagination>
         </div>
       </div>

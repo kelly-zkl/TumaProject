@@ -12,7 +12,7 @@
                            v-model="areaList" placeholder="全部地区" size="medium" filterable clearable>
               </el-cascader>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
+            <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="安装场所" v-model="query.placeName" :maxlength="30" size="medium"></el-input>
               <!--<el-select v-model="query.placeId" placeholder="安装场所" size="medium">-->
               <!--<el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">-->
@@ -52,7 +52,7 @@
         </el-table-column>
       </el-table>
       <div class="block" style="margin-top: 20px" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
@@ -148,7 +148,7 @@
       getData() {
         if (this.query.cameraCode) {
           if (noSValidator(this.query.cameraCode)) {
-            this.$message.error('请输入正确的设备名称/ID');
+            this.$message.error('请输入正确的相机编码');
             return;
           }
         }

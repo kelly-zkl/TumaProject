@@ -14,7 +14,7 @@
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
         <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.recordId" size="medium" :maxlength=30 placeholder="编号"></el-input>
+          <el-input v-model="query.recordNo" size="medium" :maxlength=30 placeholder="编号"></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-select v-model="query.staffLevel" placeholder="勤务等级" size="medium" style="width: 150px" clearable>
@@ -38,27 +38,27 @@
       </el-form>
       <el-table :data="imsiList" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="编号" prop="recordId" min-width="230"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="业务类型" prop="followType" width="120"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="勤务等级" prop="staffLevel" width="110"
-                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="编号" prop="recordNo" min-width="150"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="业务类型" prop="followType" min-width="120"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="勤务等级" prop="staffLevel" min-width="110"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="申请人" prop="creatorName" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="申请人所属组织" prop="creatorGroupName" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="申请时间" prop="createTime" width="170"
-                         :formatter="formatterAddress"></el-table-column>
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="申请时间" prop="createTime" min-width="170"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="当前节点" prop="currentNode" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="当前节点负责人" prop="currentNodeOperatorName" width="170"
-                         :formatter="formatterAddress"></el-table-column>
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="当前节点负责人" prop="currentNodeOperatorName" min-width="150"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" v-for="item in timeColumn" :key="item.prop"
                          :label="item.label" :prop="item.prop" :min-width="item.min"
                          :max-width="item.max" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="状态" prop="status" width="120"
-                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="状态" prop="status" min-width="120"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('workflow:translation:detail')">
@@ -68,7 +68,7 @@
         </el-table-column>
       </el-table>
       <div class="block" style="margin-top: 20px" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
@@ -105,11 +105,11 @@
       },
       handleType(val) {
         if (val.name === 'FINISH') {
-          this.timeColumn = [{label: '返回时间', prop: 'time', min: 170, max: 170}];
+          this.timeColumn = [{label: '返回时间', prop: 'finishTime', min: 170, max: 200}];
           this.query.finishStatus = 0;
         } else {
           this.timeColumn = [];
-          this.query.finishStatus = 3;
+          this.query.finishStatus = 1;
         }
         this.getData();
       },
@@ -126,9 +126,13 @@
         sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
         sessionStorage.setItem("query", JSON.stringify(this.query));
         if (this.activeItem === 'HANDLED') {
-          this.$router.push({path: '/approvalDetail', query: {type: 4, recordId: row.recordId}})
+          // let routeData = this.$router.resolve({path: '/approvalDetail', query: {type: 4, recordId: row.recordId}});
+          // window.open(routeData.href, '_blank');
+          this.$router.push({path: '/approvalDetail', query: {type: 4, recordId: row.recordId}});
         } else {
-          this.$router.push({path: '/approvalDetail', query: {type: 0, recordId: row.recordId}})
+          // let routeData = this.$router.resolve({path: '/approvalDetail', query: {type: 0, recordId: row.recordId}});
+          // window.open(routeData.href, '_blank');
+          this.$router.push({path: '/approvalDetail', query: {type: 0, recordId: row.recordId}});
         }
       },
       handleSizeChange(val) {
@@ -147,7 +151,7 @@
         if (this.activeItem === 'FINISH') {
           this.query.finishStatus = 0;
         } else {
-          this.query.finishStatus = 3;
+          this.query.finishStatus = 1;
         }
         this.listLoading = true;
         this.$post('/workflow/translation/mytranslate/' + JSON.parse(sessionStorage.getItem("user")).userId, this.query).then((data) => {

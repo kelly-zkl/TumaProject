@@ -29,7 +29,27 @@
           </div>
         </div>
         <div v-show="activeItem== 'data'">
-          <div id="dataheat" style="display: block;width:100%; height: 501px"></div>
+          <div style="display: block;width:100%; height: 501px;position: relative">
+            <div id="dataheat" style="display: block;width:100%; height: 501px"></div>
+            <div style="background: rgba(0, 0, 0, .5);height: 30px;position: absolute;bottom: 0;width: 100%">
+              <el-row>
+                <el-col :span="12" align="left" style="text-align: left">
+                  <span class="heat-tip-text">根据最近30分钟的抓取IMSI数量生成</span></el-col>
+                <el-col :span="12" align="right" class="heat-tip-color">
+                  <span style="height: 10px;width: 10px;border-radius: 5px;background: blue"></span>
+                  <span class="heat-tip-content">0-500</span>
+                  <span style="height: 10px;width: 10px;border-radius: 5px;background: green"></span>
+                  <span class="heat-tip-content">500-1000</span>
+                  <span style="height: 10px;width: 10px;border-radius: 5px;background: yellow"></span>
+                  <span class="heat-tip-content">1000-2000</span>
+                  <span style="height: 10px;width: 10px;border-radius: 5px;background: #FF4500"></span>
+                  <span class="heat-tip-content">2000-4000</span>
+                  <span style="height: 10px;width: 10px;border-radius: 5px;background: red"></span>
+                  <span class="heat-tip-content">4000以上</span>
+                </el-col>
+              </el-row>
+            </div>
+          </div>
           <div style="display: block;border-top: 3px #080652 solid;padding-bottom: 10px">
             <el-row style="border-bottom: 1px #3D3D8D solid">
               <el-col :span="24" align="left">
@@ -152,6 +172,7 @@
         icon: require('../../assets/img/icon.png'),
         imgPath: require('../../assets/img/icon_people.png'),
         geolocation: null,
+        count: 0
       }
     },
     //页面关闭时停止更新设备在线状态
@@ -163,12 +184,16 @@
       statusTask() {
         if (!this.intervalid) {
           this.intervalid = setInterval(() => {
+            this.count = this.count + 1;
+            if (this.count == 30) {
+              this.count = 0;
+              this.getHotSpot();
+            }
             this.getMapData();
-            this.getHotSpot();
             this.getWarningCount();
             this.getImsiList();
             this.getLineData();
-          }, 20 * 1000);
+          }, 10 * 1000);
         }
       },
       handleType(val) {
@@ -407,7 +432,7 @@
                 name: '数量',
                 type: 'scatter',
                 coordinateSystem: 'bmap',
-                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAACxAAAAsQHGLUmNAAADAUlEQVRYhe1XS08TURT+7p3pw7aALyCaYDGNj8QYTVuLPFy50h1K1MSFLkzcGfkDmrjRjUqMO13IwoULy8aYuHBDAAVKowvjg2CAxKAxWmkp05nOPceFDlRoDY8huPDb3TPnzvlyznfOyRXMjPWEXNfo/wkA0N382YdEtM0rxRkhECq1K8Jnm/nJ7qF038I7wg0RfmyK3djgFR1+XUZ8uijrY9oMo0ivjSLfjQyO3HeFwPjh2HGfR9yp8WuRpd5RxMia1D9r0dldQ+mJFRN4fyh6ui6k3/PposqxZQuUt4n7LJtfWYo/A4AmsT/glXt8umgNeOYll7doKmOoUyvWgF8Xx5zgps25bEElwy9GzlfyH01Ew4bONzdukCc1KRD0ym3f8iq+YgI2wZ8zCcQ8Zhb5UuPLkafjzbFOjyZO6lK0On7MyCvmV1KIBw0DqY6xptiFoFd2Bb0iCLgkwtFENBzwyofVPtmqyfIiVMT4YdDjhoFUx2giGlaE9r2pdJcrBN7Fo5d3bPLcds6zRYJl82vFqAl5ZaPTGYoYn6btzr2pdJfj6+ogUsT4OmN3Z2ZV4/a+1MGG/tTOr3n7SMZQ/QBQLjuuDCJNomcyU4QQmNoznH4EAOPNsc6i4uTv4dP2Nh69rkvUaRI9pXddKcFCjDfHOrcEtFszFo3NmHR011B6opLvmuwCARzQpECNX4soQvtffZ0MjCai4ZBPPpdCLHmqVYImAWfo5Ez64xsx/5GVOQ0oQvtyRupSUeVblOTItEHtALqAf30dK+JFrWPaDEv9KlvAI8q21nJQMQOmzbnvs6pb0XyXKGLkTLpa3zss6nuHxXSBnq0qeiUCihjZgkpaiq/mLf7i2DMGvdkxkLrmnI0iXcwWKL8aAmVLoEmBzQHt3HSBjlf7Za1j3xrU9k20xAbBeAsAIZ9sq/bLoOsESkjULrTXBvUEgMRqgpZi3btgjoAQmDLttX+kmDZDCEzNxS3dBZMt8Su6xIm1JGATkqVCXpNltBz8Oxr4T2C98BN+QlGAwvTMTwAAAABJRU5ErkJggg==',
+                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAb1BMVEUAAAD2PzD2PzD8VzjwJif8VjnwJijwJyj+XTv5SzXzMSzuHyX2PjD9VznwJSf+Xjz5TTX+XzztHST////9VTfxJSb5RTL2Oi79zsv4Z1/8p6D7dWb+3dr/9PP8m5L+6Ob8ta37jID1Tkf9wrz7gXPpPPFCAAAAE3RSTlMAMCBgYPDw0MDAwMCAUFDQ0ICAt+xDQQAAASZJREFUOMt90gmSgjAQBdAOoiwiLkkaCPty/zNOAz1MJDAPS2Pl59NFAX/EO1SL8C3AdXkqy/Oy2/ZCtRN6YHlcleP6sOrVoct2Xp3gDo/7Xdd1joiWuFzzRzW5JJUpaB3xAKjI+tPXktWGx3htBaSbDzdl2Yy0GJV6AQi05bItsTRmGopKSkQUkCCq7cLeDFO73mDoOgokEOG3QrISZxHgTinrib4rDiDggb6nCHIgc9Fdiu3PGjC5jeav8tz8BnA54lhakBtOAwRiDtTLMzT7QAzJGqiRns+QZd0ukIDghva4QQAEWp/MoLUOAMD/L+ADibU2uWvMtI7XV+6mT9z41U/PAikw/3jfh016O+hPweLd9/t3D775gb0d+OASnzsf/gjY/ABgxEQcBSdUhwAAAABJRU5ErkJggg==',
                 symbolSize: [24, 24],
                 data: this.mapData.filter(function (item) {
                   return !item.onLine && item.type == '侦码设备';
@@ -417,7 +442,7 @@
                 name: '数量',
                 type: 'scatter',
                 coordinateSystem: 'bmap',
-                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAACxAAAAsQHGLUmNAAABcUlEQVRYhe2Xu0oDQRSG/zMzya6uURA0jWDAwjYkMQQMIkiIiLWdT2AQG7EUn8DKyjfwCbQVxECMnSCKkMImamMSZXPZGaukyIVks4EFmb8aOIfzf3PhzAwppeCnmK/uGkADaAAAoj14X09cBzhlvRZsOupm6e5h2zVAgFM2ZHhfkGpdupqEGJ4yWN+282YKtmgICo2S/5KMpQXRLmMoR+6L554AKrYs1+py67ehMvPT/NIQ1JPzmowtA9g3BYsGOKUXLBE2BMGRCqVUfCWSL+bGBrCCFLabdGwZLNPPvJSK74QMfjVrMqs7xhmBCDOAhxXgjDA3xQ/6mQMAEfb6mXfL06kbZO5GvvcBDfB/AeyWqvgKsFp4PPyoti6+fpynal32xFsSJuCxFQ9TJF/MtcfPidiRFWRpwREFAKnUCQBQ+1Vc3lhTE7qMEL4tjNwgOo4NR5U8u49Rp7MFdlNuftbU2QQATt3kk/6YaAAN4DfAH3GdayPrcd34AAAAAElFTkSuQmCC',
+                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAaVBMVEUAAAD2PzD2PzD8VznwJif8VjnwJijwJyj+XTv5SzXzMSzuHyX2PjD9VznwJSf+Xjz5TTX+XzztHST////xJif9VTj5SDP1OC79zcv7eWf4amH8oZr/9fP5gHn+3tr5YFD9wr37tLH1TkfWZWL7AAAAE3RSTlMAMCBgYPDw0MDAwMCAUFDQ0ICAt+xDQQAAAPZJREFUOMu902mPgyAQgOEB8T56CDO1Xt3+/x+5dQKuKGa/9WljgvMqxkT4I26ZYdlNwFF0MRuXaDeWmdnJ5HZex+Ygrje3N0HRer05Udv947MglhzkvMDdEJczuX2AufMtU074Ma44D61vQucKIBC7dg9XAio/mLrBBl0/DSNWkPvBz5OD94tXD8wBg1v0rQ3w/4CInoeAXED0jaAIBp0LCqiCAb3H1/B5K1SBCAZsHokEQKqPgXZSAFBa9w/fqIl/Wiv4KPSpAhYyOZsnEljDK3IHcn/dgKV0kIJVE9glabxPr9zPSwk+lW7HqYIjcS/txXcBq1+0B0HMkpEZYwAAAABJRU5ErkJggg==',
                 symbolSize: [24, 24],
                 data: this.mapData.filter(function (item) {
                   return !item.onLine && item.type == '相机设备';
@@ -427,7 +452,7 @@
                 name: 'Top 5',
                 type: 'effectScatter',
                 coordinateSystem: 'bmap',
-                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAACxAAAAsQHGLUmNAAABdklEQVRYhWP8//8/w0ACpgG1fdQBow4YdQADAwMLjOG6KWIHNyuTO6UGfv39b+duvxUeJDuAm5XJXYqHnVL7GZ59+UmSJ1gIK8ENHn36cVeAg0WMj42Flxj1RiuDbdiZGX1YmZleHgpc1U+RAx5//vnyxddfzm++/3ZVFeSazcvGjKHGZFWwPAMDQyw/O4sBFyuzjbYItzgvGzPDz7//GGzXhSofDlqdQ7YDxLhYxT/8+F0qxsXmis1y23WhXlI87KtkeNm50eXYmZkYmJkYeRgYKAgBdmYmBgV+zmxsljMwMDAwMzGGYbMcHVCUDXFZTgoY8HJg1AHD1wEffv75NKAOuBC+Lu/y6y9Tb7z7dvXZl58Y8j/+/ONgYKCwKCYEDgetzoGx9VYEFYhystpwsjAZMDAwMPz597+c5g5ABpci1k1gYGCYgC4Oj4Kvv/8+oIZFpJoDD4H3P/44XHv7tZFSB3z59beeFPWMox2TUQeMOmCgHQAA7cZmOlB3L2AAAAAASUVORK5CYII=',
+                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAe1BMVEUAAAAxukU1xlUvrjM0xlUvrjM1yVozwE0wtDsuqi4yukQ1xlUvrjI0xVQvrzQ2yVo0wE4xszsvqi42ylwuqS3///8zw1AwsTY1yVkurDAxtT4yu0XN7tBn0Hub3qRlym/z+/VTyGba895+0YXA6sWz5bpy0H9Aw1hLvlXy6H8mAAAAFXRSTlMAIGBg8PDAwMDAgFBQMDDQ0NDQgIDEW0VAAAAA/0lEQVQ4y6XT526DMBSG4Y+9yeTg2oEy0qT3f4UlZhRjo1bK4/yxzkuwEOBXdvGZ5F8y6OwDWznYUFk+2/Ct9TxxmcZNVn8/7ElbzF6uJyJGBsl0f1fu2OY3LHc8R/DamQXyAERtpXrS7HWMI7VNoepIyEV0BDKiqtiiRYZYDbqqmYKq7poHxQjU4KuVwfMudzcKIITQbyHqYgyE+Ffw+V7AOdcDPgec/x2ExuAxByFiY8C/+3szPBUeIzcGUttzngMnUzA7AXDKsr6p+nLmYBCWu8LxlfP25p4FKd0LUkycDyMHi9TTx16qfHrRdh5ZUDnn9fjsQJdfo+nia47FDw4MSkvLJ8uSAAAAAElFTkSuQmCC',
                 symbolSize: [24, 24],
                 data: this.mapData.filter(function (item) {
                   return item.onLine && item.type == '相机设备';
@@ -458,7 +483,7 @@
                 name: 'Top 5',
                 type: 'effectScatter',
                 coordinateSystem: 'bmap',
-                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAACxAAAAsQHGLUmNAAADJUlEQVRYhe1V20sUURj/5szszOyOu2pesOsaWxRlJbFEoUnUkxHZutsq9FAPQW+R/0BCL/VSSfRWD/mQtZvuGoQQYQQZFEWoYEGg3byGljq7zp4zc8700shqu+FlRB/6Pc35zfed78d3vgtnmiasJtCqRv8vAAAEOy/bHwlWKg5UzyMuJ53HBhvF1Hzyvq6ta74PZ0cRHmoNXStwOkL5ssPnFvmMNiqhMKHpPT9T+u3Xoda7tgg4HDt9PFcSbm3xyL6F+mDKYEjFr8Y1/cy7cNvXJQsof1hbV1ak3PGIgtviBlWc1AzWlSBGd9JgowAAIs/tKZQdOzySUFHodMz6/5ghIwOTqfCSayBPFqqt4NPEUAdVHHtxKnoum70/GvROaPr10lw5KPEIil3i+k+/NP+SBaQMJg8nMBjM7J/CxsWXtY86quLhBpeAgrKAKiw7ZkKSUNYtIO5eZ00kdLA1dL7YJTYVuRwKgE1F6I8GvYVOx/2NbqlC4jN3NqYMvkyl2jprIiF/NOglzAz01seabBGw92HtpcqNuTet87imQ4LQHp2x3BJFKrU6A1MGb0fVht76WJNla+sgwpTBh4lk88CkVtpx4kH5s5ORrX3jycMDk9orAIBM2bFlEImIi3cNTQECGOmuj0UAAKri4YYZncb+DJ/KsgeBq7KAikXExdN9bXmC+aiKhxu25ztvjCVJ/2iSHHsXbvuazXZFdgHiYJ/EI9jikX2EmYF/2c5mwB8NeksUsVNA3IKnWjaIPAJr6Awn8Jx/BjPnZGW2BggzA4sZqQvFhhxpPuX7puIAADQBrPV1jCn7q3VUQkElBgAAFDgdGVtrMcjqPU0MtX9Sa8aUzRE0lMCN7dUtXHt1C/dtGj9dVvRsAjBlMKjiWILQxh8z+pjFf55K9T2viVyxzr9S+oVBFSeXIyDjE0g8Al+e8+x3FR/f7JaKLH7nOtfuI+3hNwDwEQCgRBErN7klxXYBlohtec6i+fyuAuUAABxYTtB0rHoXoLSPEZXQFQ+oEgoIYMQ6z9kFRx/XXZZ5VLuSAlKUxdILeUWW0WKwdmrgv4DVwm+D61eTFNG8+QAAAABJRU5ErkJggg==',
+                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAY1BMVEUAAAA0xVMvrzQxukQxukUwtTw1xlUvrjM0xlUvrjM1xVQwrzQ1xlUvrjI2ylw0xlQxukT///8vrjLM7tBly3La892Z36Wm4a7z+/VWympCw1fm9+iA1o6z5ruN3Zxz04PA6cWJOXpkAAAAD3RSTlMAwMAwIIBgYPDw0NBQUIDlQOsSAAABIUlEQVQ4y42Ti5KDIAxFI2rVWktAFN/2/79yY8l2UXGnZ5ig5BKuCPBH/Izkm+gZw5nbXXrcb7AnieSBKPHzj1yeyB9eeRnk9pkvL+AaSX4lyJ2Pvb9hqRXRtP3m9NcAUnPd1Cmma9mG+36W2G3yYszyooeZ9oP2z2U51Go00rTtOvSNUjQQQ4o+Uzuso1tgsDMNpBBRlNRcQOwVY3AjAuQMBzSqWyk2LEDAANNEErwW0Co9MiywtQ/5b+raegKjQpgvBYIF3fsH2L1Ao4CUOkN5pP0ZEOdDhRRirjCGK8QA5X8eSgDIrgUaMyCE1rY+80KthTtyhb6g4KNfuVf0gqMCJtNBMvhQFYH6FXgk4pgXCezJSj9dZnAmTgVPTr3r/wPtpTZf/MVuJQAAAABJRU5ErkJggg==',
                 symbolSize: [24, 24],
                 data: this.mapData.filter(function (item) {
                   return item.onLine && item.type == '侦码设备';
@@ -626,37 +651,42 @@
           if (data.code === '000000') {
             this.catchData = {imsi: [], face: [], createTime: []};
             let arr = this.set7adyData(data.data);
-            arr.forEach((item, idx) => {
-              this.catchData.imsi[idx] = item.imsi;
-              this.catchData.face[idx] = item.face;
-              this.catchData.createTime[idx] = formatDate(new Date(item.createTime * 1000), 'yyyy-MM-dd');
-            });
+            this.catchData = this.getLast7Days(arr);
             this.getImsiFace();
           }
         }).catch((err) => {
           this.catchData = {imsi: [], face: [], createTime: []};
+          let arr = this.set7adyData([]);
+          this.catchData = this.getLast7Days(arr);
           this.getImsiFace();
         });
         this.$post('/home/countLast7DayWarnings', {}).then((data) => {
           if (data.code === '000000') {
             this.warning = {imsi: [], face: [], createTime: []};
             let arr = this.set7adyData(data.data);
-            arr.forEach((item, idx) => {
-              this.warning.imsi[idx] = item.imsi;
-              this.warning.face[idx] = item.face;
-              this.warning.createTime[idx] = formatDate(new Date(item.createTime * 1000), 'yyyy-MM-dd');
-            });
+            this.warning = this.getLast7Days(arr);
             this.getWarning();
           }
         }).catch((err) => {
           this.warning = {imsi: [], face: [], createTime: []};
+          let arr = this.set7adyData([]);
+          this.warning = this.getLast7Days(arr);
           this.getWarning();
         });
       },
       //设置近7天的数据-->不满7个会自动添加到7个
+      getLast7Days(arr) {
+        let datas = {imsi: [], face: [], createTime: []};
+        arr.forEach((item, idx) => {
+          datas.imsi[idx] = item.imsi;
+          datas.face[idx] = item.face;
+          datas.createTime[idx] = formatDate(new Date(item.createTime * 1000), 'yyyy-MM-dd');
+        });
+        return datas;
+      },
       set7adyData(val) {
         if (val.length == 0) {
-          let item = {imsi: 0, face: 0, createTime: new Date().getTime() / 1000};
+          let item = {imsi: 0, face: 0, createTime: Math.round(new Date().getTime() / 1000)};
           val.push(item);
         }
         let max = 7 - val.length;
@@ -780,6 +810,9 @@
     mounted() {
       sessionStorage.setItem("index", 1);
       this.$emit('handleSelectTab', 1);
+      let arr = this.set7adyData([]);
+      this.warning = this.getLast7Days(arr);
+      this.catchData = this.getLast7Days(arr);
       //初始化地图个表格
       this.getDeviceMap();
       this.getDataHeat();
@@ -847,5 +880,31 @@
     max-width: 80px;
     max-height: 80px;
     border-radius: 6px;
+  }
+
+  .heat-tip-content {
+    text-align: left;
+    color: #999;
+    font-size: 13px;
+    margin: 0 10px;
+    line-height: 30px;
+    height: 30px
+  }
+
+  .heat-tip-color {
+    display: flex;
+    line-height: 30px;
+    height: 30px;
+    align-items: center;
+    justify-content: flex-end
+  }
+
+  .heat-tip-text {
+    text-align: left;
+    color: #fff;
+    font-size: 13px;
+    margin-left: 15px;
+    line-height: 30px;
+    height: 30px
   }
 </style>

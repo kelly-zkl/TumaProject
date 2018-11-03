@@ -86,6 +86,8 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警状态" prop="status" min-width="80" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="抓取时间" prop="catchTime" min-width="170"
+                         :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="布控人员图像" prop="faceUrl" min-width="120"
                          max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
@@ -94,10 +96,6 @@
                  style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="80" max-width="120"
-                         :formatter="formatterAddress"></el-table-column>
-        <!--<el-table-column align="left" label="所属名单" prop="blackClass" min-width="150"-->
-        <!--max-width="250" :formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)"
@@ -107,7 +105,7 @@
         </el-table-column>
       </el-table>
       <div class="block" style="margin-top: 20px" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="page"
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                        :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
       <!--查看大图-->
@@ -209,6 +207,8 @@
         sessionStorage.setItem("activeItem", this.activeItem);
         sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
         sessionStorage.setItem("query", JSON.stringify(this.query));
+        // let routeData = this.$router.resolve({path: '/faceWarningDetail', query: {id: row.id, faceId: row.faceId}});
+        // window.open(routeData.href, '_blank');
         this.$router.push({path: '/faceWarningDetail', query: {id: row.id, faceId: row.faceId}});
       },
       //获取图像告警列表
@@ -220,6 +220,12 @@
         if (this.query.faceUrl) {
           if (!this.query.similarThreshold) {
             this.$message.error('请输入相似度');
+            return;
+          }
+        }
+        if (this.query.similarThreshold) {
+          if (!this.query.faceUrl) {
+            this.$message.error('请上传头像');
             return;
           }
         }
@@ -277,6 +283,7 @@
           } else {
             this.list = [];
             this.list10 = [];
+            this.count = 0;
             this.listLoading = false;
             this.$message.error(data.msg);
           }
@@ -322,11 +329,13 @@
         if (column.property === 'status') {
           return row.status === 0 ? '待处理' : row.status === 1 ? '处理中' : row.status === 2 ? '已处理' : row.status === 3 ? '误报' : '--';
         } else if (column.property === 'sex') {
-          return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '未知';
+          return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
         } else if (column.property === 'age' || column.property === 'similarThreshold') {
-          return row[column.property] < 0 ? '未知' : row[column.property];
+          return row[column.property] < 0 ? '--' : row[column.property];
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
+        } else if (column.property === 'catchTime') {
+          return row.catchTime ? formatDate(new Date(row.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

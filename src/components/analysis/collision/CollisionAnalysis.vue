@@ -59,7 +59,7 @@
                          max-width="250" :formatter="formatterAddress">
           <template slot-scope="scope">
             <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已完成</span>
-            <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">任务失败</span>
+            <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
             <span style="color:#D76F31" v-show="scope.row.taskStatus == 'WAIT'">等待中</span>
             <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">分析中</span>
           </template>
@@ -78,7 +78,7 @@
         </el-table-column>
       </el-table>
       <div class="block" style="margin-top: 20px" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
@@ -95,7 +95,7 @@
         records: [],
         listLoading: false,
         taskTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '图像'}],//,{value: 'MAC', label: 'MAC'}
-        taskStatus: [{value: 'FINISH', label: '已完成'}, {value: 'FAILE', label: '任务失败'},
+        taskStatus: [{value: 'FINISH', label: '已完成'}, {value: 'FAILE', label: '失败'},
           {value: 'WAIT', label: '等待中'}, {value: 'EXECUTION', label: '分析中'}],
         query: {page: 1, size: 10, taskName: "", ctype: "", taskStatus: ""},
         qTime: '',
@@ -133,6 +133,11 @@
       //跳转任务详情
       gotoDetail(id, collisionType) {
         sessionStorage.setItem("query", JSON.stringify(this.query));
+        // let routeData = this.$router.resolve({
+        //   path: '/taskDetail',
+        //   query: {taskId: id, collisionType: collisionType[0]}
+        // });
+        // window.open(routeData.href, '_blank');
         this.$router.push({path: '/taskDetail', query: {taskId: id, collisionType: collisionType[0]}});
       },
       pageChange(index) {

@@ -6,6 +6,14 @@ export const JSONParse = (params) => {
   }
   return jp;
 };
+// 验证手机号码
+export const mobileValidator2 = (phone) => {
+  let bol = true;
+  if (!/^1(3|4|5|7|8)\d{0,9}$/.test(phone)) {
+    bol = false;
+  }
+  return bol;
+};
 
 // 验证手机号码
 export const mobileValidator = (phone) => {
@@ -184,7 +192,6 @@ export const globalValidP12 = (file, msg) => {
   }
   return isP12;
 };
-
 //身份证号码验证
 export const userCardValid = (cardNo) => {
   let isCardNo = false;
@@ -194,7 +201,6 @@ export const userCardValid = (cardNo) => {
   }
   return isCardNo;
 };
-
 //非空判断
 export const isNull = (str) => {
   let isNull = false;
@@ -205,4 +211,8 @@ export const isNull = (str) => {
     isNull = false;
   }
   return isNull;
+};
+//去掉字符串前后所有空格
+export const Trim = (str) => {
+  return str.replace(/(^\s*)|(\s*$)/g, "");
 };

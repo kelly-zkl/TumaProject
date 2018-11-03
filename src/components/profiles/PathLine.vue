@@ -18,7 +18,7 @@
           <el-button @click="getLineData()" size="medium" type="primary">搜索</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button @click="runLineList=true" size="medium" type="primary" v-show="query.merge == false">轨迹回放
+          <el-button @click="luShu()" size="medium" type="primary" v-show="query.merge == false">轨迹回放
           </el-button>
         </el-form-item>
       </el-form>
@@ -34,7 +34,11 @@
       </el-row>
       <div class="view-map" id="path"
            v-bind:style="query.merge == false&&imsis.length>0?'top: 150px':'top: 100px'"></div>
-      <div class="view-list" v-bind:style="query.merge == false&&imsis.length>0?'top: 150px':'top: 100px'">
+      <div v-bind:class="isShow?'arrow-list':'arrow-none'" @click="handleArrow()">
+        <i v-bind:class="isShow?'fa fa-angle-double-right fa-3x':'fa fa-angle-double-left fa-3x'"></i>
+      </div>
+      <div v-bind:class="isShow?'view-list':'list-none'"
+           v-bind:style="query.merge == false&&imsis.length>0?'top: 150px':'top: 100px'">
         <div style="color: #999;font-size: 14px;margin-top: 15px">对应IMSI</div>
         <div style="color: #333;font-size: 14px">{{choose.imsi}}</div>
         <div style="border-top: #6699FF 3px solid;margin-top: 15px">
@@ -59,14 +63,6 @@
         </div>
       </div>
     </section>
-    <!--轨迹列表-->
-    <el-dialog title="轨迹列表" :visible.sync="runLineList" width="500px" center>
-      <div class="block" v-for="item in pathLines" :key="item.value">
-        <el-button type="text" @click="luShu(item)" style="text-align: left">
-          {{item.type=='imsi' ? 'IMSI：'+item.value:item.type=='image'?'人员ID：'+item.value: '合并：'+item.value}}
-        </el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -75,7 +71,6 @@
   export default {
     data() {
       return {
-        runLineList: false,
         query: {imsis: [], faceIds: [], merge: false},
         map: {},
         imsi: this.$route.query.imsi || 0,
@@ -88,6 +83,7 @@
         faces: [],
         imsis: [],
         records: [],
+        isShow: true,
         isCenter: false,
         choose: {imsi: '', face: ''},//
         pickerBeginDate: {
@@ -107,6 +103,10 @@
       // sessionStorage.removeItem("pathFace");
     },
     methods: {
+      //显示-隐藏列表
+      handleArrow() {
+        this.isShow = !this.isShow;
+      },
       //切换模式
       handleChange(val) {
         this.map.clearOverlays();
@@ -142,6 +142,7 @@
         this.imsiLine();
       },
       imsiLine() {
+        this.map.clearOverlays();
         this.pathLines.forEach((item) => {
           if (item.value == this.choose.imsi) {
             var pois = [];
@@ -150,7 +151,7 @@
               for (var i = 0; i < item.locs.length; i++) {
                 let recData = item.locs[i];
                 if (i == 0 && !this.isCenter) {
-                  this.isCenter = true;
+                  this.isCenter = false;
                   var point = new BMap.Point(item.locs[i].lon, item.locs[i].lat);
                   this.map.centerAndZoom(point, 14);
                 }
@@ -262,28 +263,20 @@
         }
       },
       //轨迹回放
-      luShu(line) {
-        this.runLineList = false;
-        // console.log(line);
-        // this.deleteOverlay();
+      luShu() {
+        let line = {};
+        this.pathLines.forEach((item) => {
+          if (item.value == this.choose.imsi) {
+            line = item;
+          }
+        });
         if (line.locs.length == 0) {
           return;
         }
-        this.map.clearOverlays();
         var pois = [];
-        var type = 1;
-        if (line.type == 'imsi') {
-          this.choose = {imsi: line.value, face: ''};
-          type = 1;
-        } else if (line.type == 'image') {
-          this.choose = {imsi: '', face: line.value};
-          type = 0;
-        }
-
         for (var i = 0; i < line.locs.length; i++) {
           pois.push(new BMap.Point(line.locs[i].lon, line.locs[i].lat));
         }
-        this.pathLine(pois, type);
 
         var lushu = new BMapLib.LuShu(this.map, pois, {// 回放
           defaultContent: "",//"从天安门到百度大厦"
@@ -346,7 +339,7 @@
     position: absolute;
     left: 200px;
     right: 15px;
-    bottom: 20px;
+    bottom: 10px;
     top: 100px;
   }
 
@@ -363,9 +356,13 @@
     box-shadow: -6px 6px 12px rgba(40, 40, 40, .5); /*opera或ie9*/
   }
 
+  .list-none {
+    display: none;
+  }
+
   .item-label {
     font-size: 13px;
-    color: #999;
+    color: #888;
     margin-right: 10px;
   }
 
@@ -374,5 +371,29 @@
     color: #333;
     margin-right: 10px;
     white-space: nowrap;
+  }
+
+  .arrow-list {
+    position: absolute;
+    right: 315px;
+    top: 150px;
+    background: #ccc;
+    padding: 0 15px;
+    color: #fff;
+    -moz-box-shadow: -6px 6px 12px rgba(40, 40, 40, .5); /*firefox*/
+    -webkit-box-shadow: -6px 6px 12px rgba(40, 40, 40, .5); /*webkit*/
+    box-shadow: -6px 6px 12px rgba(40, 40, 40, .5); /*opera或ie9*/
+  }
+
+  .arrow-none {
+    position: absolute;
+    right: 15px;
+    top: 150px;
+    padding: 0 15px;
+    background: #ccc;
+    color: #fff;
+    -moz-box-shadow: -6px 6px 12px rgba(40, 40, 40, .5); /*firefox*/
+    -webkit-box-shadow: -6px 6px 12px rgba(40, 40, 40, .5); /*webkit*/
+    box-shadow: -6px 6px 12px rgba(40, 40, 40, .5); /*opera或ie9*/
   }
 </style>

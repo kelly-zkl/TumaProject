@@ -160,17 +160,17 @@
       },
       //标记已读
       updateStatus() {
-        this.$confirm('确认标记为已读?', '提示', {type: 'info'}).then(() => {
-          let ids = [this.recordId];
-          let param = {ids: ids, operator: JSON.parse(sessionStorage.getItem("user")).userId, remark: ''};
-          this.$post('/workflow/translation/ccread', param, '操作成功').then((data) => {
-            if ("000000" === data.code) {
-              this.getDetail();
-            }
-          }).catch((err) => {
-          });
-        }).catch(() => {
+        // this.$confirm('确认标记为已读?', '提示', {type: 'info'}).then(() => {
+        let ids = [this.recordId];
+        let param = {ids: ids, operator: JSON.parse(sessionStorage.getItem("user")).userId, remark: ''};
+        this.$post('/workflow/translation/ccread', param).then((data) => {
+          if ("000000" === data.code) {
+            this.getDetail();
+          }
+        }).catch((err) => {
         });
+        // }).catch(() => {
+        // });
       },
       //翻码并返回
       showTranslation() {

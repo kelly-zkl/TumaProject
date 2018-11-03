@@ -82,7 +82,7 @@
                            max-width="200" :formatter="formatterAddress"></el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
-          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                          :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                          layout="total, sizes, prev, pager, next, jumper"></el-pagination>
         </div>
@@ -92,7 +92,7 @@
           <el-row>
             <el-col :span="24" align="left">
               <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('device:query')">
-                <el-input placeholder="设备名称/ID" v-model="query.deviceName" :maxlength="30"
+                <el-input placeholder="设备标识/ID" v-model="query.deviceName" :maxlength="30"
                           @change="changeDevice" size="medium"></el-input>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
@@ -140,7 +140,7 @@
                            max-width="120"></el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px">
-          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
+          <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                          background :page-sizes="[10, 15, 20, 30]" :page-size="query.size"
                          layout="total, sizes, prev, pager, next, jumper" :total="count"></el-pagination>
         </div>
@@ -273,7 +273,7 @@
       changeDevice(val) {
         if (noSValidator(val)) {
           val = val.substr(0, val.length - 2);
-          this.$message.error('请输入正确的设备名称/ID');
+          this.$message.error('请输入正确的设备标识/ID');
         }
       },
       //获取设备的在线状态
@@ -307,7 +307,7 @@
       getDevice() {
         if (this.query.deviceName) {
           if (noSValidator(this.query.deviceName)) {
-            this.$message.error('请输入正确的设备名称/ID');
+            this.$message.error('请输入正确的设备标识/ID');
             return;
           }
         }
@@ -330,7 +330,7 @@
       getCamera() {
         if (this.query.cameraCode) {
           if (noSValidator(this.query.cameraCode)) {
-            this.$message.error('请输入正确的设备名称/ID');
+            this.$message.error('请输入正确的设备标识/ID');
             return;
           }
         }

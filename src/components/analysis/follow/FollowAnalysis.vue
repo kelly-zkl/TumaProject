@@ -55,8 +55,14 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="分析对象" prop="followTarget" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="125" max-width="250">
+          <template slot-scope="scope">
+            <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已完成</span>
+            <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
+            <span style="color:#D76F31" v-show="scope.row.taskStatus == 'WAIT'">等待中</span>
+            <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">进行中</span>
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="关联案件" prop="caseName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="创建日期" prop="createTime" min-width="150"
@@ -71,7 +77,7 @@
         </el-table-column>
       </el-table>
       <div class="block" style="margin-top: 20px" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
@@ -135,6 +141,11 @@
       },
       gotoDetail(task) {
         sessionStorage.setItem("query", JSON.stringify(this.query));
+        // let routeData = this.$router.resolve({
+        //   path: '/followResult',
+        //   query: {taskId: task.id, followType: task.followType}
+        // });
+        // window.open(routeData.href, '_blank');
         this.$router.push({path: '/followResult', query: {taskId: task.id, followType: task.followType}});
       },
       //清除查询条件

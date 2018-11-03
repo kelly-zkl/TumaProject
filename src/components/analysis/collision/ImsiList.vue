@@ -46,7 +46,7 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="抓取时间" prop="uptime" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备名称" prop="deviceName" min-width="125"
+        <el-table-column align="left" label="设备标识" prop="deviceName" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -59,7 +59,7 @@
         </el-table-column>
       </el-table>
       <div class="block" style="margin-top: 20px" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="query.page"
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
@@ -164,7 +164,7 @@
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'isp') {
-          return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '未知';
+          return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '--';
         } else if (column.property === 'netType') {//网络类型 --> 根据运营商判断
           return this.getNetType(row.isp);
         } else if (column.property === 'uptime') {
@@ -174,7 +174,7 @@
         }
       },
       getNetType(isp) {
-        let moduleId = "未知";
+        let moduleId = "--";
         switch (isp) {
           case 0:
             moduleId = "CMCC";

@@ -24,10 +24,10 @@
                 <span style="font-size: 15px;color:#000">{{person.name?person.name:'--'}}</span>
               </el-form-item>
               <el-form-item label="年龄" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{person.age<0?'未知':person.age}}</span>
+                <span style="font-size: 15px;color:#000">{{person.age<0?'--':person.age}}</span>
               </el-form-item>
               <el-form-item label="性别" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{person.sex == 0 ? '男' : person.sex == 1 ? '女' : '未知'}}</span>
+                <span style="font-size: 15px;color:#000">{{person.sex == 0 ? '男' : person.sex == 1 ? '女' : '--'}}</span>
               </el-form-item>
               <el-form-item label="手机号" align="left" style="margin: 0;text-align: left">
                 <span
@@ -67,8 +67,8 @@
                          style="position: absolute;top: 10px;left:150px;text-align: left">
                   <el-form-item label="档案ID" style="margin:0">
                     <span
-                      style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
-                    <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
+                      style="font-size: 15px;color:#000;margin-right: 20px">{{item.faceId?item.faceId:'--'}}</span>
+                    <el-button type="text" @click="gotoPerson(item)" v-if="item.faceId">查看人员</el-button>
                   </el-form-item>
                   <el-form-item label="相似度" style="margin:0">
                     <span
@@ -129,7 +129,7 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer" align="center">
-          <el-button type="primary" @click="confirmModify()">确认添加</el-button>
+          <el-button type="primary" @click="confirmModify()">确认修改</el-button>
         </div>
       </el-dialog>
     </section>
@@ -145,7 +145,7 @@
         activeItem: 'person',
         imgPath: require('../../assets/img/icon_people.png'),
         faceId: this.$route.query.faceId || '',
-        sexs: [{value: '0', label: '男'}, {value: '2', label: '女'}],
+        sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         person: {},
         modifyPerson: {},
         listLoading: false,
@@ -162,7 +162,7 @@
           // phone: [{required: true, message: '请输入手机号', trigger: 'blur'}],
           idCard: [{required: true, message: '请输入身份证号', trigger: 'blur'}],
           pType: [{required: true, message: '请选择所属名单', trigger: 'blur'}]
-        },
+        }
       }
     },
     methods: {
@@ -254,7 +254,7 @@
           let row = data.data;
           this.person = data.data;
           this.modifyPerson = {
-            faceUrl: row.faceUrl, name: row.name, idNumber: row.idNumber, faceId: row.faceId,
+            faceUrl: row.faceUrl, name: row.name, idCard: row.idCard, faceId: row.faceId,
             age: row.age, sex: row.sex, mobilePhone: row.mobilePhone, remark: row.remark
           };
           this.getPersons();
@@ -293,6 +293,8 @@
     width: calc(50% - 42px);
     height: 122px;
     border: 1px #D7D7D7 solid;
+    border-radius: 8px;
+    background: #fff;
     padding: 15px;
     margin-bottom: 20px;
     position: relative;

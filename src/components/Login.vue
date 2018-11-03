@@ -3,7 +3,7 @@
     <section class="content" style="margin: 0">
       <el-col :span="24" class="main-header" align="left">
         <div align="left" style="display: flex;height: 40px;align-items: center">
-          <img src="../assets/img/icon_logo.png" style="display:inline-block;height: 34px">
+          <img src="../assets/img/icon_logo.png" style="display:inline-block;height: 34px;width: 34px">
           <div style="display:inline-block;font-size: 22px;margin-left: 10px;color: #fff;letter-spacing:3px">
             图码联侦实战布控平台
           </div>
@@ -48,7 +48,7 @@
         </el-form>
       </el-col>
       <el-col :span="24" class="main-footer">
-        All Rights Reserved V3.0
+        Copyright © 2018 深圳前海中电慧安科技有限公司
       </el-col>
     </section>
   </div>
