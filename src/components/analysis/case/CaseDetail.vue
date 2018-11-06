@@ -9,7 +9,7 @@
           </el-col>
           <el-col :span="7" align="left">
             <span style="font-size: 14px;color: #999;margin:auto 20px">案发地点</span>
-            <span style="font-size: 15px">{{caseDetail.caseAddress}}</span>
+            <span style="font-size: 15px">{{caseDetail.address}}</span>
           </el-col>
           <el-col :span="7" align="left">
             <span style="font-size: 14px;color: #999;margin:auto 20px">创建时间</span>
@@ -180,14 +180,14 @@
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="任务名称" prop="taskName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="任务类型" prop="followType" width="130"
+          <el-table-column align="left" label="任务类型" prop="followType" width="120"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="分析对象" prop="followTarget" width="170"
-                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="分析对象" prop="followTarget" min-width="170"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="分析结果" prop="followCount" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="分析结果" prop="followCount" min-width="130"
+                           max-width="200" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="关联案件" prop="caseName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="160" fixed="right">
@@ -211,6 +211,7 @@
   </div>
 </template>
 <script>
+  import json from '../../../assets/city.json';
   import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
 
   export default {
@@ -437,10 +438,37 @@
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
       },
+      //获得省市县
+      getAreaLable(code) {
+        let lable = '';
+        json.forEach((province) => {
+          if (province.c) {
+            province.c.forEach((city) => {
+              if (city.c) {//省级+市级+县级
+                city.c.forEach((country) => {
+                  if (code === country.o) {
+                    lable = province.n + city.n + country.n;
+                  }
+                })
+              } else {//省级+市级
+                if (code === city.o) {
+                  lable = province.n + city.n;
+                }
+              }
+            })
+          } else {//只包含省级
+            if (code === province.o) {
+              lable = province.n;
+            }
+          }
+        });
+        return lable;
+      },
       //获取案件详情
       getCaseDetail() {
         this.$post('/case/get/' + this.caseId, {}).then((data) => {
           this.caseDetail = data.data;
+          this.caseDetail.address = this.getAreaLable(data.data.areaCode) + data.data.caseAddress;
           this.caseDetail.timeStr = formatDate(new Date(this.caseDetail.creatTime * 1000), 'yyyy-MM-dd hh:mm:ss');
           this.caseDetail.fishStr = this.caseDetail.updateTime !== 0 ? formatDate(new Date(this.caseDetail.updateTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
           this.caseDetail.startStr = formatDate(new Date(this.caseDetail.caseTime * 1000), 'yyyy-MM-dd hh:mm:ss');

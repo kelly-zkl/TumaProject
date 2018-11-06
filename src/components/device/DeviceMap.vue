@@ -288,7 +288,6 @@
           pts.push(pt);
         }
         this.ply = new BMap.Polygon(pts, this.styleOptions);
-
         this.bMap.addOverlay(this.ply);
       },
       //判断点是否在多边形内
@@ -304,17 +303,22 @@
         }
         return bol;
       },
-      //添加鼠标绘制工具监听事件，用于获取绘制结果
-      overlaycomplete(e) {
-        var allOverlay = this.bMap.getOverlays();
-        for (var i = 0; i < allOverlay.length; i++) {
-          if (allOverlay[i].toString().indexOf("Polygon") > 0 || allOverlay[i].toString().indexOf("Label") > 0
-            || allOverlay[i].toString().indexOf("Circle") > 0) {//删除折线
-            this.bMap.removeOverlay(allOverlay[i]);
+      //删除多边形
+      removePoly() {
+        if (this.bMap) {
+          var allOverlay = this.bMap.getOverlays();
+          for (var i = 0; i < allOverlay.length; i++) {
+            if (allOverlay[i].toString().indexOf("Polygon") > 0 || allOverlay[i].toString().indexOf("Label") > 0
+              || allOverlay[i].toString().indexOf("Circle") > 0) {//删除折线
+              this.bMap.removeOverlay(allOverlay[i]);
+            }
           }
         }
+      },
+      //添加鼠标绘制工具监听事件，用于获取绘制结果
+      overlaycomplete(e) {
+        this.removePoly();
         var path = e.overlay.getPath();//Array<Point> 返回多边型的点数组
-
         //生成多边形
         this.polygon(path);
         var num1 = 0, num2 = 0, num3 = 0, num4 = 0;

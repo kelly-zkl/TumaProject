@@ -134,9 +134,9 @@
         sessionStorage.setItem("activeItem", this.activeItem);
         sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
         sessionStorage.setItem("query", JSON.stringify(this.query));
-        // let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: row.imsi, id: row.id}});
-        // window.open(routeData.href, '_blank');
-        this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi, id: row.id}});
+        let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: row.imsi, id: row.id}});
+        window.open(routeData.href, '_blank');
+        // this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi, id: row.id}});
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {

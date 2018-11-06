@@ -14,7 +14,7 @@
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
         <el-row>
-          <el-col :span="18" align="left">
+          <el-col :span="21" align="left">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.recordNo" size="medium" :maxlength=30 placeholder="编号"></el-input>
             </el-form-item>
@@ -38,7 +38,7 @@
               <el-button size="medium" @click="clearData()">重置</el-button>
             </el-form-item>
           </el-col>
-          <el-col :span="6" align="right">
+          <el-col :span="3" align="right">
             <el-button type="primary" size="medium" v-show="activeItem == 'UNREAD'" :disabled="sels.length == 0"
                        @click="updateStatus()">标记已读
             </el-button>
@@ -157,13 +157,13 @@
         sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
         sessionStorage.setItem("query", JSON.stringify(this.query));
         if (this.activeItem === 'UNREAD') {
-          // let routeData = this.$router.resolve({path: '/approvalDetail', query: {type: 3, recordId: row.recordId}});
-          // window.open(routeData.href, '_blank');
-          this.$router.push({path: '/approvalDetail', query: {type: 3, recordId: row.recordId}});
+          let routeData = this.$router.resolve({path: '/approvalDetail', query: {type: 3, recordId: row.recordId}});
+          window.open(routeData.href, '_blank');
+          // this.$router.push({path: '/approvalDetail', query: {type: 3, recordId: row.recordId}});
         } else {
-          // let routeData = this.$router.resolve({path: '/approvalDetail', query: {type: 0, recordId: row.recordId}});
-          // window.open(routeData.href, '_blank');
-          this.$router.push({path: '/approvalDetail', query: {type: 0, recordId: row.recordId}});
+          let routeData = this.$router.resolve({path: '/approvalDetail', query: {type: 0, recordId: row.recordId}});
+          window.open(routeData.href, '_blank');
+          // this.$router.push({path: '/approvalDetail', query: {type: 0, recordId: row.recordId}});
         }
       },
       handleSizeChange(val) {

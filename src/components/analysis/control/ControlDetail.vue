@@ -212,8 +212,8 @@
           <el-form-item label="布控编号" align="left" style="margin: 0">{{task.taskNo}}</el-form-item>
           <el-form-item label="布控名称" align="left" style="margin: 0">{{task.taskName}}</el-form-item>
           <el-form-item label="布控人员" align="left" style="margin: 0">
-            <div class="face-main" v-if="task.featureList">
-              <div class="face-item" v-for="item in task.featureList" :key="item.imageId">
+            <div class="img-main" v-if="task.featureList">
+              <div class="img-item" v-for="item in task.featureList" :key="item.imageId">
                 <img :src="item.imageUrl?item.imageUrl:imgPath" style="max-width: 100%;border-radius: 4px"/>
               </div>
             </div>
@@ -469,6 +469,10 @@
           return row.status === 0 ? '待处理' : row.status === 1 ? '处理中' : row.status === 2 ? '已处理' : row.status === 3 ? '误报' : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
+        } else if (column.property === 'similarThreshold') {
+          return row.similarThreshold < 0 ? '--' : Math.floor(row.similarThreshold * 1000) / 1000 + '%';
+        } else if (column.property === 'age') {
+          return row[column.property] < 0 ? '--' : row[column.property];
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
@@ -626,13 +630,13 @@
   }
 </script>
 <style scoped>
-  .face-main {
+  .img-main {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
   }
 
-  .face-item {
+  .img-item {
     max-width: 100px;
     margin-right: 10px;
     /*margin-bottom: 10px;*/

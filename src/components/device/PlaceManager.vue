@@ -226,9 +226,9 @@
       gotoDetail(row) {
         sessionStorage.setItem("qTime", JSON.stringify(this.areaList));
         sessionStorage.setItem("query", JSON.stringify(this.query));
-        // let routeData = this.$router.resolve({path: '/placeDetail', query: {id: row.id}});
-        // window.open(routeData.href, '_blank');
-        this.$router.push({path: '/placeDetail', query: {id: row.id}});
+        let routeData = this.$router.resolve({path: '/placeDetail', query: {id: row.id}});
+        window.open(routeData.href, '_blank');
+        // this.$router.push({path: '/placeDetail', query: {id: row.id}});
       },
       //场所类型
       showPlaceType() {

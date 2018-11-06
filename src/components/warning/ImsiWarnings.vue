@@ -138,9 +138,9 @@
         sessionStorage.setItem("activeItem", this.activeItem);
         sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
         sessionStorage.setItem("query", JSON.stringify(this.query));
-        // let routeData = this.$router.resolve({path: '/imsiWarningDetail', query: {id: row.id, imsi: row.imsi}});
-        // window.open(routeData.href, '_blank');
-        this.$router.push({path: '/imsiWarningDetail', query: {id: row.id, imsi: row.imsi}});
+        let routeData = this.$router.resolve({path: '/imsiWarningDetail', query: {id: row.id, imsi: row.imsi}});
+        window.open(routeData.href, '_blank');
+        // this.$router.push({path: '/imsiWarningDetail', query: {id: row.id, imsi: row.imsi}});
       },
       //获取IMSI告警列表
       getData() {

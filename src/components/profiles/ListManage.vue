@@ -58,7 +58,7 @@
           <!--<el-button type="primary" size="medium" style="margin-bottom: 10px" @click="showList()">管理名单</el-button>-->
           <el-button type="primary" size="medium" style="margin-bottom: 10px"
                      v-show="getButtonVial('person:importKeyPerson')"
-                     @click="importFile='';runningImports=true">批量导入
+                     @click="isUpload=false;importFile='';runningImports=true">批量导入
           </el-button>
         </el-col>
       </el-row>
@@ -199,7 +199,7 @@
             </el-col>
           </el-row>
           <div slot="footer" class="dialog-footer" align="center" style="margin-top: 30px">
-            <el-button type="primary" @click="importDevice" v-show="!fileFlag">确认导入
+            <el-button type="primary" @click="importDevice" v-show="!fileFlag&&isUpload">确认导入
             </el-button>
             <el-button type="primary" @click="abortUpload" v-show="fileFlag&&fileUploadPercent!=100">取消导入</el-button>
           </div>
@@ -209,7 +209,7 @@
       <el-dialog title="批量导入" :visible.sync="runningImportNumber" width="600px" center>
         <span>已检测到人员 {{totalNum}} 个，导入成功 <span style="color: green">{{successNum}}</span> 个，失败 <span style="color: red">{{failNum}}</span> 个</span>
         <div slot="footer" class="dialog-footer" align="center">
-          <el-button type="primary" @click="runningImportResult = true">查看失败文件</el-button>
+          <el-button type="primary" @click="runningImportResult = true" v-show="failNum>0">查看失败文件</el-button>
           <el-button type="primary" @click="runningImportNumber = false">关闭</el-button>
         </div>
       </el-dialog>
@@ -290,7 +290,8 @@
         },
         fileFlag: false,
         fileUploadPercent: 0,
-        fileChoose: null
+        fileChoose: null,
+        isUpload: false
       }
     },
     methods: {
@@ -313,7 +314,7 @@
       //上传进度
       uploadFileProcess(event, file, fileList) {
         this.fileFlag = true;
-        this.fileUploadPercent = event.percent;
+        this.fileUploadPercent = parseInt(event.percent);
       },
       //批量导入设备的文件格式验证
       handleChange(file) {
@@ -322,6 +323,7 @@
         this.importFile = file.name;
         if (file.status == 'ready') {
           if (globalValidZIP(file.raw, this.$message)) {
+            this.isUpload = true;
             this.importFile = file.name;
           }
         }
@@ -331,7 +333,12 @@
         this.importList = [];
         this.importFile = file.name;
         if (res.code === '000000') {
-          this.$message({message: "导入成功", type: 'success'});
+          this.totalNum = res.data.totalNum;
+          this.successNum = res.data.successNum;
+          this.failNum = res.data.failNum;
+          if (this.totalNum > 0) {
+            this.$message({message: "导入成功", type: 'success'});
+          }
           setTimeout(() => {
             this.runningImports = false;
             this.fileFlag = false;
@@ -340,9 +347,7 @@
           setTimeout(() => {
             this.runningImportNumber = true;
           }, 2000);
-          this.totalNum = res.data.totalNum;
-          this.successNum = res.data.successNum;
-          this.failNum = res.data.failNum;
+
           if (res.data.failDetails && res.data.failDetails.length > 0) {
             this.importList = res.data.failDetails;
           }
@@ -361,9 +366,9 @@
       },
       gotoDetail(row) {
         sessionStorage.setItem("query", JSON.stringify(this.query));
-        // let routeData = this.$router.resolve({path: '/vipDetail', query: {faceId: row.faceId}});
-        // window.open(routeData.href, '_blank');
-        this.$router.push({path: '/vipDetail', query: {faceId: row.faceId}});
+        let routeData = this.$router.resolve({path: '/vipDetail', query: {faceId: row.faceId}});
+        window.open(routeData.href, '_blank');
+        // this.$router.push({path: '/vipDetail', query: {faceId: row.faceId}});
       },
       showList() {
         this.addList = '';

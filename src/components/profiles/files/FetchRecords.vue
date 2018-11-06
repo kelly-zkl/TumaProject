@@ -39,8 +39,8 @@
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="isp" label="运营商" min-width="150" max-width="250"
-                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="isp" label="运营商" min-width="100"
+                           max-width="120" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="regional" label="IMSI归属地" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="uptime" label="抓取时间" min-width="170" max-width="250"
@@ -112,7 +112,7 @@
         </el-form>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="人员图像" prop="imageUrl" min-width="125" max-width="250">
+          <el-table-column align="left" label="人员图像" prop="imageUrl" min-width="150" max-width="200">
             <template slot-scope="scope">
               <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
                    @click="bigUrl=scope.row.faceUrl;runBigPic=true"
@@ -124,8 +124,8 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="抓取场所" prop="placeName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="抓取时间" prop="catchTime" width="170"
-                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="抓取时间" prop="catchTime" min-width="170"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="160" fixed="right">

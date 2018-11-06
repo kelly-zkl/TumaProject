@@ -184,13 +184,13 @@
         caseList: [],
         caseArea: [],
         createCase: {startTime: []},
-        defaultProps: [{value: 'caseNo', name: '案件编号', min: 150, max: 250},
-          {value: 'caseName', name: '案件名称', min: 150, max: 250},
-          {value: 'caseType', name: '案件类型', min: 150, max: 250},
-          {value: 'caseTime', name: '案发时间', min: 350, max: 350},
-          {value: 'caseAddress', name: '案发地点', min: 150, max: 250},
+        defaultProps: [{value: 'caseNo', name: '案件编号', min: 150, max: 200},
+          {value: 'caseName', name: '案件名称', min: 150, max: 200},
+          {value: 'caseType', name: '案件类型', min: 100, max: 150},
+          {value: 'caseTime', name: '案发时间', min: 300, max: 300},
+          {value: 'caseAddress', name: '案发地点', min: 200, max: 250},
           {value: 'creatTime', name: '创建时间', min: 170, max: 170},
-          {value: 'status', name: '案件状态', min: 120, max: 120}],
+          {value: 'status', name: '案件状态', min: 100, max: 100}],
         rules: {
           caseNo: [
             {required: true, message: '请输入案件编号', trigger: 'blur', maxlength: 20},
@@ -269,21 +269,21 @@
       },
       handleType(val) {
         if (val.name === 'EXECUTION') {
-          this.defaultProps = [{value: 'caseNo', name: '案件编号', min: 150, max: 250},
-            {value: 'caseName', name: '案件名称', min: 150, max: 250},
-            {value: 'caseType', name: '案件类型', min: 150, max: 250},
-            {value: 'caseTime', name: '案发时间', min: 350, max: 350},
-            {value: 'caseAddress', name: '案发地点', min: 150, max: 250},
+          this.defaultProps = [{value: 'caseNo', name: '案件编号', min: 150, max: 200},
+            {value: 'caseName', name: '案件名称', min: 150, max: 200},
+            {value: 'caseType', name: '案件类型', min: 100, max: 150},
+            {value: 'caseTime', name: '案发时间', min: 300, max: 300},
+            {value: 'caseAddress', name: '案发地点', min: 200, max: 250},
             {value: 'creatTime', name: '创建时间', min: 170, max: 170},
-            {value: 'status', name: '案件状态', min: 120, max: 120}];
+            {value: 'status', name: '案件状态', min: 100, max: 100}];
         } else {
-          this.defaultProps = [{value: 'caseNo', name: '案件编号', min: 150, max: 250},
-            {value: 'caseName', name: '案件名称', min: 150, max: 250},
-            {value: 'caseType', name: '案件类型', min: 150, max: 250},
-            {value: 'caseTime', name: '案发时间', min: 350, max: 350},
-            {value: 'caseAddress', name: '案发地点', min: 150, max: 250},
+          this.defaultProps = [{value: 'caseNo', name: '案件编号', min: 150, max: 200},
+            {value: 'caseName', name: '案件名称', min: 150, max: 200},
+            {value: 'caseType', name: '案件类型', min: 100, max: 150},
+            {value: 'caseTime', name: '案发时间', min: 300, max: 300},
+            {value: 'caseAddress', name: '案发地点', min: 200, max: 250},
             {value: 'creatTime', name: '创建时间', min: 170, max: 170},
-            {value: 'status', name: '案件状态', min: 120, max: 120},
+            {value: 'status', name: '案件状态', min: 100, max: 100},
             {value: 'updateTime', name: '结案时间', min: 170, max: 170}];
         }
         this.getData();
@@ -292,9 +292,9 @@
         sessionStorage.setItem("activeItem", this.activeItem);
         sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
         sessionStorage.setItem("query", JSON.stringify(this.query));
-        // let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: task.id}});
-        // window.open(routeData.href, '_blank');
-        this.$router.push({path: '/caseDetail', query: {caseId: task.id}});
+        let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: task.id}});
+        window.open(routeData.href, '_blank');
+        // this.$router.push({path: '/caseDetail', query: {caseId: task.id}});
       },
       //创建新案件
       showCreate() {
@@ -404,6 +404,32 @@
           this.listLoading = false;
         });
       },
+      //获得省市县
+      getAreaLable(code) {
+        let lable = '';
+        this.provinceList.forEach((province) => {
+          if (province.c) {
+            province.c.forEach((city) => {
+              if (city.c) {//省级+市级+县级
+                city.c.forEach((country) => {
+                  if (code === country.o) {
+                    lable = province.n + city.n + country.n;
+                  }
+                })
+              } else {//省级+市级
+                if (code === city.o) {
+                  lable = province.n + city.n;
+                }
+              }
+            })
+          } else {//只包含省级
+            if (code === province.o) {
+              lable = province.n;
+            }
+          }
+        });
+        return lable;
+      },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'updateTime') {
@@ -416,6 +442,8 @@
           return start + " ~ " + end;
         } else if (column.property === 'status') {
           return row.status === 'UNHANDLED' ? '未处理' : row.status === 'EXECUTION' ? '进行中' : row.status === 'HANDLED' ? '已结案' : '--';
+        } else if (column.property === 'caseAddress') {
+          return row.areaCode ? this.getAreaLable(row.areaCode) + row.caseAddress : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

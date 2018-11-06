@@ -66,8 +66,8 @@
            v-if="persons.length>0 || imsiList.length>0">
         <el-row>
           <el-col :span="12" style="border-right: 1px solid #D0CACF">
-            <div class="face-main" v-if="persons.length>0">
-              <div class="face-item" v-for="item in persons" :key="item.id">
+            <div class="person-main" v-if="persons.length>0">
+              <div class="person-item" v-for="item in persons" :key="item.id">
                 <img :src="item.faceUrl?item.faceUrl:imgPath">
                 <div style="font-size:14px;height: 20px;line-height: 20px">{{item.timeStr}}</div>
               </div>
@@ -321,20 +321,20 @@
   }
 </script>
 <style scoped>
-  .face-main {
+  .person-main {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
   }
 
-  .face-item {
+  .person-item {
     width: 28%;
     height: 162px;
     margin-bottom: 20px;
     position: relative;
   }
 
-  .face-item img {
+  .person-item img {
     position: absolute;
     left: 20px;
     width: 130px;
@@ -344,17 +344,17 @@
     text-align: left;
   }
 
-  .face-item div {
+  .person-item div {
     position: absolute;
     left: 20px;
     top: 132px;
   }
 
-  .face-item:nth-child(3n+1) {
+  .person-item:nth-child(3n+1) {
     margin-right: 20px;
   }
 
-  .face-item:nth-child(3n+2) {
+  .person-item:nth-child(3n+2) {
     margin-right: 20px;
   }
 </style>

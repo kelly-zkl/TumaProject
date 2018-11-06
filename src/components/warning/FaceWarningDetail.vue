@@ -76,7 +76,7 @@
                   </el-form-item>
                   <el-form-item label="相似度" style="margin:0">
                     <span
-                      style="font-size: 15px;color:#000">{{item.similarThreshold<0?'--':item.similarThreshold}}</span>
+                      style="font-size: 15px;color:#000">{{item.similarThreshold<0?'--':Math.floor(item.similarThreshold*1000)/1000+'%'}}</span>
                   </el-form-item>
                 </el-form>
               </div>
@@ -134,12 +134,12 @@
                    style="width: 90px;height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
-          <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="年龄" prop="age" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="性别" prop="sex" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="100"
+                           max-width="150" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="年龄" prop="age" min-width="100"
+                           max-width="150" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="性别" prop="sex" min-width="100"
+                           max-width="150" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="抓取时间" prop="createTime" min-width="170"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="抓取场所" prop="placeName" min-width="150"
@@ -220,9 +220,9 @@
       },
       //进入人员档案
       gotoPerson(row) {
-        if (row.personId) {
-          // this.$router.push({path: '/personnelFiles', query: {faceId: row.personId}});
-          let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.personId}});
+        if (row.faceId) {
+          // this.$router.push({path: '/personnelFiles', query: {faceId: row.faceId}});
+          let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.faceId}});
           window.open(routeData.href, '_blank');
         }
       },
@@ -362,7 +362,9 @@
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-        } else if (column.property === 'age' || column.property === 'similarThreshold') {
+        } else if (column.property === 'similarThreshold') {
+          return row.similarThreshold < 0 ? '--' : Math.floor(row.similarThreshold * 1000) / 1000 + '%';
+        } else if (column.property === 'age') {
           return row[column.property] < 0 ? '--' : row[column.property];
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
@@ -409,37 +411,3 @@
     }
   }
 </script>
-<style scoped>
-  .face-main {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .face-item {
-    width: -moz-calc(50% - 42px);
-    width: -webkit-calc(50% - 42px);
-    width: calc(50% - 42px);
-    height: 122px;
-    border: 1px #D7D7D7 solid;
-    border-radius: 8px;
-    background: #fff;
-    padding: 15px;
-    margin-bottom: 20px;
-    position: relative;
-  }
-
-  .face-item img {
-    position: absolute;
-    left: 15px;
-    width: 120px;
-    height: 120px;
-    border: 1px #D7D7D7 dashed;
-    border-radius: 8px;
-    text-align: left;
-  }
-
-  .face-item:nth-child(odd) {
-    margin-right: 20px;
-  }
-</style>

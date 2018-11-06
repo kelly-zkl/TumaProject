@@ -51,8 +51,8 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="任务名称" prop="taskName" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="任务类型" prop="collisionType" min-width="125"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="任务类型" prop="collisionType" min-width="100"
+                         max-width="150" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="创建日期" prop="createTime" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="125"
@@ -133,12 +133,12 @@
       //跳转任务详情
       gotoDetail(id, collisionType) {
         sessionStorage.setItem("query", JSON.stringify(this.query));
-        // let routeData = this.$router.resolve({
-        //   path: '/taskDetail',
-        //   query: {taskId: id, collisionType: collisionType[0]}
-        // });
-        // window.open(routeData.href, '_blank');
-        this.$router.push({path: '/taskDetail', query: {taskId: id, collisionType: collisionType[0]}});
+        let routeData = this.$router.resolve({
+          path: '/taskDetail',
+          query: {taskId: id, collisionType: collisionType[0]}
+        });
+        window.open(routeData.href, '_blank');
+        // this.$router.push({path: '/taskDetail', query: {taskId: id, collisionType: collisionType[0]}});
       },
       pageChange(index) {
         this.query.page = index;

@@ -207,9 +207,9 @@
         sessionStorage.setItem("activeItem", this.activeItem);
         sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
         sessionStorage.setItem("query", JSON.stringify(this.query));
-        // let routeData = this.$router.resolve({path: '/faceWarningDetail', query: {id: row.id, faceId: row.faceId}});
-        // window.open(routeData.href, '_blank');
-        this.$router.push({path: '/faceWarningDetail', query: {id: row.id, faceId: row.faceId}});
+        let routeData = this.$router.resolve({path: '/faceWarningDetail', query: {id: row.id, faceId: row.faceId}});
+        window.open(routeData.href, '_blank');
+        // this.$router.push({path: '/faceWarningDetail', query: {id: row.id, faceId: row.faceId}});
       },
       //获取图像告警列表
       getData() {

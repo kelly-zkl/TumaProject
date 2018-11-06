@@ -24,8 +24,8 @@
       </el-form>
       <h5 class="add-label">设置碰撞条件</h5>
       <div class="center-block add-appdiv">
-        <el-row :gutter="30">
-          <el-col :lg="12" :xl="10">
+        <el-row :gutter="20">
+          <el-col :xl="10" :lg="11" :md="11" :sm="11" :xs="11">
             <h6 style="background: #CCC;text-align: left;margin: 0;padding: 10px 20px">条件1</h6>
             <el-form label-position="right" label-width="60px" ref="param1" :model="param1"
                      style="margin: 0;background: #F2F2F2;padding: 10px;height: 200px">
@@ -65,6 +65,9 @@
                                 placeholder="选择时间范围">
                 </el-time-picker>
               </el-form-item>
+              <el-form-item align="left" v-show="param1.dataFromMode == 'QUERY'">
+                <span style="font-size:13px;color: #999">(时段非必选，默认为全天24小时)</span>
+              </el-form-item>
               <el-form-item label="任务" align="left" style="margin: 10px 0 0 0"
                             v-show="param1.dataFromMode == 'COLLISION_RESULT'">
                 <el-select v-model="param1.collisionTaskId" placeholder="请选择任务" size="medium">
@@ -73,7 +76,19 @@
               </el-form-item>
             </el-form>
           </el-col>
-          <el-col :lg="12" :xl="10" style="background: #fff">
+          <el-col :lg="2" :xl="2" :md="2" :sm="2" :xs="2">
+            <el-tooltip class="item" effect="dark" placement="bottom">
+              <div slot="content">交集：条件1的记录与条件2的记录里都出现的IMSI<br/>
+                并集：条件1的记录与条件2的记录里分别出现的IMSI<br/>差集：条件1的记录里出现，条件2的记录里未出现的IMSI
+              </div>
+              <el-radio-group v-model="collision.collisionMode" size="medium">
+                <el-radio-button label="INTERSECT">交集</el-radio-button>
+                <el-radio-button label="UNION">并集</el-radio-button>
+                <el-radio-button label="SUBTRACT">差集</el-radio-button>
+              </el-radio-group>
+            </el-tooltip>
+          </el-col>
+          <el-col :xl="10" :lg="11" :md="2" :sm="2" :xs="2" style="background: #fff">
             <h6 style="background: #CCC;text-align: left;margin: 0;padding: 10px 20px">条件2</h6>
             <el-form label-position="right" label-width="60px" ref="param2" :model="param2"
                      style="margin:0;background: #F2F2F2;padding: 10px;height: 200px">
@@ -113,6 +128,9 @@
                                 style="width: 300px">
                 </el-time-picker>
               </el-form-item>
+              <el-form-item align="left" v-show="param2.dataFromMode == 'QUERY'">
+                <span style="font-size:13px;color: #999">(时段非必选，默认为全天24小时)</span>
+              </el-form-item>
               <el-form-item label="任务" align="left" style="margin: 10px 0 0 0"
                             v-show="param2.dataFromMode == 'COLLISION_RESULT'">
                 <el-select v-model="param2.collisionTaskId" placeholder="请选择任务" size="medium">
@@ -122,20 +140,6 @@
             </el-form>
           </el-col>
         </el-row>
-        <el-form style="margin-top: 10px">
-          <el-form-item label="数据组合方式" align="left" style="margin: 0">
-            <el-tooltip class="item" effect="dark" placement="bottom">
-              <div slot="content">交集：条件1的记录与条件2的记录里都出现的IMSI<br/>
-                并集：条件1的记录与条件2的记录里分别出现的IMSI<br/>差集：条件1的记录里出现，条件2的记录里未出现的IMSI
-              </div>
-              <el-radio-group v-model="collision.collisionMode" size="medium">
-                <el-radio-button label="INTERSECT">交集</el-radio-button>
-                <el-radio-button label="UNION">并集</el-radio-button>
-                <el-radio-button label="SUBTRACT">差集</el-radio-button>
-              </el-radio-group>
-            </el-tooltip>
-          </el-form-item>
-        </el-form>
       </div>
       <div class="block" style="margin-top: 30px">
         <el-button type="primary" @click="createTask()">确认创建</el-button>

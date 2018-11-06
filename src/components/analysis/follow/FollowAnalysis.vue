@@ -8,13 +8,13 @@
               <el-input v-model="query.taskName" placeholder="任务名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.followType" placeholder="全部类型" style="width: 120px"
-                         size="medium" filterable clearable>
-                <el-option v-for="item in followTypes" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
+            <!--<el-form-item style="margin-bottom: 10px">-->
+            <!--<el-select v-model="query.followType" placeholder="全部类型" style="width: 120px"-->
+            <!--size="medium" filterable clearable>-->
+            <!--<el-option v-for="item in followTypes" :key="item.value" :label="item.label" :value="item.value">-->
+            <!--</el-option>-->
+            <!--</el-select>-->
+            <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px">
               <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                               start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
@@ -51,8 +51,8 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="任务名称" prop="taskName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="任务类型" prop="followType" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="任务类型" prop="followType" min-width="100"
+                         max-width="150" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="分析对象" prop="followTarget" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="125" max-width="250">
@@ -141,12 +141,12 @@
       },
       gotoDetail(task) {
         sessionStorage.setItem("query", JSON.stringify(this.query));
-        // let routeData = this.$router.resolve({
-        //   path: '/followResult',
-        //   query: {taskId: task.id, followType: task.followType}
-        // });
-        // window.open(routeData.href, '_blank');
-        this.$router.push({path: '/followResult', query: {taskId: task.id, followType: task.followType}});
+        let routeData = this.$router.resolve({
+          path: '/followResult',
+          query: {taskId: task.id, followType: task.followType}
+        });
+        window.open(routeData.href, '_blank');
+        // this.$router.push({path: '/followResult', query: {taskId: task.id, followType: task.followType}});
       },
       //清除查询条件
       clearData() {

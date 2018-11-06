@@ -131,10 +131,10 @@
                            max-width="300" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="伴随时间" prop="upTime" min-width="170"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="运营商" prop="isp" min-width="125"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="网络类型" prop="netType" min-width="125"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="运营商" prop="isp" min-width="100"
+                           max-width="120" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="网络类型" prop="netType" min-width="100"
+                           max-width="120" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"

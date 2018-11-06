@@ -188,9 +188,9 @@
       gotoDetail(row) {
         sessionStorage.setItem("query", JSON.stringify(this.query));
         // sessionStorage.setItem("page", this.page);
-        // let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.faceId}});
-        // window.open(routeData.href, '_blank');
-        this.$router.push({path: '/personnelFiles', query: {faceId: row.faceId}});
+        let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.faceId}});
+        window.open(routeData.href, '_blank');
+        // this.$router.push({path: '/personnelFiles', query: {faceId: row.faceId}});
       },
       //获取档案人员列表
       getData() {

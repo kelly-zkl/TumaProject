@@ -71,25 +71,36 @@
                          layout="total, sizes, prev, pager, next, jumper"></el-pagination>
         </div>
       </div>
-      <div class="content" style="margin-left: 10px" v-show="activeItem == 'person'">
-        <el-table :data="persons" v-loading="listLoading1" class="center-block" stripe>
-          <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="人员图像" prop="deviceId" min-width="125" max-width="250">
-            <template slot-scope="scope">
-              <img v-bind:src="scope.row.faceImage" style="max-width: 90px;max-height:90px;border-radius: 6px"/>
-            </template>
-          </el-table-column>
-          <el-table-column align="left" label="人员ID" prop="personId" min-width="100"
-                           max-width="200" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="姓名" prop="name" min-width="100"
-                           max-width="200" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="年龄" prop="age" min-width="100"
-                           max-width="200" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="性别" prop="sex" min-width="100"
-                           max-width="200" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="IMSI" prop="imsiList" min-width="180"
-                           max-width="350" :formatter="formatterAddress"></el-table-column>
-        </el-table>
+      <div class="content" v-show="activeItem == 'person'">
+        <el-row v-loading="listLoading" style="margin: 0;padding: 0">
+          <el-col :span="24" style="margin: 0;padding: 0">
+            <div class="face-main">
+              <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
+                <img :src="item.faceUrl?item.faceUrl:imgPath"/>
+                <el-form :model="item" align="left" label-width="80px" label-position="right"
+                         style="position: absolute;top: 15px;left:150px;text-align: left">
+                  <el-form-item label="档案ID" style="margin:0">
+                    <span
+                      style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
+                    <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
+                  </el-form-item>
+                  <el-form-item label="关联次数" style="margin:0">
+                    <span style="font-size: 15px;color:#000">{{item.fnIn<0?'--':item.fnIn}}</span>
+                  </el-form-item>
+                  <el-form-item label="置信度" style="margin:0">
+                    <span style="font-size: 15px;color:#000">{{item.weight?item.weight/10+'%':'--'}}</span>
+                  </el-form-item>
+                </el-form>
+              </div>
+              <span v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px">暂无数据</span>
+              <el-row style="width: 100%" v-if="persons.length>=num">
+                <el-col :span="24" style="text-align: center" align="center">
+                  <el-button type="text" @click="loadMore()">加载更多</el-button>
+                </el-col>
+              </el-row>
+            </div>
+          </el-col>
+        </el-row>
       </div>
     </section>
   </div>
@@ -113,6 +124,7 @@
         listLoading: false,
         count: 0,
         persons: [],
+        num: 10,
         listLoading1: false,
         queryPerson: {imsi: this.imsi, size: 10000, page: 1}
       }
@@ -125,19 +137,33 @@
         if (this.activeItem === 'record') {//所有imsi记录
           this.getList();
         } else {//关联人员
-          this.getPerson();
+          this.getPersons();
+        }
+      },
+      //关联人员加载更多
+      loadMore() {
+        this.num += 10;
+        this.getPersons();
+      },
+      //进入人员档案
+      gotoPerson(row) {
+        if (row.personId) {
+          // this.$router.push({path: '/personnelFiles', query: {faceId: row.personId}});
+          let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.personId}});
+          window.open(routeData.href, '_blank');
         }
       },
       //根据imsi查人脸
-      getPerson() {
-        this.queryPerson.imsi = this.imsi;
-        this.listLoading1 = true;
-        this.$post('/terminate/queryArchives', this.queryPerson).then((data) => {
-          this.persons = data.data;
-          this.listLoading1 = false;
+      getPersons() {
+        this.listLoading = true;
+        this.$post('common/imsi/listFace', {imsi: this.imsi, num: this.num}).then((data) => {
+          this.listLoading = false;
+          if (data.data && data.data.length > 0) {
+            this.persons = data.data;
+          }
         }).catch((err) => {
-          this.persons = [];
-          this.listLoading1 = false;
+          this.listLoading = false;
+          this.$message.error(err);
         });
       },
       //清除查询条件

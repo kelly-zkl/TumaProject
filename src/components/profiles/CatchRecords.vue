@@ -167,9 +167,9 @@
         sessionStorage.setItem("activeItem", this.activeItem);
         sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
         sessionStorage.setItem("query", JSON.stringify(this.query));
-        // let routeData = this.$router.resolve({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
-        // window.open(routeData.href, '_blank');
-        this.$router.push({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
+        let routeData = this.$router.resolve({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
+        window.open(routeData.href, '_blank');
+        // this.$router.push({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
       },
       //批量导入设备的文件格式验证
       beforeAvatarUpload(file) {

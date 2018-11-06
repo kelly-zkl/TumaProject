@@ -269,6 +269,7 @@
           this.heatMap = new BMap.Map("dataheat");// 创建地图实例
 
           this.heatMap.enableScrollWheelZoom(); // 允许滚轮缩放
+          this.heatMap.setMinZoom(5);
           var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
           this.heatMap.setMapStyle({style: 'midnight'});
           this.heatMap.addControl(mapType);//左上角，默认地图控件
@@ -680,7 +681,7 @@
         arr.forEach((item, idx) => {
           datas.imsi[idx] = item.imsi;
           datas.face[idx] = item.face;
-          datas.createTime[idx] = formatDate(new Date(item.createTime * 1000), 'yyyy-MM-dd');
+          datas.createTime[idx] = formatDate(new Date(item.createTime * 1000), 'yy/MM/dd');
         });
         return datas;
       },
@@ -763,7 +764,7 @@
             tooltip: {trigger: 'axis', axisPointer: {type: 'cross'}},
             legend: {textStyle: {color: '#999'}, data: ['IMSI', '图像'], right: '20'},
             xAxis: {
-              data: (this.warning.createTime ? this.warning.createTime : []),
+              data: (this.warning.createTime ? this.warning.createTime : []), axisLabel: {align: 'center'},
               axisLine: {show: true, lineStyle: {color: '#6D6C98'}}
             },
             yAxis: {
