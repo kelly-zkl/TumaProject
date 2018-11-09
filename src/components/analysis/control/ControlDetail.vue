@@ -89,7 +89,7 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="告警时间" prop="createTime" min-width="170"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="告警状态" prop="status" width="120"
+          <el-table-column align="left" label="告警状态" prop="status" min-width="100" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="160" fixed="right">
             <template slot-scope="scope">
@@ -179,8 +179,10 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="告警时间" prop="createTime" min-width="170"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="告警状态" prop="status" width="120"
+          <el-table-column align="left" label="告警状态" prop="status" min-width="80" max-width="120"
                            :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="抓取时间" prop="catchTime" min-width="170"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="布控人员图像" prop="faceUrl" min-width="150"
                            max-width="250" :formatter="formatterAddress">
             <template slot-scope="scope">
@@ -189,8 +191,6 @@
                    style="max-width: 90px;max-height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
-          <el-table-column align="left" label="相似度" prop="similarThreshold" width="150"
-                           :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="160" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoDetail(scope.row)"
@@ -469,8 +469,8 @@
           return row.status === 0 ? '待处理' : row.status === 1 ? '处理中' : row.status === 2 ? '已处理' : row.status === 3 ? '误报' : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-        } else if (column.property === 'similarThreshold') {
-          return row.similarThreshold < 0 ? '--' : Math.floor(row.similarThreshold * 1000) / 1000 + '%';
+        } else if (column.property === 'catchTime') {
+          return row.catchTime ? formatDate(new Date(row.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'age') {
           return row[column.property] < 0 ? '--' : row[column.property];
         } else {

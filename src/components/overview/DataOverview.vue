@@ -171,7 +171,6 @@
         intervalid: null,//定时器
         icon: require('../../assets/img/icon.png'),
         imgPath: require('../../assets/img/icon_people.png'),
-        geolocation: null,
         count: 0
       }
     },
@@ -185,11 +184,11 @@
         if (!this.intervalid) {
           this.intervalid = setInterval(() => {
             this.count = this.count + 1;
-            if (this.count == 30) {
+            if (this.count == 6) {
               this.count = 0;
+              this.getMapData();
               this.getHotSpot();
             }
-            this.getMapData();
             this.getWarningCount();
             this.getImsiList();
             this.getLineData();
@@ -823,10 +822,10 @@
       this.getWarning();
       //获取概览数据
       this.getMapData();
-      this.getHotSpot();
       this.getWarningCount();
       this.getImsiList();
       this.getLineData();
+      this.getHotSpot();
       //定时请求数据==>10s请求一次
       this.statusTask();
     }

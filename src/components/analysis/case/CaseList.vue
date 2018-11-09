@@ -67,10 +67,10 @@
                          :max-width="item.max"></el-table-column>
         <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('case:get')">查看</el-button>
             <el-button type="text" @click="sels = [];sels.push(scope.row);finishCase()"
                        v-show="scope.row.status=='EXECUTION' && getButtonVial('case:batchUpdateStatus')">结案
             </el-button>
-            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('case:get')">查看</el-button>
             <el-button type="text" @click="sels = [];sels.push(scope.row);deleteCase()"
                        v-show="getButtonVial('case:delete')">删除
             </el-button>

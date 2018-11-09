@@ -64,10 +64,10 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="230" fixed="right">
           <template slot-scope="scope">
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('disposition:get')">查看
+            </el-button>
             <el-button type="text" @click="sels = [];sels.push(scope.row);finishTask()"
                        v-show="activeItem== 'EXECUTION' && getButtonVial('disposition:batchUpdateStatus')">结束布控
-            </el-button>
-            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('disposition:get')">查看告警
             </el-button>
             <el-button type="text" @click="sels = [];sels.push(scope.row);deleteTask()"
                        v-show="getButtonVial('disposition:delete')">删除

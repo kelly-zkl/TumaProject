@@ -43,18 +43,17 @@
                          max-width="300" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="200" fixed="right">
           <template slot-scope="scope">
-            <el-button type="text" @click="userole(scope.row)"
-                       v-show="getButtonVial('manager:role:update') && scope.row.roleType==1">
-              {{scope.row.state == 0 ? '停用' : '启用'}}
-            </el-button>
-            <el-button type="text" @click="roleInfo(scope.row)"
-                       v-show="getButtonVial('manager:role:detail:*') && scope.row.roleType==0">查看
+            <el-button type="text" @click="roleInfo(scope.row)" v-show="getButtonVial('manager:role:detail:*')">查看
             </el-button>
             <el-button v-show="getButtonVial('manager:role:update') && scope.row.roleId!=1"
                        type="text" @click="modifyrole(scope.row)">修改
             </el-button>
             <el-button @click="deleterole(scope.row.roleId)" type="text"
                        v-show="getButtonVial('manager:role:delete:*') && scope.row.roleType==1">删除
+            </el-button>
+            <el-button type="text" @click="userole(scope.row)"
+                       v-show="getButtonVial('manager:role:update') && scope.row.roleType==1">
+              {{scope.row.state == 0 ? '停用' : '启用'}}
             </el-button>
           </template>
         </el-table-column>

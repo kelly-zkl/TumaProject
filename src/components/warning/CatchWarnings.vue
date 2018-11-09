@@ -83,11 +83,11 @@
         <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警时间" prop="createTime" min-width="170"
-                         :formatter="formatterAddress"></el-table-column>
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警状态" prop="status" min-width="80" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="抓取时间" prop="catchTime" min-width="170"
-                         :formatter="formatterAddress"></el-table-column>
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="布控人员图像" prop="faceUrl" min-width="120"
                          max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">

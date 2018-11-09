@@ -75,9 +75,9 @@
         </el-table-column>
         <el-table-column align="left" label="姓名" prop="name" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="年龄" prop="age" width="120"
+        <el-table-column align="left" label="年龄" prop="age" min-width="100" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="性别" prop="sex" width="120"
+        <el-table-column align="left" label="性别" prop="sex" min-width="100" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="身份证号" prop="idCard" min-width="170"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -87,12 +87,12 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="150" fixed="right">
           <template slot-scope="scope">
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('person:delKeyPerson')">查看
+            </el-button>
             <el-button type="text" @click="showModify(scope.row)" v-show="getButtonVial('archives:updateDetails')">修改
             </el-button>
             <el-button type="text" @click="sels = [];sels.push(scope.row);deletePerson()"
                        v-show="getButtonVial('person:delKeyPerson')">删除
-            </el-button>
-            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('person:delKeyPerson')">查看
             </el-button>
           </template>
         </el-table-column>

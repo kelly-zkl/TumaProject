@@ -54,12 +54,12 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
-            <el-button type="text" @click="sels = [];sels.push(scope.row);deletePlace()"
-                       v-show="getButtonVial('place:delete')">删除
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('place:get')">查看
             </el-button>
             <el-button type="text" @click="updateInfo(scope.row)" v-show="getButtonVial('place:update')">修改
             </el-button>
-            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('place:get')">查看
+            <el-button type="text" @click="sels = [];sels.push(scope.row);deletePlace()"
+                       v-show="getButtonVial('place:delete')">删除
             </el-button>
           </template>
         </el-table-column>
