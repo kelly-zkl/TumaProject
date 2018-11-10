@@ -3,7 +3,7 @@
     <!--左侧菜单栏-->
     <el-aside :width="collapseWidth" v-bind:class="isCollapse ? 'content-aside-close' : 'content-aside'">
       <el-menu :default-active="$route.path" :collapse="isCollapse" unique-opened router mode="vertical"
-               background-color="#fff" text-color="#333" active-text-color="#6699FF" @select="handleActive">
+               background-color="#f6f7fb" text-color="#333" active-text-color="#6699FF" @select="handleActive">
         <el-menu-item v-for="item in menu" :index="item.permissionUrl">
           {{item.name}}
         </el-menu-item>
@@ -20,7 +20,7 @@
             </el-breadcrumb-item>
           </el-breadcrumb>
         </el-col>
-        <el-col :span="24" style="padding-top: 20px">
+        <el-col :span="24" style="padding-top: 15px">
           <transition name="fade" mode="out-in">
             <router-view></router-view>
           </transition>

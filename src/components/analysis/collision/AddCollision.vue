@@ -145,16 +145,19 @@
         <el-button type="primary" @click="createTask()">确认创建</el-button>
       </div>
       <!--在地图上选择设备-->
-      <el-dialog title="选择设备" :visible.sync="mapVisible">
-        <DeviceBmap @getDeviceList="getDeviceList" v-bind:deviceData="deviceData"></DeviceBmap>
-        <div class="block" style="margin-top: 20px">
-          <el-button @click="mapVisible = false">取消</el-button>
-          <el-button type="primary" @click="setDeviceList">确定</el-button>
-        </div>
-      </el-dialog>
+      <div class="device">
+        <el-dialog title="选择设备" :visible.sync="mapVisible" width="90%">
+          <DeviceBmap @getDeviceList="getDeviceList" v-bind:deviceData="deviceData" ref="map"></DeviceBmap>
+          <div class="block" style="margin-top: 20px">
+            <el-button @click="mapVisible = false">取消</el-button>
+            <el-button type="danger" round @click="clearChoose()">清除</el-button>
+            <el-button type="primary" @click="setDeviceList">确定</el-button>
+          </div>
+        </el-dialog>
+      </div>
       <!--选择设备-->
-      <el-dialog title="选择设备" :visible.sync="dialogDevice" width="950px">
-        <el-form :inline="true" :model="query" align="left">
+      <el-dialog title="选择设备" :visible.sync="dialogDevice" width="80%">
+        <el-form :inline="true" :model="query" align="left" style="text-align: left">
           <el-form-item style="margin-bottom: 10px">
             <el-input placeholder="设备标识/ID" v-model="query.deviceName" :maxlength="30" size="medium"></el-input>
           </el-form-item>
@@ -212,8 +215,8 @@
         </div>
       </el-dialog>
       <!--选择设备-->
-      <el-dialog title="选择设备" :visible.sync="dialogCamera" width="950px">
-        <el-form :inline="true" :model="query" align="left">
+      <el-dialog title="选择设备" :visible.sync="dialogCamera" width="80%">
+        <el-form :inline="true" :model="query" align="left" style="text-align: left">
           <el-form-item style="margin-bottom: 10px">
             <el-input v-model="query.cameraCode" placeholder="相机编码" size="medium" :maxlength=30></el-input>
           </el-form-item>
@@ -311,12 +314,17 @@
       }
     },
     methods: {
+      //清除选择
+      clearChoose() {
+        this.$refs.map.clearArea();
+      },
       //地图选择设备，显示dialog
       selectDevice(val) {
         let param = {deviceType: this.collisionType, dataType: val};
         console.log(param);
         this.deviceData = JSON.stringify(param);
         this.mapVisible = true;
+        // this.$refs.map.clearArea();
       },
       //地图选择设备
       setDeviceList() {

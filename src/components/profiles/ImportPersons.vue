@@ -1,61 +1,58 @@
 <template>
   <div>
     <section class="content">
-      <el-row>
-        <el-col :span="24" align="left">
-          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('person:query')">
-            <el-form-item style="margin-bottom: 10px">
-              <el-input v-model.number="query.similarThreshold" placeholder="相似度阈值" size="medium"
-                        style="width: 260px">
-                <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
-                           :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
-                           :auto-upload="true" :show-file-list="false">
-                  <el-button type="primary" size="medium">上传头像图片</el-button>
-                </el-upload>
-              </el-input>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="人员编号" v-model="query.faceId" :maxlength="18"
-                        style="width: 180px" size="medium"></el-input>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="15"
-                        style="width: 180px" size="medium"></el-input>
-            </el-form-item>
-            <el-form-item label="年龄" style="margin-bottom: 10px">
-              <el-input-number v-model="query.startAge" controls-position="right" :min="1"
-                               :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
-              <span>~</span>
-              <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
-                               :max="200" style="width: 100px" size="medium"></el-input-number>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px">
-                <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="手机号" v-model="query.mobilePhone" :maxlength="11"
-                        style="width: 180px" size="medium"></el-input>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="姓名" v-model="query.name" :maxlength="10"
-                        style="width: 180px" size="medium"></el-input>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="身份证号" v-model="query.idCard" :maxlength="18"
-                        style="width: 180px" size="medium"></el-input>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-button size="medium" @click="clearData()">重置</el-button>
-            </el-form-item>
-          </el-form>
-        </el-col>
-      </el-row>
+      <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('person:query')"
+               style="text-align: left">
+        <el-form-item style="margin-bottom: 10px">
+          <el-input v-model.number="query.similarThreshold" placeholder="相似度阈值" size="medium"
+                    style="width: 260px">
+            <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
+                       :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
+                       :auto-upload="true" :show-file-list="false">
+              <el-button type="primary" size="medium">上传头像图片</el-button>
+            </el-upload>
+          </el-input>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
+          <el-input placeholder="人员编号" v-model="query.faceId" :maxlength="18"
+                    style="width: 180px" size="medium"></el-input>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
+          <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="15"
+                    style="width: 180px" size="medium"></el-input>
+        </el-form-item>
+        <el-form-item label="年龄" style="margin-bottom: 10px">
+          <el-input-number v-model="query.startAge" controls-position="right" :min="1"
+                           :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
+          <span>~</span>
+          <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
+                           :max="200" style="width: 100px" size="medium"></el-input-number>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
+          <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px">
+            <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
+          <el-input placeholder="手机号" v-model="query.mobilePhone" :maxlength="11"
+                    style="width: 180px" size="medium"></el-input>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
+          <el-input placeholder="姓名" v-model="query.name" :maxlength="10"
+                    style="width: 180px" size="medium"></el-input>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
+          <el-input placeholder="身份证号" v-model="query.idCard" :maxlength="18"
+                    style="width: 180px" size="medium"></el-input>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
+          <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
+          <el-button size="medium" @click="clearData()">重置</el-button>
+        </el-form-item>
+      </el-form>
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="人员编号" prop="faceId" min-width="180"

@@ -30,21 +30,21 @@
       <!--</div>-->
       <h5 style="border-left: 3px #6699FF solid;text-align: left;font-size: 16px;padding-left: 10px;color:#343434">
         所有记录</h5>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;margin-left: 30px">
-        <el-form-item label="设备ID">
+      <el-form :inline="true" :model="query" align="left" style="text-align: left">
+        <el-form-item style="margin-bottom: 10px">
           <el-input v-model="query.deviceId" placeholder="设备ID" style="width: 160px" size="medium"
                     :maxlength=30></el-input>
         </el-form-item>
-        <el-form-item label="时间范围">
+        <el-form-item style="margin-bottom: 10px">
           <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" size="medium"
                           :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
                           start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px">
           </el-date-picker>
         </el-form-item>
-        <el-form-item>
+        <el-form-item style="margin-bottom: 10px">
           <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
         </el-form-item>
-        <el-form-item>
+        <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
       </el-form>

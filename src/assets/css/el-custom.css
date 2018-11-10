@@ -5,22 +5,26 @@
   cursor: not-allowed
 }
 
-.el-input.is-disabled .el-input__inner::-webkit-input-placeholder {
-  color: #C1C1C1
+.el-input__inner::-webkit-input-placeholder, .el-date-editor .el-range-input::-webkit-input-placeholder, .el-textarea__inner::-webkit-input-placeholder {
+  color: #999
 }
 
-.el-input.is-disabled .el-input__inner:-ms-input-placeholder {
-  color: #C1C1C1
+.el-input__inner:-ms-input-placeholder, .el-date-editor .el-range-input:-ms-input-placeholder, .el-textarea__inner:-ms-input-placeholder {
+  color: #999
 }
 
-.el-input.is-disabled .el-input__inner::placeholder {
-  color: #C1C1C1
+.el-input__inner::placeholder, .el-date-editor .el-range-input::placeholder, .el-textarea__inner::placeholder {
+  color: #999
 }
 
 .login-box .el-input__inner {
   background: rgba(0, 0, 0, 0);
   border-color: #bbb;
   color: #343434;
+}
+
+.login-box .el-input .el-input__inner::-webkit-input-placeholder {
+  color: #999
 }
 
 .login-box .el-input__inner:-ms-input-placeholder {
@@ -73,7 +77,7 @@
 }
 
 .el-table--striped .el-table__body tr.el-table__row--striped td {
-  background: #dfdfdf;
+  background: #efefef;
   background-clip: padding-box;
 }
 
@@ -196,7 +200,7 @@
 
 /*标签页*/
 .tab-card .el-tabs--border-card {
-  background: #E9ECF1;
+  background: #E9ECF0;
   border: none;
   -webkit-box-shadow: none;
   box-shadow: none;
@@ -209,7 +213,7 @@
 }
 
 .tab-card .el-tabs--border-card > .el-tabs__header {
-  background-color: #E9ECF1;
+  background-color: #E9ECF0;
   border-bottom: none;
   margin: 0;
   padding: 0;
@@ -219,12 +223,12 @@
   color: #343434 !important;
   font-weight: bold;
   font-size: 15px;
-  border-top: 4px #E9ECF1 solid;
+  border-top: 4px #E9ECF0 solid;
 }
 
 .tab-card .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
   color: #6699FF !important;
-  background-color: #E9ECF1;
+  background-color: #E9ECF0;
   border-top: 4px #6699FF solid;
   border-right-color: transparent;
   border-left-color: transparent
@@ -248,7 +252,7 @@
   bottom: 0;
   width: 430px;
   border-radius: 0;
-  background: #E9ECF1;
+  background: #E9ECF0;
 }
 
 .view-msg .el-dialog__header, .view-msg .el-dialog__body, .warning .el-dialog__body {
@@ -259,7 +263,7 @@
   position: absolute;
   right: 10px;
   border-radius: 4px;
-  background: #E9ECF1;
+  background: #E9ECF0;
 }
 
 /**所有的弹窗标题靠左*/
@@ -287,7 +291,7 @@
 .add-label {
   border-left: 3px #6699FF solid;
   text-align: left;
-  font-size: 16px;
+  font-size: 15px;
   padding-left: 10px;
   color: #343434;
 }
@@ -295,7 +299,10 @@
 /**dialog中的form表单标签和内容的距离*/
 .dialog .el-form-item__label {
   padding: 0 30px 0 0;
-  color: #999;
+}
+
+.device .el-dialog__body {
+  padding: 0 20px 20px 20px
 }
 
 @media screen and (min-width: 320px) and (max-width: 799px) {
@@ -344,18 +351,18 @@
 .content-aside-close {
   flex: 0 0 60px;
   width: 60px;
-  background-color: #E4E4E4;
+  background-color: #eff0f4;
 }
 
 .content-aside {
   flex: 0 0 200px;
   width: 200px;
-  background-color: #E4E4E4;
+  background-color: #eff0f4;
 }
 
 .content-main {
   padding-right: 20px;
-  background-color: #E9ECF1;
+  background-color: #E9ECF0;
   flex: 1;
   overflow-y: scroll;
   padding-top: 10px;

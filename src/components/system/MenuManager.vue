@@ -1,9 +1,9 @@
 <template>
   <div>
     <section class="content">
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 0">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left">
         <el-row>
-          <el-col :span="20" align="left" v-show="getButtonVial('manager:permission:query')">
+          <el-col :span="20" align="left" v-show="getButtonVial('manager:permission:query')" style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="菜单名称" v-model="query.name" :maxlength="30" size="medium"
                         style="width: 200px"></el-input>
@@ -23,8 +23,8 @@
               <el-button @click.stop="clearData()" size="medium">重置</el-button>
             </el-form-item>
           </el-col>
-          <el-col :span="4" align="right">
-            <el-form-item>
+          <el-col :span="4" align="right" style="text-align: right">
+            <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" icon="el-icon-plus" @click="addMenu()" size="medium"
                          v-show="getButtonVial('manager:permission:create')">创建菜单
               </el-button>

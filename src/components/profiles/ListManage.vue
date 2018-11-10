@@ -2,8 +2,8 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="16" align="left">
-          <el-form :inline="true" :model="query" align="left">
+        <el-col :span="16" align="left" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model.number="query.similarThreshold" placeholder="相似度阈值" size="medium"
                         style="width: 260px">
@@ -50,7 +50,7 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="8" align="right">
+        <el-col :span="8" align="right" style="text-align: right">
           <el-button type="primary" size="medium" style="margin-bottom: 10px"
                      v-show="getButtonVial('person:delKeyPerson')"
                      :disabled="sels.length == 0" @click="deletePerson()">删除

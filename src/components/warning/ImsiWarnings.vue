@@ -9,7 +9,7 @@
           </el-tabs>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left"
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left"
                v-show="getButtonVial(exportKey)">
         <el-form-item style="margin-bottom: 10px">
           <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 160px"

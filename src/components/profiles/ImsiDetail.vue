@@ -52,7 +52,7 @@
         </el-form>
       </div>
       <el-row>
-        <el-col :span="16" align="left" class="tab-card">
+        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="关联人员" name="person"></el-tab-pane>
             <el-tab-pane label="侦码记录" name="list"></el-tab-pane>
@@ -92,8 +92,8 @@
       </div>
       <div v-show="activeItem=='list'">
         <el-row style="margin-top: 15px">
-          <el-col :span="18" align="left">
-            <el-form :inline="true" :model="query" align="left"
+          <el-col :span="18" align="left" style="text-align: left">
+            <el-form :inline="true" :model="query" align="left" style="text-align: left"
                      v-show="getButtonVial('common:imsi:listImsiRecordBySpecialImsi')">
               <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
                 <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
@@ -116,7 +116,7 @@
               </el-form-item>
             </el-form>
           </el-col>
-          <el-col :span="6" align="right" v-show="getButtonVial('route:query')">
+          <el-col :span="6" align="right" v-show="getButtonVial('route:query')" style="text-align: right">
             <el-button type="primary" size="medium" @click="gotoPath()" v-show="getButtonVial('place:query')">查看轨迹
             </el-button>
           </el-col>

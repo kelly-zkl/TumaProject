@@ -2,22 +2,23 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="16" align="left" class="tab-card">
+        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="进行中" name="EXECUTION"></el-tab-pane>
             <el-tab-pane label="已结案" name="HANDLED"></el-tab-pane>
           </el-tabs>
         </el-col>
-        <el-col :span="8" align="right">
+        <el-col :span="8" align="right" style="text-align: right">
           <el-button type="primary" size="medium" @click="showCaseType()">管理案件属性</el-button>
           <el-button type="primary" size="medium" @click="showCreate()"
                      v-show="getButtonVial('case:add')">创建新案件
           </el-button>
         </el-col>
       </el-row>
-      <el-row style="padding-top: 15px">
-        <el-col :span="18" align="left">
-          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('case:query')">
+      <el-row style="padding-top: 10px">
+        <el-col :span="18" align="left" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('case:query')"
+                   style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.caseName" placeholder="案件编号/名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
@@ -49,7 +50,7 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="6" align="right">
+        <el-col :span="6" align="right" style="text-align: right">
           <el-button type="primary" size="medium"
                      v-show="query.status == 'EXECUTION' && getButtonVial('case:batchUpdateStatus')"
                      :disabled="sels.length == 0" @click="finishCase()">结案
@@ -88,10 +89,10 @@
           <el-form ref="createCase" :rules="rules" :model="createCase" label-position="right"
                    :label-width="labelWidth">
             <el-form-item label="案件编号" prop="caseNo">
-              <el-input v-model="createCase.caseNo" auto-complete="off" :maxlength="30"></el-input>
+              <el-input v-model="createCase.caseNo" auto-complete="off" :maxlength="30" placeholder="案件编号"></el-input>
             </el-form-item>
             <el-form-item label="案件名称" prop="caseName">
-              <el-input v-model="createCase.caseName" auto-complete="off" :maxlength="20"></el-input>
+              <el-input v-model="createCase.caseName" auto-complete="off" :maxlength="20" placeholder="案件名称"></el-input>
             </el-form-item>
             <el-form-item label="案件类型" prop="caseType">
               <el-select v-model="createCase.caseType" placeholder="案件类型" filterable clearable style="width: 100%">

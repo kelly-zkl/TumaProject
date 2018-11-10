@@ -25,19 +25,20 @@
         </el-row>
       </div>
       <el-row style="margin-bottom: 15px">
-        <el-col :span="16" align="left" class="tab-card">
+        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="分析结果" name="result"></el-tab-pane>
             <el-tab-pane label="所有记录" name="list"></el-tab-pane>
           </el-tabs>
         </el-col>
-        <el-col :span="8" align="right">
+        <el-col :span="8" align="right" style="text-align: right">
           <el-button type="primary" size="medium" @click="exportData()" v-show="getButtonVial(exportKey)">导出数据
           </el-button>
         </el-col>
       </el-row>
       <div class="content" v-show="activeItem == 'result' && task.followType == 'IMSI'">
-        <el-form :inline="true" :model="queryResult" align="left" v-show="getButtonVial('follow:queryResult')">
+        <el-form :inline="true" :model="queryResult" align="left" v-show="getButtonVial('follow:queryResult')"
+                 style="text-align: left">
           <el-form-item style="margin-bottom: 10px">
             <el-input v-model="queryResult.imsi" placeholder="IMSI" size="medium" style="width: 160px"
                       :maxlength=20></el-input>
@@ -91,8 +92,9 @@
                          layout="total, sizes, prev, pager, next, jumper"></el-pagination>
         </div>
       </div>
-      <div class="content" style="margin-left: 10px" v-show="activeItem == 'list' && task.followType == 'IMSI'">
-        <el-form :inline="true" :model="queryRecord" align="left" v-show="getButtonVial('follow:queryRecord')">
+      <div class="content" v-show="activeItem == 'list' && task.followType == 'IMSI'">
+        <el-form :inline="true" :model="queryRecord" align="left" v-show="getButtonVial('follow:queryRecord')"
+                 style="text-align: left">
           <el-form-item style="margin-bottom: 10px">
             <el-input v-model="queryRecord.imsi" placeholder="IMSI" size="medium" style="width: 160px"
                       :maxlength=20></el-input>
@@ -156,7 +158,8 @@
         </div>
       </div>
       <div class="content" v-show="activeItem == 'result' && task.followType == 'FACE'">
-        <el-form :inline="true" :model="queryResult" align="left" v-show="getButtonVial('follow:queryResult')">
+        <el-form :inline="true" :model="queryResult" align="left" v-show="getButtonVial('follow:queryResult')"
+                 style="text-align: left">
           <el-form-item label="年龄" style="margin-bottom: 10px">
             <el-input-number v-model="queryResult.startAge" controls-position="right" :min="1"
                              :max="queryResult.endAge-1" style="width: 100px" size="medium"></el-input-number>
@@ -212,7 +215,8 @@
         </div>
       </div>
       <div class="content" style="margin-left: 10px" v-show="activeItem == 'list' && task.followType == 'FACE'">
-        <el-form :inline="true" :model="queryRecord" align="left" v-show="getButtonVial('follow:queryRecord')">
+        <el-form :inline="true" :model="queryRecord" align="left" v-show="getButtonVial('follow:queryRecord')"
+                 style="text-align: left">
           <el-form-item label="年龄" style="margin-bottom: 10px">
             <el-row>
               <el-input v-model="queryRecord.startAge" type="number" size="medium" style="width: 80px"
@@ -222,7 +226,7 @@
                         :maxlength=3></el-input>
             </el-row>
           </el-form-item>
-          <el-form-item label="性别">
+          <el-form-item>
             <el-select v-model="queryRecord.sex" placeholder="性别" style="width: 100px" size="medium" clearable>
               <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
               </el-option>

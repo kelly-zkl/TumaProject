@@ -6,7 +6,7 @@
         <el-tab-pane label="图像" name="face"></el-tab-pane>
       </el-tabs>
       <div v-show="activeItem=='imsi'">
-        <el-form :inline="true" :model="queryImsi" align="left" style="margin-top: 15px">
+        <el-form :inline="true" :model="queryImsi" align="left" style="margin-top: 10px;text-align: left">
           <el-form-item style="margin-bottom: 10px">
             <el-input placeholder="设备ID" v-model="queryImsi.deviceId" :maxlength="30"
                       style="width: 180px" size="medium"></el-input>
@@ -63,7 +63,7 @@
         </div>
       </div>
       <div v-show="activeItem=='face'">
-        <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
+        <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: right">
           <el-form-item style="margin-bottom: 10px">
             <el-input v-model.number="query.similarThreshold" placeholder="相似度阈值" size="medium" style="width: 260px">
               <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"

@@ -2,13 +2,13 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="16" align="left" class="tab-card">
+        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="布控中" name="EXECUTION"></el-tab-pane>
             <el-tab-pane label="已结束" name="FINISH"></el-tab-pane>
           </el-tabs>
         </el-col>
-        <el-col :span="8" align="right">
+        <el-col :span="8" align="right" style="text-align: right;margin-top: 10px">
           <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="deleteTask()"
                      v-show="getButtonVial('disposition:delete')">删除
           </el-button>
@@ -20,7 +20,7 @@
           </el-button>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px"
+      <el-form :inline="true" :model="query" align="left" style="text-align: left"
                v-show="getButtonVial('disposition:query')">
         <el-form-item style="margin-bottom: 10px">
           <el-input v-model="query.taskName" placeholder="任务名称" size="medium" style="width: 160px"

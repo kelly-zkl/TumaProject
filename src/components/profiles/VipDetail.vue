@@ -5,7 +5,7 @@
         <el-col :span="8" align="left" style="text-align: left">
           <div style="font-size:14px;padding:10px 20px">基本信息</div>
         </el-col>
-        <el-col :span="4" :offset="12" align="center" style="text-align: center">
+        <el-col :span="4" :offset="12" align="center" style="text-align: right">
           <el-button type="text" size="medium" @click="deletePerson()" v-show="getButtonVial('person:delKeyPerson')">
             删除
           </el-button>
@@ -30,8 +30,7 @@
                 <span style="font-size: 15px;color:#000">{{person.sex == 0 ? '男' : person.sex == 1 ? '女' : '--'}}</span>
               </el-form-item>
               <el-form-item label="手机号" align="left" style="margin: 0;text-align: left">
-                <span
-                  style="font-size: 15px;color:#000">{{person.mobilePhone? person.mobilePhone: '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{person.mobilePhone? person.mobilePhone: '--'}}</span>
               </el-form-item>
             </el-col>
             <el-col :span="8">
@@ -39,12 +38,10 @@
                 <span style="font-size: 15px;color:#000">{{person.idCard ? person.idCard : '--'}}</span>
               </el-form-item>
               <el-form-item label="所属名单" align="left" style="margin: 0;text-align: left">
-                <span
-                  style="font-size: 15px;color:#000">{{person.blackClass ? person.blackClass : '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{person.blackClass ? person.blackClass : '--'}}</span>
               </el-form-item>
               <el-form-item label="备注" align="left" style="margin: 0;text-align: left">
-                <span
-                  style="font-size: 15px;color:#000">{{person.remark ? person.remark : '--'}}</span>
+                <span style="font-size: 15px;color:#000">{{person.remark ? person.remark : '--'}}</span>
               </el-form-item>
             </el-col>
           </el-row>
@@ -66,13 +63,11 @@
                 <el-form :model="item" align="left" label-width="80px" label-position="right"
                          style="position: absolute;top: 10px;left:150px;text-align: left">
                   <el-form-item label="档案ID" style="margin:0">
-                    <span
-                      style="font-size: 15px;color:#000;margin-right: 20px">{{item.faceId?item.faceId:'--'}}</span>
+                    <span style="font-size: 15px;color:#000;margin-right: 20px">{{item.faceId?item.faceId:'--'}}</span>
                     <el-button type="text" @click="gotoPerson(item)" v-if="item.faceId">查看人员</el-button>
                   </el-form-item>
                   <el-form-item label="相似度" style="margin:0">
-                    <span
-                      style="font-size: 15px;color:#000">{{item.similarThreshold<0?'--':Math.floor(item.similarThreshold*1000)/1000+'%'}}</span>
+                    <span style="font-size: 15px;color:#000">{{item.similarThreshold<0?'--':Math.floor(item.similarThreshold*1000)/1000+'%'}}</span>
                   </el-form-item>
                 </el-form>
               </div>
@@ -111,8 +106,7 @@
           </el-form-item>
           <el-form-item label="性别">
             <el-select v-model="modifyPerson.sex" placeholder="选择性别">
-              <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
-              </el-option>
+              <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="手机号">

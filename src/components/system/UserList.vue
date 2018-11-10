@@ -1,9 +1,9 @@
 <template>
   <div>
     <section class="content">
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 0">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left">
         <el-row>
-          <el-col :span="20" align="left" v-show="getButtonVial('manager:user:query')">
+          <el-col :span="20" align="left" v-show="getButtonVial('manager:user:query')" style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="账号/用户名" v-model="query.keyword" :maxlength="30"
                         style="width: 200px" size="medium"></el-input>
@@ -29,8 +29,8 @@
               <el-button @click.stop="clearData()" size="medium">重置</el-button>
             </el-form-item>
           </el-col>
-          <el-col :span="4" align="right">
-            <el-form-item>
+          <el-col :span="4" align="right" style="text-align: right">
+            <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" icon="el-icon-plus" @click="addInfo()"
                          v-show="getButtonVial('manager:user:create')" size="medium">添加成员
               </el-button>

@@ -55,7 +55,7 @@
       <h5 style="border-left: 3px #6699FF solid;text-align: left;font-size: 16px;padding-left: 10px;color:#343434">
         已关联任务</h5>
       <el-row style="margin-bottom: 15px">
-        <el-col :span="24" align="left" class="tab-card">
+        <el-col :span="24" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="碰撞任务" name="collision"></el-tab-pane>
             <el-tab-pane label="伴随任务" name="follow"></el-tab-pane>
@@ -64,7 +64,7 @@
       </el-row>
       <div class="content" v-show="activeItem == 'collision'">
         <el-row>
-          <el-col :span="18" v-show="getButtonVial('collision:query')">
+          <el-col :span="18" v-show="getButtonVial('collision:query')" style="text-align: left">
             <el-form :inline="true" :model="queryCollision" align="left">
               <el-form-item style="margin-bottom: 10px">
                 <el-input v-model="queryCollision.taskName" placeholder="任务名称" size="medium" style="width: 160px"
@@ -99,7 +99,7 @@
               </el-form-item>
             </el-form>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="6" style="text-align: right">
             <el-button type="primary" size="medium" @click="cancelCollis()" :disabled="selsColl.length == 0"
                        v-show="getButtonVial('collision:cancelCase')">取消关联
             </el-button>
@@ -140,7 +140,7 @@
       </div>
       <div class="content" v-show="activeItem == 'follow'">
         <el-row>
-          <el-col :span="18" v-show="getButtonVial('follow:query')">
+          <el-col :span="18" v-show="getButtonVial('follow:query')" style="text-align: left">
             <el-form :inline="true" :model="queryFollow" align="left">
               <el-form-item>
                 <el-input v-model="queryFollow.taskName" placeholder="任务名称" size="medium" style="width: 160px"
@@ -166,7 +166,7 @@
               </el-form-item>
             </el-form>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="6" style="text-align: right">
             <el-button type="primary" size="medium" @click="cancelFollow()" :disabled="selsFoll.length == 0"
                        v-show="getButtonVial('follow:cancelCase')">取消关联
             </el-button>

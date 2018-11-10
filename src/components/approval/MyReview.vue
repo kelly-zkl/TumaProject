@@ -2,17 +2,17 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="16" align="left" class="tab-card">
+        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="未读" name="UNREAD"></el-tab-pane>
             <el-tab-pane label="已读" name="READ"></el-tab-pane>
           </el-tabs>
         </el-col>
-        <el-col :span="8" align="right" v-show="getButtonVial('workflow:translation:apply')">
+        <el-col :span="8" align="right" v-show="getButtonVial('workflow:translation:apply')" style="text-align: right">
           <el-button type="primary" size="medium" @click="addApply()">发起申请</el-button>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left">
         <el-row>
           <el-col :span="21" align="left">
             <el-form-item style="margin-bottom: 10px">

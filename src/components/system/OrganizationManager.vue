@@ -1,9 +1,9 @@
 <template>
   <div>
     <section class="content">
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 0">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left">
         <el-row>
-          <el-col :span="20" align="left" v-show="getButtonVial('manager:group:query')">
+          <el-col :span="20" align="left" v-show="getButtonVial('manager:group:query')" style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="组织名称" v-model="query.groupName" :maxlength="20" size="medium"></el-input>
             </el-form-item>
@@ -15,7 +15,7 @@
               <el-button @click.stop="clearData()" size="medium">重置</el-button>
             </el-form-item>
           </el-col>
-          <el-col :span="4" align="right">
+          <el-col :span="4" align="right" style="text-align: right">
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" icon="el-icon-plus" @click="addOrganization()"
                          v-show="getButtonVial('manager:group:create')" size="medium">创建组织

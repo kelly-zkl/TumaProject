@@ -2,8 +2,9 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="18" align="left">
-          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('place:query')">
+        <el-col :span="18" align="left" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('place:query')"
+                   style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.placeName" placeholder="场所编码/名称" size="medium" :maxlength=30></el-input>
             </el-form-item>
@@ -26,7 +27,7 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="6" align="right">
+        <el-col :span="6" align="right" style="text-align: right">
           <el-button type="primary" size="medium" @click="deletePlace()" :disabled="sels.length==0"
                      v-show="getButtonVial('place:delete')">删除
           </el-button>
@@ -87,7 +88,7 @@
               </el-row>
             </el-form-item>
             <el-form-item label="场所名称" prop="placeName">
-              <el-input v-model="addPlace.placeName" auto-complete="off" :maxlength="20"></el-input>
+              <el-input v-model="addPlace.placeName" auto-complete="off" :maxlength="20" placeholder="场所名称"></el-input>
             </el-form-item>
             <el-form-item label="场所类型" prop="placeType">
               <el-select v-model="addPlace.placeType" placeholder="请选择" style="width: 100%" filterable
@@ -109,7 +110,8 @@
               </el-cascader>
             </el-form-item>
             <el-form-item label="详细地址" prop="detailAddress">
-              <el-input v-model="addPlace.detailAddress" auto-complete="off" :maxlength="30"></el-input>
+              <el-input v-model="addPlace.detailAddress" auto-complete="off" :maxlength="30"
+                        placeholder="详细地址"></el-input>
             </el-form-item>
             <el-form-item label="经纬度" required>
               <el-row :gutter="15" style="text-align: left">

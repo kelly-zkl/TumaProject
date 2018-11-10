@@ -2,8 +2,9 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="18" align="left">
-          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('follow:query')">
+        <el-col :span="18" align="left" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('follow:query')"
+                   style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.taskName" placeholder="任务名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
@@ -37,7 +38,7 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="6" align="right">
+        <el-col :span="6" align="right" style="text-align: right">
           <el-button type="primary" size="medium" @click="deleteTask()" :disabled="sels.length == 0"
                      v-show="getButtonVial('follow:delete')">删除任务
           </el-button>

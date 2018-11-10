@@ -1,7 +1,7 @@
 <template>
   <div>
     <section class="content">
-      <div id="device-map" style="width: 100%;height:550px"></div>
+      <div id="device-map" style="width: 100%;height:650px"></div>
     </section>
   </div>
 </template>
@@ -22,8 +22,8 @@
           strokeColor: "#FF6600",    //边线颜色。
           fillColor: "#FF6600",      //填充颜色。当参数为空时，圆形将没有填充效果。
           strokeWeight: 3,       //边线的宽度，以像素为单位。
-          strokeOpacity: 0.8,	   //边线透明度，取值范围0 - 1。
-          fillOpacity: 0.3,      //填充的透明度，取值范围0 - 1。
+          strokeOpacity: 0.4,	   //边线透明度，取值范围0 - 1。
+          fillOpacity: 0.15,      //填充的透明度，取值范围0 - 1。
           strokeStyle: 'solid' //边线的样式，solid或dashed。
         },
         mapData: [],
@@ -247,7 +247,7 @@
       },
       //添加鼠标绘制工具监听事件，用于获取绘制结果
       overlaycomplete(e) {
-        this.clearArea();
+        // this.clearArea();
         var path = e.overlay.getPath();//Array<Point> 返回多边型的点数组
 
         //生成多边形
@@ -255,7 +255,7 @@
         var num = 0;
         for (var k = 0; k < this.mapData.length; k++) {
           let isBol = this.InOrOutPolygon(this.mapData[k].value[0], this.mapData[k].value[1]);
-          if (isBol) {
+          if (isBol && !this.isHasDevice(this.mapData[k].deviceId)) {
             this.deviceList.push(this.mapData[k].deviceId)
           }
           num = (isBol ? num + 1 : num);
@@ -271,6 +271,18 @@
         });
         this.bMap.addOverlay(label);
         this.$emit('getDeviceList', {dataType: this.dataType, deviceList: this.deviceList});
+      },
+      //是否存在重复的deviceId
+      isHasDevice(val) {
+        var bol = false;
+        if (this.deviceList.length > 0) {
+          this.deviceList.forEach((item) => {
+            if (val == item) {
+              bol = true;
+            }
+          });
+        }
+        return bol;
       },
       //地图拖拽/放大之后的中心点和放大倍数
       zoomEvent() {
@@ -295,6 +307,7 @@
           }
         }
         this.deviceList = [];
+        this.$emit('getDeviceList', {dataType: this.dataType, deviceList: this.deviceList});
       }
     },
     mounted() {

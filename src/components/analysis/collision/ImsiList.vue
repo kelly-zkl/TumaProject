@@ -1,16 +1,17 @@
 <template>
   <div>
     <section class="content">
-      <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryRecord')">
+      <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryRecord')"
+               style="text-align: left">
         <el-form-item style="margin-bottom: 10px">
           <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 160px"
                     :maxlength=50></el-input>
         </el-form-item>
-        <el-form-item label="设备ID" style="margin-bottom: 10px">
+        <el-form-item style="margin-bottom: 10px">
           <el-input v-model="query.deviceId" placeholder="设备ID" style="width: 160px" size="medium"
                     :maxlength=30></el-input>
         </el-form-item>
-        <el-form-item label="时间范围" style="margin-bottom: 10px">
+        <el-form-item style="margin-bottom: 10px">
           <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" size="medium"
                           :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
                           start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px"

@@ -1,18 +1,19 @@
 <template>
   <div>
     <section class="content">
-      <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:regional:count')">
-        <el-form-item label="数量">
+      <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:regional:count')"
+               style="text-align: left">
+        <el-form-item label="数量" style="margin-bottom: 10px">
           <el-input-number v-model="query.count1" controls-position="right" :min="1"
                            :max="query.count2-1" style="width: 100px" size="medium"></el-input-number>
           <span>~</span>
           <el-input-number v-model="query.count2" controls-position="right" :min="query.count1+1"
                            :max="99999" style="width: 100px" size="medium"></el-input-number>
         </el-form-item>
-        <el-form-item>
+        <el-form-item style="margin-bottom: 10px">
           <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
         </el-form-item>
-        <el-form-item>
+        <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
       </el-form>

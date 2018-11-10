@@ -2,8 +2,9 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="24" align="left">
-          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('camera:query')">
+        <el-col :span="24" align="left" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('camera:query')"
+                   style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.cameraCode" placeholder="相机编码" size="medium" :maxlength=30></el-input>
             </el-form-item>

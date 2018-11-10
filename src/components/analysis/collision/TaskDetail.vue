@@ -23,8 +23,8 @@
           </el-col>
         </el-row>
       </div>
-      <el-row v-show="activeType == 'IMSI'" style="margin-bottom: 15px">
-        <el-col :span="16" align="left" class="tab-card">
+      <el-row v-show="activeType == 'IMSI'" style="margin-bottom: 10px">
+        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="分析结果" name="first"></el-tab-pane>
             <el-tab-pane label="归属地统计" name="second"></el-tab-pane>
@@ -32,7 +32,7 @@
             <el-tab-pane label="源IMSI记录" name="fourth"></el-tab-pane>
           </el-tabs>
         </el-col>
-        <el-col :span="8" align="right">
+        <el-col :span="8" align="right" style="text-align: right">
           <el-button type="primary" size="medium" @click="exportData()" v-show="getButtonVial(exportKey)">导出数据
           </el-button>
         </el-col>
@@ -46,8 +46,9 @@
       <div v-show="activeType == 'IMSI'&&activeItem=='fourth'">
         <imsiList ref="imsiList"></imsiList>
       </div>
-      <div class="content" style="margin-left: 10px" v-show="activeType == 'IMSI'&&activeItem=='first'">
-        <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryResult')">
+      <div class="CONTENT" v-show="activeType == 'IMSI'&&activeItem=='first'">
+        <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryResult')"
+                 style="text-align: left">
           <el-form-item style="margin-bottom: 10px">
             <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 160px"
                       :maxlength=20></el-input>
@@ -104,13 +105,13 @@
         </div>
       </div>
       <el-row v-show="activeType == 'FACE'" style="margin-bottom: 10px">
-        <el-col :span="16" align="left" class="tab-card">
+        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="imageItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="图像" name="image"></el-tab-pane>
             <el-tab-pane label="图像记录" name="list"></el-tab-pane>
           </el-tabs>
         </el-col>
-        <el-col :span="8" align="right">
+        <el-col :span="8" align="right" style="text-align: right">
           <el-button type="primary" size="medium" @click="exportData()" v-show="getButtonVial(exportKey)">导出数据
           </el-button>
         </el-col>
@@ -118,8 +119,9 @@
       <div v-show="activeType == 'FACE'&&imageItem=='list'">
         <imageList ref="imageList"></imageList>
       </div>
-      <div class="content" style="margin-left: 10px" v-show="activeType == 'FACE'&&imageItem=='image'">
-        <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryResult')">
+      <div class="content" v-show="activeType == 'FACE'&&imageItem=='image'">
+        <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryResult')"
+                 style="text-align: left">
           <el-form-item label="年龄">
             <el-input-number v-model="query.age1" controls-position="right" :min="1"
                              :max="query.age2-1" style="width: 100px" size="medium"></el-input-number>

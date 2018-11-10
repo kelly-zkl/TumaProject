@@ -18,7 +18,7 @@
         </el-row>
       </div>
       <el-row style="margin-bottom: 15px">
-        <el-col :span="24" align="left" class="tab-card">
+        <el-col :span="24" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="所有侦码记录" name="record"></el-tab-pane>
             <el-tab-pane label="关联人员" name="person"></el-tab-pane>
@@ -26,7 +26,8 @@
         </el-col>
       </el-row>
       <div class="content" v-show="activeItem == 'record'">
-        <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('follow:queryRecord')">
+        <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('follow:queryRecord')"
+                 style="text-align: left">
           <el-form-item style="margin-bottom: 10px">
             <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                             start-placeholder="抓取时间" size="medium" end-placeholder="结束日期" clearable

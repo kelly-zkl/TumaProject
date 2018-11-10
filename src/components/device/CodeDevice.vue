@@ -2,45 +2,41 @@
   <div>
     <section class="content">
       <div class="center-block">
-        <el-form :inline="true" :model="query" align="left">
-          <el-row>
-            <el-col :span="24" align="left">
-              <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('device:query')">
-                <el-input placeholder="设备标识/ID" v-model="query.deviceName" :maxlength="30"
-                          @change="changeDevice" size="medium"></el-input>
-              </el-form-item>
-              <el-form-item style="margin-bottom: 10px">
-                <el-cascader :options="provinceList" :props="props" @change="areaChange" change-on-select
-                             v-model="areaList" placeholder="全部地区" size="medium" filterable clearable>
-                </el-cascader>
-              </el-form-item>
-              <el-form-item style="margin-bottom: 10px">
-                <el-select v-model="query.deviceType" placeholder="全部类型" size="medium" filterable clearable>
-                  <el-option v-for="item in deviceTypes" :key="item.code" :label="item.name" :value="item.code">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item style="margin-bottom: 10px">
-                <el-select v-model="query.deviceForm" placeholder="全部形态" size="medium" filterable clearable>
-                  <el-option v-for="item in deviceForms" :key="item.code" :label="item.name" :value="item.code">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item style="margin-bottom: 10px">
-                <el-input placeholder="安装场所" v-model="query.placeName" :maxlength="30" size="medium"></el-input>
-                <!--<el-select v-model="query.placeId" placeholder="安装场所" size="medium" filterable clearable>-->
-                <!--<el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">-->
-                <!--</el-option>-->
-                <!--</el-select>-->
-              </el-form-item>
-              <el-form-item style="margin-bottom: 10px">
-                <el-button type="primary" @click.stop="query.page=1;getData()" size="medium">搜索</el-button>
-              </el-form-item>
-              <el-form-item style="margin-bottom: 10px">
-                <el-button @click.stop="clearData()" size="medium">重置</el-button>
-              </el-form-item>
-            </el-col>
-          </el-row>
+        <el-form :inline="true" :model="query" align="left" style="text-align: left">
+          <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('device:query')">
+            <el-input placeholder="设备标识/ID" v-model="query.deviceName" :maxlength="30"
+                      @change="changeDevice" size="medium"></el-input>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-cascader :options="provinceList" :props="props" @change="areaChange" change-on-select
+                         v-model="areaList" placeholder="全部地区" size="medium" filterable clearable>
+            </el-cascader>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-select v-model="query.deviceType" placeholder="全部类型" size="medium" filterable clearable>
+              <el-option v-for="item in deviceTypes" :key="item.code" :label="item.name" :value="item.code">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-select v-model="query.deviceForm" placeholder="全部形态" size="medium" filterable clearable>
+              <el-option v-for="item in deviceForms" :key="item.code" :label="item.name" :value="item.code">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-input placeholder="安装场所" v-model="query.placeName" :maxlength="30" size="medium"></el-input>
+            <!--<el-select v-model="query.placeId" placeholder="安装场所" size="medium" filterable clearable>-->
+            <!--<el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">-->
+            <!--</el-option>-->
+            <!--</el-select>-->
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-button type="primary" @click.stop="query.page=1;getData()" size="medium">搜索</el-button>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-button @click.stop="clearData()" size="medium">重置</el-button>
+          </el-form-item>
         </el-form>
 
         <el-table :data="deviceList" v-loading="listLoading" class="center-block" stripe>

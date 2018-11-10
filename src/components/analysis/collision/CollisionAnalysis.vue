@@ -2,8 +2,8 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="18" align="left" v-show="getButtonVial('collision:query')">
-          <el-form :inline="true" :model="query" align="left">
+        <el-col :span="18" align="left" v-show="getButtonVial('collision:query')" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.taskName" placeholder="任务名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
@@ -37,7 +37,7 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="6" align="right">
+        <el-col :span="6" align="right" style="text-align: right">
           <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="deleteTask()"
                      v-show="getButtonVial('collision:delete')">删除
           </el-button>

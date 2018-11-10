@@ -28,7 +28,7 @@
         </el-row>
       </div>
       <el-row style="margin-bottom: 15px">
-        <el-col :span="16" align="left" class="tab-card">
+        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="IMSI告警" name="IMSI"></el-tab-pane>
             <el-tab-pane label="图像告警" name="FACE"></el-tab-pane>
@@ -36,7 +36,7 @@
         </el-col>
       </el-row>
       <div class="content" v-show="activeItem == 'IMSI'">
-        <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
+        <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left">
           <el-form-item style="margin-bottom: 10px">
             <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 160px"
                       :maxlength=30></el-input>
@@ -105,7 +105,7 @@
         </div>
       </div>
       <div class="content" v-show="activeItem == 'FACE'">
-        <el-form :inline="true" :model="query" align="left" style="margin-top: 15px">
+        <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left">
           <el-form-item style="margin-bottom: 10px">
             <el-input v-model.number="query.similarThreshold" placeholder="输入相似度阈值" size="medium" style="width: 260px">
               <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"

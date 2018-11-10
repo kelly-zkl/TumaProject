@@ -91,7 +91,7 @@
         </el-row>
       </div>
       <div v-show="activeItem=='list'">
-        <el-row style="margin-top: 15px">
+        <el-row style="margin-top: 10px">
           <el-col :span="18" align="left" style="text-align: left" v-show="getButtonVial('common:face:listFaceTrace')">
             <el-form :inline="true" :model="query" align="left" style="text-align: left">
               <el-form-item label="相似度" style="margin-bottom: 10px">
