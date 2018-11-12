@@ -138,13 +138,55 @@
               enableDrawingTool: true, //是否显示工具栏
               drawingToolOptions: {
                 anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
-                offset: new BMap.Size(5, 5), //偏离值
+                offset: new BMap.Size(55, 5), //偏离值
                 drawingModes: [BMAP_DRAWING_CIRCLE, BMAP_DRAWING_POLYGON, BMAP_DRAWING_RECTANGLE]
               },
               circleOptions: _this.styleOptions, //圆的样式
               polygonOptions: _this.styleOptions, //多边形的样式
               rectangleOptions: _this.styleOptions //矩形的样式
             });
+
+            // 定义一个控件类,即function
+            function DeleteControl() {
+              // 默认停靠位置和偏移量
+              this.defaultAnchor = BMAP_ANCHOR_TOP_RIGHT;
+              this.defaultOffset = new BMap.Size(5, 5);
+            }
+
+            // 通过JavaScript的prototype属性继承于BMap.Control
+            DeleteControl.prototype = new BMap.Control();
+
+            // 自定义控件必须实现自己的initialize方法,并且将控件的DOM元素返回
+            // 在本方法中创建个div元素作为控件的容器,并将其添加到地图容器中
+            DeleteControl.prototype.initialize = function (map) {
+              // 创建一个DOM元素
+              var div = document.createElement("div");
+              // 设置样式
+              div.className = "el-icon-delete";
+              div.style.cursor = "pointer";
+              div.style.border = "1px solid gray";
+              div.style.backgroundColor = "white";
+              div.style.fontSize = "25px";
+              div.style.color = "#2074B0";
+              div.style.width = "50px";
+              div.style.height = "47px";
+              div.style.lineHeight = "47px";
+              div.style.textAlign = "center";
+              div.style.borderRadius = "0 4px 4px 0";
+
+              // 绑定事件,点击一次放大两级
+              div.onclick = function (e) {
+                _this.clearArea();
+              };
+              // 添加DOM元素到地图中
+              _this.bMap.getContainer().appendChild(div);
+              // 将DOM元素返回
+              return div;
+            };
+            // 创建控件
+            var myZoomCtrl = new DeleteControl();
+            // 添加到地图当中
+            this.bMap.addControl(myZoomCtrl);
           }
         } else {
           this.myChart.setOption({
@@ -220,7 +262,7 @@
           position: this.ply.getBounds().getCenter(),    // 指定文本标注所在的地理位置
           offset: new BMap.Size(0, 0)    //设置文本偏移量
         };
-        var label = new BMap.Label("设备总量：" + num, opts);  // 创建文本标注对象
+        var label = new BMap.Label("场所数量：" + num, opts);  // 创建文本标注对象
         label.setStyle({
           color: "#fff", backgroundColor: "black", border: 'none', fontSize: "12px", borderRadius: '3px',
           opacity: 0.8, lineHeight: "20px", fontFamily: "微软雅黑", padding: '0 5px'

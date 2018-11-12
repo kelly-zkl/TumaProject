@@ -112,7 +112,6 @@
           <DeviceBmap @getDeviceList="getDeviceList" v-bind:deviceData="deviceData" ref="map"></DeviceBmap>
           <div class="block" style="margin-top: 20px">
             <el-button @click="mapVisible = false">取消</el-button>
-            <el-button type="danger" round @click="clearChoose()">清除</el-button>
             <el-button type="primary" @click="setDeviceList">确定</el-button>
           </div>
         </el-dialog>
@@ -309,10 +308,6 @@
       }
     },
     methods: {
-      //清除选择
-      clearChoose() {
-        this.$refs.map.clearArea();
-      },
       //地图选择设备，显示dialog
       selectDevice() {
         let param = {deviceType: this.followTask.followType, dataType: 'data1'};

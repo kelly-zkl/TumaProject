@@ -73,7 +73,7 @@
     <div class="warning">
       <transition name="fade" mode="out-in" appear>
         <el-dialog width="500px" :visible.sync="runImsiWarning" style="border-radius: 6px" top="70px" title="嫌疑告警">
-          <el-form :model="imsiWarning" align="left" style="padding: 10px 50px;border-top: 1px #f2f2f2 solid"
+          <el-form :model="imsiWarning" align="left" style="padding: 10px 50px;border-top: 1px #efefef solid"
                    label-width="100px" label-position="left">
             <el-form-item label="抓取IMSI" style="margin:0">
               <span style="font-size: 15px;color:#000">{{imsiWarning.imsi}}</span>
@@ -106,7 +106,7 @@
     <div class="warning">
       <transition name="fade" mode="out-in" appear>
         <el-dialog width="500px" :visible.sync="runFaceWarning" style="border-radius: 6px" top="70px" title="嫌疑告警">
-          <div style="padding: 20px 20px 10px;text-align: left;position: relative;border-top: 1px #f2f2f2 solid">
+          <div style="padding: 20px 20px 10px;text-align: left;position: relative;border-top: 1px #efefef solid">
             <img :src="faceWarning.faceUrl?faceWarning.faceUrl:imgPath">
             <el-form :model="faceWarning" align="left" label-width="80px" label-position="left"
                      style="display:inline-block;position: absolute;top: 20px">

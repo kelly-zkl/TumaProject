@@ -88,7 +88,6 @@
           <PlaceMap @getPlaceList="getPlaceList" ref="map"></PlaceMap>
           <div class="block" style="margin-top: 20px">
             <el-button @click="mapVisible = false">取消</el-button>
-            <el-button type="danger" round @click="clearChoose()">清除</el-button>
             <el-button type="primary" @click="setPlaceList">确定</el-button>
           </div>
         </el-dialog>
@@ -204,10 +203,6 @@
       showMap() {
         this.mapVisible = true;
         // this.$refs.map.clearArea();
-      },
-      //清除选择
-      clearChoose() {
-        this.$refs.map.clearArea();
       },
       //地图选择场所
       setPlaceList() {
