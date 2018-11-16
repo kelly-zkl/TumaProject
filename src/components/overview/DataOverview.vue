@@ -112,7 +112,7 @@
                   <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" class="user-img"/>
                 </template>
               </el-table-column>
-              <el-table-column align="left" label="IMSI" prop="imsiList" min-width="140" max-width="200">
+              <el-table-column align="left" label="关联IMSI" prop="imsiList" min-width="140" max-width="200">
                 <template slot-scope="scope">
                   <div v-for="item in scope.row.imsiList">
                     <span>{{item.imsi}}</span>
@@ -171,7 +171,9 @@
         intervalid: null,//定时器
         icon: require('../../assets/img/icon.png'),
         imgPath: require('../../assets/img/icon_people.png'),
-        count: 0
+        count: 0,
+        markers: [],
+        markerClusterer: null
       }
     },
     //页面关闭时停止更新设备在线状态
@@ -186,8 +188,11 @@
             this.count = this.count + 1;
             if (this.count == 6) {
               this.count = 0;
-              this.getMapData();
-              this.getHotSpot();
+              if (this.activeItem === 'device') {
+                this.getMapData();
+              } else {//热力图
+                this.getHotSpot();
+              }
             }
             this.getWarningCount();
             this.getImsiList();
@@ -305,7 +310,7 @@
 
         this.heatMap.clearHotspots();//清空地图所有热区,添加新数据
         if (!this.heatmapOverlay) {
-          this.heatmapOverlay = new BMapLib.HeatmapOverlay({"radius": 40});
+          this.heatmapOverlay = new BMapLib.HeatmapOverlay({"radius": 20});
           this.heatMap.addOverlay(this.heatmapOverlay);
           this.heatmapOverlay.setOptions({
             gradient: {
@@ -432,7 +437,8 @@
                 name: '数量',
                 type: 'scatter',
                 coordinateSystem: 'bmap',
-                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAb1BMVEUAAAD2PzD2PzD8VzjwJif8VjnwJijwJyj+XTv5SzXzMSzuHyX2PjD9VznwJSf+Xjz5TTX+XzztHST////9VTfxJSb5RTL2Oi79zsv4Z1/8p6D7dWb+3dr/9PP8m5L+6Ob8ta37jID1Tkf9wrz7gXPpPPFCAAAAE3RSTlMAMCBgYPDw0MDAwMCAUFDQ0ICAt+xDQQAAASZJREFUOMt90gmSgjAQBdAOoiwiLkkaCPty/zNOAz1MJDAPS2Pl59NFAX/EO1SL8C3AdXkqy/Oy2/ZCtRN6YHlcleP6sOrVoct2Xp3gDo/7Xdd1joiWuFzzRzW5JJUpaB3xAKjI+tPXktWGx3htBaSbDzdl2Yy0GJV6AQi05bItsTRmGopKSkQUkCCq7cLeDFO73mDoOgokEOG3QrISZxHgTinrib4rDiDggb6nCHIgc9Fdiu3PGjC5jeav8tz8BnA54lhakBtOAwRiDtTLMzT7QAzJGqiRns+QZd0ukIDghva4QQAEWp/MoLUOAMD/L+ADibU2uWvMtI7XV+6mT9z41U/PAikw/3jfh016O+hPweLd9/t3D775gb0d+OASnzsf/gjY/ABgxEQcBSdUhwAAAABJRU5ErkJggg==',
+                symbol: 'diamond',
+                // symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAb1BMVEUAAAD2PzD2PzD8VzjwJif8VjnwJijwJyj+XTv5SzXzMSzuHyX2PjD9VznwJSf+Xjz5TTX+XzztHST////9VTfxJSb5RTL2Oi79zsv4Z1/8p6D7dWb+3dr/9PP8m5L+6Ob8ta37jID1Tkf9wrz7gXPpPPFCAAAAE3RSTlMAMCBgYPDw0MDAwMCAUFDQ0ICAt+xDQQAAASZJREFUOMt90gmSgjAQBdAOoiwiLkkaCPty/zNOAz1MJDAPS2Pl59NFAX/EO1SL8C3AdXkqy/Oy2/ZCtRN6YHlcleP6sOrVoct2Xp3gDo/7Xdd1joiWuFzzRzW5JJUpaB3xAKjI+tPXktWGx3htBaSbDzdl2Yy0GJV6AQi05bItsTRmGopKSkQUkCCq7cLeDFO73mDoOgokEOG3QrISZxHgTinrib4rDiDggb6nCHIgc9Fdiu3PGjC5jeav8tz8BnA54lhakBtOAwRiDtTLMzT7QAzJGqiRns+QZd0ukIDghva4QQAEWp/MoLUOAMD/L+ADibU2uWvMtI7XV+6mT9z41U/PAikw/3jfh016O+hPweLd9/t3D775gb0d+OASnzsf/gjY/ABgxEQcBSdUhwAAAABJRU5ErkJggg==',
                 symbolSize: [24, 24],
                 data: this.mapData.filter(function (item) {
                   return !item.onLine && item.type == '侦码设备';
@@ -442,7 +448,8 @@
                 name: '数量',
                 type: 'scatter',
                 coordinateSystem: 'bmap',
-                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAaVBMVEUAAAD2PzD2PzD8VznwJif8VjnwJijwJyj+XTv5SzXzMSzuHyX2PjD9VznwJSf+Xjz5TTX+XzztHST////xJif9VTj5SDP1OC79zcv7eWf4amH8oZr/9fP5gHn+3tr5YFD9wr37tLH1TkfWZWL7AAAAE3RSTlMAMCBgYPDw0MDAwMCAUFDQ0ICAt+xDQQAAAPZJREFUOMu902mPgyAQgOEB8T56CDO1Xt3+/x+5dQKuKGa/9WljgvMqxkT4I26ZYdlNwFF0MRuXaDeWmdnJ5HZex+Ygrje3N0HRer05Udv947MglhzkvMDdEJczuX2AufMtU074Ma44D61vQucKIBC7dg9XAio/mLrBBl0/DSNWkPvBz5OD94tXD8wBg1v0rQ3w/4CInoeAXED0jaAIBp0LCqiCAb3H1/B5K1SBCAZsHokEQKqPgXZSAFBa9w/fqIl/Wiv4KPSpAhYyOZsnEljDK3IHcn/dgKV0kIJVE9glabxPr9zPSwk+lW7HqYIjcS/txXcBq1+0B0HMkpEZYwAAAABJRU5ErkJggg==',
+                symbol: 'circle',
+                // symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAaVBMVEUAAAD2PzD2PzD8VznwJif8VjnwJijwJyj+XTv5SzXzMSzuHyX2PjD9VznwJSf+Xjz5TTX+XzztHST////xJif9VTj5SDP1OC79zcv7eWf4amH8oZr/9fP5gHn+3tr5YFD9wr37tLH1TkfWZWL7AAAAE3RSTlMAMCBgYPDw0MDAwMCAUFDQ0ICAt+xDQQAAAPZJREFUOMu902mPgyAQgOEB8T56CDO1Xt3+/x+5dQKuKGa/9WljgvMqxkT4I26ZYdlNwFF0MRuXaDeWmdnJ5HZex+Ygrje3N0HRer05Udv947MglhzkvMDdEJczuX2AufMtU074Ma44D61vQucKIBC7dg9XAio/mLrBBl0/DSNWkPvBz5OD94tXD8wBg1v0rQ3w/4CInoeAXED0jaAIBp0LCqiCAb3H1/B5K1SBCAZsHokEQKqPgXZSAFBa9w/fqIl/Wiv4KPSpAhYyOZsnEljDK3IHcn/dgKV0kIJVE9glabxPr9zPSwk+lW7HqYIjcS/txXcBq1+0B0HMkpEZYwAAAABJRU5ErkJggg==',
                 symbolSize: [24, 24],
                 data: this.mapData.filter(function (item) {
                   return !item.onLine && item.type == '相机设备';
@@ -452,7 +459,8 @@
                 name: 'Top 5',
                 type: 'effectScatter',
                 coordinateSystem: 'bmap',
-                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAe1BMVEUAAAAxukU1xlUvrjM0xlUvrjM1yVozwE0wtDsuqi4yukQ1xlUvrjI0xVQvrzQ2yVo0wE4xszsvqi42ylwuqS3///8zw1AwsTY1yVkurDAxtT4yu0XN7tBn0Hub3qRlym/z+/VTyGba895+0YXA6sWz5bpy0H9Aw1hLvlXy6H8mAAAAFXRSTlMAIGBg8PDAwMDAgFBQMDDQ0NDQgIDEW0VAAAAA/0lEQVQ4y6XT526DMBSG4Y+9yeTg2oEy0qT3f4UlZhRjo1bK4/yxzkuwEOBXdvGZ5F8y6OwDWznYUFk+2/Ct9TxxmcZNVn8/7ElbzF6uJyJGBsl0f1fu2OY3LHc8R/DamQXyAERtpXrS7HWMI7VNoepIyEV0BDKiqtiiRYZYDbqqmYKq7poHxQjU4KuVwfMudzcKIITQbyHqYgyE+Ffw+V7AOdcDPgec/x2ExuAxByFiY8C/+3szPBUeIzcGUttzngMnUzA7AXDKsr6p+nLmYBCWu8LxlfP25p4FKd0LUkycDyMHi9TTx16qfHrRdh5ZUDnn9fjsQJdfo+nia47FDw4MSkvLJ8uSAAAAAElFTkSuQmCC',
+                symbol: 'circle',
+                // symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAe1BMVEUAAAAxukU1xlUvrjM0xlUvrjM1yVozwE0wtDsuqi4yukQ1xlUvrjI0xVQvrzQ2yVo0wE4xszsvqi42ylwuqS3///8zw1AwsTY1yVkurDAxtT4yu0XN7tBn0Hub3qRlym/z+/VTyGba895+0YXA6sWz5bpy0H9Aw1hLvlXy6H8mAAAAFXRSTlMAIGBg8PDAwMDAgFBQMDDQ0NDQgIDEW0VAAAAA/0lEQVQ4y6XT526DMBSG4Y+9yeTg2oEy0qT3f4UlZhRjo1bK4/yxzkuwEOBXdvGZ5F8y6OwDWznYUFk+2/Ct9TxxmcZNVn8/7ElbzF6uJyJGBsl0f1fu2OY3LHc8R/DamQXyAERtpXrS7HWMI7VNoepIyEV0BDKiqtiiRYZYDbqqmYKq7poHxQjU4KuVwfMudzcKIITQbyHqYgyE+Ffw+V7AOdcDPgec/x2ExuAxByFiY8C/+3szPBUeIzcGUttzngMnUzA7AXDKsr6p+nLmYBCWu8LxlfP25p4FKd0LUkycDyMHi9TTx16qfHrRdh5ZUDnn9fjsQJdfo+nia47FDw4MSkvLJ8uSAAAAAElFTkSuQmCC',
                 symbolSize: [24, 24],
                 data: this.mapData.filter(function (item) {
                   return item.onLine && item.type == '相机设备';
@@ -469,21 +477,12 @@
                 },
                 zlevel: 1
               },
-              // {//相机设备在线
-              //   name: '数量',
-              //   type: 'scatter',
-              //   coordinateSystem: 'bmap',
-              //   symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAACxAAAAsQHGLUmNAAABdklEQVRYhWP8//8/w0ACpgG1fdQBow4YdQADAwMLjOG6KWIHNyuTO6UGfv39b+duvxUeJDuAm5XJXYqHnVL7GZ59+UmSJ1gIK8ENHn36cVeAg0WMj42Flxj1RiuDbdiZGX1YmZleHgpc1U+RAx5//vnyxddfzm++/3ZVFeSazcvGjKHGZFWwPAMDQyw/O4sBFyuzjbYItzgvGzPDz7//GGzXhSofDlqdQ7YDxLhYxT/8+F0qxsXmis1y23WhXlI87KtkeNm50eXYmZkYmJkYeRgYKAgBdmYmBgV+zmxsljMwMDAwMzGGYbMcHVCUDXFZTgoY8HJg1AHD1wEffv75NKAOuBC+Lu/y6y9Tb7z7dvXZl58Y8j/+/ONgYKCwKCYEDgetzoGx9VYEFYhystpwsjAZMDAwMPz597+c5g5ABpci1k1gYGCYgC4Oj4Kvv/8+oIZFpJoDD4H3P/44XHv7tZFSB3z59beeFPWMox2TUQeMOmCgHQAA7cZmOlB3L2AAAAAASUVORK5CYII=',
-              //   symbolSize: [24, 24],
-              //   data: this.mapData.filter(function (item) {
-              //     return item.onLine && item.type == '相机设备';
-              //   })
-              // },
               {
                 name: 'Top 5',
                 type: 'effectScatter',
                 coordinateSystem: 'bmap',
-                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAY1BMVEUAAAA0xVMvrzQxukQxukUwtTw1xlUvrjM0xlUvrjM1xVQwrzQ1xlUvrjI2ylw0xlQxukT///8vrjLM7tBly3La892Z36Wm4a7z+/VWympCw1fm9+iA1o6z5ruN3Zxz04PA6cWJOXpkAAAAD3RSTlMAwMAwIIBgYPDw0NBQUIDlQOsSAAABIUlEQVQ4y42Ti5KDIAxFI2rVWktAFN/2/79yY8l2UXGnZ5ig5BKuCPBH/Izkm+gZw5nbXXrcb7AnieSBKPHzj1yeyB9eeRnk9pkvL+AaSX4lyJ2Pvb9hqRXRtP3m9NcAUnPd1Cmma9mG+36W2G3yYszyooeZ9oP2z2U51Go00rTtOvSNUjQQQ4o+Uzuso1tgsDMNpBBRlNRcQOwVY3AjAuQMBzSqWyk2LEDAANNEErwW0Co9MiywtQ/5b+raegKjQpgvBYIF3fsH2L1Ao4CUOkN5pP0ZEOdDhRRirjCGK8QA5X8eSgDIrgUaMyCE1rY+80KthTtyhb6g4KNfuVf0gqMCJtNBMvhQFYH6FXgk4pgXCezJSj9dZnAmTgVPTr3r/wPtpTZf/MVuJQAAAABJRU5ErkJggg==',
+                symbol: 'diamond',
+                // symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAY1BMVEUAAAA0xVMvrzQxukQxukUwtTw1xlUvrjM0xlUvrjM1xVQwrzQ1xlUvrjI2ylw0xlQxukT///8vrjLM7tBly3La892Z36Wm4a7z+/VWympCw1fm9+iA1o6z5ruN3Zxz04PA6cWJOXpkAAAAD3RSTlMAwMAwIIBgYPDw0NBQUIDlQOsSAAABIUlEQVQ4y42Ti5KDIAxFI2rVWktAFN/2/79yY8l2UXGnZ5ig5BKuCPBH/Izkm+gZw5nbXXrcb7AnieSBKPHzj1yeyB9eeRnk9pkvL+AaSX4lyJ2Pvb9hqRXRtP3m9NcAUnPd1Cmma9mG+36W2G3yYszyooeZ9oP2z2U51Go00rTtOvSNUjQQQ4o+Uzuso1tgsDMNpBBRlNRcQOwVY3AjAuQMBzSqWyk2LEDAANNEErwW0Co9MiywtQ/5b+raegKjQpgvBYIF3fsH2L1Ao4CUOkN5pP0ZEOdDhRRirjCGK8QA5X8eSgDIrgUaMyCE1rY+80KthTtyhb6g4KNfuVf0gqMCJtNBMvhQFYH6FXgk4pgXCezJSj9dZnAmTgVPTr3r/wPtpTZf/MVuJQAAAABJRU5ErkJggg==',
                 symbolSize: [24, 24],
                 data: this.mapData.filter(function (item) {
                   return item.onLine && item.type == '侦码设备';
@@ -499,17 +498,7 @@
                   shadowColor: '#333'
                 },
                 zlevel: 1
-              },
-              // {//侦码设备在线
-              //   name: '数量',
-              //   type: 'scatter',
-              //   coordinateSystem: 'bmap',
-              //   symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAACxAAAAsQHGLUmNAAADJUlEQVRYhe1V20sUURj/5szszOyOu2pesOsaWxRlJbFEoUnUkxHZutsq9FAPQW+R/0BCL/VSSfRWD/mQtZvuGoQQYQQZFEWoYEGg3byGljq7zp4zc8700shqu+FlRB/6Pc35zfed78d3vgtnmiasJtCqRv8vAAAEOy/bHwlWKg5UzyMuJ53HBhvF1Hzyvq6ta74PZ0cRHmoNXStwOkL5ssPnFvmMNiqhMKHpPT9T+u3Xoda7tgg4HDt9PFcSbm3xyL6F+mDKYEjFr8Y1/cy7cNvXJQsof1hbV1ak3PGIgtviBlWc1AzWlSBGd9JgowAAIs/tKZQdOzySUFHodMz6/5ghIwOTqfCSayBPFqqt4NPEUAdVHHtxKnoum70/GvROaPr10lw5KPEIil3i+k+/NP+SBaQMJg8nMBjM7J/CxsWXtY86quLhBpeAgrKAKiw7ZkKSUNYtIO5eZ00kdLA1dL7YJTYVuRwKgE1F6I8GvYVOx/2NbqlC4jN3NqYMvkyl2jprIiF/NOglzAz01seabBGw92HtpcqNuTet87imQ4LQHp2x3BJFKrU6A1MGb0fVht76WJNla+sgwpTBh4lk88CkVtpx4kH5s5ORrX3jycMDk9orAIBM2bFlEImIi3cNTQECGOmuj0UAAKri4YYZncb+DJ/KsgeBq7KAikXExdN9bXmC+aiKhxu25ztvjCVJ/2iSHHsXbvuazXZFdgHiYJ/EI9jikX2EmYF/2c5mwB8NeksUsVNA3IKnWjaIPAJr6Awn8Jx/BjPnZGW2BggzA4sZqQvFhhxpPuX7puIAADQBrPV1jCn7q3VUQkElBgAAFDgdGVtrMcjqPU0MtX9Sa8aUzRE0lMCN7dUtXHt1C/dtGj9dVvRsAjBlMKjiWILQxh8z+pjFf55K9T2viVyxzr9S+oVBFSeXIyDjE0g8Al+e8+x3FR/f7JaKLH7nOtfuI+3hNwDwEQCgRBErN7klxXYBlohtec6i+fyuAuUAABxYTtB0rHoXoLSPEZXQFQ+oEgoIYMQ6z9kFRx/XXZZ5VLuSAlKUxdILeUWW0WKwdmrgv4DVwm+D61eTFNG8+QAAAABJRU5ErkJggg==',
-              //   symbolSize: [24, 24],
-              //   data: this.mapData.filter(function (item) {
-              //     return item.onLine && item.type == '侦码设备';
-              //   })
-              // }
+              }
             ]
           });
         }
@@ -537,8 +526,45 @@
           _this.mapZoom = _this.deviceMap.getZoom();
         }
 
+        // var points = [];  // 添加海量点数据
+        // for (var i = 0; i < this.mapData.length; i++) {
+        //   points.push(new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]));
+        // }
+        // var options = {
+        //   size: BMAP_POINT_SIZE_BIG,
+        //   shape: BMAP_POINT_SHAPE_STAR,
+        //   color: '#d340c3'
+        // };
+        // var pointCollection = new BMap.PointCollection(points, options);
+        // this.deviceMap.addOverlay(pointCollection);
+
+        // this.getMarkNumber();
+
         this.deviceMap.addEventListener("zoomend", map);
         this.deviceMap.addEventListener("dragend", map);
+      },
+      //点聚合功能
+      getMarkNumber() {
+        if (!this.markerClusterer) {
+          // var _styles = [{url: this.imgPath, size: new BMap.Size(40, 40)}];, styles: _styles
+          this.markerClusterer = new BMapLib.MarkerClusterer(this.deviceMap, {markers: this.markers});
+        }
+        this.markerClusterer.clearMarkers();
+        this.markers = [];
+        for (var i = 0; i < this.mapData.length; i++) {
+          var pt = new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]);
+          var myIcon = new BMap.Icon(this.icon, new BMap.Size(1, 1));
+          this.markers.push(new BMap.Marker(pt, {icon: myIcon}));
+        }
+        //最简单的用法，生成一个marker数组，然后调用markerClusterer类即可。
+        this.markerClusterer.addMarkers(this.markers);
+        // markers {Array} 要聚合的标记数组
+        // girdSize {Number} 聚合计算时网格的像素大小，默认60
+        // maxZoom {Number} 最大的聚合级别，大于该级别就不进行相应的聚合
+        // minClusterSize {Number} 最小的聚合数量，小于该数量的不能成为一个聚合，默认为2
+        // isAverangeCenter {Boolean} 聚合点的落脚位置是否是所有聚合在内点的平均值，默认为否，落脚在聚合内的第一个点
+        // styles {Array} 自定义聚合后的图标风格，请参考TextIconOverlay类
+        //鼠标绘制完成回调方法,获取各个点的经纬度
       },
       //相机--饼状图
       getCamera() {
@@ -815,7 +841,6 @@
       this.catchData = this.getLast7Days(arr);
       //初始化地图个表格
       this.getDeviceMap();
-      this.getDataHeat();
       this.getCamera();
       this.getDevice();
       this.getImsiFace();
@@ -825,7 +850,6 @@
       this.getWarningCount();
       this.getImsiList();
       this.getLineData();
-      this.getHotSpot();
       //定时请求数据==>10s请求一次
       this.statusTask();
     }

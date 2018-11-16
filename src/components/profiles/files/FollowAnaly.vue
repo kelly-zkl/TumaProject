@@ -50,7 +50,7 @@
                  style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
-        <el-table-column align="left" prop="age" label="年龄" min-width="150" max-width="250"></el-table-column>
+        <el-table-column align="left" prop="age" label="年龄段" min-width="150" max-width="250"></el-table-column>
         <el-table-column align="left" prop="sex" label="性别" min-width="150" max-width="250"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="followCount" label="伴随次数" min-width="150" max-width="250"></el-table-column>

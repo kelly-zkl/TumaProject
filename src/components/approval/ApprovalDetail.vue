@@ -17,9 +17,9 @@
             <el-button type="primary" size="medium" @click="applyPass(1)"
                        v-show="show==2&&approval.status==1&&getButtonVial('workflow:translation:approve')">不通过
             </el-button>
-            <el-button type="primary" size="medium" @click="updateStatus()"
-                       v-show="show==3&&approval.ccReadStatus==1&&getButtonVial('workflow:translation:ccread')">标记已读
-            </el-button>
+            <!--<el-button type="primary" size="medium" @click="updateStatus()"-->
+            <!--v-show="show==3&&approval.ccReadStatus==1&&getButtonVial('workflow:translation:ccread')">标记已读-->
+            <!--</el-button>-->
             <!--<el-button type="primary" size="medium" v-show="show==4">翻码返回</el-button>-->
             <el-button type="primary" size="medium" @click="showTranslation()"
                        v-show="show==4 &&approval.status==3&& getButtonVial('workflow:translation:inputtranslate')">录入翻码

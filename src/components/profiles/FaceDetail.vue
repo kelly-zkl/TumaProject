@@ -16,8 +16,8 @@
             <el-col :span="8" align="left">
               <img :src="faceDetail.imageUrl?faceDetail.imageUrl:imgPath"
                    style="height: 160px;width: 160px;border: 1px #D7D7D7 dashed;border-radius: 8px"/>
-              <el-form-item label="年龄" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{faceDetail.age >= 0 ? faceDetail.age:'--'}}</span>
+              <el-form-item label="年龄段" align="left" style="margin: 0">
+                <span style="font-size: 15px;color:#000">{{faceDetail.age > 0 ? (faceDetail.age-3)+"~"+(faceDetail.age+3):'--'}}</span>
               </el-form-item>
               <el-form-item label="性别" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{faceDetail.sex == 0 ? '男' : faceDetail.sex == 1 ? '女' : '--'}}</span>
@@ -135,7 +135,7 @@
           </el-table-column>
           <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="年龄" prop="age" min-width="150"
+          <el-table-column align="left" label="年龄段" prop="age" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="性别" prop="sex" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -190,6 +190,7 @@
         num: 10,
         loading: {},
         sels: [],
+        timeStamp: new Date().getTime(),
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -241,7 +242,9 @@
       //根据人脸查找指定的对应人员
       getPersons() {
         this.listLoading = true;
-        this.$post('common/listPersonByUrl', {type: "face", url: this.faceDetail.imageUrl},
+        this.$post('common/listPersonByUrl', {
+            type: "face", url: this.faceDetail.imageUrl + '?t=' + this.timeStamp
+          },
           undefined, undefined, "login").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;

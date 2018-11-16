@@ -34,6 +34,12 @@
                           size="medium" :default-time="['00:00:00', '23:59:59']" @change="handleChange">
           </el-date-picker>
         </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='first'">
+          <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
+                          style="width: 230px" value-format="HH:mm:ss" end-placeholder="结束时间"
+                          placeholder="选择时间范围" @change="handleTime">
+          </el-time-picker>
+        </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button type="primary" @click="isSearch = true;getData()" size="medium">搜索
           </el-button>
@@ -100,6 +106,7 @@
         exportKey: 'archives:get:listImsiToday',
         listLoading: false,
         query: {size: 100},
+        time1: ['00:00:00', '23:59:59'],
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -118,8 +125,16 @@
         if (!val || val.length == 0) {
           this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
-          this.getData();
         }
+        this.getData();
+      },
+      handleTime(val) {
+        if (!val || val.length == 0) {
+          this.time1 = ['00:00:00', '23:59:59'];
+        }
+        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " " + this.time1[0]).replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " " + this.time1[1]).replace(/-/g, '/')).getTime()];
+        this.getData();
       },
       handleClick(tab, event) {
         this.clearData();
@@ -236,6 +251,7 @@
           this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         } else {
+          this.time1 = ['00:00:00', '23:59:59'];
           this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         }

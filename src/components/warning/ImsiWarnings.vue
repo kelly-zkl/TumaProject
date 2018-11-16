@@ -8,6 +8,10 @@
             <el-tab-pane label="历史告警" name="H"></el-tab-pane>
           </el-tabs>
         </el-col>
+        <el-col :span="8" align="right" style="text-align: right" v-show="getButtonVial('warning:dealWithWarningById')">
+          <el-button type="primary" size="medium" @click=changeStatus(2) :disabled="sels.length == 0">已处理</el-button>
+          <el-button type="primary" size="medium" @click=changeStatus(3) :disabled="sels.length == 0">误报</el-button>
+        </el-col>
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left"
                v-show="getButtonVial(exportKey)">
@@ -25,6 +29,12 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
+          <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 130px" clearable>
+            <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-if="activeItem=='H'">
           <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
                           start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
@@ -32,20 +42,13 @@
                           :picker-options="pickerBeginDate">
           </el-date-picker>
         </el-form-item>
-        <!--<el-form-item style="margin-bottom: 10px">-->
-        <!--<el-select v-model="query.blackClassId" placeholder="人员名单" size="medium" style="width: 150px">-->
-        <!--<el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">-->
-        <!--</el-option>-->
-        <!--</el-select>-->
-        <!--</el-form-item>-->
-        <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 130px" clearable>
-            <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
+          <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
+                          style="width: 230px" value-format="HH:mm:ss" end-placeholder="结束时间"
+                          placeholder="选择时间范围" @change="handleTime">
+          </el-time-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <!--<el-button type="primary" size="medium" @click="getData()">搜索</el-button>-->
           <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索
           </el-button>
         </el-form-item>
@@ -53,9 +56,10 @@
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
       </el-form>
-      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
+      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
+        <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="抓取IMSI" prop="imsi" min-width="150"
+        <el-table-column align="left" label="IMSI" prop="imsi" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -66,7 +70,13 @@
         <el-table-column align="left" label="告警时间" prop="createTime" min-width="170"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警状态" prop="status" min-width="100"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+                         max-width="250" :formatter="formatterAddress">
+          <template slot-scope="scope">
+            <span style="color:#dd6161" v-show="scope.row.status == 0">待处理</span>
+            <span style="color:#00C755" v-show="scope.row.status == 2">已处理</span>
+            <span style="color:#999" v-show="scope.row.status == 3">误报</span>
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)"
@@ -104,6 +114,8 @@
         firstPage: 0,
         page: 1,
         places: [],
+        sels: [],
+        time1: ['00:00:00', '23:59:59'],
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -118,12 +130,42 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      //全选  ==>  删除/结案
+      selsChange(sels) {
+        this.sels = sels;
+      },
+      checkboxInit(row, index) {
+        if (row.status !== 0)
+          return 0;//不可勾选
+        else
+          return 1;//可勾选
+      },
+      changeStatus(status) {
+        let arr = [];
+        this.sels.forEach((item) => {
+          arr.push(item.id);
+        });
+        this.$post('warning/dealWithWarningById', {ids: arr, status: status}, "处理成功").then((data) => {
+          this.sels = [];
+          this.getData();
+        }).catch((err) => {
+          this.$message.error(err);
+        });
+      },
       handleChange(val) {
         if (!val || val.length == 0) {
           this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
-          this.getData();
         }
+        this.getData();
+      },
+      handleTime(val) {
+        if (!val || val.length == 0) {
+          this.time1 = ['00:00:00', '23:59:59'];
+        }
+        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " " + this.time1[0]).replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " " + this.time1[1]).replace(/-/g, '/')).getTime()];
+        this.getData();
       },
       handleType(val, ev) {
         this.clearData();
@@ -218,6 +260,7 @@
           this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         } else {
+          this.time1 = ['00:00:00', '23:59:59'];
           this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         }

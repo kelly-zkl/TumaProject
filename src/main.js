@@ -98,10 +98,11 @@ Vue.use(VueAxios, axios);
 
 router.beforeEach((to, from, next) => {
   let user = JSON.parse(sessionStorage.getItem('user'));
-  if (to.path === '/login' && from !== '/login' && user) {//登录后不能返回到登录页
+  let login = localStorage.getItem('login');
+  if (to.path === '/login' && from !== '/login' && user && login) {//登录后不能返回到登录页
     return;
   }
-  if (!user && to.path !== '/login') {
+  if ((!login || !user) && to.path !== '/login') {
     next({path: '/login'})
   } else {
     next()

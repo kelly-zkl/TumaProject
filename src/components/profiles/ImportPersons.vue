@@ -4,14 +4,18 @@
       <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('person:query')"
                style="text-align: left">
         <el-form-item style="margin-bottom: 10px">
-          <el-input v-model.number="query.similarThreshold" placeholder="相似度阈值" size="medium"
-                    style="width: 260px">
-            <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
-                       :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
-                       :auto-upload="true" :show-file-list="false">
-              <el-button type="primary" size="medium">上传头像图片</el-button>
-            </el-upload>
-          </el-input>
+          <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
+                     :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
+                     :auto-upload="true" :show-file-list="false">
+            <el-button size="medium" style="width: 100px">
+              <span class="el-upload__text">
+                <span v-show="!query.faceUrl">
+                  <i class="fa fa-photo fa-lg"></i>上传头像
+                </span>
+                <img :src="query.faceUrl" v-show="query.faceUrl" style="height: 30px;margin: 0;padding: 0">
+              </span>
+            </el-button>
+          </el-upload>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-input placeholder="人员编号" v-model="query.faceId" :maxlength="18"
@@ -21,7 +25,7 @@
           <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="15"
                     style="width: 180px" size="medium"></el-input>
         </el-form-item>
-        <el-form-item label="年龄" style="margin-bottom: 10px">
+        <el-form-item label="年龄段" style="margin-bottom: 10px">
           <el-input-number v-model="query.startAge" controls-position="right" :min="1"
                            :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
           <span>~</span>
@@ -29,7 +33,7 @@
                            :max="200" style="width: 100px" size="medium"></el-input-number>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px">
+          <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px" clearable>
             <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -65,11 +69,11 @@
                  style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="年龄" prop="age" min-width="60" max-width="120"
+        <el-table-column align="left" label="年龄段" prop="startAge" min-width="80" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="IMSI[置信度]" prop="imsiList" min-width="220" max-width="250">
+        <el-table-column align="left" label="关联IMSI[置信度]" prop="imsiList" min-width="220" max-width="250">
           <template slot-scope="scope">
             <div v-for="item in scope.row.imsiList">
               <span>{{item.imsi}}<span style="color:#000;font-weight: bold">[{{item.weight / 10}}%]</span></span>
@@ -294,8 +298,8 @@
       formatterAddress(row, column) {
         if (column.property === 'sex') {
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
-        } else if (column.property === 'age') {
-          return row.age >= 0 ? row.age : '--';
+        } else if (column.property === 'startAge') {
+          return row.startAge >= 0 ? row.startAge == row.endAge ? (row.startAge - 3) + '~' + (row.startAge + 3) : row.startAge + '~' + row.endAge : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {

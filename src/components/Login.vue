@@ -91,6 +91,7 @@
                 user.psw = this.account.password;
               }
               localStorage.setItem("user", JSON.stringify(user));
+              localStorage.setItem("login", 'true');
               sessionStorage.setItem("user", JSON.stringify(data.data));
               sessionStorage.setItem("face", JSON.stringify({id: ''}));
               sessionStorage.setItem("imsi", JSON.stringify({id: ''}));
@@ -104,7 +105,6 @@
             }
           }
         });
-        this.$router.push('/dataOverview');
       },
       //获取验证码图片
       getUrl() {

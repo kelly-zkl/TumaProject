@@ -79,7 +79,7 @@
         </el-form>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="抓取IMSI" prop="imsi" min-width="150"
+          <el-table-column align="left" label="IMSI" prop="imsi" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -107,15 +107,20 @@
       <div class="content" v-show="activeItem == 'FACE'">
         <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left">
           <el-form-item style="margin-bottom: 10px">
-            <el-input v-model.number="query.similarThreshold" placeholder="输入相似度阈值" size="medium" style="width: 260px">
-              <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
-                         :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
-                         :auto-upload="true" :show-file-list="false">
-                <el-button type="primary" size="medium">上传头像图片</el-button>
-              </el-upload>
-            </el-input>
+            <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
+                       :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
+                       :auto-upload="true" :show-file-list="false">
+              <el-button size="medium" style="width: 100px">
+              <span class="el-upload__text">
+                <span v-if="!query.faceUrl">
+                  <i class="fa fa-photo fa-lg"></i>上传头像
+                </span>
+                <img :src="query.faceUrl" v-if="query.faceUrl" style="height: 30px">
+              </span>
+              </el-button>
+            </el-upload>
           </el-form-item>
-          <el-form-item label="年龄" style="margin-bottom: 10px">
+          <el-form-item label="年龄段" style="margin-bottom: 10px">
             <el-input-number v-model="query.startAge" controls-position="right" :min="1"
                              :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
             <span>~</span>
@@ -169,7 +174,7 @@
                    style="max-height:70px;border-radius: 6px"/>
             </template>
           </el-table-column>
-          <el-table-column align="left" label="年龄" prop="age" min-width="60" max-width="120"
+          <el-table-column align="left" label="年龄段" prop="age" min-width="80" max-width="120"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="120"
                            :formatter="formatterAddress"></el-table-column>
@@ -472,7 +477,9 @@
         } else if (column.property === 'catchTime') {
           return row.catchTime ? formatDate(new Date(row.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'age') {
-          return row[column.property] < 0 ? '--' : row[column.property];
+          return row.age <= 0 ? '--' : (row.age - 3) + "~" + (row.age + 3);
+        } else if (column.property === 'similarThreshold') {
+          return row[column.property] <= 0 ? '--' : row[column.property];
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
@@ -490,7 +497,7 @@
       handleSuccess(res, file) {
         if (res.code === '000000') {
           if (res.data) {
-            this.query1.faceUrl = res.data.fileUrl;
+            this.query.faceUrl = res.data.fileUrl;
             this.query.similarThreshold = 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.isSearch = true;

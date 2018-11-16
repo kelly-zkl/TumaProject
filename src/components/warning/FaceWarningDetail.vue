@@ -7,7 +7,8 @@
             当前状态：{{faceDetail.status==0?'待处理':faceDetail.status==1?'处理中':faceDetail.status==2?'已处理':faceDetail.status==3?'误报':''}}
           </div>
         </el-col>
-        <el-col :span="8" :offset="8" align="right" style="text-align: right" v-if="faceDetail.status==0">
+        <el-col :span="8" :offset="8" align="right" style="text-align: right"
+                v-if="getButtonVial('warning:dealWithWarningById')&&faceDetail.status==0">
           <el-button type="primary" size="medium" @click=changeStatus(2)>已处理</el-button>
           <el-button type="primary" size="medium" @click=changeStatus(3)>误报</el-button>
         </el-col>
@@ -22,8 +23,8 @@
             <el-col :span="8" align="left" style="text-align: left">
               <img :src="faceDetail.faceUrl?faceDetail.faceUrl:imgPath"
                    style="height: 160px;width: 160px;border: 1px #D7D7D7 dashed;border-radius: 8px"/>
-              <el-form-item label="年龄" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{faceDetail.age<0?'--':faceDetail.age}}</span>
+              <el-form-item label="年龄段" align="left" style="margin: 0;text-align: left">
+                <span style="font-size: 15px;color:#000">{{faceDetail.age > 0 ? (faceDetail.age-3)+"~"+(faceDetail.age+3):'--'}}</span>
               </el-form-item>
               <el-form-item label="性别" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000">{{faceDetail.sex == 0 ? '男' : faceDetail.sex == 1 ? '女' : '--'}}</span>
@@ -67,16 +68,23 @@
             <div class="face-main">
               <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
                 <img :src="item.faceUrl?item.faceUrl:imgPath"/>
-                <el-form :model="item" align="left" label-width="80px" label-position="right"
-                         style="position: absolute;top: 10px;left:150px;text-align: left">
+                <el-form :model="item" align="left" label-width="80px" label-position="right" size="medium"
+                         style="position: absolute;top: 5px;left:150px;text-align: left">
                   <el-form-item label="档案ID" style="margin:0">
                     <span
                       style="font-size: 15px;color:#000;margin-right: 20px">{{item.faceId?item.faceId:'--'}}</span>
                     <el-button type="text" @click="gotoPerson(item)" v-if="item.faceId">查看人员</el-button>
                   </el-form-item>
-                  <el-form-item label="相似度" style="margin:0">
+                  <el-form-item label="关联IMSI" style="margin:0">
                     <span
                       style="font-size: 15px;color:#000">{{item.similarThreshold<0?'--':Math.floor(item.similarThreshold*1000)/1000+'%'}}</span>
+                  </el-form-item>
+                  <el-form-item style="margin:0">
+                    <span style="font-size: 15px;color:#000;margin-right: 20px">
+                      {{'置信度['+(item.weight>=0?item.weight/10:'--')+'%]'}} {{'关联次数['+(item.fnIn>=0?item.fnIn:'--')+']'}}</span>
+                  </el-form-item>
+                  <el-form-item style="margin:0">
+                    <el-button type="text" @click="">查看所有疑似IMSI</el-button>
                   </el-form-item>
                 </el-form>
               </div>
@@ -136,7 +144,7 @@
           </el-table-column>
           <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="100"
                            max-width="150" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="年龄" prop="age" min-width="100"
+          <el-table-column align="left" label="年龄段" prop="age" min-width="100"
                            max-width="150" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="性别" prop="sex" min-width="100"
                            max-width="150" :formatter="formatterAddress"></el-table-column>
@@ -190,6 +198,7 @@
         page: 1,
         listLoading: false,
         num: 10,
+        timeStamp: new Date().getTime(),
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -227,7 +236,7 @@
         }
       },
       changeStatus(status) {
-        this.$post('warning/dealWithWarningById', {id: this.id, status: status}, "处理成功").then((data) => {
+        this.$post('warning/dealWithWarningById', {ids: [this.id], status: status}, "处理成功").then((data) => {
           this.getFaceDetail();
         }).catch((err) => {
           this.$message.error(err);
@@ -263,7 +272,9 @@
       //根据imsi查找指定的对应人员
       getPersons() {
         this.listLoading = true;
-        this.$post('common/listPersonByUrl', {type: "faceWarning", url: this.faceDetail.faceUrl},
+        this.$post('common/listPersonByUrl', {
+            type: "faceWarning", url: this.faceDetail.faceUrl + '?t=' + this.timeStamp
+          },
           undefined, undefined, "login").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;

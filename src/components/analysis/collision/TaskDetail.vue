@@ -122,7 +122,7 @@
       <div class="content" v-show="activeType == 'FACE'&&imageItem=='image'">
         <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryResult')"
                  style="text-align: left">
-          <el-form-item label="年龄">
+          <el-form-item label="年龄段">
             <el-input-number v-model="query.age1" controls-position="right" :min="1"
                              :max="query.age2-1" style="width: 100px" size="medium"></el-input-number>
             <span>~</span>
@@ -159,7 +159,7 @@
                    style="max-width: 90px;max-height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
-          <el-table-column align="left" label="年龄" prop="age" min-width="125"
+          <el-table-column align="left" label="年龄段" prop="age" min-width="125"
                            max-width="250"></el-table-column>
           <el-table-column align="left" label="性别" prop="sex" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>

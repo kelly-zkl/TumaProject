@@ -85,6 +85,7 @@
         records: [],
         isShow: true,
         isCenter: false,
+        lushu: null,
         choose: {imsi: '', face: ''},//
         pickerBeginDate: {
           disabledDate: (time) => {
@@ -160,6 +161,14 @@
                 this.records.push(recData);
               }
               this.pathLine(pois, 1);
+              this.lushu = new BMapLib.LuShu(this.map, pois, {// 回放
+                defaultContent: "",
+                autoView: true,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
+                icon: new BMap.Icon('http://lbsyun.baidu.com/jsdemo/img/Mario.png', new BMap.Size(52, 26), {anchor: new BMap.Size(27, 13)}),
+                speed: 2000,
+                enableRotation: true,//是否设置marker随着道路的走向进行旋转
+                landmarkPois: []
+              });
             }
           }
         });
@@ -218,17 +227,17 @@
         var polyline = new BMap.Polyline(pois, {
           enableEditing: false,//是否启用线编辑，默认为false
           enableClicking: true,//是否响应点击事件，默认为true
-          icons: [icons],
-          strokeWeight: '6',//折线的宽度，以像素为单位
+          // icons: [icons],
+          strokeWeight: '4',//折线的宽度，以像素为单位
           strokeOpacity: 1,//折线的透明度，取值范围0 - 1
           strokeColor: type == 0 ? "#FF6600" : '#6699FF' //折线颜色#6699FF#325EDA
         });
         for (var i = 0; i < pois.length; i++) {
           var pt = pois[i];
-          var myIcon = new BMap.Icon(type == 0 ? this.icon1 : this.icon2, new BMap.Size(23, 25));
-          var marker2 = new BMap.Marker(pt, {icon: myIcon});
+          // var myIcon = new BMap.Icon(type == 0 ? this.icon1 : this.icon2, new BMap.Size(23, 25));, {icon: myIcon}
+          var marker2 = new BMap.Marker(pt);
           var label = new BMap.Label(i + 1, {
-            offset: new BMap.Size(5, 4)
+            offset: new BMap.Size(1, 2)
           });
           label.setStyle({
             background: 'none', color: '#fff', border: 'none'//只要对label样式进行设置就可达到在标注图标上显示数字的效果
@@ -264,42 +273,7 @@
       },
       //轨迹回放
       luShu() {
-        let line = {};
-        this.pathLines.forEach((item) => {
-          if (item.value == this.choose.imsi) {
-            line = item;
-          }
-        });
-        if (line.locs.length == 0) {
-          return;
-        }
-        var pois = [];
-        for (var i = 0; i < line.locs.length; i++) {
-          pois.push(new BMap.Point(line.locs[i].lon, line.locs[i].lat));
-        }
-
-        var lushu = new BMapLib.LuShu(this.map, pois, {// 回放
-          defaultContent: "",//"从天安门到百度大厦"
-          autoView: true,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
-          icon: new BMap.Icon('http://lbsyun.baidu.com/jsdemo/img/Mario.png', new BMap.Size(52, 26), {anchor: new BMap.Size(27, 13)}),
-          speed: 1000,
-          enableRotation: true,//是否设置marker随着道路的走向进行旋转
-          landmarkPois: [
-            // {lng: 116.386446, lat: 39.939281, html: '加油站', pauseTime: 2},
-            // {
-            //   lng: 116.389034, lat: 39.913828,
-            //   html: '高速公路收费<div><img src="http://map.baidu.com/img/logo-map.gif"/></div>',
-            //   pauseTime: 3
-            // },
-            // {
-            //   lng: 116.442501, lat: 39.914603,
-            //   html: '肯德基早餐<div><img src="http://ishouji.baidu.com/resource/images/map/show_pic04.gif"/></div>',
-            //   pauseTime: 2
-            // }
-          ],
-        });
-
-        lushu.start();
+        this.lushu.start();
       }
     },
     mounted() {

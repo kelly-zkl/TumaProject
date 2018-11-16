@@ -11,15 +11,20 @@
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
-          <el-input v-model.number="query.similarThreshold" placeholder="相似度阈值" size="medium" style="width: 260px">
-            <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
-                       :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
-                       :auto-upload="true" :show-file-list="false">
-              <el-button type="primary" size="medium">上传头像图片</el-button>
-            </el-upload>
-          </el-input>
+          <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
+                     :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
+                     :auto-upload="true" :show-file-list="false">
+            <el-button size="medium" style="width: 100px">
+              <span class="el-upload__text">
+                <span v-if="!query.faceUrl">
+                  <i class="fa fa-photo fa-lg"></i>上传头像
+                </span>
+                <img :src="query.faceUrl" v-if="query.faceUrl" style="height: 30px">
+              </span>
+            </el-button>
+          </el-upload>
         </el-form-item>
-        <el-form-item label="年龄" style="margin-bottom: 10px">
+        <el-form-item label="年龄段" style="margin-bottom: 10px">
           <el-input-number v-model="query.startAge" controls-position="right" :min="1"
                            :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
           <span>~</span>
@@ -27,7 +32,7 @@
                            :max="200" style="width: 100px" size="medium"></el-input-number>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px">
+          <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px" clearable>
             <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -44,6 +49,12 @@
                           :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                           :picker-options="pickerBeginDate" style="width: 360px">
           </el-date-picker>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
+          <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
+                          style="width: 230px" value-format="HH:mm:ss" end-placeholder="结束时间"
+                          placeholder="选择时间范围" @change="handleTime">
+          </el-time-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"></el-input>
@@ -65,7 +76,7 @@
                  style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="年龄" prop="age" min-width="60" max-width="120"
+        <el-table-column align="left" label="年龄段" prop="age" min-width="80" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
@@ -132,6 +143,7 @@
         exportKey: 'archives:get:listFaceToday',
         places: [],
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
+        time1: ['00:00:00', '23:59:59'],
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -150,8 +162,16 @@
         if (!val || val.length == 0) {
           this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
-          this.getData();
         }
+        this.getData();
+      },
+      handleTime(val) {
+        if (!val || val.length == 0) {
+          this.time1 = ['00:00:00', '23:59:59'];
+        }
+        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " " + this.time1[0]).replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " " + this.time1[1]).replace(/-/g, '/')).getTime()];
+        this.getData();
       },
       handleType(val) {
         this.clearData();
@@ -296,6 +316,7 @@
           this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         } else {
+          this.time1 = ['00:00:00', '23:59:59'];
           this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         }
@@ -308,8 +329,10 @@
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
         } else if (column.property === 'catchTime') {
           return row.catchTime ? formatDate(new Date(row.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-        } else if (column.property === 'age' || column.property === 'similarThreshold') {
-          return row[column.property] < 0 ? '--' : row[column.property];
+        } else if (column.property === 'age') {
+          return row.age <= 0 ? '--' : (row.age - 3) + "~" + (row.age + 3);
+        } else if (column.property === 'similarThreshold') {
+          return row[column.property] <= 0 ? '--' : row[column.property];
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

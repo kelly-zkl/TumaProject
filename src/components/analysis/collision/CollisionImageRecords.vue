@@ -56,7 +56,7 @@
             <img v-bind:src="scope.row.userFacePicURL" style="width: 90px;height:90px"/>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="年龄" prop="age" min-width="100"
+        <el-table-column align="left" label="年龄段" prop="age" min-width="100"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" min-width="100"
                          max-width="200" :formatter="formatterAddress"></el-table-column>

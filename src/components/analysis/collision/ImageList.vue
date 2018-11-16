@@ -6,7 +6,7 @@
           <el-input v-model="query.deviceId" placeholder="设备ID" style="width: 160px" size="medium"
                     :maxlength=30></el-input>
         </el-form-item>
-        <el-form-item label="年龄" style="margin-bottom: 10px">
+        <el-form-item label="年龄段" style="margin-bottom: 10px">
           <el-input-number v-model="query.age1" controls-position="right" :min="1"
                            :max="query.age2-1" style="width: 100px" size="medium"></el-input-number>
           <span>~</span>
@@ -42,7 +42,7 @@
                  style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="年龄" prop="age" min-width="100"
+        <el-table-column align="left" label="年龄段" prop="age" min-width="100"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" min-width="100"
                          max-width="200" :formatter="formatterAddress"></el-table-column>

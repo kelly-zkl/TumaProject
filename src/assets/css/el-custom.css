@@ -425,3 +425,16 @@
 .face-item:nth-child(odd) {
   margin-right: 20px;
 }
+
+* {
+  font-size: 13px;
+}
+
+.upload.img {
+  margin: 0
+}
+
+.upload.img .el-button--medium {
+  padding: 2px 10px;
+  height: 36px;
+}

@@ -196,45 +196,71 @@
         } else {
           this.myChart.setOption({
             series: [
-              {
-                name: '数量', // series名称
+              {// 侦码设备不在线
+                name: '数量',
                 type: 'scatter',
                 coordinateSystem: 'bmap',
-                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAUVBMVEUAAADyID/yID/yID/yID/yID/yID/yID/yID/yID/yID/////8yND1WG/91tz5kJ/zLkv+8vT5nqv95Oj6rLf3dIf0SmP4gpP2Znv7usT0PFfIwQAbAAAACnRSTlMAwGBQ8NAwIICQp9SBIgAAAPVJREFUOMuNk1mWgyAQRQtUQh6giGN6/wttonSHKTH3w+PHrYE6VfRCSIYDJgWVNB0iuoZSbgwZ7JaEtyhooyQcVfh/PN7QhPrtO6E9+0j7s5tWnn6wz07LAvuoAuMQiiTvd0ewMdvD/8xARyQQo9VkYIZht2uvFABBMhGWwe7TUWCzs88ASfkIVxUw50AJGUaNi//2QQChwvJUEAlllRVIBKdjfP+91i4SjKphvhRYEMZjhi4XGMlTGK2fzw8wZ4IkETJM9QyCqPvUQ0dE/JPAw8I4XfKwALtcuYul5d+uvTdqh8MvTy+Fp8fLqUTc/87/Hp3/LwNlIteKaJqgAAAAAElFTkSuQmCC',
+                symbol: 'diamond',
+                // symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAb1BMVEUAAAD2PzD2PzD8VzjwJif8VjnwJijwJyj+XTv5SzXzMSzuHyX2PjD9VznwJSf+Xjz5TTX+XzztHST////9VTfxJSb5RTL2Oi79zsv4Z1/8p6D7dWb+3dr/9PP8m5L+6Ob8ta37jID1Tkf9wrz7gXPpPPFCAAAAE3RSTlMAMCBgYPDw0MDAwMCAUFDQ0ICAt+xDQQAAASZJREFUOMt90gmSgjAQBdAOoiwiLkkaCPty/zNOAz1MJDAPS2Pl59NFAX/EO1SL8C3AdXkqy/Oy2/ZCtRN6YHlcleP6sOrVoct2Xp3gDo/7Xdd1joiWuFzzRzW5JJUpaB3xAKjI+tPXktWGx3htBaSbDzdl2Yy0GJV6AQi05bItsTRmGopKSkQUkCCq7cLeDFO73mDoOgokEOG3QrISZxHgTinrib4rDiDggb6nCHIgc9Fdiu3PGjC5jeav8tz8BnA54lhakBtOAwRiDtTLMzT7QAzJGqiRns+QZd0ukIDghva4QQAEWp/MoLUOAMD/L+ADibU2uWvMtI7XV+6mT9z41U/PAikw/3jfh016O+hPweLd9/t3D775gb0d+OASnzsf/gjY/ABgxEQcBSdUhwAAAABJRU5ErkJggg==',
                 symbolSize: [24, 24],
                 data: this.mapData.filter(function (item) {
                   return !item.onLine && item.type == '侦码设备';
                 })
               },
-              {
-                name: '数量', // series名称
+              {// 相机设备不在线
+                name: '数量',
                 type: 'scatter',
                 coordinateSystem: 'bmap',
-                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAATlBMVEUAAADyID/yID/yID/yID/yID/yID/yID/yID/yID/yID/////1WG/8yND5kJ/+8vT0PFf91tz7usT6rLf3dIf2Znv0SmPzLkv5nqv4gpM24GbiAAAACnRSTlMAwGBQ8NAwIICQp9SBIgAAAL9JREFUOMvV01sSgyAMBdAEheL1gVof7f432o5SNIry3fPnzMVoSGhjLGPB1tBZprGjM5IejAN+iOM5TvLdSxSiVDiPC5mvn+NCvn4H4xL7Am0lzaKIRutKqdv6QWSAqjxCYMjKQFc5H6ia2o2wxDLwnJbA3C9PNZgQLdGUPoD/CHA0MJbhN228k+27d9+uwN61ehoAQ6Tv7kKv8/aqpUFMXWJgEiOXGFqVHvuQiC2OSq6epOTyKjozxW/9C0PBB43AIjcte3hMAAAAAElFTkSuQmCC',
+                symbol: 'circle',
+                // symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAaVBMVEUAAAD2PzD2PzD8VznwJif8VjnwJijwJyj+XTv5SzXzMSzuHyX2PjD9VznwJSf+Xjz5TTX+XzztHST////xJif9VTj5SDP1OC79zcv7eWf4amH8oZr/9fP5gHn+3tr5YFD9wr37tLH1TkfWZWL7AAAAE3RSTlMAMCBgYPDw0MDAwMCAUFDQ0ICAt+xDQQAAAPZJREFUOMu902mPgyAQgOEB8T56CDO1Xt3+/x+5dQKuKGa/9WljgvMqxkT4I26ZYdlNwFF0MRuXaDeWmdnJ5HZex+Ygrje3N0HRer05Udv947MglhzkvMDdEJczuX2AufMtU074Ma44D61vQucKIBC7dg9XAio/mLrBBl0/DSNWkPvBz5OD94tXD8wBg1v0rQ3w/4CInoeAXED0jaAIBp0LCqiCAb3H1/B5K1SBCAZsHokEQKqPgXZSAFBa9w/fqIl/Wiv4KPSpAhYyOZsnEljDK3IHcn/dgKV0kIJVE9glabxPr9zPSwk+lW7HqYIjcS/txXcBq1+0B0HMkpEZYwAAAABJRU5ErkJggg==',
                 symbolSize: [24, 24],
                 data: this.mapData.filter(function (item) {
                   return !item.onLine && item.type == '相机设备';
                 })
               },
               {
-                name: '数量',
-                type: 'scatter',
+                name: 'Top 5',
+                type: 'effectScatter',
                 coordinateSystem: 'bmap',
-                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAATlBMVEUAAAANhCwNhCwNhCwNhCwNhCwNhCwNhCwNhCwNhCwNhCz///9Ko2HD4cuGwpbx+PMrk0bS6Ni02b6l0bBosntZq247m1QcjDmWyaN3uonzHorRAAAACnRSTlMAwGBQ8NAwIICQp9SBIgAAAL9JREFUOMvV01sSgyAMBdAEheL1gVof7f432o5SNIry3fPnzMVoSGhjLGPB1tBZprGjM5IejAN+iOM5TvLdSxSiVDiPC5mvn+NCvn4H4xL7Am0lzaKIRutKqdv6QWSAqjxCYMjKQFc5H6ia2o2wxDLwnJbA3C9PNZgQLdGUPoD/CHA0MJbhN228k+27d9+uwN61ehoAQ6Tv7kKv8/aqpUFMXWJgEiOXGFqVHvuQiC2OSq6epOTyKjozxW/9C0PBB43AIjcte3hMAAAAAElFTkSuQmCC',
+                symbol: 'circle',
+                // symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAe1BMVEUAAAAxukU1xlUvrjM0xlUvrjM1yVozwE0wtDsuqi4yukQ1xlUvrjI0xVQvrzQ2yVo0wE4xszsvqi42ylwuqS3///8zw1AwsTY1yVkurDAxtT4yu0XN7tBn0Hub3qRlym/z+/VTyGba895+0YXA6sWz5bpy0H9Aw1hLvlXy6H8mAAAAFXRSTlMAIGBg8PDAwMDAgFBQMDDQ0NDQgIDEW0VAAAAA/0lEQVQ4y6XT526DMBSG4Y+9yeTg2oEy0qT3f4UlZhRjo1bK4/yxzkuwEOBXdvGZ5F8y6OwDWznYUFk+2/Ct9TxxmcZNVn8/7ElbzF6uJyJGBsl0f1fu2OY3LHc8R/DamQXyAERtpXrS7HWMI7VNoepIyEV0BDKiqtiiRYZYDbqqmYKq7poHxQjU4KuVwfMudzcKIITQbyHqYgyE+Ffw+V7AOdcDPgec/x2ExuAxByFiY8C/+3szPBUeIzcGUttzngMnUzA7AXDKsr6p+nLmYBCWu8LxlfP25p4FKd0LUkycDyMHi9TTx16qfHrRdh5ZUDnn9fjsQJdfo+nia47FDw4MSkvLJ8uSAAAAAElFTkSuQmCC',
                 symbolSize: [24, 24],
                 data: this.mapData.filter(function (item) {
                   return item.onLine && item.type == '相机设备';
-                })
+                }),
+                showEffectOn: 'render',
+                rippleEffect: {
+                  brushType: 'stroke'
+                },
+                hoverAnimation: true,
+                itemStyle: {
+                  color: '#29A75D',
+                  shadowBlur: 10,
+                  shadowColor: '#333'
+                },
+                zlevel: 1
               },
               {
-                name: '数量',
-                type: 'scatter',
+                name: 'Top 5',
+                type: 'effectScatter',
                 coordinateSystem: 'bmap',
-                symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAUVBMVEUAAAANhCwNhCwNhCwNhCwNhCwNhCwNhCwNhCwNhCwNhCz////D4ctKo2HS6NiGwpYcjDnx+POWyaPi8OWl0bBosns7m1R3uolZq2602b4rk0YbVFX3AAAACnRSTlMAwGBQ8NAwIICQp9SBIgAAAPVJREFUOMuNk1mWgyAQRQtUQh6giGN6/wttonSHKTH3w+PHrYE6VfRCSIYDJgWVNB0iuoZSbgwZ7JaEtyhooyQcVfh/PN7QhPrtO6E9+0j7s5tWnn6wz07LAvuoAuMQiiTvd0ewMdvD/8xARyQQo9VkYIZht2uvFABBMhGWwe7TUWCzs88ASfkIVxUw50AJGUaNi//2QQChwvJUEAlllRVIBKdjfP+91i4SjKphvhRYEMZjhi4XGMlTGK2fzw8wZ4IkETJM9QyCqPvUQ0dE/JPAw8I4XfKwALtcuYul5d+uvTdqh8MvTy+Fp8fLqUTc/87/Hp3/LwNlIteKaJqgAAAAAElFTkSuQmCC',
+                symbol: 'diamond',
+                // symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAY1BMVEUAAAA0xVMvrzQxukQxukUwtTw1xlUvrjM0xlUvrjM1xVQwrzQ1xlUvrjI2ylw0xlQxukT///8vrjLM7tBly3La892Z36Wm4a7z+/VWympCw1fm9+iA1o6z5ruN3Zxz04PA6cWJOXpkAAAAD3RSTlMAwMAwIIBgYPDw0NBQUIDlQOsSAAABIUlEQVQ4y42Ti5KDIAxFI2rVWktAFN/2/79yY8l2UXGnZ5ig5BKuCPBH/Izkm+gZw5nbXXrcb7AnieSBKPHzj1yeyB9eeRnk9pkvL+AaSX4lyJ2Pvb9hqRXRtP3m9NcAUnPd1Cmma9mG+36W2G3yYszyooeZ9oP2z2U51Go00rTtOvSNUjQQQ4o+Uzuso1tgsDMNpBBRlNRcQOwVY3AjAuQMBzSqWyk2LEDAANNEErwW0Co9MiywtQ/5b+raegKjQpgvBYIF3fsH2L1Ao4CUOkN5pP0ZEOdDhRRirjCGK8QA5X8eSgDIrgUaMyCE1rY+80KthTtyhb6g4KNfuVf0gqMCJtNBMvhQFYH6FXgk4pgXCezJSj9dZnAmTgVPTr3r/wPtpTZf/MVuJQAAAABJRU5ErkJggg==',
                 symbolSize: [24, 24],
                 data: this.mapData.filter(function (item) {
                   return item.onLine && item.type == '侦码设备';
-                })
+                }),
+                showEffectOn: 'render',
+                rippleEffect: {
+                  brushType: 'stroke'
+                },
+                hoverAnimation: true,
+                itemStyle: {
+                  color: '#29A75D',
+                  shadowBlur: 10,
+                  shadowColor: '#333'
+                },
+                zlevel: 1
               }
             ]
           });

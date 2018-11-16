@@ -30,8 +30,10 @@
               <el-form-item label="性别" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{userInfo.sex==0 ? '男' : userInfo.sex==1 ?'女':'--'}}</span>
               </el-form-item>
-              <el-form-item label="年龄" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{userInfo.age>=0?userInfo.age:'--'}}</span>
+              <el-form-item label="年龄段" align="left" style="margin: 0">
+                <span style="font-size: 15px;color:#000">
+                  {{userInfo.startAge>=0?userInfo.startAge==userInfo.endAge?(userInfo.startAge - 3)+ '~'+(userInfo.startAge + 3):userInfo.startAge+'~'+userInfo.endAge:'--'}}
+                </span>
               </el-form-item>
               <el-form-item label="身份证" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{userInfo.idCard ? userInfo.idCard : '--'}}</span>
@@ -78,7 +80,8 @@
             <el-col :span="24" align="left" style="text-align: left;margin-left: 20px"
                     v-for="item in imsiList" :key="item.imsi" v-if="imsiList.length>0">
               <el-button type="text" @click="gotoDetail(item)">
-                {{item.imsi}} {{'关联次数['+(item.fnIn>=0?item.fnIn:'--')+']'}} {{'置信度['+item.weight/10+'%]'}}
+                {{item.imsi}} {{'关联次数['+(item.fnIn>=0?item.fnIn:'--')+']'}}
+                {{'置信度['+(item.weight>=0?item.weight/10:'--')+'%]'}}
               </el-button>
             </el-col>
             <div v-else style="width:100%;color: #909399;font-size: 14px;text-align: center">暂无数据</div>
@@ -93,8 +96,12 @@
           <el-form-item label="姓名">
             <el-input v-model="person.name" auto-complete="off" :maxlength="10" placeholder="输入姓名"></el-input>
           </el-form-item>
-          <el-form-item label="年龄">
-            <el-input v-model.number="person.age" auto-complete="off" :maxlength="3" placeholder="输入年龄"></el-input>
+          <el-form-item label="年龄段">
+            <el-input-number v-model="person.startAge" controls-position="right" :min="1"
+                             :max="person.endAge-1" style="width: 100px"></el-input-number>
+            <span>~</span>
+            <el-input-number v-model="person.endAge" controls-position="right" :min="person.startAge+1"
+                             :max="200" style="width: 100px"></el-input-number>
           </el-form-item>
           <el-form-item label="性别">
             <el-select v-model="person.sex" placeholder="选择性别" size="medium">
@@ -157,17 +164,24 @@
       //查看IMSI详情
       gotoDetail(row) {
         // this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi}});
-        let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: row.imsi}});
-        window.open(routeData.href, '_blank');
+        // let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: row.imsi}});
+        // window.open(routeData.href, '_blank');
       },
       clickModify() {
         let data = this.userInfo;
-        var age = !isNull(data.age) ? data.age : '';
+        var startAge = !isNull(data.startAge) ? data.startAge : 0;
+        var endAge = !isNull(data.endAge) ? data.endAge : 0;
+        if (!isNull(data.startAge) && !isNull(data.endAge)) {
+          if (startAge == endAge) {
+            endAge = startAge + 3;
+            startAge = startAge - 3;
+          }
+        }
         this.person = {
           faceId: data.faceId, telephone: data.telephone ? data.telephone : '',
           sex: !isNull(data.sex) ? data.sex : '', name: data.name ? data.name : '',
-          mobilePhone: data.mobilePhone ? data.mobilePhone : '', age: age,
-          idCard: data.idCard ? data.idCard : ''
+          mobilePhone: data.mobilePhone ? data.mobilePhone : '', startAge: startAge,
+          idCard: data.idCard ? data.idCard : '', endAge: endAge
         };
         this.selectedOptions2 = data.areaCode ? this.getCode(data.areaCode) : [];
         if (isNull(data.sex)) {
@@ -182,8 +196,9 @@
         if (!data.idCard) {
           delete this.person['idCard'];
         }
-        if (isNull(data.age)) {
-          delete this.person['age'];
+        if (isNull(data.startAge)) {
+          delete this.person['startAge'];
+          delete this.person['endAge'];
         }
         if (!data.telephone) {
           delete this.person['telephone'];
@@ -199,11 +214,11 @@
             return;
           }
         }
-        if (this.person.age) {
-          if (!numValid(this.person.age)) {
+        if (this.person.startAge) {
+          if (!numValid(this.person.startAge)) {
             this.$message.error('请输入正确的年龄');
             return;
-          } else if (this.person.age < 1 && this.person.age > 150) {
+          } else if (this.person.startAge < 1 && this.person.startAge > 150) {
             this.$message.error('请输入正确的年龄');
             return;
           }

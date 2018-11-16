@@ -160,7 +160,7 @@
       <div class="content" v-show="activeItem == 'result' && task.followType == 'FACE'">
         <el-form :inline="true" :model="queryResult" align="left" v-show="getButtonVial('follow:queryResult')"
                  style="text-align: left">
-          <el-form-item label="年龄" style="margin-bottom: 10px">
+          <el-form-item label="年龄段" style="margin-bottom: 10px">
             <el-input-number v-model="queryResult.startAge" controls-position="right" :min="1"
                              :max="queryResult.endAge-1" style="width: 100px" size="medium"></el-input-number>
             <span>~</span>
@@ -194,9 +194,9 @@
                    style="max-width: 90px;max-height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
-          <el-table-column align="left" label="年龄" prop="isp" min-width="125"
+          <el-table-column align="left" label="年龄段" prop="age" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="性别" prop="netType" min-width="125"
+          <el-table-column align="left" label="性别" prop="sex" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="伴随次数" prop="followCount" min-width="125"
                            max-width="250"></el-table-column>
@@ -217,7 +217,7 @@
       <div class="content" style="margin-left: 10px" v-show="activeItem == 'list' && task.followType == 'FACE'">
         <el-form :inline="true" :model="queryRecord" align="left" v-show="getButtonVial('follow:queryRecord')"
                  style="text-align: left">
-          <el-form-item label="年龄" style="margin-bottom: 10px">
+          <el-form-item label="年龄段" style="margin-bottom: 10px">
             <el-row>
               <el-input v-model="queryRecord.startAge" type="number" size="medium" style="width: 80px"
                         :maxlength=3></el-input>
@@ -256,9 +256,9 @@
                    style="max-width: 90px;max-height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
-          <el-table-column align="left" label="年龄" prop="isp" min-width="125"
+          <el-table-column align="left" label="年龄段" prop="age" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="性别" prop="netType" min-width="125"
+          <el-table-column align="left" label="性别" prop="sex" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="抓取时间" prop="upTime" min-width="170"
                            :formatter="formatterAddress"></el-table-column>

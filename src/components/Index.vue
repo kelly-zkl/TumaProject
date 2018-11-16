@@ -75,7 +75,7 @@
         <el-dialog width="500px" :visible.sync="runImsiWarning" style="border-radius: 6px" top="70px" title="嫌疑告警">
           <el-form :model="imsiWarning" align="left" style="padding: 10px 50px;border-top: 1px #efefef solid"
                    label-width="100px" label-position="left">
-            <el-form-item label="抓取IMSI" style="margin:0">
+            <el-form-item label="IMSI" style="margin:0">
               <span style="font-size: 15px;color:#000">{{imsiWarning.imsi}}</span>
             </el-form-item>
             <el-form-item label="运营商" style="margin:0">
@@ -110,8 +110,8 @@
             <img :src="faceWarning.faceUrl?faceWarning.faceUrl:imgPath">
             <el-form :model="faceWarning" align="left" label-width="80px" label-position="left"
                      style="display:inline-block;position: absolute;top: 20px">
-              <el-form-item label="年龄" style="margin:0">
-                <span style="font-size: 15px;color:#000">{{faceWarning.age<0?'--':faceWarning.age}}</span>
+              <el-form-item label="年龄段" style="margin:0">
+                <span style="font-size: 15px;color:#000">{{faceWarning.age<0?'--':(faceWarning.age-3)+"~"+(faceWarning.age+3)}}</span>
               </el-form-item>
               <el-form-item label="性别" style="margin:0">
                 <span style="font-size: 15px;color:#000">
@@ -314,6 +314,7 @@
               sessionStorage.removeItem("index");
               sessionStorage.removeItem("face");
               sessionStorage.removeItem("imsi");
+              localStorage.removeItem("login");
               this.$router.push("/login");
             }
           });

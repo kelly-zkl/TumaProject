@@ -2,27 +2,31 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="16" align="left" style="text-align: left">
+        <el-col :span="20" align="left" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
-              <el-input v-model.number="query.similarThreshold" placeholder="相似度阈值" size="medium"
-                        style="width: 260px">
-                <el-upload ref="upload" class="upload" slot="prepend" :action="uploadImgUrl" name="file"
-                           :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
-                           :auto-upload="true" :show-file-list="false">
-                  <el-button type="primary" size="medium">上传头像图片</el-button>
-                </el-upload>
-              </el-input>
+              <el-upload ref="upload" class="upload img" :action="uploadImgUrl" name="file"
+                         :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
+                         :auto-upload="true" :show-file-list="false">
+                <el-button size="medium" style="width: 100px">
+                  <span class="el-upload__text">
+                    <span v-if="!query.faceUrl">
+                      <i class="fa fa-photo fa-lg"></i>上传头像
+                    </span>
+                    <img :src="query.faceUrl" v-if="query.faceUrl" style="height: 30px">
+                  </span>
+                </el-button>
+              </el-upload>
             </el-form-item>
-            <el-form-item label="年龄" style="margin-bottom: 10px">
+            <el-form-item label="年龄段" style="margin-bottom: 10px">
               <el-input-number v-model="query.startAge" controls-position="right" :min="1"
-                               :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
+                               :max="query.endAge-1" style="width: 90px" size="medium"></el-input-number>
               <span>~</span>
               <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
-                               :max="200" style="width: 100px" size="medium"></el-input-number>
+                               :max="200" style="width: 90px" size="medium"></el-input-number>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px">
+              <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 80px" clearable>
                 <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
@@ -37,10 +41,14 @@
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="手机号" v-model="query.mobilePhone" :maxlength="11"
-                        style="width: 180px" size="medium"></el-input>
+                        style="width: 150px" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="所属名单" v-model="query.blackClass" :maxlength="30" size="medium"></el-input>
+              <el-select v-model="query.blackClass" placeholder="所属名单" size="medium"
+                         style="width: 180px" clearable filterable>
+                <el-option v-for="item in listTypes" :key="item.id" :label="item.name" :value="item.name">
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
@@ -50,7 +58,7 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="8" align="right" style="text-align: right">
+        <el-col :span="4" align="right" style="text-align: right">
           <el-button type="primary" size="medium" style="margin-bottom: 10px"
                      v-show="getButtonVial('person:delKeyPerson')"
                      :disabled="sels.length == 0" @click="deletePerson()">删除
@@ -73,18 +81,18 @@
                  style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="姓名" prop="name" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="姓名" prop="name" min-width="120"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="年龄" prop="age" min-width="100" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" min-width="100" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="身份证号" prop="idCard" min-width="170"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+                         max-width="220" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="手机号" prop="mobilePhone" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="所属名单" prop="blackClass" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="150" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('person:delKeyPerson')">查看
@@ -153,7 +161,8 @@
             <el-input placeholder="输入身份证号" v-model="modifyPerson.idCard" :maxlength="18"></el-input>
           </el-form-item>
           <el-form-item label="年龄">
-            <el-input placeholder="输入年龄" v-model="modifyPerson.age" :maxlength="3" type="number"></el-input>
+            <el-input-number v-model="modifyPerson.age" controls-position="right" :min="1"
+                             :max="150"></el-input-number>
           </el-form-item>
           <el-form-item label="性别">
             <el-select v-model="modifyPerson.sex" placeholder="选择性别">
@@ -164,12 +173,6 @@
           <el-form-item label="手机号">
             <el-input placeholder="输入手机号" v-model="modifyPerson.mobilePhone" :maxlength="11"></el-input>
           </el-form-item>
-          <!--<el-form-item label="所属名单" prop="pType">-->
-          <!--<el-select v-model="modifyPerson.pType" placeholder="名单">-->
-          <!--<el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">-->
-          <!--</el-option>-->
-          <!--</el-select>-->
-          <!--</el-form-item>-->
           <el-form-item label="备注">
             <el-input placeholder="备注" v-model="modifyPerson.remark" :maxlength="200" type="textarea"></el-input>
           </el-form-item>
@@ -188,8 +191,8 @@
               <el-button type="primary">选择文件</el-button>
             </el-upload>
           </el-input>
-          <div style="color:#999;margin-top: 20px" v-show="!fileFlag">
-            选择ZIP、RAR的文件，导入后，文件将自动解压。<br/>文件夹需要以名单名称来命名；<br/>
+          <div style="color:#999;margin-top: 20px;font-weight: bold" v-show="!fileFlag">
+            选择压缩文件，导入后，文件将自动解压。<br/>文件夹需要以名单名称来命名；<br/>
             人员图片请选择清晰的人头像照片；<br/>图片文件的命名规则以姓名（汉字）+身份证号（18位数字）
           </div>
           <div v-show="fileFlag" style="margin-bottom: 20px">文件名：{{importFile}}</div>
@@ -242,7 +245,7 @@
 <script>
   import {
     globalValidImg, nameValidator, numValid, mobileValidator, doubleValid, mobileValidator2,
-    userCardValid, globalValidZIP
+    userCardValid, globalValidZIP, isNull
   } from "../../assets/js/api";
   import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
 
@@ -299,10 +302,14 @@
         return buttonValidator(msg);
       },
       showModify(row) {
+        var age = !isNull(row.age) ? row.age : 0;
         this.modifyPerson = {
-          faceUrl: row.faceUrl, name: row.name, idCard: row.idCard, faceId: row.faceId,
-          age: row.age, sex: row.sex, mobilePhone: row.mobilePhone, remark: row.remark
+          faceUrl: row.faceUrl, name: row.name, idCard: row.idCard, faceId: row.faceId, age: age,
+          sex: row.sex, mobilePhone: row.mobilePhone, remark: row.remark
         };
+        if (isNull(row.age)) {
+          delete this.modifyPerson['age'];
+        }
         this.runningModifyPerson = true
       },
       //取消上传
@@ -595,12 +602,22 @@
         if (column.property === 'sex') {
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
         } else if (column.property === 'age') {
+          return row.age > 0 ? row.age : '--';
+        } else if (column.property === 'age') {
           return row.age >= 0 ? row.age : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
+      },
+      getBlackTypes() {
+        this.$post('archives/listBlackPersonType', {page: 1, size: 9999}).then((data) => {
+          if ("000000" === data.code) {
+            this.listTypes = data.data.list;
+          }
+        }).catch((err) => {
+        });
       }
     },
     mounted() {
@@ -609,6 +626,7 @@
         this.query = JSON.parse(sessionStorage.getItem("query"));
         delete this.query['pageTime'];
       }
+      this.getBlackTypes();
       this.getData();
     }
   }

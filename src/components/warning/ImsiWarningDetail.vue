@@ -209,7 +209,7 @@
         }
       },
       changeStatus(status) {
-        this.$post('warning/dealWithWarningById', {id: this.id, status: status}, "处理成功").then((data) => {
+        this.$post('warning/dealWithWarningById', {ids: [this.id], status: status}, "处理成功").then((data) => {
           this.getImsiDetail();
         }).catch((err) => {
           this.$message.error(err);

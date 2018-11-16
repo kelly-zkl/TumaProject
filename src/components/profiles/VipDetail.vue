@@ -5,7 +5,7 @@
         <el-col :span="8" align="left" style="text-align: left">
           <div style="font-size:14px;padding:10px 20px">基本信息</div>
         </el-col>
-        <el-col :span="4" :offset="12" align="center" style="text-align: right">
+        <el-col :span="4" :offset="12" align="center" style="text-align: center">
           <el-button type="text" size="medium" @click="deletePerson()" v-show="getButtonVial('person:delKeyPerson')">
             删除
           </el-button>
@@ -24,7 +24,7 @@
                 <span style="font-size: 15px;color:#000">{{person.name?person.name:'--'}}</span>
               </el-form-item>
               <el-form-item label="年龄" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{person.age<0?'--':person.age}}</span>
+                <span style="font-size: 15px;color:#000">{{person.age>0?person.age: '--'}}</span>
               </el-form-item>
               <el-form-item label="性别" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000">{{person.sex == 0 ? '男' : person.sex == 1 ? '女' : '--'}}</span>
@@ -102,7 +102,8 @@
             <el-input placeholder="输入身份证号" v-model="modifyPerson.idCard" :maxlength="18"></el-input>
           </el-form-item>
           <el-form-item label="年龄">
-            <el-input placeholder="输入年龄" v-model="modifyPerson.age" :maxlength="3" type="number"></el-input>
+            <el-input-number v-model="modifyPerson.age" controls-position="right" :min="1"
+                             :max="150"></el-input-number>
           </el-form-item>
           <el-form-item label="性别">
             <el-select v-model="modifyPerson.sex" placeholder="选择性别">
@@ -112,12 +113,6 @@
           <el-form-item label="手机号">
             <el-input placeholder="输入手机号" v-model="modifyPerson.mobilePhone" :maxlength="11"></el-input>
           </el-form-item>
-          <!--<el-form-item label="所属名单" prop="pType">-->
-          <!--<el-select v-model="modifyPerson.pType" placeholder="名单">-->
-          <!--<el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">-->
-          <!--</el-option>-->
-          <!--</el-select>-->
-          <!--</el-form-item>-->
           <el-form-item label="备注">
             <el-input placeholder="备注" v-model="modifyPerson.remark" :maxlength="200" type="textarea"></el-input>
           </el-form-item>
@@ -130,7 +125,7 @@
   </div>
 </template>
 <script>
-  import {globalValidImg, nameValidator, numValid, mobileValidator, userCardValid} from "../../assets/js/api";
+  import {globalValidImg, nameValidator, numValid, mobileValidator, userCardValid, isNull} from "../../assets/js/api";
   import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
 
   export default {
@@ -148,6 +143,7 @@
         runningModifyPerson: false,
         persons: [],
         num: 10,
+        timeStamp: new Date().getTime(),
         rules: {
           faceUrl: [{required: true, message: '请选择头像', trigger: 'blur'}],
           // age: [{required: true, message: '请输入年龄', trigger: 'blur'}],
@@ -214,7 +210,7 @@
       //根据imsi查找指定的对应人员
       getPersons() {
         this.listLoading = true;
-        this.$post('common/listPersonByUrl', {type: "keyPerson", url: this.person.faceUrl},
+        this.$post('common/listPersonByUrl', {type: "keyPerson", url: this.person.faceUrl + '?t=' + this.timeStamp},
           undefined, undefined, "login").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
@@ -247,10 +243,14 @@
         this.$post('archives/detail', {faceId: this.faceId}).then((data) => {
           let row = data.data;
           this.person = data.data;
+          var age = !isNull(row.age) ? row.age : 0;
           this.modifyPerson = {
-            faceUrl: row.faceUrl, name: row.name, idCard: row.idCard, faceId: row.faceId,
-            age: row.age, sex: row.sex, mobilePhone: row.mobilePhone, remark: row.remark
+            faceUrl: row.faceUrl, name: row.name, idCard: row.idCard, faceId: row.faceId, age: age,
+            sex: row.sex, mobilePhone: row.mobilePhone, remark: row.remark
           };
+          if (isNull(row.age)) {
+            delete this.modifyPerson['age'];
+          }
           this.getPersons();
         }).catch((err) => {
           this.$message.error(err);

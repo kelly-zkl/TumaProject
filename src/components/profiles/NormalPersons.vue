@@ -5,15 +5,20 @@
         <el-col :span="18" align="left">
           <el-form :inline="true" :model="query" align="left">
             <el-form-item style="margin-bottom: 10px">
-              <el-input v-model="query.imgUrl" placeholder="输入相似度阈值" size="medium" style="width: 260px">
-                <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
-                           :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
-                           :auto-upload="true" :show-file-list="false">
-                  <el-button type="primary" size="medium">上传头像图片</el-button>
-                </el-upload>
-              </el-input>
+              <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
+                         :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
+                         :auto-upload="true" :show-file-list="false">
+                <el-button size="medium" style="width: 100px">
+              <span class="el-upload__text">
+                <span v-if="!query.faceUrl">
+                  <i class="fa fa-photo fa-lg"></i>上传头像
+                </span>
+                <img :src="query.faceUrl" v-if="query.faceUrl" style="height: 30px">
+              </span>
+                </el-button>
+              </el-upload>
             </el-form-item>
-            <el-form-item label="年龄" style="margin-bottom: 10px">
+            <el-form-item label="年龄段" style="margin-bottom: 10px">
               <el-input-number v-model="query.startAge" controls-position="right" :min="1"
                                :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
               <span>~</span>
@@ -77,7 +82,7 @@
                  style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="年龄" prop="age" width="120"
+        <el-table-column align="left" label="年龄段" prop="age" width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" width="120"
                          :formatter="formatterAddress"></el-table-column>
@@ -127,8 +132,8 @@
             </el-upload>
             <span style="color:#999">只能上传jpeg/jpg/png文件，且不超过2M</span>
           </el-form-item>
-          <el-form-item label="年龄" prop="age">
-            <el-input placeholder="输入年龄" v-model="addPerson.age" :maxlength="3" type="number"></el-input>
+          <el-form-item label="年龄段" prop="age">
+            <el-input placeholder="输入年龄段" v-model="addPerson.age" :maxlength="3" type="number"></el-input>
           </el-form-item>
           <el-form-item label="性别" prop="sex">
             <el-select v-model="addPerson.sex" placeholder="选择性别">

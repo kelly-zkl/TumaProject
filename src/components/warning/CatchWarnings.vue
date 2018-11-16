@@ -8,18 +8,27 @@
             <el-tab-pane label="历史告警" name="H"></el-tab-pane>
           </el-tabs>
         </el-col>
+        <el-col :span="8" align="right" style="text-align: right" v-show="getButtonVial('warning:dealWithWarningById')">
+          <el-button type="primary" size="medium" @click=changeStatus(2) :disabled="sels.length == 0">已处理</el-button>
+          <el-button type="primary" size="medium" @click=changeStatus(3) :disabled="sels.length == 0">误报</el-button>
+        </el-col>
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
-          <el-input v-model.number="query.similarThreshold" placeholder="相似度阈值" size="medium" style="width: 260px">
-            <el-upload ref="upload" class="upload" slot="prepend" :action="uploadUrl" name="file"
-                       :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
-                       :auto-upload="true" :show-file-list="false">
-              <el-button type="primary" size="medium">上传头像图片</el-button>
-            </el-upload>
-          </el-input>
+          <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
+                     :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
+                     :auto-upload="true" :show-file-list="false">
+            <el-button size="medium" style="width: 100px">
+              <span class="el-upload__text">
+                <span v-if="!query.faceUrl">
+                  <i class="fa fa-photo fa-lg"></i>上传头像
+                </span>
+                <img :src="query.faceUrl" v-if="query.faceUrl" style="height: 30px">
+              </span>
+            </el-button>
+          </el-upload>
         </el-form-item>
-        <el-form-item label="年龄" style="margin-bottom: 10px">
+        <el-form-item label="年龄段" style="margin-bottom: 10px">
           <el-input-number v-model="query.startAge" controls-position="right" :min="1"
                            :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
           <span>~</span>
@@ -27,7 +36,7 @@
                            :max="200" style="width: 100px" size="medium"></el-input-number>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px">
+          <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px" clearable>
             <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -38,24 +47,24 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-if="activeItem=='H'">
+        <el-form-item style="margin-bottom: 10px">
+          <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 130px" clearable>
+            <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'">
           <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
                           start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                           :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                           :picker-options="pickerBeginDate">
           </el-date-picker>
         </el-form-item>
-        <!--<el-form-item style="margin-bottom: 10px">-->
-        <!--<el-select v-model="query.blackClassId" placeholder="人员名单" size="medium" style="width: 150px">-->
-        <!--<el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">-->
-        <!--</el-option>-->
-        <!--</el-select>-->
-        <!--</el-form-item>-->
-        <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 130px">
-            <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
+          <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
+                          style="width: 230px" value-format="HH:mm:ss" end-placeholder="结束时间"
+                          placeholder="选择时间范围" @change="handleTime">
+          </el-time-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索
@@ -65,7 +74,8 @@
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
       </el-form>
-      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
+      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
+        <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150">
           <template slot-scope="scope">
@@ -74,7 +84,7 @@
                  style="max-height:70px;border-radius: 6px"/>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="年龄" prop="age" min-width="60" max-width="120"
+        <el-table-column align="left" label="年龄段" prop="age" min-width="60" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
@@ -85,7 +95,13 @@
         <el-table-column align="left" label="告警时间" prop="createTime" min-width="170"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警状态" prop="status" min-width="80" max-width="120"
-                         :formatter="formatterAddress"></el-table-column>
+                         :formatter="formatterAddress">
+          <template slot-scope="scope">
+            <span style="color:#dd6161" v-show="scope.row.status == 0">待处理</span>
+            <span style="color:#00C755" v-show="scope.row.status == 2">已处理</span>
+            <span style="color:#999" v-show="scope.row.status == 3">误报</span>
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="抓取时间" prop="catchTime" min-width="170"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="布控人员图像" prop="faceUrl" min-width="120"
@@ -153,6 +169,8 @@
         places: [],
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         imgUrl: '',
+        sels: [],
+        time1: ['00:00:00', '23:59:59'],
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -167,12 +185,42 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      //全选  ==>  删除/结案
+      selsChange(sels) {
+        this.sels = sels;
+      },
+      checkboxInit(row, index) {
+        if (row.status !== 0)
+          return 0;//不可勾选
+        else
+          return 1;//可勾选
+      },
+      changeStatus(status) {
+        let arr = [];
+        this.sels.forEach((item) => {
+          arr.push(item.id);
+        });
+        this.$post('warning/dealWithWarningById', {ids: arr, status: status}, "处理成功").then((data) => {
+          this.sels = [];
+          this.getData();
+        }).catch((err) => {
+          this.$message.error(err);
+        });
+      },
       handleChange(val) {
         if (!val || val.length == 0) {
           this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
-          this.getData();
         }
+        this.getData();
+      },
+      handleTime(val) {
+        if (!val || val.length == 0) {
+          this.time1 = ['00:00:00', '23:59:59'];
+        }
+        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " " + this.time1[0]).replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " " + this.time1[1]).replace(/-/g, '/')).getTime()];
+        this.getData();
       },
       handleType(val, ev) {
         this.clearData();
@@ -318,6 +366,7 @@
           this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         } else {
+          this.time1 = ['00:00:00', '23:59:59'];
           this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         }
@@ -330,8 +379,10 @@
           return row.status === 0 ? '待处理' : row.status === 1 ? '处理中' : row.status === 2 ? '已处理' : row.status === 3 ? '误报' : '--';
         } else if (column.property === 'sex') {
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
-        } else if (column.property === 'age' || column.property === 'similarThreshold') {
-          return row[column.property] < 0 ? '--' : row[column.property];
+        } else if (column.property === 'age') {
+          return row.age <= 0 ? '--' : (row.age - 3) + "~" + (row.age + 3);
+        } else if (column.property === 'similarThreshold') {
+          return row[column.property] <= 0 ? '--' : row[column.property];
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'catchTime') {

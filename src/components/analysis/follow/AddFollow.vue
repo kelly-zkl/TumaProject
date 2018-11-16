@@ -83,7 +83,7 @@
                      style="max-width: 90px;max-height:90px;border-radius: 6px"/>
               </template>
             </el-table-column>
-            <el-table-column align="left" label="IMSI[置信度]" prop="imsiList" min-width="220" max-width="250">
+            <el-table-column align="left" label="关联IMSI[置信度]" prop="imsiList" min-width="220" max-width="250">
               <template slot-scope="scope">
                 <div v-for="item in scope.row.imsiList">
                   <span>{{item.imsi}}<span style="color:#000;font-weight: bold">[{{item.weight / 10}}%]</span></span>
