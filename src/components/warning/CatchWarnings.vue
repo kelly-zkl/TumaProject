@@ -10,10 +10,18 @@
         </el-col>
         <el-col :span="8" align="right" style="text-align: right" v-show="getButtonVial('warning:dealWithWarningById')">
           <el-button type="primary" size="medium" @click=changeStatus(2) :disabled="sels.length == 0">已处理</el-button>
-          <el-button type="primary" size="medium" @click=changeStatus(3) :disabled="sels.length == 0">误报</el-button>
+          <el-button size="medium" @click=changeStatus(3) :disabled="sels.length == 0">误报</el-button>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left">
+      <div class="s-tip" v-show="showTip">
+        <i class="el-icon-info" style="color: #1890FF;font-size: 15px;margin-right: 5px"></i>
+        <span style="color: #343434">当前没有进行中的布控任务。
+          <el-button type="text" style="margin: 0;padding: 0" @click="$router.push('/addControl')">添加布控任务</el-button>
+        </span>
+        <el-button type="text" style="margin: 0;padding: 0;position: absolute;right: 10px"
+                   icon="el-icon-close" @click="showTip=false"></el-button>
+      </div>
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1120px">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
                      :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -41,30 +49,20 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
-          <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable>
-            <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 130px" clearable>
             <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'">
-          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
-                          start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
-                          :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
-                          :picker-options="pickerBeginDate">
-          </el-date-picker>
+        <el-form-item style="margin-bottom: 10px">
+          <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable>
+            <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
-          <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
-                          style="width: 230px" value-format="HH:mm:ss" end-placeholder="结束时间"
-                          placeholder="选择时间范围" @change="handleTime">
-          </el-time-picker>
+        <el-form-item style="margin-bottom: 10px">
+          <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索
@@ -73,8 +71,22 @@
         <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'&&isMore">
+          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
+                          start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
+                          :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                          :picker-options="pickerBeginDate">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'&&isMore">
+          <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
+                          style="width: 230px" value-format="HH:mm:ss" end-placeholder="结束时间"
+                          placeholder="选择时间范围" @change="handleTime">
+          </el-time-picker>
+        </el-form-item>
       </el-form>
-      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
+      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe
+                @selection-change="selsChange" :max-height="tableHeight">
         <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150">
@@ -148,9 +160,11 @@
     data() {
       return {
         runBigPic: false,
+        isMore: false,
         bigUrl: '',
         activeItem: 'T',
         imgPath: require('../../assets/img/icon_people.png'),
+        tableHeight: window.innerHeight - 280,
         query: {size: 100},
         statuses: [{label: '待处理', value: 0}, {label: '已处理', value: 2}, {label: '误报', value: 3}],
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
@@ -169,6 +183,7 @@
         places: [],
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         imgUrl: '',
+        showTip: false,
         sels: [],
         time1: ['00:00:00', '23:59:59'],
         pickerBeginDate: {
@@ -185,6 +200,22 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      showMore() {
+        this.isMore = !this.isMore;
+        if (this.isMore) {
+          this.tableHeight = window.innerHeight - 330
+        } else {
+          this.tableHeight = window.innerHeight - 280
+        }
+      },
+      //是否有进行中的布控任务
+      getTask() {
+        this.$post('disposition/query', {page: 1, size: 10, taskStatus: "EXECUTION"}).then((data) => {
+          this.showTip = data.data.list.length == 0;
+        }).catch((err) => {
+          this.showTip = false;
+        });
+      },
       //全选  ==>  删除/结案
       selsChange(sels) {
         this.sels = sels;
@@ -200,11 +231,32 @@
         this.sels.forEach((item) => {
           arr.push(item.id);
         });
-        this.$post('warning/dealWithWarningById', {ids: arr, status: status}, "处理成功").then((data) => {
-          this.sels = [];
-          this.getData();
-        }).catch((err) => {
-          this.$message.error(err);
+        this.$prompt('确认已处理此告警？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          inputType: 'textarea',
+          inputPlaceholder: '录入备注（非必填）',
+          inputValidator: function (value) {
+            let bol = true;
+            if (value) {
+              bol = (value.length <= 200)
+            }
+            return bol
+          },
+          inputErrorMessage: '请输入200字以内的备注'
+        }).then(({value}) => {
+          let param = {
+            ids: arr, status: status, remark: value ? value : '',
+            dealWithUser: JSON.parse(sessionStorage.getItem("user")).account
+          };
+          this.$post('warning/dealWithWarningById', param, "处理成功").then((data) => {
+            this.$emit('getWarningCount');
+            this.sels = [];
+            this.getData();
+          }).catch((err) => {
+            this.$message.error(err);
+          });
+        }).catch(() => {
         });
       },
       handleChange(val) {
@@ -223,7 +275,9 @@
         this.getData();
       },
       handleType(val, ev) {
+        this.isMore = false;
         this.clearData();
+        this.getTask();
 
         if (this.activeItem === 'H') {
           this.exportKey = 'warning:get:listFaceHistory';
@@ -242,7 +296,8 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
-            this.query.similarThreshold = 60;
+            let param = JSON.parse(sessionStorage.getItem("system")).similarThreshold;
+            this.query.similarThreshold = param ? param : 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.isSearch = true;
             this.getData();
@@ -414,11 +469,22 @@
       if (time1) {
         this.qTime = time1;
       }
+      this.getTask();
       this.getPlaces();
       this.getData();
     }
   }
 </script>
-<style>
-
+<style scoped>
+  .s-tip {
+    color: #666;
+    text-align: left;
+    font-size: 13px;
+    padding: 10px 20px;
+    margin-top: 10px;
+    background: #E6F7FF;
+    border: 1px solid #91D5FF;
+    border-radius: 4px;
+    position: relative;
+  }
 </style>

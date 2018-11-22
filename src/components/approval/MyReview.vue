@@ -39,13 +39,14 @@
             </el-form-item>
           </el-col>
           <el-col :span="3" align="right">
-            <el-button type="primary" size="medium" v-show="activeItem == 'UNREAD'" :disabled="sels.length == 0"
+            <el-button size="medium" v-show="activeItem == 'UNREAD'" :disabled="sels.length == 0"
                        @click="updateStatus()">标记已读
             </el-button>
           </el-col>
         </el-row>
       </el-form>
-      <el-table :data="imsiList" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
+      <el-table :data="imsiList" v-loading="listLoading" class="center-block" stripe
+                @selection-change="selsChange" :max-height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="编号" prop="recordNo" min-width="150"
@@ -95,6 +96,7 @@
         activeItem: 'UNREAD',
         imsiList: [],
         query: {page: 1, size: 10, ccReadStatus: 1},
+        tableHeight: window.innerHeight - 280,
         qTime: '',
         count: 0,
         sels: [],

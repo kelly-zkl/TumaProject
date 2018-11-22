@@ -1,11 +1,15 @@
 <template>
-  <el-container class="main-container">
+  <el-container class="home-container">
     <!--左侧菜单栏-->
     <el-aside :width="collapseWidth" v-bind:class="isCollapse ? 'content-aside-close' : 'content-aside'">
       <el-menu :default-active="$route.path" :collapse="isCollapse" unique-opened router mode="vertical"
                background-color="#f6f7fb" text-color="#333" active-text-color="#6699FF" @select="handleActive">
         <el-menu-item v-for="item in menu" :index="item.permissionUrl">
           {{item.name}}
+          <el-badge class="mark" :value="imsi" :max="99"
+                    v-show="item.permissionUrl=='/imsiWarnings'&&imsi>0"/>
+          <el-badge class="mark" :value="face" :max="99"
+                    v-show="item.permissionUrl=='/catchWarnings'&&face>0"/>
         </el-menu-item>
       </el-menu>
     </el-aside>
@@ -22,7 +26,7 @@
         </el-col>
         <el-col :span="24" style="padding-top: 15px">
           <transition name="fade" mode="out-in">
-            <router-view></router-view>
+            <router-view @getWarningCount="getWarningCount"></router-view>
           </transition>
         </el-col>
       </div>
@@ -31,14 +35,30 @@
 </template>
 <script>
   export default {
+    props: ['faceCount', 'imsiCount'],
     data() {
       return {
         isCollapse: false,
         collapseWidth: '200px',
-        menu: []
+        menu: [],
+        imsi: 0,
+        face: 0
       }
     },
+    watch: {
+      deviceId: function () {
+        this.imsi = this.imsiCount;
+        this.face = this.faceCount;
+      }
+    },
+    created() {
+      this.imsi = this.imsiCount;
+      this.face = this.faceCount;
+    },
     methods: {
+      getWarningCount() {
+        this.$emit('handleSelectTab', null, 'warning');
+      },
       //菜单栏左侧缩小/放大功能
       isCollNav() {
         if (this.isCollapse) {
@@ -70,14 +90,3 @@
     }
   }
 </script>
-<style scoped>
-  .main-container {
-    position: absolute;
-    padding: 0;
-    margin: 0;
-    top: 70px;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-  }
-</style>

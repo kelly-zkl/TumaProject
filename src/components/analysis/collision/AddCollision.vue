@@ -1,10 +1,10 @@
 <template>
   <div>
     <section class="content">
-      <el-form ref="collision" :model="collision">
+      <el-form ref="collision" :model="collision" label-position="left" label-width="100px" :rules="rules">
         <h5 class="add-label" style="margin-top: 0">任务基本信息</h5>
         <div class="add-appdiv">
-          <el-form-item label="任务名称" align="left" required>
+          <el-form-item label="任务名称" align="left" prop="taskName">
             <el-input v-model="collision.taskName" placeholder="请输入任务名称" style="width: 300px" :maxlength=20></el-input>
           </el-form-item>
           <!--<el-form-item label="任务类型" align="left">-->
@@ -14,11 +14,17 @@
           <!--<el-radio label="MAC">MAC</el-radio>-->
           <!--</el-radio-group>-->
           <!--</el-form-item>-->
-          <el-form-item label="设置案件" required align="left" style="margin:0" prop="caseId">
+          <el-form-item label="设置案件" align="left" style="margin:0" prop="caseId">
             <el-select v-model="collision.caseId" placeholder="选择案件" filterable clearable>
               <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
               </el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item label="任务类型" align="left" style="margin:15px 0 0 0" prop="conditionType">
+            <el-radio-group v-model="collision.conditionType">
+              <el-radio label="0">多条件碰撞</el-radio>
+              <el-radio label="1">单条件碰撞</el-radio>
+            </el-radio-group>
           </el-form-item>
         </div>
       </el-form>
@@ -32,32 +38,36 @@
               <el-form-item label="方式" align="left" style="margin: 0">
                 <el-radio-group v-model="param1.dataFromMode" size="medium">
                   <el-radio-button label="QUERY">输入条件</el-radio-button>
-                  <el-radio-button label="COLLISION_RESULT">选择历史任务</el-radio-button>
+                  <el-radio-button label="COLLISION_RESULT" :disabled="collision.conditionType==1">选择历史任务
+                  </el-radio-button>
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="设备" align="left" style="margin: 10px 0 0 0" v-show="param1.dataFromMode == 'QUERY'">
                 <el-select v-model="param1.deviceId" placeholder="请选择设备" size="medium"
-                           v-if="collisionType == 'FACE'" multiple collapse-tags>
+                           v-if="collisionType == 'FACE'" multiple collapse-tags clearable>
                   <el-option v-for="item in cameras" :key="item.cameraCode" :label="item.name" :value="item.cameraCode">
                   </el-option>
                 </el-select>
-                <el-select v-model="param1.deviceId" placeholder="请选择设备" size="medium" v-else multiple collapse-tags>
+                <el-select v-model="param1.deviceId" placeholder="请选择设备" size="medium" v-else
+                           multiple collapse-tags clearable>
                   <el-option v-for="item in deviceList" :key="item.deviceId" :label="item.deviceName"
                              :value="item.deviceId">
                   </el-option>
                 </el-select>
                 <el-button type="primary" size="medium" style="margin-left: 10px" @click="showDialog(1)">选择
                 </el-button>
-                <el-button type="primary" size="medium" @click="selectDevice('data1')" style="margin-left: 10px">地图选择
+                <el-button type="primary" size="medium" @click="selectDevice('data1')">地图选择
                 </el-button>
               </el-form-item>
               <el-form-item label="日期" align="left" required style="margin: 10px 0 0 0"
                             v-show="param1.dataFromMode == 'QUERY'">
-                <el-date-picker v-model="date1" type="datetimerange" range-separator="至" style="width: 300px"
-                                value-format="timestamp" start-placeholder="开始日期" end-placeholder="结束日期"
-                                :default-time="['00:00:00', '23:59:59']" format="yyyy-MM-dd"
-                                :picker-options="pickerBeginDate">
-                </el-date-picker>
+                <el-tooltip effect="dark" content="日期范围不能超过7天" placement="bottom">
+                  <el-date-picker v-model="date1" type="datetimerange" range-separator="至" style="width: 300px"
+                                  value-format="timestamp" start-placeholder="开始日期" end-placeholder="结束日期"
+                                  :default-time="['00:00:00', '23:59:59']" format="yyyy-MM-dd"
+                                  :picker-options="pickerBeginDate">
+                  </el-date-picker>
+                </el-tooltip>
               </el-form-item>
               <el-form-item label="时段" align="left" style="margin: 10px 0 0 0" v-show="param1.dataFromMode == 'QUERY'">
                 <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
@@ -76,7 +86,7 @@
               </el-form-item>
             </el-form>
           </el-col>
-          <el-col :lg="2" :xl="2" :md="2" :sm="2" :xs="2">
+          <el-col :lg="2" :xl="2" :md="2" :sm="2" :xs="2" v-show="collision.conditionType==0">
             <el-tooltip class="item" effect="dark" placement="bottom">
               <div slot="content">交集：条件1的记录与条件2的记录里都出现的IMSI<br/>
                 并集：条件1的记录与条件2的记录里分别出现的IMSI<br/>差集：条件1的记录里出现，条件2的记录里未出现的IMSI
@@ -88,7 +98,8 @@
               </el-radio-group>
             </el-tooltip>
           </el-col>
-          <el-col :xl="10" :lg="11" :md="2" :sm="2" :xs="2" style="background: #fff">
+          <el-col :xl="10" :lg="11" :md="2" :sm="2" :xs="2" style="background: #fff"
+                  v-show="collision.conditionType==0">
             <h6 style="background: #CCC;text-align: left;margin: 0;padding: 10px 20px">条件2</h6>
             <el-form label-position="right" label-width="60px" ref="param2" :model="param2"
                      style="margin:0;background: #F2F2F2;padding: 10px;height: 200px">
@@ -116,11 +127,13 @@
               </el-form-item>
               <el-form-item label="日期" align="left" required style="margin: 10px 0 0 0"
                             v-show="param2.dataFromMode == 'QUERY'">
-                <el-date-picker v-model="date2" type="datetimerange" range-separator="至" style="width: 300px"
-                                value-format="timestamp" start-placeholder="开始日期" end-placeholder="结束日期"
-                                :default-time="['00:00:00', '23:59:59']" format="yyyy-MM-dd"
-                                :picker-options="pickerBeginDate">
-                </el-date-picker>
+                <el-tooltip effect="dark" content="日期范围不能超过7天" placement="bottom">
+                  <el-date-picker v-model="date2" type="datetimerange" range-separator="至" style="width: 300px"
+                                  value-format="timestamp" start-placeholder="开始日期" end-placeholder="结束日期"
+                                  :default-time="['00:00:00', '23:59:59']" format="yyyy-MM-dd"
+                                  :picker-options="pickerBeginDate">
+                  </el-date-picker>
+                </el-tooltip>
               </el-form-item>
               <el-form-item label="时段" align="left" style="margin: 10px 0 0 0" v-show="param2.dataFromMode == 'QUERY'">
                 <el-time-picker is-range v-model="time2" range-separator="至" start-placeholder="开始时间"
@@ -279,7 +292,7 @@
         provinceList: json,
         mapVisible: false,
         collisionType: 'IMSI',
-        collision: {taskName: '', collisionMode: "INTERSECT", caseId: ""},
+        collision: {taskName: '', collisionMode: "INTERSECT", caseId: "", conditionType: 0},
         param1: {dataFromMode: "QUERY"},
         param2: {dataFromMode: "QUERY"},
         deviceList: [],
@@ -302,6 +315,17 @@
         deviceForms: [],
         sels: [],
         dataType: 1,
+        rules: {
+          caseId: [
+            {required: true, message: '请选择案件', trigger: 'blur'}
+          ],
+          conditionType: [
+            {required: true, message: '请选择任务类型', trigger: 'blur'}
+          ],
+          taskName: [
+            {required: true, message: '请输入任务名称', trigger: 'blur'}
+          ]
+        },
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date().getTime();
@@ -360,9 +384,9 @@
             if (this.date1) {
               this.param1.startDate = this.date1[0] / 1000;
               this.param1.endDate = this.date1[1] / 1000;
-              let bol = ((this.param1.endDate - this.param1.startDate) > 60 * 60 * 24 * 30);
+              let bol = ((this.param1.endDate - this.param1.startDate) > 60 * 60 * 24 * 7);
               if (bol) {
-                this.$message.error('条件1：日期范围不能超过30天');
+                this.$message.error('条件1：日期范围不能超过7天');
                 return;
               }
             }
@@ -376,29 +400,33 @@
           return;
         }
 
-        if (this.judgeParam2()) {
-          if (this.param2.dataFromMode === 'QUERY') {
-            if (this.date2) {
-              this.param2.startDate = this.date2[0] / 1000;
-              this.param2.endDate = this.date2[1] / 1000;
-              let bol = ((this.param2.endDate - this.param2.startDate) > 60 * 60 * 24 * 30);
-              if (bol) {
-                this.$message.error('条件2：日期范围不能超过30天');
-                return;
+        if (this.collision.conditionType == 0) {//多条件碰撞
+          if (this.judgeParam2()) {
+            if (this.param2.dataFromMode === 'QUERY') {
+              if (this.date2) {
+                this.param2.startDate = this.date2[0] / 1000;
+                this.param2.endDate = this.date2[1] / 1000;
+                let bol = ((this.param2.endDate - this.param2.startDate) > 60 * 60 * 24 * 7);
+                if (bol) {
+                  this.$message.error('条件2：日期范围不能超过7天');
+                  return;
+                }
+              }
+              if (this.time2) {
+                this.param2.startTimeInterval = this.time2[0];
+                this.param2.endTimeInterval = this.time2[1];
               }
             }
-            if (this.time2) {
-              this.param2.startTimeInterval = this.time2[0];
-              this.param2.endTimeInterval = this.time2[1];
-            }
+          } else {
+            this.$message.error('请完善任务2的条件信息');
+            return;
           }
+          this.collision.param2 = this.param2;
         } else {
-          this.$message.error('请完善任务2的条件信息');
-          return;
+          delete this.collision['collisionMode'];
         }
 
         this.collision.param1 = this.param1;
-        this.collision.param2 = this.param2;
         this.collision.caseName = this.getCaseName();
         console.log(this.collision);
         this.$post('/collision/add', this.collision, "创建成功").then((data) => {

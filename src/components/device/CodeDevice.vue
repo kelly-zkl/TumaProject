@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <div class="center-block">
-        <el-form :inline="true" :model="query" align="left" style="text-align: left">
+        <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1120px">
           <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('device:query')">
             <el-input placeholder="设备标识/ID" v-model="query.deviceName" :maxlength="30"
                       @change="changeDevice" size="medium"></el-input>
@@ -19,17 +19,14 @@
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-select v-model="query.deviceForm" placeholder="全部形态" size="medium" filterable clearable>
+            <el-select v-model="query.deviceForm" placeholder="全部形态" size="medium" filterable clearable
+                       style="width: 160px">
               <el-option v-for="item in deviceForms" :key="item.code" :label="item.name" :value="item.code">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-input placeholder="安装场所" v-model="query.placeName" :maxlength="30" size="medium"></el-input>
-            <!--<el-select v-model="query.placeId" placeholder="安装场所" size="medium" filterable clearable>-->
-            <!--<el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">-->
-            <!--</el-option>-->
-            <!--</el-select>-->
+            <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button type="primary" @click.stop="query.page=1;getData()" size="medium">搜索</el-button>
@@ -37,9 +34,15 @@
           <el-form-item style="margin-bottom: 10px">
             <el-button @click.stop="clearData()" size="medium">重置</el-button>
           </el-form-item>
+          <el-form-item style="margin-bottom: 10px" v-show="isMore">
+            <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
+              <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
         </el-form>
 
-        <el-table :data="deviceList" v-loading="listLoading" class="center-block" stripe>
+        <el-table :data="deviceList" v-loading="listLoading" class="center-block" stripe :max-height="tableHeight">
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
@@ -63,7 +66,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <div class="block" style="margin-top: 20px">
+        <div class="block" style="margin-top: 20px;text-align: right" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                          background :page-sizes="[10, 15, 20, 30]" :page-size="query.size"
                          layout="total, sizes, prev, pager, next, jumper" :total="count"></el-pagination>
@@ -104,10 +107,12 @@
   export default {
     data() {
       return {
+        isMore: false,
         props: {value: 'o', label: 'n', children: 'c'},
         lineStatus: '',
         areaList: [],
         provinceList: json,
+        tableHeight: window.innerHeight - 230,
         dialogWidth: isPC() ? '40%' : '90%',
         labelWidth: isPC() ? '100px' : '80px',
         listLoading: false,
@@ -131,6 +136,14 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      showMore() {
+        this.isMore = !this.isMore;
+        if (this.isMore) {
+          this.tableHeight = window.innerHeight - 280
+        } else {
+          this.tableHeight = window.innerHeight - 230
+        }
       },
       //省市县变化
       areaChange(value) {

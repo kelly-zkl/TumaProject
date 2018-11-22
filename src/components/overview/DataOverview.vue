@@ -1,8 +1,8 @@
 <template>
   <div style="padding:10px 20px 10px 30px">
     <el-row :gutter="30">
-      <el-col :span="15" style="background: #21206C;border-radius: 6px;padding: 0">
-        <el-row style="border-bottom: 3px #080652 solid;height: 60px;line-height: 60px">
+      <el-col :span="15" style="background: #08163d;border-radius: 6px;padding: 0">
+        <el-row style="height: 60px;line-height: 60px">
           <el-col :span="24">
             <span v-bind:class="activeItem== 'device'?'map-tap-active':'map-tap'"
                   @click="handleType('device')">设备分布实况</span>
@@ -12,7 +12,7 @@
         </el-row>
         <div v-show="activeItem== 'device'">
           <div id="devicemap" style="width:100%;height: 551px;display: block"></div>
-          <div style="border-top: 3px #080652 solid;padding-bottom: 10px;display: block">
+          <div style="padding-bottom: 10px;display: block">
             <el-row style="border-bottom: 1px #3D3D8D solid">
               <el-col :span="24" align="left">
                 <span class="header-title" style=" height: 50px;line-height: 50px">设备实况</span>
@@ -36,21 +36,15 @@
                 <el-col :span="12" align="left" style="text-align: left">
                   <span class="heat-tip-text">根据最近30分钟的抓取IMSI数量生成</span></el-col>
                 <el-col :span="12" align="right" class="heat-tip-color">
-                  <span style="height: 10px;width: 10px;border-radius: 5px;background: blue"></span>
-                  <span class="heat-tip-content">0-500</span>
-                  <span style="height: 10px;width: 10px;border-radius: 5px;background: green"></span>
-                  <span class="heat-tip-content">500-1000</span>
-                  <span style="height: 10px;width: 10px;border-radius: 5px;background: yellow"></span>
-                  <span class="heat-tip-content">1000-2000</span>
-                  <span style="height: 10px;width: 10px;border-radius: 5px;background: #FF4500"></span>
-                  <span class="heat-tip-content">2000-4000</span>
-                  <span style="height: 10px;width: 10px;border-radius: 5px;background: red"></span>
-                  <span class="heat-tip-content">4000以上</span>
+                  <div v-for="(item,idx) in systemParam.heatRanges" :key="idx">
+                    <div class="dot-heat" v-bind:style='{backgroundColor:item.color?item.color:""}'></div>
+                    <div class="heat-tip-content">{{item.end?item.start+'-'+item.end:item.start+'以上'}}</div>
+                  </div>
                 </el-col>
               </el-row>
             </div>
           </div>
-          <div style="display: block;border-top: 3px #080652 solid;padding-bottom: 10px">
+          <div style="display: block;padding-bottom: 10px">
             <el-row style="border-bottom: 1px #3D3D8D solid">
               <el-col :span="24" align="left">
                 <span class="header-title" style=" height: 50px;line-height: 50px">图码抓取数据</span>
@@ -59,14 +53,14 @@
             <el-row>
               <el-col :span="8" align="center">
                 <div
-                  style="background: #060450;border-radius: 6px;height: 60px;width: 160px; margin-top: 20px;padding: 15px 20px">
+                  style="background: rgba(0,0,0,.3);border-radius: 6px;height: 60px;width: 160px; margin-top: 20px;padding: 15px 20px">
                   <div style="color: #fff;font-size: 14px">今日抓取IMSI</div>
                   <br/>
                   <div style="color: #fff;font-size: 20px">{{addImsiCount}}<span
                     style="color: #fff;font-size: 14px">条</span></div>
                 </div>
                 <div
-                  style="background: #060450;border-radius: 6px;height: 60px;width: 160px;margin-top: 20px;padding: 15px 20px">
+                  style="background: rgba(0,0,0,.3);border-radius: 6px;height: 60px;width: 160px;margin-top: 20px;padding: 15px 20px">
                   <div style="color: #fff;font-size: 14px">今日抓取图像</div>
                   <br/>
                   <div style="color: #fff;font-size: 20px">{{addFaceCount}}<span
@@ -82,7 +76,7 @@
       </el-col>
       <el-col :span="9">
         <!--今日告警 柱状图-->
-        <div style="display: block;background: #21206C;border-radius: 6px;height: 400px">
+        <div style="display: block;background: #08163d;border-radius: 6px;height: 400px">
           <el-row style="border-bottom: 1px #3D3D8D solid">
             <el-col :span="12" align="left">
               <span class="header-title">今日告警</span>
@@ -95,7 +89,7 @@
           <div id="warning" style="height: 300px;padding: 10px 20px"></div>
         </div>
         <!--今日图码碰撞 列表-->
-        <div style="display: block;background: #21206C;border-radius: 6px;height: 440px;margin-top: 15px">
+        <div style="display: block;background: #08163d;border-radius: 6px;height: 440px;margin-top: 15px">
           <el-row style="border-bottom: 1px #3D3D8D solid">
             <el-col :span="12" align="left">
               <span class="header-title">今日图码碰撞</span>
@@ -106,7 +100,7 @@
             </el-col>
           </el-row>
           <div class="overview">
-            <el-table :data="imgList" :header-cell-style="{background:'#100E5A'}" stripe>
+            <el-table :data="imgList" :header-cell-style="{background:'#08163d'}" stripe>
               <el-table-column align="left" label="图像" style="align-content: center" min-width="90" max-width="200">
                 <template slot-scope="scope">
                   <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" class="user-img"/>
@@ -122,7 +116,7 @@
               <el-table-column align="left" label="置信度" prop="imsiList" min-width="70" max-width="250">
                 <template slot-scope="scope">
                   <div v-for="item in scope.row.imsiList">
-                    <span>{{item.weight / 10 + '%'}}</span>
+                    <span>{{(item.weight/10).toFixed(1) + '%'}}</span>
                   </div>
                 </template>
               </el-table-column>
@@ -143,6 +137,7 @@
     data() {
       return {
         activeItem: 'device',
+        systemParam: {refreshTime: 10, limitTime: 30, similarThreshold: 60, localPoint: [116.331398, 39.897445]},
         imgList: [],
         mapData: [],//设备实况数据
         deviceChart: null,//设备实况的eCharts
@@ -197,7 +192,7 @@
             this.getWarningCount();
             this.getImsiList();
             this.getLineData();
-          }, 10 * 1000);
+          }, this.systemParam.refreshTime * 1000);
         }
       },
       handleType(val) {
@@ -205,6 +200,7 @@
         if (val === 'device') {//设备地图
           this.getMapData();
         } else {//热力图
+          // this.getDataHeat();
           this.getHotSpot();
         }
       },
@@ -276,28 +272,29 @@
           this.heatMap.setMinZoom(5);
           var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
           this.heatMap.setMapStyle({style: 'midnight'});
-          this.heatMap.addControl(mapType);//左上角，默认地图控件
+          // this.heatMap.addControl(mapType);//左上角，默认地图控件
         } else {
           this.hotPoint = this.heatMap.getCenter();
           this.hotZoom = this.heatMap.getZoom();
         }
 
-        if (!this.hotPoint) {
-          var point = new BMap.Point(116.331398, 39.897445);
-          this.heatMap.centerAndZoom(point, this.hotZoom);
-
-          function myFun(result) {
-            var cityName = result.name;
-            _this.heatMap.setCenter(cityName);
-            _this.heatMap.setZoom(_this.hotZoom);
-            _this.hotPoint = _this.heatMap.getCenter();
-          }
-
-          var myCity = new BMap.LocalCity();
-          myCity.get(myFun);
-        } else {
-          this.heatMap.centerAndZoom(this.hotPoint, this.hotZoom);
-        }
+        this.heatMap.centerAndZoom(this.hotPoint, this.hotZoom);
+        // if (!this.hotPoint) {
+        //   var point = new BMap.Point(116.331398, 39.897445);
+        //   this.heatMap.centerAndZoom(point, this.hotZoom);
+        //
+        //   function myFun(result) {
+        //     var cityName = result.name;
+        //     _this.heatMap.setCenter(cityName);
+        //     _this.heatMap.setZoom(_this.hotZoom);
+        //     _this.hotPoint = _this.heatMap.getCenter();
+        //   }
+        //
+        //   var myCity = new BMap.LocalCity();
+        //   myCity.get(myFun);
+        // } else {
+        //   this.heatMap.centerAndZoom(this.hotPoint, this.hotZoom);
+        // }
 
         function zoom() {
           _this.heatMap.centerAndZoom(_this.heatMap.getCenter(), _this.heatMap.getZoom());
@@ -309,18 +306,23 @@
         this.heatMap.addEventListener("dragend", zoom);
 
         this.heatMap.clearHotspots();//清空地图所有热区,添加新数据
+        var colorRange = {};
+        var total = this.systemParam.heatRanges[this.systemParam.heatRanges.length - 1].start;
+        this.systemParam.heatRanges.forEach((item) => {
+          if (item.end) {
+            var ketStr = item.end / total;
+            colorRange[ketStr] = item.color;
+          }
+        });
+        //0.125: "rgb(0,0,255)", 0.25: "rgb(0,255,0)", 0.5: "yellow", 1.0: "rgb(255,0,0)"
         if (!this.heatmapOverlay) {
           this.heatmapOverlay = new BMapLib.HeatmapOverlay({"radius": 20});
           this.heatMap.addOverlay(this.heatmapOverlay);
-          this.heatmapOverlay.setOptions({
-            gradient: {
-              0.125: "rgb(0,0,255)", 0.25: "rgb(0,255,0)", 0.5: "yellow", 1.0: "rgb(255,0,0)"
-            }
-          });
+          this.heatmapOverlay.setOptions({gradient: colorRange});
           this.heatmapOverlay.show();//显示热力图
         }
 
-        this.heatmapOverlay.setDataSet({data: this.hotSpots, max: 4000});
+        this.heatmapOverlay.setDataSet({data: this.hotSpots, max: total});
       },
       //设备地图
       getMapData() {
@@ -331,8 +333,7 @@
 
             let device1 = {
               count: deviceImsi.count,
-              data: [{value: deviceImsi.onlineCount, name: '在线'},
-                {value: deviceImsi.offlineCount, name: '离线'}]
+              data: [{value: deviceImsi.onlineCount, name: '在线'}, {value: deviceImsi.offlineCount, name: '离线'}]
             };
             let device2 = {
               count: camera.count,
@@ -391,7 +392,7 @@
           var app = {};
           this.deviceChart = echarts.init(document.getElementById('devicemap'));
           let option = {
-            // backgroundColor: "#21206C",
+            animation: false,
             tooltip: {
               trigger: 'item',
               padding: [5, 10],
@@ -410,7 +411,7 @@
             },
             grid: {left: 0, right: 0, bottom: 0, top: 0, containLabel: true},
             bmap: {
-              center: [116.404, 39.915],
+              center: this.systemParam.localPoint,
               zoom: 12,
               roam: true
             },
@@ -428,7 +429,7 @@
             this.deviceMap = this.deviceChart.getModel().getComponent('bmap').getBMap();
             var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
             this.deviceMap.setMapStyle({style: 'midnight'});
-            this.deviceMap.addControl(mapType);          //左上角，默认地图控件
+            // this.deviceMap.addControl(mapType);          //左上角，默认地图控件
           }
         } else {
           this.deviceChart.setOption({
@@ -471,7 +472,7 @@
                 },
                 hoverAnimation: true,
                 itemStyle: {
-                  color: '#29A75D',
+                  color: '#24A6FE',
                   shadowBlur: 10,
                   shadowColor: '#333'
                 },
@@ -493,7 +494,7 @@
                 },
                 hoverAnimation: true,
                 itemStyle: {
-                  color: '#29A75D',
+                  color: '#24A6FE',
                   shadowBlur: 10,
                   shadowColor: '#333'
                 },
@@ -502,23 +503,24 @@
             ]
           });
         }
+        this.deviceMap.centerAndZoom(this.mapPoint, this.mapZoom);
         //IP定位
-        if (!this.mapPoint) {
-          var point = new BMap.Point(116.331398, 39.897445);
-          this.deviceMap.centerAndZoom(point, this.mapZoom);
-
-          function myFun(result) {
-            var cityName = result.name;
-            _this.deviceMap.setCenter(cityName);
-            _this.deviceMap.setZoom(_this.mapZoom);
-            _this.mapPoint = _this.deviceMap.getCenter();
-          }
-
-          var myCity = new BMap.LocalCity();
-          myCity.get(myFun);
-        } else {
-          this.deviceMap.centerAndZoom(this.mapPoint, this.mapZoom);
-        }
+        // if (!this.mapPoint) {
+        //   var point = new BMap.Point(116.331398, 39.897445);
+        //   this.deviceMap.centerAndZoom(point, this.mapZoom);
+        //
+        //   function myFun(result) {
+        //     var cityName = result.name;
+        //     _this.deviceMap.setCenter(cityName);
+        //     _this.deviceMap.setZoom(_this.mapZoom);
+        //     _this.mapPoint = _this.deviceMap.getCenter();
+        //   }
+        //
+        //   var myCity = new BMap.LocalCity();
+        //   myCity.get(myFun);
+        // } else {
+        //   this.deviceMap.centerAndZoom(this.mapPoint, this.mapZoom);
+        // }
 
         function map() {
           _this.deviceMap.centerAndZoom(_this.deviceMap.getCenter(), _this.deviceMap.getZoom());
@@ -571,7 +573,7 @@
         if (!this.cameraPieChart) {
           this.cameraPieChart = echarts.init(document.getElementById('camera'));
           let option = {
-            color: ['#2CA85C', '#F04864'],
+            color: ['#25A4FE', '#F04864'],
             title: {
               text: '相机总数\n\n' + (this.devicePie.device2 ? this.devicePie.device2.count : 0),
               textStyle: {color: '#fff', fontSize: '14'},
@@ -632,7 +634,7 @@
         if (!this.devicePieChart) {
           this.devicePieChart = echarts.init(document.getElementById('device'));
           let option = {
-            color: ['#2CA85C', '#F04864'],
+            color: ['#25A4FE', '#F04864'],
             title: {
               text: '侦码设备总数\n\n' + (this.devicePie.device1 ? this.devicePie.device1.count : 0),
               textStyle: {color: '#fff', fontSize: '14'},
@@ -729,7 +731,7 @@
         if (!this.catchLineChart) {
           this.catchLineChart = echarts.init(document.getElementById('imsi'));
           let option = {
-            textStyle: {color: '#6D6C98'},
+            textStyle: {color: '#CFCFD1'},
             title: {
               text: '近7天抓取数量统计',
               textStyle: {color: '#999', fontSize: '14'}
@@ -779,7 +781,7 @@
         if (!this.warningBarChart) {
           this.warningBarChart = echarts.init(document.getElementById('warning'));
           let option = {
-            textStyle: {color: '#6D6C98'},
+            textStyle: {color: '#CFCFD1'},
             title: {
               text: '近7天告警数量统计',
               textStyle: {color: '#999', fontSize: '14'}
@@ -834,6 +836,9 @@
       }
     },
     mounted() {
+      this.systemParam = JSON.parse(sessionStorage.getItem("system"));
+      this.hotPoint = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
+      this.mapPoint = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
       sessionStorage.setItem("index", 1);
       this.$emit('handleSelectTab', 1);
       let arr = this.set7adyData([]);
@@ -860,7 +865,7 @@
     height: 50px;
     line-height: 50px;
     cursor: pointer;
-    color: #5F5E91;
+    color: #fff;
     font-size: 18px;
     margin: 0 15px;
     padding: 0 20px 10px 20px;
@@ -871,11 +876,11 @@
     height: 50px;
     line-height: 50px;
     cursor: pointer;
-    color: #66CCFF;
+    color: #3FA8F3;
     font-size: 18px;
     margin: 0 15px;
     padding: 0 20px 10px 20px;
-    border-bottom: 3px #66CCFF solid;
+    border-bottom: 3px #3FA8F3 solid;
   }
 
   .header-title {
@@ -907,10 +912,11 @@
   }
 
   .heat-tip-content {
+    display: inline-block;
     text-align: left;
     color: #999;
     font-size: 13px;
-    margin: 0 10px;
+    margin: 0 10px 0 5px;
     line-height: 30px;
     height: 30px
   }
@@ -930,5 +936,12 @@
     margin-left: 15px;
     line-height: 30px;
     height: 30px
+  }
+
+  .dot-heat {
+    height: 10px;
+    width: 10px;
+    border-radius: 5px;
+    display: inline-block;
   }
 </style>

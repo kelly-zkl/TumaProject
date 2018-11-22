@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="18" align="left" style="text-align: left">
+        <el-col :span="19" align="left" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('place:query')"
                    style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
@@ -27,16 +27,17 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="6" align="right" style="text-align: right">
-          <el-button type="primary" size="medium" @click="deletePlace()" :disabled="sels.length==0"
-                     v-show="getButtonVial('place:delete')">删除
-          </el-button>
+        <el-col :span="5" align="right" style="text-align: right">
           <el-button type="primary" size="medium" @click="addInfo()"
                      v-show="getButtonVial('place:add')">添加场所
           </el-button>
+          <el-button size="medium" @click="deletePlace()" :disabled="sels.length==0"
+                     v-show="getButtonVial('place:delete')">删除
+          </el-button>
         </el-col>
       </el-row>
-      <el-table :data="placeList" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
+      <el-table :data="placeList" v-loading="listLoading" class="center-block" stripe
+                @selection-change="selsChange" :max-height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="场所编码" prop="placeCode" min-width="150"
@@ -175,6 +176,7 @@
         query: {page: 1, size: 10},
         provinceList: json,
         props: {value: 'o', label: 'n', children: 'c'},
+        tableHeight: window.innerHeight - 230,
         serviceTypes: [{value: '0', label: '网吧'}, {value: '1', label: '旅店宾馆类（住宿服务场所）'},
           {value: '2', label: '图书馆阅览室'}, {value: '3', label: '电脑培训中心类'}, {value: '4', label: '娱乐场所类'},
           {value: '5', label: '交通枢纽'}, {value: '6', label: '公共交通工具'}, {value: '7', label: '餐饮服务场所'},

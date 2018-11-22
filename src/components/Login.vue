@@ -1,14 +1,6 @@
 <template>
   <div class="login-bg">
     <section class="content" style="margin: 0">
-      <el-col :span="24" class="main-header" align="left">
-        <div align="left" style="display: flex;height: 40px;align-items: center">
-          <img src="../assets/img/icon_logo.png" style="display:inline-block;height: 34px;width: 34px">
-          <div style="display:inline-block;font-size: 22px;margin-left: 10px;color: #fff;letter-spacing:3px">
-            图码联侦实战布控平台
-          </div>
-        </div>
-      </el-col>
       <el-col :span="24" align="center">
         <el-form label-width="0" label-position="left" :model="account" class="login-input">
           <!--<el-form-item align="left" style="position: absolute;top: 0;left: 15px">-->
@@ -16,9 +8,13 @@
           <!--<i class="fa fa-retweet" style="margin-right: 5px;font-size: 1.4em"></i>切换系统-->
           <!--</el-button>-->
           <!--</el-form-item>-->
-          <el-form-item class="lan-no">
-            <span style="font-size: 22px;color: #333">登录后台</span>
-          </el-form-item>
+          <div style="display: flex;height: 80px;align-items: center">
+            <img :src="systemParam.sysLogo?systemParam.sysLogo:'../assets/img/icon_logo.svg'"
+                 style="display:inline-block;height: 34px;width: 34px;margin-right: 10px">
+            <div style="display:inline-block;font-size: 20px;color: #fff;text-align: center">
+              {{systemParam.sysName?systemParam.sysName:'图码联侦实战平台'}}
+            </div>
+          </div>
           <el-form-item class="login-box">
             <el-input placeholder="账号" v-model="account.loginId" :maxlength="18"
                       prefix-icon="fa fa-user"></el-input>
@@ -64,6 +60,7 @@
         savePsw: false,
         account: {loginId: '', password: '', checkcode: ''},
         imgUrl: '',
+        systemParam: {sysLogo: '../assets/img/icon_logo.svg'},
         options: []
       }
     },
@@ -144,9 +141,45 @@
         this.$post('/manager/permission/listByType/' + JSON.parse(sessionStorage.getItem("user")).userId + '/3', {}).then((data) => {
           sessionStorage.setItem("button", JSON.stringify(data.data));
         });
+      },
+      //获取系统参数配置
+      getSystemDetail() {
+        this.$post('sysparam/query', {}).then((data) => {
+          if ("000000" === data.code) {
+            if (data.data.length > 0) {
+              data.data.forEach((item) => {
+                if (item.code == 'sys_name') {
+                  this.systemParam.sysName = item.value;
+                }
+                if (item.code == 'sys_logo') {
+                  this.systemParam.sysLogo = item.value;
+                }
+                if (item.code == 'sys_map_location') {
+                  this.systemParam.localPoint = item.value;
+                }
+                if (item.code == 'heatChart_refresh_freq') {
+                  this.systemParam.refreshTime = item.value;
+                }
+                if (item.code == 'heatChart_time_limit') {
+                  this.systemParam.limitTime = item.value;
+                }
+                if (item.code == 'heatChart_color_range') {
+                  this.systemParam.heatRanges = item.value;
+                }
+                if (item.code == 'image_search_threshold') {
+                  this.systemParam.similarThreshold = item.value;
+                }
+                sessionStorage.setItem("system", JSON.stringify(this.systemParam));
+              });
+            }
+          }
+        }).catch((err) => {
+          this.$message.error(err);
+        });
       }
     },
     mounted() {
+      this.getSystemDetail();
       let bol = JSON.parse(localStorage.getItem("user"));
       if (bol && bol.save === true) {
         this.savePsw = true;
@@ -178,21 +211,11 @@
     bottom: 0;
     width: 100%;
     margin: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0);
     color: #ccc;
     border-top: none;
     font-size: 14px;
     padding: 25px;
-  }
-
-  .main-header {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    background: rgba(0, 0, 0, 0.6);
-    border-top: none;
-    padding: 20px 40px;
   }
 
   .login-input {
@@ -200,12 +223,12 @@
     width: 310px;
     height: 350px;
     line-height: 350px;
-    background: rgba(255, 255, 255, 1);
+    background: rgba(0, 0, 0, 0);
     padding: 30px 40px;
     border-radius: 3px;
-    left: 75%;
+    left: 70%;
     margin-left: -195px;
     top: 50%;
-    margin-top: -205px;
+    margin-top: -210px;
   }
 </style>

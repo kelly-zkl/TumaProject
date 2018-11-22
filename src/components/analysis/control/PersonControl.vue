@@ -9,15 +9,16 @@
           </el-tabs>
         </el-col>
         <el-col :span="8" align="right" style="text-align: right;margin-top: 10px">
-          <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="deleteTask()"
-                     v-show="getButtonVial('disposition:delete')">删除
-          </el-button>
-          <el-button type="primary" size="medium"
-                     v-show="activeItem == 'EXECUTION' && getButtonVial('disposition:batchUpdateStatus')"
-                     :disabled="sels.length == 0" @click="finishTask()">结束布控
-          </el-button>
           <el-button type="primary" size="medium" @click="addControl()" v-show="getButtonVial('disposition:add')">添加布控
           </el-button>
+          <el-button-group>
+            <el-button :disabled="sels.length == 0" @click="deleteTask()"
+                       v-show="getButtonVial('disposition:delete')">删除
+            </el-button>
+            <el-button v-show="activeItem == 'EXECUTION' && getButtonVial('disposition:batchUpdateStatus')"
+                       :disabled="sels.length == 0" @click="finishTask()">结束布控
+            </el-button>
+          </el-button-group>
         </el-col>
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="text-align: left"
@@ -43,7 +44,8 @@
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
       </el-form>
-      <el-table :data="controlList" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
+      <el-table :data="controlList" v-loading="listLoading" class="center-block" stripe
+                @selection-change="selsChange" :max-height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="布控编号" prop="taskNo" min-width="150"
@@ -91,21 +93,14 @@
       return {
         activeItem: 'EXECUTION',
         query: {page: 1, size: 10},
+        tableHeight: window.innerHeight - 280,
         statuses: [{label: '进行中', value: 'EXECUTION'}, {label: '已结案', value: 'FINISH'}],
         areaList: [],
         count: 0,
         listLoading: false,
         places: [],
         controlList: [],
-        sels: [],
-        pickerBeginDate: {
-          disabledDate: (time) => {
-            let beginDateVal = new Date().getTime();
-            if (beginDateVal) {
-              return beginDateVal < time.getTime();
-            }
-          }
-        }
+        sels: []
       }
     },
     methods: {

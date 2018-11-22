@@ -29,7 +29,7 @@
           </el-form>
         </el-col>
       </el-row>
-      <el-table :data="deviceList" v-loading="listLoading" class="center-block" stripe>
+      <el-table :data="deviceList" v-loading="listLoading" class="center-block" stripe :max-height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="相机编码" prop="cameraCode" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -52,7 +52,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
+      <div class="block" style="margin-top: 20px;text-align: right" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
@@ -93,6 +93,7 @@
       return {
         dialogWidth: isPC() ? '40%' : '90%',
         labelWidth: isPC() ? '100px' : '80px',
+        tableHeight: window.innerHeight - 230,
         labelPosition: 'right',
         runningSetPlace: false,
         activeItem: 'EXECUTION',

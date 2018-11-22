@@ -6,10 +6,10 @@
         <div class="add-appdiv">
           <el-form-item label="任务名称" align="left">
             <el-input v-model="controlTask.taskName" placeholder="请输入任务名称" style="width: 300px"
-                      :maxlength=20></el-input>
+                      :maxlength=20 size="medium"></el-input>
           </el-form-item>
           <el-form-item label="关联案件" align="left" style="margin:0" prop="caseId">
-            <el-select v-model="controlTask.caseId" placeholder="选择案件" filterable clearable>
+            <el-select v-model="controlTask.caseId" placeholder="选择案件" filterable clearable size="medium">
               <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
               </el-option>
             </el-select>
@@ -17,25 +17,36 @@
         </div>
         <h5 class="add-label">设置布控</h5>
         <div class="add-appdiv">
-          <el-form-item label="特征布控" align="left">
+          <el-form-item label="布控类型" align="left" style="text-align: left">
+            <el-radio-group v-model="taskType" size="medium">
+              <el-radio-button label="list">名单布控</el-radio-button>
+              <el-radio-button label="feature">特征布控</el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="名单布控" align="left" style="margin:0 0 20px 0" prop="blackClassList"
+                        v-show="taskType=='list'">
+            <el-select v-model="controlTask.blackClassList" placeholder="重点人员名单" size="medium"
+                       filterable multiple clearable collapse-tags>
+              <el-option v-for="item in listTypes" :key="item.id" :label="item.name" :value="item.id"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="头像特征" align="left" v-show="taskType=='feature'">
             <el-upload :action="uploadUrl" list-type="picture-card" :before-remove="beforeRemove"
                        :on-change="handleChange" :limit="20">
               <div class="el-upload__text" style="color: #777">上传头像</div>
             </el-upload>
-            <el-row style="margin-top: 15px">
-              <el-col :span="24">
-                <el-tag :key="tag" v-for="tag in controlTask.imsiList" closable hit
-                        :disable-transitions="false" @close="handleClose(tag)">{{tag}}
-                </el-tag>
-                <el-input class="input-tag" v-show="inputVisible && controlTask.imsiList.length<20" v-model="inputValue"
-                          ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm" :maxlength="15"
-                          @blur="handleInputConfirm">
-                </el-input>
-                <el-button v-show="!inputVisible && controlTask.imsiList.length<20" class="button-tag" size="small"
-                           @click="showInput" type="primary" icon="el-icon-plus">IMSI
-                </el-button>
-              </el-col>
-            </el-row>
+          </el-form-item>
+          <el-form-item label="IMSI特征" align="left" v-show="taskType=='feature'">
+            <el-tag :key="tag" v-for="tag in controlTask.imsiList" closable hit
+                    :disable-transitions="false" @close="handleClose(tag)">{{tag}}
+            </el-tag>
+            <el-input class="input-tag" v-show="inputVisible && controlTask.imsiList.length<20" v-model="inputValue"
+                      ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm" :maxlength="15"
+                      @blur="handleInputConfirm">
+            </el-input>
+            <el-button v-show="!inputVisible && controlTask.imsiList.length<20" class="button-tag" size="small"
+                       @click="showInput" type="primary" icon="el-icon-plus">IMSI
+            </el-button>
           </el-form-item>
           <el-form-item label="布控场所" align="left" style="margin:0" prop="placeList">
             <el-select v-model="controlTask.placeList" placeholder="布控场所" size="medium" filterable multiple clearable
@@ -51,7 +62,7 @@
         <div class="add-appdiv">
           <el-form-item label="布控有效期" align="left" prop="startDate">
             <el-date-picker v-model="controlTask.startDate" type="datetimerange" range-separator="至"
-                            start-placeholder="开始日期" end-placeholder="结束日期" clearable
+                            start-placeholder="开始日期" end-placeholder="结束日期" clearable :picker-options="pickerBeginDate"
                             :default-time="['00:00:00', '23:59:59']" value-format="timestamp" format="yyyy-MM-dd">
             </el-date-picker>
           </el-form-item>
@@ -151,24 +162,14 @@
 
   export default {
     data() {
-      let nameValidator = (rule, value, callback) => {
-        if (!/[A-Za-z0-9_\u4e00-\u9fa5]$/.test(value)) {
-          callback(new Error("由汉字、数字、英文字母、下划线组成"));
-        } else {
-          callback();
-        }
-      };
-      let noValidator = (rule, value, callback) => {
-        if (!/[a-zA-Z0-9_]$/.test(value)) {
-          callback(new Error("由英文字母、数字、下划线组成"));
-        } else {
-          callback();
-        }
-      };
       return {
         mapVisible: false,
         dialogPlace: false,
-        controlTask: {cycleType: 'EVERYDAY', intervalType: 'ALLDAY', week: [], imsiList: [], featureList: []},
+        taskType: 'list',
+        controlTask: {
+          cycleType: 'EVERYDAY', intervalType: 'ALLDAY', week: [], imsiList: [],
+          featureList: [], blackClassList: []
+        },
         cases: [],
         places: [],
         placeList: [],
@@ -192,11 +193,19 @@
           {value: '8', label: '金融服务场所'}, {value: 'A', label: '购物场所'}, {value: 'B', label: '公共服务场所'},
           {value: 'C', label: '文化服务场所'}, {value: 'D', label: '公共休闲场所'}, {value: '9', label: '其他'}],
         areaList: [],
-        organizations: [],
+        listTypes: [],
         count: 0,
         listLoading: false,
         sels: [],
-        placeList1: []
+        placeList1: [],
+        pickerBeginDate: {
+          disabledDate: (time) => {
+            let beginDateVal = new Date().getTime();
+            if (beginDateVal) {
+              return time.getTime() < (beginDateVal - 60 * 60 * 24 * 1000);
+            }
+          }
+        }
       }
     },
     methods: {
@@ -289,9 +298,27 @@
               this.controlTask.startTimeInterval = this.controlTask.timerange[0];
               this.controlTask.endTimeInterval = this.controlTask.timerange[1];
             }
-            if (this.controlTask.featureList.length === 0 && this.controlTask.imsiList.length === 0) {
-              this.$message.error('请设置布控人员特征');
+            if (this.taskType == 'list') {//名单布控
+              this.controlTask.featureList = [];
+              this.controlTask.imsiList = [];
+            } else {//特征布控
+              this.controlTask.blackClassList = [];
+            }
+            if (this.controlTask.featureList.length === 0 && this.controlTask.imsiList.length === 0
+              && this.controlTask.blackClassList.length === 0) {
+              this.$message.error('请设置布控特征');
               return;
+            }
+            if (this.taskType == 'list') {//名单布控
+              var arr = [];
+              this.controlTask.blackClassList.forEach((item) => {
+                this.listTypes.forEach((list) => {
+                  if (item == list.id) {
+                    arr.push(list);
+                  }
+                });
+              });
+              this.controlTask.blackClassList = arr;
             }
 
             this.controlTask.caseName = this.getCaseName();
@@ -303,6 +330,7 @@
             this.$post("disposition/add", this.controlTask, "创建成功").then((data) => {
               if ("000000" === data.code)
                 this.$router.go(-1);
+            }).catch((err) => {
             });
           }
         })
@@ -412,6 +440,14 @@
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
       },
+      getBlackTypes() {
+        this.$post('archives/listBlackPersonType', {page: 1, size: 9999}).then((data) => {
+          if ("000000" === data.code) {
+            this.listTypes = data.data.list;
+          }
+        }).catch((err) => {
+        });
+      },
       //省市县变化
       areaChange(value) {
         this.areaList = value;
@@ -458,6 +494,7 @@
     },
     mounted() {
       this.getCases();
+      this.getBlackTypes();
       this.getPlaces();
     },
     components: {

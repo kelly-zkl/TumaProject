@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="18" align="left" style="text-align: left">
+        <el-col :span="19" align="left" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('follow:query')"
                    style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
@@ -20,7 +20,7 @@
               <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                               start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                               :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
-                              :picker-options="pickerBeginDate">
+                              :picker-options="pickerBeginDate" style="width:360px">
               </el-date-picker>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
@@ -38,16 +38,17 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="6" align="right" style="text-align: right">
-          <el-button type="primary" size="medium" @click="deleteTask()" :disabled="sels.length == 0"
-                     v-show="getButtonVial('follow:delete')">删除任务
-          </el-button>
+        <el-col :span="5" align="right" style="text-align: right">
           <el-button type="primary" size="medium" @click="addFollowTask()"
                      v-show="getButtonVial('follow:add')">新建伴随任务
           </el-button>
+          <el-button size="medium" @click="deleteTask()" :disabled="sels.length == 0"
+                     v-show="getButtonVial('follow:delete')">删除
+          </el-button>
         </el-col>
       </el-row>
-      <el-table :data="tasks" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
+      <el-table :data="tasks" v-loading="listLoading" class="center-block" stripe
+                @selection-change="selsChange" :max-height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="任务名称" prop="taskName" min-width="150"
@@ -56,7 +57,7 @@
                          max-width="150" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="分析对象" prop="followTarget" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="125" max-width="250">
+        <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="100" max-width="150">
           <template slot-scope="scope">
             <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已完成</span>
             <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
@@ -68,11 +69,14 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="创建日期" prop="createTime" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="160" fixed="right">
+        <el-table-column align="left" label="操作" width="180" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('follow:get')">查看</el-button>
             <el-button type="text" @click="sels = [];sels.push(scope.row);deleteTask()"
                        v-show="getButtonVial('follow:delete')">删除
+            </el-button>
+            <el-button type="text" @click="reAnalysis(scope.row.id)"
+                       v-show="getButtonVial('follow:reanalysis')">重新分析
             </el-button>
           </template>
         </el-table-column>
@@ -95,6 +99,7 @@
         tasks: [],
         qTime: "",
         query: {page: 1, size: 10},
+        tableHeight: window.innerHeight - 230,
         followTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '图像'}],//{value: 'MAC', label: 'MAC'}
         taskTypes: [{value: 'EXECUTION', label: '进行中'}, {value: 'FINISH', label: '已完成'},
           {value: 'WAIT', label: '等待中'}, {value: 'FAILE', label: '失败'}],
@@ -113,6 +118,15 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      //重新分析
+      reAnalysis(id) {
+        this.$post('/follow/reanalysis/' + id, {}, '操作成功').then((data) => {
+          if ("000000" === data.code) {
+            this.getData();
+          }
+        }).catch((err) => {
+        });
       },
       //删除伴随任务
       deleteTask() {

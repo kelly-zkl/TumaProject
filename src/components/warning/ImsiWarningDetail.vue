@@ -7,9 +7,16 @@
             当前状态：{{imsiDetail.status==0?'待处理':imsiDetail.status==1?'处理中':imsiDetail.status==2?'已处理':imsiDetail.status==3?'误报':''}}
           </div>
         </el-col>
-        <el-col :span="8" :offset="8" align="right" style="text-align: right" v-if="imsiDetail.status==0">
-          <el-button type="primary" size="medium" @click=changeStatus(2)>已处理</el-button>
-          <el-button type="primary" size="medium" @click=changeStatus(3)>误报</el-button>
+        <el-col :span="8" :offset="8" align="right" style="text-align: right;padding-right: 15px">
+          <el-button type="text" size="medium" @click="runDealDetail=true"
+                     v-if="getButtonVial('warning:getSolvedWarningById')&&imsiDetail.status!=0">查看处理记录
+          </el-button>
+          <el-button type="primary" size="medium" @click=changeStatus(2)
+                     v-if="getButtonVial('warning:dealWithWarningById')&&imsiDetail.status==0">已处理
+          </el-button>
+          <el-button size="medium" @click=changeStatus(3)
+                     v-if="getButtonVial('warning:dealWithWarningById')&&imsiDetail.status==0">误报
+          </el-button>
         </el-col>
       </el-row>
       <div class="add-appdiv dialog" style="border-top: none;padding: 10px 30px;border-radius: 0 0 4px 4px">
@@ -62,7 +69,7 @@
           </el-tabs>
         </el-col>
       </el-row>
-      <div v-show="activeItem=='person'" style="padding: 20px 0">
+      <div v-show="activeItem=='person'" style="padding: 10px 0">
         <el-row v-loading="listLoading" style="margin: 0;padding: 0">
           <el-col :span="24" style="margin: 0;padding: 0">
             <div class="face-main">
@@ -141,6 +148,20 @@
                          :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
       </div>
+      <!--告警处理记录-->
+      <el-dialog title="告警处理记录" width="750px" :visible.sync="runDealDetail">
+        <div class="gray-form">
+          <el-form label-width="100px" :model="dealDetail" label-position="right" style="margin: 0">
+            <el-form-item label="处理时间" align="left" style="margin: 0">{{dealDetail.timeStr}}</el-form-item>
+            <el-form-item label="处理人" align="left" style="margin: 0">{{dealDetail.dealWithUser}}</el-form-item>
+            <el-form-item label="变更状态" align="left" style="margin: 0">
+              {{dealDetail.status==0?'待处理':dealDetail.status==2?'已处理':dealDetail.status==3?'误报':'--'}}
+            </el-form-item>
+            <el-form-item label="备注" align="left" style="margin: 0">{{dealDetail.remark?dealDetail.remark:'--'}}
+            </el-form-item>
+          </el-form>
+        </div>
+      </el-dialog>
     </section>
   </div>
 </template>
@@ -152,12 +173,14 @@
     data() {
       return {
         listLoading: false,
+        runDealDetail: false,
         activeItem: 'person',
         provinceList: json,
         imgPath: require('../../assets/img/icon_people.png'),
         id: this.$route.query.id || '',
         imsi: this.$route.query.imsi || '',
         qTime: '',
+        dealDetail: {},
         imsiDetail: {},
         imsiList: [],
         persons: [],
@@ -209,10 +232,31 @@
         }
       },
       changeStatus(status) {
-        this.$post('warning/dealWithWarningById', {ids: [this.id], status: status}, "处理成功").then((data) => {
-          this.getImsiDetail();
-        }).catch((err) => {
-          this.$message.error(err);
+        this.$prompt('确认处理此告警？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          inputType: 'textarea',
+          inputPlaceholder: '录入备注（非必填）',
+          inputValidator: function (value) {
+            let bol = true;
+            if (value) {
+              bol = (value.length <= 200)
+            }
+            return bol
+          },
+          inputErrorMessage: '请输入200字以内的备注'
+        }).then(({value}) => {
+          let param = {
+            ids: [this.id], status: status, remark: value ? value : '',
+            dealWithUser: JSON.parse(sessionStorage.getItem("user")).account
+          };
+          this.$post('warning/dealWithWarningById', param, "处理成功").then((data) => {
+            this.$emit('getWarningCount');
+            this.getImsiDetail();
+          }).catch((err) => {
+            this.$message.error(err);
+          });
+        }).catch(() => {
         });
       },
       //获取imsi详情
@@ -223,6 +267,9 @@
           let code = (this.imsiDetail.areaCode ? this.imsiDetail.areaCode : this.imsiDetail.cityCode ? this.imsiDetail.cityCode : this.imsiDetail.provinceCode ? this.imsiDetail.provinceCode : 0);
           if (code != 0) {
             this.imsiDetail.area = this.getAreaLable(code);
+          }
+          if (data.data.status != 0) {
+            this.getDealDetail();
           }
         }).catch((err) => {
           this.$message.error(err);
@@ -341,6 +388,14 @@
           this.places = data.data.list;
         }).catch((err) => {
           this.places = [];
+        });
+      },
+      //处理记录
+      getDealDetail() {
+        this.$post('warning/getSolvedWarningById/' + this.id, {}).then((data) => {
+          this.dealDetail = data.data;
+          this.dealDetail.timeStr = formatDate(new Date(data.data.dealWithTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+        }).catch((err) => {
         });
       },
       //获得省市县

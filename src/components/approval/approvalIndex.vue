@@ -1,5 +1,5 @@
 <template>
-  <el-container class="main-container">
+  <el-container class="home-container">
     <!--左侧菜单栏-->
     <el-aside :width="collapseWidth" v-bind:class="isCollapse ? 'content-aside-close' : 'content-aside'">
       <el-menu :default-active="$route.path" :collapse="isCollapse" unique-opened router mode="vertical"
@@ -70,14 +70,3 @@
     }
   }
 </script>
-<style scoped>
-  .main-container {
-    position: absolute;
-    padding: 0;
-    margin: 0;
-    top: 70px;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-  }
-</style>

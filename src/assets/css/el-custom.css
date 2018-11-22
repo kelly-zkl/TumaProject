@@ -19,8 +19,8 @@
 
 .login-box .el-input__inner {
   background: rgba(0, 0, 0, 0);
-  border-color: #bbb;
-  color: #343434;
+  border-color: #CFCFCF;
+  color: #fff;
 }
 
 .login-box .el-input .el-input__inner::-webkit-input-placeholder {
@@ -43,11 +43,11 @@
   margin-left: 10px;
 }
 
-.el-menu {
+.content-aside-close .el-menu, .content-aside .el-menu {
   border-right: none;
 }
 
-.el-menu--popup {
+.content-aside-close .el-menu--popup, .content-aside .el-menu--popup {
   min-width: 170px
 }
 
@@ -100,11 +100,11 @@
   height: 365px;
   font-size: 14px;
   color: #fff;
-  background: #21206C;
+  background: #08163d;
 }
 
 .overview .el-table th, .overview .el-table tr {
-  background-color: #2E2D78;
+  background-color: #050D34;
 }
 
 .overview .el-table thead {
@@ -117,17 +117,17 @@
 }
 
 .overview .el-table--striped .el-table__body tr.el-table__row--striped td {
-  background: #21206C;
+  background: #08163d;
   background-clip: padding-box;
 }
 
 .overview .el-table--striped .el-table__body tr.el-table__row--striped.current-row td, .overview .el-table__body tr.current-row > td, .overview .el-table__body tr.hover-row.current-row > td, .overview .el-table__body tr.hover-row.el-table__row--striped.current-row > td, .overview .el-table__body tr.hover-row.el-table__row--striped > td, .overview .el-table__body tr.hover-row > td {
-  background: #2E2D78;
+  background: #050D34;
 }
 
 /*表格获取焦点事件*/
 .overview .el-table--enable-row-hover .el-table__body tr:hover > td {
-  background-color: #3A3195
+  background-color: #050D34
 }
 
 /*删除表格的线*/
@@ -152,6 +152,12 @@
   background-color: #6699FF;
   color: #fff;
   border: 1px solid #6699FF;
+}
+
+.sys .el-input-group__append, .sys .el-input-group__prepend {
+  background-color: #fff;
+  color: #999;
+  border: none;
 }
 
 /** 定制版dialog*/
@@ -368,13 +374,31 @@
   padding-top: 10px;
 }
 
-.el-menu-item:focus, .el-menu-item:hover {
+.content-aside-close .el-menu-item:focus, .content-aside-close .el-menu-item:hover, .content-aside .el-menu-item:focus, .content-aside .el-menu-item:hover {
   outline: 0;
   background-color: rgba(0, 0, 0, 0) !important
 }
 
-.el-menu-item.is-active {
+.content-aside-close .el-menu-item.is-active, .content-aside .el-menu-item.is-active {
   border-left: 5px solid #6699FF;
+}
+
+.el-menu--horizontal {
+  border-bottom: none;
+}
+
+.el-menu--horizontal > .el-menu-item.is-active {
+  border-bottom: 3px solid #3FA8F3 !important
+}
+
+.home-container {
+  position: absolute;
+  padding: 0;
+  margin: 0;
+  top: 61px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
 }
 
 /*去除百度地图左下角的Logo*/
@@ -430,6 +454,7 @@
   font-size: 13px;
 }
 
+/*图片搜索控件*/
 .upload.img {
   margin: 0
 }
@@ -437,4 +462,24 @@
 .upload.img .el-button--medium {
   padding: 2px 10px;
   height: 36px;
+}
+
+/*去掉标记的白色边框*/
+.el-badge__content {
+  border: none;
+}
+
+/*单选框禁止时的边框和颜色*/
+.el-radio-button__orig-radio:disabled + .el-radio-button__inner {
+  color: #999;
+  border-color: #bbb;
+}
+
+/*按钮组的大小*/
+.el-button-group .el-button {
+  float: left;
+  position: relative;
+  padding: 11px 15px 10px 15px;
+  margin-top: -2px;
+  margin-left: 10px;
 }

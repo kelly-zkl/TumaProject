@@ -32,7 +32,7 @@
           </el-col>
         </el-row>
       </el-form>
-      <el-table :data="menus" v-loading="listLoading" class="center-block" stripe>
+      <el-table :data="menus" v-loading="listLoading" class="center-block" stripe :max-height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
         <el-table-column align="left" prop="name" label="菜单名称" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
@@ -126,6 +126,7 @@
         listLoading: false,
         addMenuVisible: false,
         dialogWidth: isPC() ? '35%' : '90%',
+        tableHeight: window.innerHeight - 230,
         menus: [],
         query: {page: 1, size: 10},
         count: 0,
@@ -178,7 +179,7 @@
             msg = '修改成功';
             tip = '修改菜单可能会改变系统的页面布局及功能，请谨慎操作！';
           } else {
-            this.menu.userId = '';
+            this.menu.userId = JSON.parse(sessionStorage.getItem("user")).userId;
             this.menu.status = 0;
           }
           if (this.menu.pid === '' || this.menu.pid === null) {

@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('person:query')"
-               style="text-align: left">
+               style="text-align: left;width: 1120px">
         <el-form-item style="margin-bottom: 10px">
           <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
                      :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -33,22 +33,7 @@
                            :max="200" style="width: 100px" size="medium"></el-input-number>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px" clearable>
-            <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="手机号" v-model="query.mobilePhone" :maxlength="11"
-                    style="width: 180px" size="medium"></el-input>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="姓名" v-model="query.name" :maxlength="10"
-                    style="width: 180px" size="medium"></el-input>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="身份证号" v-model="query.idCard" :maxlength="18"
-                    style="width: 180px" size="medium"></el-input>
+          <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
@@ -56,8 +41,27 @@
         <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="isMore">
+          <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px" clearable>
+            <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="isMore">
+          <el-input placeholder="手机号" v-model="query.mobilePhone" :maxlength="11"
+                    style="width: 180px" size="medium"></el-input>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="isMore">
+          <el-input placeholder="姓名" v-model="query.name" :maxlength="10"
+                    style="width: 180px" size="medium"></el-input>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="isMore">
+          <el-input placeholder="身份证号" v-model="query.idCard" :maxlength="18"
+                    style="width: 180px" size="medium"></el-input>
+        </el-form-item>
       </el-form>
-      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
+      <el-table ref="table" :data="list10" v-loading="listLoading" class="center-block" stripe
+                :max-height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="人员编号" prop="faceId" min-width="180"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -69,17 +73,18 @@
                  style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
+        <el-table-column align="left" label="关联IMSI[置信度]" prop="imsiList" min-width="220" max-width="250">
+          <template slot-scope="scope">
+            <div v-for="item in scope.row.imsiList">
+              <span>{{item.imsi}}<span
+                style="color:#000;font-weight: bold">[{{(item.weight/10).toFixed(1)}}%]</span></span>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="年龄段" prop="startAge" min-width="80" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="关联IMSI[置信度]" prop="imsiList" min-width="220" max-width="250">
-          <template slot-scope="scope">
-            <div v-for="item in scope.row.imsiList">
-              <span>{{item.imsi}}<span style="color:#000;font-weight: bold">[{{item.weight / 10}}%]</span></span>
-            </div>
-          </template>
-        </el-table-column>
         <el-table-column align="left" label="姓名" prop="name" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="手机号" prop="mobilePhone" min-width="150"
@@ -90,7 +95,7 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="150" fixed="right">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('archives:detail')">人员档案
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('archives:detail')">查看人员档案
             </el-button>
           </template>
         </el-table-column>
@@ -123,7 +128,9 @@
   export default {
     data() {
       return {
+        isMore: false,
         query: {size: 100},
+        tableHeight: window.innerHeight - 230,
         provinceList: json,
         imgPath: require('../../assets/img/icon_people.png'),
         props: {value: 'o', label: 'n', children: 'c'},
@@ -168,6 +175,14 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      showMore() {
+        this.isMore = !this.isMore;
+        if (this.isMore) {
+          this.tableHeight = window.innerHeight - 280
+        } else {
+          this.tableHeight = window.innerHeight - 230
+        }
+      },
       beforeAvatarUpload(file) {
         if (globalValidImg(file, this.$message)) {
         }
@@ -178,7 +193,8 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
-            this.query.similarThreshold = 60;
+            let param = JSON.parse(sessionStorage.getItem("system")).similarThreshold;
+            this.query.similarThreshold = param ? param : 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.getData();
           }

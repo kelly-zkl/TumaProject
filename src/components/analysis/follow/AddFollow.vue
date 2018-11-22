@@ -48,11 +48,13 @@
             <el-button type="primary" size="medium" @click="selectDevice()" style="margin-left: 10px">地图选择</el-button>
           </el-form-item>
           <el-form-item label="日期范围" align="left" required>
-            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
-                            start-placeholder="开始日期" end-placeholder="结束日期" clearable
-                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
-                            :picker-options="pickerBeginDate">
-            </el-date-picker>
+            <el-tooltip effect="dark" content="日期范围不能超过7天" placement="bottom">
+              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
+                              start-placeholder="开始日期" end-placeholder="结束日期" clearable
+                              :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                              :picker-options="pickerBeginDate">
+              </el-date-picker>
+            </el-tooltip>
           </el-form-item>
           <el-form-item label="伴随时间间隔" align="left" prop="interval" style="margin: 0">
             <el-tooltip class="item" effect="dark" placement="bottom">
@@ -86,7 +88,8 @@
             <el-table-column align="left" label="关联IMSI[置信度]" prop="imsiList" min-width="220" max-width="250">
               <template slot-scope="scope">
                 <div v-for="item in scope.row.imsiList">
-                  <span>{{item.imsi}}<span style="color:#000;font-weight: bold">[{{item.weight / 10}}%]</span></span>
+                  <span>{{item.imsi}}<span
+                    style="color:#000;font-weight: bold">[{{(item.weight/10).toFixed(1)}}%]</span></span>
                 </div>
               </template>
             </el-table-column>
@@ -366,17 +369,17 @@
             }
             this.followTask.startDate = Math.round(this.qTime[0] / 1000);
             this.followTask.endDate = Math.round(this.qTime[1] / 1000);
-            let bol = ((this.followTask.endDate - this.followTask.startDate) > 60 * 60 * 24 * 30);
+            let bol = ((this.followTask.endDate - this.followTask.startDate) > 60 * 60 * 24 * 7);
             if (bol) {
-              this.$message.error('日期范围不能超过30天');
+              this.$message.error('日期范围不能超过7天');
               return;
             }
 
             this.followTask.caseName = this.getCaseName();
-
             this.$post("follow/add", this.followTask, "创建成功").then((data) => {
               if ("000000" === data.code)
                 this.$router.go(-1);
+            }).catch((err) => {
             });
           }
         })

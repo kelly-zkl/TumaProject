@@ -6,7 +6,7 @@
         <el-tab-pane label="图像" name="face"></el-tab-pane>
       </el-tabs>
       <div v-show="activeItem=='imsi'">
-        <el-form :inline="true" :model="queryImsi" align="left" style="margin-top: 10px;text-align: left">
+        <el-form :inline="true" :model="queryImsi" align="left" style="margin-top: 10px;text-align: left;width: 1120px">
           <el-form-item style="margin-bottom: 10px">
             <el-input placeholder="设备ID" v-model="queryImsi.deviceId" :maxlength="30"
                       style="width: 180px" size="medium"></el-input>
@@ -22,17 +22,20 @@
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
-                            start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
-                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
-                            :picker-options="pickerBeginDate" style="width: 360px">
-            </el-date-picker>
+            <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button type="primary" size="medium" @click="getImsiData()">搜索</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button size="medium" @click="clearImsiData()">重置</el-button>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px" v-show="isMore">
+            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
+                            start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
+                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                            :picker-options="pickerBeginDate" style="width: 360px">
+            </el-date-picker>
           </el-form-item>
         </el-form>
         <el-table :data="list10" class="center-block" v-loading="listLoading" stripe>
@@ -63,7 +66,7 @@
         </div>
       </div>
       <div v-show="activeItem=='face'">
-        <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left">
+        <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1120px">
           <el-form-item style="margin-bottom: 10px">
             <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
                        :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -78,6 +81,10 @@
               </el-button>
             </el-upload>
           </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-input placeholder="输入设备ID" v-model="query.deviceId" :maxlength="30"
+                      style="width: 180px" size="medium"></el-input>
+          </el-form-item>
           <el-form-item label="年龄段" style="margin-bottom: 10px">
             <el-input-number v-model="query.startAge" controls-position="right" :min="1"
                              :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
@@ -91,28 +98,27 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
-            <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
-              <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
-              </el-option>
-            </el-select>
-          </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
-                            start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
-                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
-                            :picker-options="pickerBeginDate" style="width: 360px">
-            </el-date-picker>
-          </el-form-item>
-          <el-form-item style="margin-bottom: 10px">
-            <el-input placeholder="输入设备ID" v-model="query.deviceId" :maxlength="30"
-                      style="width: 180px" size="medium"></el-input>
+            <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button size="medium" @click="clearData()">重置</el-button>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px" v-show="isMore">
+            <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
+              <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px" v-show="isMore">
+            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
+                            start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
+                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                            :picker-options="pickerBeginDate" style="width: 360px">
+            </el-date-picker>
           </el-form-item>
         </el-form>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
@@ -170,6 +176,7 @@
       return {
         activeItem: 'imsi',
         runBigPic: false,
+        isMore: false,
         bigUrl: '',
         faceId: this.$route.query.faceId || '',
         imgPath: require('../../../assets/img/icon_people.png'),
@@ -212,6 +219,7 @@
         }
       },
       handleType(val) {
+        this.isMore = false;
         this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 30 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         this.isSearch = false;
@@ -319,7 +327,8 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
-            this.query.similarThreshold = 60;
+            let param = JSON.parse(sessionStorage.getItem("system")).similarThreshold;
+            this.query.similarThreshold = param ? param : 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.isSearch = true;
             this.getData();

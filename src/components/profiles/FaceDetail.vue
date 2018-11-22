@@ -51,11 +51,12 @@
         <el-col :span="16" align="left" class="tab-card">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="疑似人员" name="person"></el-tab-pane>
+            <el-tab-pane label="疑似IMSI" name="imsi"></el-tab-pane>
             <!--<el-tab-pane label="所有记录" name="list"></el-tab-pane>-->
           </el-tabs>
         </el-col>
       </el-row>
-      <div v-show="activeItem=='person'" style="padding: 20px 0">
+      <div v-show="activeItem=='person'" style="padding: 10px 0">
         <el-row v-loading="listLoading">
           <el-col :span="24">
             <div class="face-main">
@@ -64,28 +65,29 @@
                 <el-form :model="item" align="left" label-width="80px" label-position="right"
                          style="position: absolute;top: 10px;left:150px;text-align: left">
                   <el-form-item label="档案ID" style="margin:0">
-                    <span
-                      style="font-size: 15px;color:#000;margin-right: 20px">{{item.faceId?item.faceId:'--'}}</span>
-                    <el-button type="text" @click="gotoPerson(item)" v-if="item.faceId">查看人员</el-button>
+                    <!--<span-->
+                    <!--style="font-size: 14px;color:#000;margin-right: 20px">{{item.faceId?item.faceId:'&#45;&#45;'}}</span>-->
+                    <el-button type="text" @click="gotoPerson(item)" v-if="item.faceId">
+                      {{item.faceId?item.faceId:'--'}}
+                    </el-button>
                   </el-form-item>
-                  <el-form-item label="相似度" style="margin:0">
+                  <el-form-item label="关联IMSI" style="margin:0">
                     <span
-                      style="font-size: 15px;color:#000">{{item.similarThreshold<0?'--':Math.floor(item.similarThreshold*1000)/1000+'%'}}</span>
+                      style="font-size: 14px;color:#000">{{imsiList.length>0?imsiList[0].imsi:'--'}}</span>
+                  </el-form-item>
+                  <el-form-item style="margin:0">
+                    <span style="font-size: 14px;color:#000;margin-right: 20px">
+                      {{'置信度['+(imsiList.length>0&&imsiList[0].weight>=0?imsiList[0].weight/10:'--')+'%]'}} {{'关联次数['+(imsiList.length>0&&imsiList[0].fnIn>=0?imsiList[0].fnIn:'--')+']'}}</span>
                   </el-form-item>
                 </el-form>
               </div>
               <span v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px">暂无数据</span>
-              <!--<el-row style="width: 100%" v-if="persons.length>=num">-->
-              <!--<el-col :span="24" style="text-align: center" align="center">-->
-              <!--<el-button type="text" @click="loadMore()">加载更多</el-button>-->
-              <!--</el-col>-->
-              <!--</el-row>-->
             </div>
           </el-col>
         </el-row>
       </div>
       <div v-show="activeItem=='list'">
-        <el-row style="margin-top: 15px">
+        <el-row style="margin-top: 10px">
           <el-col :span="18" align="left">
             <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('common:face:listFaceTrace')">
               <el-form-item label="相似度" style="margin-bottom: 10px">
@@ -158,6 +160,28 @@
                          :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
       </div>
+      <div v-show="activeItem=='imsi'" style="margin-top: 10px">
+        <el-table :data="imsiList" class="center-block" v-loading="listLoading" stripe>
+          <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
+          <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="200"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="ispDes" label="运营商" max-width="150" min-width="100"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="IMSI归属地" max-width="200" min-width="150" prop="regional"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="fnIn" label="关联次数" min-width="150" max-width="200"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="weight" label="置信度" min-width="150" max-width="200"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="操作" width="160" fixed="right">
+            <template slot-scope="scope">
+              <el-button type="text" @click="gotoIMSI(scope.row)"
+                         v-show="getButtonVial('archives:getImsiRecordByImsi')">查看IMSI
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
     </section>
   </div>
 </template>
@@ -176,6 +200,7 @@
         id: this.$route.query.id || '',
         imageId: this.$route.query.imageId || '',
         faceDetail: {},
+        imsiList: [],
         persons: [],
         places: [],
         query: {size: 100},
@@ -187,7 +212,6 @@
         isSearch: false,
         firstPage: 0,
         page: 1,
-        num: 10,
         loading: {},
         sels: [],
         timeStamp: new Date().getTime(),
@@ -205,19 +229,20 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
-      handleType(val) {
-        if (this.activeItem === 'person') {
-          this.getPersons();
-          this.isSearch = false;
-        } else {
+      //查看IMSI详情
+      gotoIMSI(row) {
+        // this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi}});
+        let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: row.imsi}});
+        window.open(routeData.href, '_blank');
+      },
+      handleType(val, eve) {
+        if (this.activeItem === 'list') {
           this.isSearch = true;
           this.getData();
+        } else {
+          this.getPersons();
+          this.isSearch = false;
         }
-      },
-      //关联人员加载更多
-      loadMore() {
-        this.num += 10;
-        this.getPersons();
       },
       //进入人员档案
       gotoPerson(row) {
@@ -250,6 +275,7 @@
             this.listLoading = false;
             if (data.data && data.data.length > 0) {
               this.persons = data.data;
+              this.imsiList = data.data[0].imsiWeightBOList;
             }
           } else if ("100000" === data.code) {//执行中
             setTimeout(() => {
@@ -257,6 +283,7 @@
             }, 1000);
           } else {
             this.persons = [];
+            this.imsiList = [];
             this.listLoading = false;
             this.$message.error(data.msg);
           }
@@ -359,14 +386,12 @@
       formatterAddress(row, column) {
         if (column.property === 'sex') {
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
-        } else if (column.property === 'followType') {
-          return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '图像' : row.followType === "MAC" ? 'MAC' : '--';
-        } else if (column.property === 'status') {
-          return row.status === 'UNHANDLED' ? '未处理' : row.status === 'EXECUTION' ? '进行中' : row.status === 'HANDLED' ? '已结案' : '--';
-        } else if (column.property === 'similarThreshold') {
-          return row.similarThreshold < 0 ? '--' : Math.floor(row.similarThreshold * 1000) / 1000 + '%';
-        } else if (column.property === 'age') {
+        } else if (column.property === 'weight') {
+          return row.weight < 0 ? '--' : (row.weight / 10).toFixed(1) + '%';
+        } else if (column.property === 'age' && column.property === 'fnIn') {
           return row[column.property] < 0 ? '--' : row[column.property];
+        } else if (column.property === 'ispDes') {
+          return row.ispDes == 0 ? '移动' : row.ispDes == 1 ? '联通' : row.ispDes == 2 ? '电信' : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

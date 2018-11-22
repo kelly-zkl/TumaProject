@@ -39,7 +39,7 @@
         </el-row>
       </el-form>
 
-      <el-table :data="users" v-loading="listLoading" class="center-block" stripe>
+      <el-table :data="users" v-loading="listLoading" class="center-block" stripe :max-height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" prop="account" label="账号" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
@@ -236,6 +236,7 @@
         modifyPswVisible: false,
         resetPswVisible: false,
         addUserTitle: '添加成员',
+        tableHeight: window.innerHeight - 230,
         dialogWidth: isPC() ? '35%' : '90%',
         userId: JSON.parse(sessionStorage.getItem("user")).userId,
         admin: {

@@ -65,6 +65,7 @@ import RoleList from '@/components/system/RoleList'
 import MenuManager from '@/components/system/MenuManager'
 import OrganizationManager from '@/components/system/OrganizationManager'
 import SystemLog from '@/components/system/SystemLog'
+import SystemParams from '@/components/system/SystemParams'
 
 Vue.use(Router);
 
@@ -143,7 +144,8 @@ export default new Router({
             {path: '/userList', component: UserList, name: '用户管理'},
             {path: '/roleList', component: RoleList, name: '角色管理'},
             {path: '/menuManager', component: MenuManager, name: '菜单管理'},
-            {path: '/organizationManager', component: OrganizationManager, name: '组织管理'}
+            {path: '/organizationManager', component: OrganizationManager, name: '组织管理'},
+            {path: '/systemParams', component: SystemParams, name: '系统参数配置'}
           ]
         }
       ]

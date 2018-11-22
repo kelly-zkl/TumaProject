@@ -7,8 +7,8 @@
           <span style="color: #343434;font-size: 15px">使用说明<br/></span>
         </div>
         <div style="margin-left: 30px">
-          分别上传两张清晰的人脸照片（角度也尽量保持一致），系统将自动计算出两张人脸的相似度。<br/>
-          图片可支持：JPG、JPEG、PNG格式，且图片文件不超过2M。
+          分别上传两张清晰的人脸图片（角度也尽量保持一致），系统将自动计算出两张人脸的相似度。<br/>
+          图片可支持：JPG、JPEG、PNG格式，且单张图片文件不超过2M。
         </div>
       </div>
       <div class="bg-compare">

@@ -36,7 +36,7 @@
         </el-col>
       </el-row>
       <div class="content" v-show="activeItem == 'IMSI'">
-        <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left">
+        <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1120px">
           <el-form-item style="margin-bottom: 10px">
             <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 160px"
                       :maxlength=30></el-input>
@@ -51,13 +51,6 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item style="margin-bottom: 10px">
-            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
-                            start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
-                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
-                            :picker-options="pickerBeginDate">
-            </el-date-picker>
-          </el-form-item>
           <!--<el-form-item style="margin-bottom: 10px">-->
           <!--<el-select v-model="query.value" placeholder="人员名单" size="medium" style="width: 150px">-->
           <!--<el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">-->
@@ -71,10 +64,20 @@
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
+            <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
             <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button size="medium" @click="clearData()">重置</el-button>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px" v-show="isMore">
+            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
+                            start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
+                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                            :picker-options="pickerBeginDate">
+            </el-date-picker>
           </el-form-item>
         </el-form>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
@@ -105,7 +108,7 @@
         </div>
       </div>
       <div class="content" v-show="activeItem == 'FACE'">
-        <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left">
+        <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1120px">
           <el-form-item style="margin-bottom: 10px">
             <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
                        :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -133,13 +136,28 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item style="margin-bottom: 10px" v-if="places.length !== 0">
+          <el-form-item style="margin-bottom: 10px" v-show="places.length !== 0">
             <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable>
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
+            <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 130px">
+              <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-button type="primary" size="medium" @click="query.page=1;getImgData()">搜索</el-button>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-button size="medium" @click="clearImgData()">重置</el-button>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px" v-show="isMore">
             <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                             start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
                             :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
@@ -152,18 +170,6 @@
           <!--</el-option>-->
           <!--</el-select>-->
           <!--</el-form-item>-->
-          <el-form-item style="margin-bottom: 10px">
-            <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 130px">
-              <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item style="margin-bottom: 10px">
-            <el-button type="primary" size="medium" @click="query.page=1;getImgData()">搜索</el-button>
-          </el-form-item>
-          <el-form-item style="margin-bottom: 10px">
-            <el-button size="medium" @click="clearImgData()">重置</el-button>
-          </el-form-item>
         </el-form>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
@@ -213,10 +219,10 @@
     <!--布控详情-->
     <el-dialog title="布控详情" width="750px" :visible.sync="runTaskDetail">
       <div class="block gray-form">
-        <el-form label-width="100px" :model="task" label-position="right" style="margin-right: 20px">
+        <el-form label-width="100px" :model="task" label-position="right">
           <el-form-item label="布控编号" align="left" style="margin: 0">{{task.taskNo}}</el-form-item>
           <el-form-item label="布控名称" align="left" style="margin: 0">{{task.taskName}}</el-form-item>
-          <el-form-item label="布控人员" align="left" style="margin: 0">
+          <el-form-item label="布控人员" align="left" style="margin: 0" v-if="task.featureList || task.imsiList">
             <div class="img-main" v-if="task.featureList">
               <div class="img-item" v-for="item in task.featureList" :key="item.imageId">
                 <img :src="item.imageUrl?item.imageUrl:imgPath" style="max-width: 100%;border-radius: 4px"/>
@@ -224,6 +230,11 @@
             </div>
             <el-row v-if="task.imsiList">
               <el-col :span="24">{{task.imsi}}</el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="布控名单" align="left" style="margin: 0" v-if="task.list">
+            <el-row v-if="task.list">
+              <el-col :span="24">{{task.list}}</el-col>
             </el-row>
           </el-form-item>
           <el-form-item label="布控场所" align="left" style="margin: 0">
@@ -273,6 +284,7 @@
       return {
         task: {},
         places: [],
+        isMore: false,
         runBigPic: false,
         bigUrl: '',
         runTaskDetail: false,
@@ -309,6 +321,7 @@
         return buttonValidator(msg);
       },
       handleType(val) {
+        this.isMore = false;
         this.list10 = [];
         this.isSearch = true;
         this.qTime = '';
@@ -330,6 +343,13 @@
           this.task.endStr = formatDate(new Date(this.task.endTime * 1000), 'yyyy-MM-dd');
           if (this.task.cycleType === 'WEEKLY') {//每周
             this.task.week = this.getWeekStr(this.task.weekCycleDay);
+          }
+          if (this.task.blackClassList.length > 0) {
+            var list = '';
+            this.task.blackClassList.forEach((item) => {
+              list += item.name + ',';
+            });
+            this.task.list = list.substring(0, list.length - 1);
           }
         }).catch((err) => {
         });
@@ -498,7 +518,8 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
-            this.query.similarThreshold = 60;
+            let param = JSON.parse(sessionStorage.getItem("system")).similarThreshold;
+            this.query.similarThreshold = param ? param : 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.isSearch = true;
             this.getImgData();

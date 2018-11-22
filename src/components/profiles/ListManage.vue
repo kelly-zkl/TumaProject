@@ -3,7 +3,7 @@
     <section class="content">
       <el-row>
         <el-col :span="20" align="left" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 930px">
             <el-form-item style="margin-bottom: 10px">
               <el-upload ref="upload" class="upload img" :action="uploadImgUrl" name="file"
                          :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -36,19 +36,7 @@
                         style="width: 180px" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="身份证号" v-model="query.idCard" :maxlength="18"
-                        style="width: 180px" size="medium"></el-input>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="手机号" v-model="query.mobilePhone" :maxlength="11"
-                        style="width: 150px" size="medium"></el-input>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.blackClass" placeholder="所属名单" size="medium"
-                         style="width: 180px" clearable filterable>
-                <el-option v-for="item in listTypes" :key="item.id" :label="item.name" :value="item.name">
-                </el-option>
-              </el-select>
+              <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
@@ -56,21 +44,36 @@
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()">重置</el-button>
             </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-input placeholder="身份证号" v-model="query.idCard" :maxlength="18"
+                        style="width: 180px" size="medium"></el-input>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-input placeholder="手机号" v-model="query.mobilePhone" :maxlength="11"
+                        style="width: 150px" size="medium"></el-input>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-select v-model="query.blackClass" placeholder="所属名单" size="medium"
+                         style="width: 180px" clearable filterable>
+                <el-option v-for="item in listTypes" :key="item.id" :label="item.name" :value="item.name">
+                </el-option>
+              </el-select>
+            </el-form-item>
           </el-form>
         </el-col>
         <el-col :span="4" align="right" style="text-align: right">
-          <el-button type="primary" size="medium" style="margin-bottom: 10px"
-                     v-show="getButtonVial('person:delKeyPerson')"
-                     :disabled="sels.length == 0" @click="deletePerson()">删除
-          </el-button>
           <!--<el-button type="primary" size="medium" style="margin-bottom: 10px" @click="showList()">管理名单</el-button>-->
           <el-button type="primary" size="medium" style="margin-bottom: 10px"
                      v-show="getButtonVial('person:importKeyPerson')"
                      @click="isUpload=false;importFile='';runningImports=true">批量导入
           </el-button>
+          <el-button size="medium" style="margin-bottom: 10px" v-show="getButtonVial('person:delKeyPerson')"
+                     :disabled="sels.length == 0" @click="deletePerson()">删除
+          </el-button>
         </el-col>
       </el-row>
-      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
+      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe
+                @selection-change="selsChange" :max-height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="130"
@@ -253,10 +256,12 @@
     data() {
       return {
         bigUrl: '',
+        isMore: false,
         runBigPic: false,
         runningImports: false,
         runningImportResult: false,
         runningImportNumber: false,
+        tableHeight: window.innerHeight - 230,
         count: 0,
         list: [],
         list10: [],
@@ -300,6 +305,14 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      showMore() {
+        this.isMore = !this.isMore;
+        if (this.isMore) {
+          this.tableHeight = window.innerHeight - 280
+        } else {
+          this.tableHeight = window.innerHeight - 230
+        }
       },
       showModify(row) {
         var age = !isNull(row.age) ? row.age : 0;
@@ -471,7 +484,8 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
-            this.query.similarThreshold = 60;
+            let param = JSON.parse(sessionStorage.getItem("system")).similarThreshold;
+            this.query.similarThreshold = param ? param : 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.getData();
           }

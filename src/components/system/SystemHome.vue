@@ -1,5 +1,5 @@
 <template>
-  <el-container class="main-container">
+  <el-container class="home-container">
     <!--左侧菜单栏-->
     <el-aside :width="collapseWidth" v-bind:class="isCollapse ? 'content-aside-close' : 'content-aside'">
       <el-menu :default-active="$route.path" :collapse="isCollapse" unique-opened router mode="vertical"
@@ -22,7 +22,7 @@
         </el-col>
         <el-col :span="24" style="padding-top: 15px">
           <transition name="fade" mode="out-in">
-            <router-view></router-view>
+            <router-view @setSystem="setSystem"></router-view>
           </transition>
         </el-col>
       </div>
@@ -49,6 +49,9 @@
           this.collapseWidth = '200px';
         }
       },
+      setSystem() {
+        this.$emit('handleSelectTab', null, 'sys');
+      },
       //菜单激活回调
       handleActive(index, indexPath) {
         sessionStorage.removeItem("query");
@@ -70,14 +73,3 @@
     }
   }
 </script>
-<style scoped>
-  .main-container {
-    position: absolute;
-    padding: 0;
-    margin: 0;
-    top: 70px;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-  }
-</style>

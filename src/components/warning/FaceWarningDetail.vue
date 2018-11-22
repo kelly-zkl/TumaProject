@@ -7,10 +7,16 @@
             当前状态：{{faceDetail.status==0?'待处理':faceDetail.status==1?'处理中':faceDetail.status==2?'已处理':faceDetail.status==3?'误报':''}}
           </div>
         </el-col>
-        <el-col :span="8" :offset="8" align="right" style="text-align: right"
-                v-if="getButtonVial('warning:dealWithWarningById')&&faceDetail.status==0">
-          <el-button type="primary" size="medium" @click=changeStatus(2)>已处理</el-button>
-          <el-button type="primary" size="medium" @click=changeStatus(3)>误报</el-button>
+        <el-col :span="8" :offset="8" align="right" style="text-align: right;padding-right: 15px">
+          <el-button type="text" size="medium" @click="runDealDetail=true"
+                     v-if="getButtonVial('warning:getSolvedWarningById')&&faceDetail.status!=0">查看处理记录
+          </el-button>
+          <el-button type="primary" size="medium" @click=changeStatus(2)
+                     v-if="getButtonVial('warning:dealWithWarningById')&&faceDetail.status==0">已处理
+          </el-button>
+          <el-button size="medium" @click=changeStatus(3)
+                     v-if="getButtonVial('warning:dealWithWarningById')&&faceDetail.status==0">误报
+          </el-button>
         </el-col>
       </el-row>
       <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px">
@@ -58,49 +64,42 @@
         <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="疑似人员" name="person"></el-tab-pane>
+            <el-tab-pane label="疑似IMSI" name="imsi"></el-tab-pane>
             <el-tab-pane label="所有记录" name="list"></el-tab-pane>
           </el-tabs>
         </el-col>
       </el-row>
-      <div v-show="activeItem=='person'" style="padding: 20px 0">
+      <div v-show="activeItem=='person'" style="padding: 10px 0">
         <el-row v-loading="listLoading">
           <el-col :span="24">
             <div class="face-main">
               <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
                 <img :src="item.faceUrl?item.faceUrl:imgPath"/>
-                <el-form :model="item" align="left" label-width="80px" label-position="right" size="medium"
-                         style="position: absolute;top: 5px;left:150px;text-align: left">
+                <el-form :model="item" align="left" label-width="80px" label-position="right"
+                         style="position: absolute;top: 10px;left:150px;text-align: left">
                   <el-form-item label="档案ID" style="margin:0">
-                    <span
-                      style="font-size: 15px;color:#000;margin-right: 20px">{{item.faceId?item.faceId:'--'}}</span>
-                    <el-button type="text" @click="gotoPerson(item)" v-if="item.faceId">查看人员</el-button>
+                    <el-button type="text" @click="gotoPerson(item)" v-if="item.faceId">
+                      {{item.faceId?item.faceId:'--'}}
+                    </el-button>
                   </el-form-item>
                   <el-form-item label="关联IMSI" style="margin:0">
                     <span
-                      style="font-size: 15px;color:#000">{{item.similarThreshold<0?'--':Math.floor(item.similarThreshold*1000)/1000+'%'}}</span>
+                      style="font-size: 14px;color:#000">{{imsiList.length>0?imsiList[0].imsi:'--'}}</span>
                   </el-form-item>
                   <el-form-item style="margin:0">
-                    <span style="font-size: 15px;color:#000;margin-right: 20px">
-                      {{'置信度['+(item.weight>=0?item.weight/10:'--')+'%]'}} {{'关联次数['+(item.fnIn>=0?item.fnIn:'--')+']'}}</span>
-                  </el-form-item>
-                  <el-form-item style="margin:0">
-                    <el-button type="text" @click="">查看所有疑似IMSI</el-button>
+                    <span style="font-size: 14px;color:#000;margin-right: 20px">
+                      {{'置信度['+(imsiList.length>0&&imsiList[0].weight>=0?imsiList[0].weight/10:'--')+'%]'}} {{'关联次数['+(imsiList.length>0&&imsiList[0].fnIn>=0?imsiList[0].fnIn:'--')+']'}}</span>
                   </el-form-item>
                 </el-form>
               </div>
               <span v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px">暂无数据</span>
-              <!--<el-row style="width: 100%" v-if="persons.length>=num">-->
-              <!--<el-col :span="24" style="text-align: center" align="center">-->
-              <!--<el-button type="text" @click="loadMore()">加载更多</el-button>-->
-              <!--</el-col>-->
-              <!--</el-row>-->
             </div>
           </el-col>
         </el-row>
       </div>
       <div v-show="activeItem=='list'">
         <el-row style="margin-top: 10px">
-          <el-col :span="18" align="left" style="text-align: left" v-show="getButtonVial('common:face:listFaceTrace')">
+          <el-col :span="24" align="left" style="text-align: left" v-show="getButtonVial('common:face:listFaceTrace')">
             <el-form :inline="true" :model="query" align="left" style="text-align: left">
               <el-form-item label="相似度" style="margin-bottom: 10px">
                 <el-input-number v-model="query.startSimilar" controls-position="right" :min="0.1" :step="0.1"
@@ -130,9 +129,9 @@
               </el-form-item>
             </el-form>
           </el-col>
-          <el-col :span="6" align="right" style="text-align: right" v-show="getButtonVial('route:query')&&false">
-            <el-button type="primary" size="medium" @click="gotoPath()">查看轨迹</el-button>
-          </el-col>
+          <!--<el-col :span="6" align="right" style="text-align: right" v-show="getButtonVial('route:query')&&false">-->
+          <!--<el-button type="primary" size="medium" @click="gotoPath()">查看轨迹</el-button>-->
+          <!--</el-col>-->
         </el-row>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
@@ -142,8 +141,6 @@
                    style="width: 90px;height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
-          <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="100"
-                           max-width="150" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="年龄段" prop="age" min-width="100"
                            max-width="150" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="性别" prop="sex" min-width="100"
@@ -167,6 +164,42 @@
                          :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
       </div>
+      <div v-show="activeItem=='imsi'" style="margin-top: 10px">
+        <el-table :data="imsiList" class="center-block" v-loading="listLoading" stripe>
+          <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
+          <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="200"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="ispDes" label="运营商" max-width="150" min-width="100"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="IMSI归属地" max-width="200" min-width="150" prop="regional"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="fnIn" label="关联次数" min-width="150" max-width="200"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="weight" label="置信度" min-width="150" max-width="200"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="操作" width="160" fixed="right">
+            <template slot-scope="scope">
+              <el-button type="text" @click="gotoIMSI(scope.row)"
+                         v-show="getButtonVial('archives:getImsiRecordByImsi')">查看IMSI
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <!--告警处理记录-->
+      <el-dialog title="告警处理记录" width="750px" :visible.sync="runDealDetail">
+        <div class="gray-form">
+          <el-form label-width="100px" :model="dealDetail" label-position="right" style="margin: 0">
+            <el-form-item label="处理时间" align="left" style="margin: 0">{{dealDetail.timeStr}}</el-form-item>
+            <el-form-item label="处理人" align="left" style="margin: 0">{{dealDetail.dealWithUser}}</el-form-item>
+            <el-form-item label="变更状态" align="left" style="margin: 0">
+              {{dealDetail.status==0?'待处理':dealDetail.status==2?'已处理':dealDetail.status==3?'误报':'--'}}
+            </el-form-item>
+            <el-form-item label="备注" align="left" style="margin: 0">{{dealDetail.remark?dealDetail.remark:'--'}}
+            </el-form-item>
+          </el-form>
+        </div>
+      </el-dialog>
     </section>
   </div>
 </template>
@@ -177,6 +210,8 @@
   export default {
     data() {
       return {
+        runDealDetail: false,
+        dealDetail: {},
         activeItem: 'person',
         provinceList: json,
         imgPath: require('../../assets/img/icon_people.png'),
@@ -185,6 +220,7 @@
         qTime: '',
         faceDetail: {},
         faceList: [],
+        imsiList: [],
         persons: [],
         places: [],
         query: {size: 100},
@@ -197,7 +233,6 @@
         firstPage: 0,
         page: 1,
         listLoading: false,
-        num: 10,
         timeStamp: new Date().getTime(),
         pickerBeginDate: {
           disabledDate: (time) => {
@@ -213,19 +248,20 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      //查看IMSI详情
+      gotoIMSI(row) {
+        // this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi}});
+        let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: row.imsi}});
+        window.open(routeData.href, '_blank');
+      },
       handleType(val, eve) {
-        if (this.activeItem === 'person') {
-          this.getPersons();
-          this.isSearch = false;
-        } else {
+        if (this.activeItem === 'list') {
           this.isSearch = true;
           this.getData();
+        } else {
+          this.getPersons();
+          this.isSearch = false;
         }
-      },
-      //关联人员加载更多
-      loadMore() {
-        this.num += 10;
-        this.getPersons();
       },
       //进入人员档案
       gotoPerson(row) {
@@ -236,10 +272,31 @@
         }
       },
       changeStatus(status) {
-        this.$post('warning/dealWithWarningById', {ids: [this.id], status: status}, "处理成功").then((data) => {
-          this.getFaceDetail();
-        }).catch((err) => {
-          this.$message.error(err);
+        this.$prompt('确认处理此告警？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          inputType: 'textarea',
+          inputPlaceholder: '录入备注（非必填）',
+          inputValidator: function (value) {
+            let bol = true;
+            if (value) {
+              bol = (value.length <= 200)
+            }
+            return bol
+          },
+          inputErrorMessage: '请输入200字以内的备注'
+        }).then(({value}) => {
+          let param = {
+            ids: [this.id], status: status, remark: value ? value : '',
+            dealWithUser: JSON.parse(sessionStorage.getItem("user")).account
+          };
+          this.$post('warning/dealWithWarningById', param, "处理成功").then((data) => {
+            this.$emit('getWarningCount');
+            this.getImsiDetail();
+          }).catch((err) => {
+            this.$message.error(err);
+          });
+        }).catch(() => {
         });
       },
       //获取图像告警详情
@@ -252,6 +309,9 @@
             this.faceDetail.area = this.getAreaLable(code);
           }
           this.getPersons();
+          if (data.data.status != 0) {
+            this.getDealDetail();
+          }
         }).catch((err) => {
           this.$message.error(err);
         });
@@ -280,6 +340,7 @@
             this.listLoading = false;
             if (data.data && data.data.length > 0) {
               this.persons = data.data;
+              this.imsiList = data.data[0].imsiWeightBOList;
             }
           } else if ("100000" === data.code) {//执行中
             setTimeout(() => {
@@ -287,6 +348,7 @@
             }, 1000);
           } else {
             this.persons = [];
+            this.imsiList = [];
             this.listLoading = false;
             this.$message.error(data.msg);
           }
@@ -367,16 +429,16 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'taskStatus') {
-          return row.taskStatus === "WAIT" ? '等待中' : row.taskStatus === "FINISH" ? '已完成' : row.taskStatus === "FAILE" ? '失败' : row.taskStatus === "EXECUTION" ? '进行中' : '--';
-        } else if (column.property === 'sex') {
+        if (column.property === 'sex') {
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-        } else if (column.property === 'similarThreshold') {
-          return row.similarThreshold < 0 ? '--' : Math.floor(row.similarThreshold * 1000) / 1000 + '%';
-        } else if (column.property === 'age') {
+        } else if (column.property === 'weight') {
+          return row.weight < 0 ? '--' : (row.weight / 10).toFixed(1) + '%';
+        } else if (column.property === 'age' && column.property === 'fnIn') {
           return row[column.property] < 0 ? '--' : row[column.property];
+        } else if (column.property === 'ispDes') {
+          return row.ispDes == 0 ? '移动' : row.ispDes == 1 ? '联通' : row.ispDes == 2 ? '电信' : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
@@ -387,6 +449,14 @@
           this.places = data.data.list;
         }).catch((err) => {
           this.places = [];
+        });
+      },
+      //处理记录
+      getDealDetail() {
+        this.$post('warning/getSolvedWarningById/' + this.id, {}).then((data) => {
+          this.dealDetail = data.data;
+          this.dealDetail.timeStr = formatDate(new Date(data.data.dealWithTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+        }).catch((err) => {
         });
       },
       //获得省市县

@@ -9,16 +9,32 @@
           </el-tabs>
         </el-col>
         <el-col :span="8" align="right" style="text-align: right">
-          <el-button type="primary" size="medium" @click="showCaseType()">管理案件属性</el-button>
+          <el-popover ref="moreBtn" placement="bottom-start" width="80" trigger="hover">
+            <el-col :span="24">
+              <el-button type="text" :disabled="sels.length == 0" @click="deleteCase()"
+                         v-show="getButtonVial('case:delete')" style="width: 100%">删除
+              </el-button>
+            </el-col>
+            <el-col :span="24">
+              <el-button type="text" style="width: 100%"
+                         v-show="query.status == 'EXECUTION' && getButtonVial('case:batchUpdateStatus')"
+                         :disabled="sels.length == 0" @click="finishCase()">结案
+              </el-button>
+            </el-col>
+          </el-popover>
           <el-button type="primary" size="medium" @click="showCreate()"
                      v-show="getButtonVial('case:add')">创建新案件
           </el-button>
+          <el-button-group>
+            <el-button @click="showCaseType()">管理案件属性</el-button>
+            <el-button icon="el-icon-more" v-popover:moreBtn></el-button>
+          </el-button-group>
         </el-col>
       </el-row>
       <el-row style="padding-top: 10px">
-        <el-col :span="18" align="left" style="text-align: left">
+        <el-col :span="24" align="left" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('case:query')"
-                   style="text-align: left">
+                   style="text-align: left;width: 1120px">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.caseName" placeholder="案件编号/名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
@@ -36,11 +52,7 @@
               </el-cascader>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
-                              start-placeholder="案发开始日期" size="medium" end-placeholder="案发结束日期" clearable
-                              :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
-                              :picker-options="pickerBeginDate">
-              </el-date-picker>
+              <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
@@ -48,19 +60,27 @@
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()">重置</el-button>
             </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
+                              start-placeholder="案发开始日期" size="medium" end-placeholder="案发结束日期" clearable
+                              :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                              :picker-options="pickerBeginDate">
+              </el-date-picker>
+            </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="6" align="right" style="text-align: right">
-          <el-button type="primary" size="medium"
-                     v-show="query.status == 'EXECUTION' && getButtonVial('case:batchUpdateStatus')"
-                     :disabled="sels.length == 0" @click="finishCase()">结案
-          </el-button>
-          <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="deleteCase()"
-                     v-show="getButtonVial('case:delete')">删除
-          </el-button>
-        </el-col>
+        <!--<el-col :span="6" align="right" style="text-align: right">-->
+        <!--<el-button type="primary" size="medium"-->
+        <!--v-show="query.status == 'EXECUTION' && getButtonVial('case:batchUpdateStatus')"-->
+        <!--:disabled="sels.length == 0" @click="finishCase()">结案-->
+        <!--</el-button>-->
+        <!--<el-button type="primary" size="medium" :disabled="sels.length == 0" @click="deleteCase()"-->
+        <!--v-show="getButtonVial('case:delete')">删除-->
+        <!--</el-button>-->
+        <!--</el-col>-->
       </el-row>
-      <el-table :data="caseList" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
+      <el-table :data="caseList" v-loading="listLoading" class="center-block" stripe
+                @selection-change="selsChange" :max-height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" v-for="item in defaultProps" :key="item.value" :formatter="formatterAddress"
@@ -170,10 +190,12 @@
         activeItem: 'EXECUTION',
         runningCreateCase: false,
         runningCaseType: false,
+        isMore: false,
         listLoading: false,
         dialogWidth: '600px',
         labelWidth: isPC() ? '100px' : '80px',
         props: {value: 'o', label: 'n', children: 'c'},
+        tableHeight: window.innerHeight - 280,
         areaList: [],
         caseTypeAdd: '',
         provinceList: json,
@@ -219,6 +241,14 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      showMore() {
+        this.isMore = !this.isMore;
+        if (this.isMore) {
+          this.tableHeight = window.innerHeight - 330
+        } else {
+          this.tableHeight = window.innerHeight - 280
+        }
       },
       //案件属性
       showCaseType() {
@@ -269,6 +299,7 @@
         this.sels = sels;
       },
       handleType(val) {
+        this.isMore = false;
         if (val.name === 'EXECUTION') {
           this.defaultProps = [{value: 'caseNo', name: '案件编号', min: 150, max: 200},
             {value: 'caseName', name: '案件名称', min: 150, max: 200},

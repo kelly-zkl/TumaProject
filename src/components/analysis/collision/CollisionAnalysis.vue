@@ -2,25 +2,25 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="18" align="left" v-show="getButtonVial('collision:query')" style="text-align: left">
+        <el-col :span="19" align="left" v-show="getButtonVial('collision:query')" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.taskName" placeholder="任务名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
             </el-form-item>
             <!--<el-form-item style="margin-bottom: 10px">-->
-            <!--<el-select v-model="query.ctype" placeholder="任务类型" style="width: 120px"-->
+            <!--<el-select v-model="query.ctype" placeholder="任务类型" style="width: 100px"-->
             <!--size="medium" filterable clearable>-->
             <!--<el-option v-for="item in taskTypes" :key="item.value" :label="item.label" :value="item.value">-->
             <!--</el-option>-->
             <!--</el-select>-->
             <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px">
-              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" size="medium"
-                              :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
-                              start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px"
-                              :picker-options="pickerBeginDate">
-              </el-date-picker>
+              <el-select v-model="query.conditionType" placeholder="任务类型" style="width: 120px"
+                         size="medium" filterable clearable>
+                <el-option v-for="item in conditionTypes" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-select v-model="query.taskStatus" placeholder="全部状态" style="width: 120px"
@@ -30,28 +30,39 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
+              <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()">重置</el-button>
             </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" size="medium"
+                              :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
+                              start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px"
+                              :picker-options="pickerBeginDate">
+              </el-date-picker>
+            </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="6" align="right" style="text-align: right">
-          <el-button type="primary" size="medium" :disabled="sels.length == 0" @click="deleteTask()"
-                     v-show="getButtonVial('collision:delete')">删除
-          </el-button>
+        <el-col :span="5" align="right" style="text-align: right">
           <el-button type="primary" size="medium" @click="gotoAdd()"
                      v-show="getButtonVial('collision:add')">新建碰撞任务
           </el-button>
+          <el-button size="medium" :disabled="sels.length == 0" @click="deleteTask()"
+                     v-show="getButtonVial('collision:delete')">删除
+          </el-button>
         </el-col>
       </el-row>
-      <el-table :data="records" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
+      <el-table :data="records" v-loading="listLoading" class="center-block" stripe
+                @selection-change="selsChange" :max-height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="任务名称" prop="taskName" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="任务类型" prop="collisionType" min-width="100"
+        <el-table-column align="left" label="任务类型" prop="conditionType" min-width="100"
                          max-width="150" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="创建日期" prop="createTime" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
@@ -66,13 +77,16 @@
         </el-table-column>
         <el-table-column align="left" label="关联案件" prop="caseName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" min-width="125" max-width="250" fixed="right">
+        <el-table-column align="left" label="操作" width="180" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row.id,scope.row.collisionType)"
                        v-show="getButtonVial('collision:get')">查看
             </el-button>
             <el-button type="text" @click="sels = [];sels.push(scope.row);deleteTask()"
                        v-show="getButtonVial('collision:delete')">删除
+            </el-button>
+            <el-button type="text" @click="reAnalysis(scope.row.id)"
+                       v-show="getButtonVial('collision:reanalysis')">重新分析
             </el-button>
           </template>
         </el-table-column>
@@ -94,7 +108,10 @@
       return {//,,
         records: [],
         listLoading: false,
+        isMore: false,
+        tableHeight: window.innerHeight - 230,
         taskTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '图像'}],//,{value: 'MAC', label: 'MAC'}
+        conditionTypes: [{value: 0, label: '多条件碰撞'}, {value: 1, label: '单条件碰撞'}],
         taskStatus: [{value: 'FINISH', label: '已完成'}, {value: 'FAILE', label: '失败'},
           {value: 'WAIT', label: '等待中'}, {value: 'EXECUTION', label: '分析中'}],
         query: {page: 1, size: 10, taskName: "", ctype: "", taskStatus: ""},
@@ -115,6 +132,14 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      showMore() {
+        this.isMore = !this.isMore;
+        if (this.isMore) {
+          this.tableHeight = window.innerHeight - 280
+        } else {
+          this.tableHeight = window.innerHeight - 230
+        }
+      },
       //全选
       selsChange(sels) {
         this.sels = sels;
@@ -124,6 +149,15 @@
         this.query = {page: 1, size: 10, taskName: "", ctype: "", taskStatus: ""};
         this.qTime = '';
         this.getData();
+      },
+      //重新分析
+      reAnalysis(id) {
+        this.$post('/collision/reanalysis/' + id, {}, '操作成功').then((data) => {
+          if ("000000" === data.code) {
+            this.getData();
+          }
+        }).catch((err) => {
+        });
       },
       //跳转新建碰撞条件
       gotoAdd() {
@@ -152,6 +186,8 @@
       formatterAddress(row, column) {
         if (column.property === 'collisionType') {
           return row.collisionType[0] ? row.collisionType[0] === 'IMSI' ? 'IMSI' : row.collisionType[0] === 'FACE' ? '图像' : row.collisionType[0] === 'MAC' ? '' : 'MAC' : '--';
+        } else if (column.property === 'conditionType') {
+          return row.conditionType ? row.conditionType == 0 ? '多条件碰撞' : row.conditionType == 1 ? '单条件碰撞' : '--' : '--'
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'taskStatus') {

@@ -24,7 +24,7 @@
           </el-col>
         </el-row>
       </el-form>
-      <el-table :data="organizations" v-loading="listLoading" class="center-block" stripe>
+      <el-table :data="organizations" v-loading="listLoading" class="center-block" stripe :max-height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
         <el-table-column align="left" prop="groupName" label="组织名称" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
@@ -109,6 +109,7 @@
         listLoading: false,
         isShow: true,
         addAdminVisible: false,
+        tableHeight: window.innerHeight - 230,
         organizations: [],
         dialogWidth: isPC ? '40%' : '90%',
         groupId: JSON.parse(sessionStorage.getItem("user")).groupId,

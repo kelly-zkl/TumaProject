@@ -14,7 +14,7 @@
             <el-button type="primary" size="medium" @click="applyPass(0)"
                        v-show="show==2&&approval.status==1&&getButtonVial('workflow:translation:approve')">通过
             </el-button>
-            <el-button type="primary" size="medium" @click="applyPass(1)"
+            <el-button size="medium" @click="applyPass(1)"
                        v-show="show==2&&approval.status==1&&getButtonVial('workflow:translation:approve')">不通过
             </el-button>
             <!--<el-button type="primary" size="medium" @click="updateStatus()"-->

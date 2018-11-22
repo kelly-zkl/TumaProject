@@ -284,7 +284,7 @@
     <!--任务详情-->
     <el-dialog title="任务详情" :width="dialogWidth" :visible.sync="runTaskDetail">
       <div class="block gray-form">
-        <el-form label-width="100px" :model="task" label-position="right" style="margin-right: 20px">
+        <el-form label-width="100px" :model="task" label-position="right">
           <el-form-item label="任务名称" align="left" style="margin: 0">{{task.taskName}}</el-form-item>
           <el-form-item label="关联案件" align="left" style="margin: 0">{{task.caseName}}</el-form-item>
           <el-form-item label="设备ID" align="left" style="margin: 0">

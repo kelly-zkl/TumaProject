@@ -65,7 +65,7 @@
       <div class="content" v-show="activeItem == 'collision'">
         <el-row>
           <el-col :span="18" v-show="getButtonVial('collision:query')" style="text-align: left">
-            <el-form :inline="true" :model="queryCollision" align="left">
+            <el-form :inline="true" :model="queryCollision" align="left" style="text-align: left;width: 840px">
               <el-form-item style="margin-bottom: 10px">
                 <el-input v-model="queryCollision.taskName" placeholder="任务名称" size="medium" style="width: 160px"
                           :maxlength=20></el-input>
@@ -78,13 +78,6 @@
                 </el-select>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
-                <el-date-picker v-model="date1" type="datetimerange" range-separator="至" size="medium"
-                                :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
-                                start-placeholder="开始日期" end-placeholder="结束日期"
-                                style="width:360px" :picker-options="pickerBeginDate">
-                </el-date-picker>
-              </el-form-item>
-              <el-form-item style="margin-bottom: 10px">
                 <el-select v-model="queryCollision.taskStatus" placeholder="全部状态" style="width: 120px"
                            size="medium" filterable clearable>
                   <el-option v-for="item in taskStatus" :key="item.value" :label="item.label" :value="item.value">
@@ -92,10 +85,20 @@
                 </el-select>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
+                <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
+              </el-form-item>
+              <el-form-item style="margin-bottom: 10px">
                 <el-button type="primary" size="medium" @click="queryCollision.page=1;getCollisions()">搜索</el-button>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
                 <el-button size="medium" @click="clearData()">重置</el-button>
+              </el-form-item>
+              <el-form-item style="margin-bottom: 10px" v-show="isMore">
+                <el-date-picker v-model="date1" type="datetimerange" range-separator="至" size="medium"
+                                :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
+                                start-placeholder="开始日期" end-placeholder="结束日期"
+                                style="width:360px" :picker-options="pickerBeginDate">
+                </el-date-picker>
               </el-form-item>
             </el-form>
           </el-col>
@@ -103,7 +106,7 @@
             <el-button type="primary" size="medium" @click="cancelCollis()" :disabled="selsColl.length == 0"
                        v-show="getButtonVial('collision:cancelCase')">取消关联
             </el-button>
-            <el-button type="primary" size="medium" @click="deleteCoTask()" :disabled="selsColl.length == 0"
+            <el-button size="medium" @click="deleteCoTask()" :disabled="selsColl.length == 0"
                        v-show="getButtonVial('collision:delete')">删除任务
             </el-button>
           </el-col>
@@ -141,28 +144,33 @@
       <div class="content" v-show="activeItem == 'follow'">
         <el-row>
           <el-col :span="18" v-show="getButtonVial('follow:query')" style="text-align: left">
-            <el-form :inline="true" :model="queryFollow" align="left">
-              <el-form-item>
+            <el-form :inline="true" :model="queryFollow" align="left" style="text-align: left;width: 840px">
+              <el-form-item style="margin-bottom: 10px">
                 <el-input v-model="queryFollow.taskName" placeholder="任务名称" size="medium" style="width: 160px"
                           :maxlength=20></el-input>
               </el-form-item>
-              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
-                              start-placeholder="创建时间" size="medium" end-placeholder="结束日期" clearable
-                              :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
-                              :picker-options="pickerBeginDate">
-              </el-date-picker>
-              <el-form-item>
+              <el-form-item style="margin-bottom: 10px">
                 <el-select v-model="queryFollow.taskStatus" placeholder="任务状态" style="width: 120px"
                            size="medium" filterable clearable>
                   <el-option v-for="item in followTypes" :key="item.value" :label="item.label" :value="item.value">
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item>
+              <el-form-item style="margin-bottom: 10px">
+                <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
+              </el-form-item>
+              <el-form-item style="margin-bottom: 10px">
                 <el-button type="primary" size="medium" @click="queryFollow.page=1;getFollows()">搜索</el-button>
               </el-form-item>
-              <el-form-item>
+              <el-form-item style="margin-bottom: 10px">
                 <el-button size="medium" @click="clearData()">重置</el-button>
+              </el-form-item>
+              <el-form-item style="margin-bottom: 10px" v-show="isMore">
+                <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
+                                start-placeholder="创建时间" size="medium" end-placeholder="结束日期" clearable
+                                :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                                :picker-options="pickerBeginDate">
+                </el-date-picker>
               </el-form-item>
             </el-form>
           </el-col>
@@ -170,7 +178,7 @@
             <el-button type="primary" size="medium" @click="cancelFollow()" :disabled="selsFoll.length == 0"
                        v-show="getButtonVial('follow:cancelCase')">取消关联
             </el-button>
-            <el-button type="primary" size="medium" @click="deleteFoTask()" :disabled="selsFoll.length == 0"
+            <el-button size="medium" @click="deleteFoTask()" :disabled="selsFoll.length == 0"
                        v-show="getButtonVial('follow:delete')">删除任务
             </el-button>
           </el-col>
@@ -217,6 +225,7 @@
   export default {
     data() {
       return {
+        isMore: false,
         caseId: this.$route.query.caseId || '',
         caseDetail: {},
         activeItem: "collision",
@@ -252,6 +261,7 @@
         return buttonValidator(msg);
       },
       handleType(val) {
+        this.isMore = false;
         if (this.activeItem === "collision") {//碰撞任务
           this.getCollisions();
         } else {//伴随任务

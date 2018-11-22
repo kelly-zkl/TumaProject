@@ -9,7 +9,7 @@
           </el-tabs>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left;width: 1120px">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
                     style="width: 160px"></el-input>
@@ -28,17 +28,8 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-if="activeItem == 'second'">
-          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" start-placeholder="开始日期"
-                          end-placeholder="结束日期" value-format="timestamp" :picker-options="pickerBeginDate"
-                          size="medium" :default-time="['00:00:00', '23:59:59']" @change="handleChange">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='first'">
-          <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
-                          style="width: 230px" value-format="HH:mm:ss" end-placeholder="结束时间"
-                          placeholder="选择时间范围" @change="handleTime">
-          </el-time-picker>
+        <el-form-item style="margin-bottom: 10px">
+          <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button type="primary" @click="isSearch = true;getData()" size="medium">搜索
@@ -47,8 +38,20 @@
         <el-form-item style="margin-bottom: 10px">
           <el-button @click="clearData()" size="medium">重置</el-button>
         </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem == 'second'&&isMore">
+          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" start-placeholder="开始日期"
+                          end-placeholder="结束日期" value-format="timestamp" :picker-options="pickerBeginDate"
+                          size="medium" :default-time="['00:00:00', '23:59:59']" @change="handleChange">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='first'&&isMore">
+          <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
+                          style="width: 230px" value-format="HH:mm:ss" end-placeholder="结束时间"
+                          placeholder="选择时间范围" @change="handleTime">
+          </el-time-picker>
+        </el-form-item>
       </el-form>
-      <el-table :data="list10" class="center-block" v-loading="listLoading" stripe>
+      <el-table :data="list10" class="center-block" v-loading="listLoading" stripe :max-height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
@@ -91,7 +94,9 @@
   export default {
     data() {
       return {
+        isMore: false,
         activeItem: 'first',
+        tableHeight: window.innerHeight - 280,
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         count: 0,
@@ -121,6 +126,14 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      showMore() {
+        this.isMore = !this.isMore;
+        if (this.isMore) {
+          this.tableHeight = window.innerHeight - 330
+        } else {
+          this.tableHeight = window.innerHeight - 280
+        }
+      },
       handleChange(val) {
         if (!val || val.length == 0) {
           this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
@@ -137,6 +150,7 @@
         this.getData();
       },
       handleClick(tab, event) {
+        this.isMore = false;
         this.clearData();
         if (this.activeItem === 'second') {
           this.exportKey = 'archives:get:listImsiHistory';

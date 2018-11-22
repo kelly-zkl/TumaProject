@@ -31,7 +31,7 @@
           </el-col>
         </el-row>
       </el-form>
-      <el-table :data="roles" v-loading="listLoading" class="center-block" stripe>
+      <el-table :data="roles" v-loading="listLoading" class="center-block" stripe :max-height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
         <el-table-column align="left" prop="roleName" label="角色名称" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
@@ -106,6 +106,7 @@
         isShow: false,
         dialogWidth: isPC() ? '40%' : '90%',
         labelWidth: isPC() ? '120px' : '80px',
+        tableHeight: window.innerHeight - 230,
         query: {
           page: 1, size: 10, roleName: '', roleType: '', lastNode: true,
           creatorGroupId: JSON.parse(sessionStorage.getItem("user")).groupId

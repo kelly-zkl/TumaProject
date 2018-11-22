@@ -1,25 +1,31 @@
 <template>
   <div>
     <el-container class="main-container">
-      <el-header style="background: #060450;color:#fff" height="70px">
-        <div style="display: flex;flex-direction: row;height: 70px;width: 100%">
-          <div align="left" style="display: flex;height: 70px;align-items: center">
-            <img src="../assets/img/icon_logo.png" style="display:inline-block;height: 34px;width: 34px">
-            <div style="display:inline-block;font-size: 18px;;margin-left: 10px;letter-spacing:3px">
-              图码联侦实战布控平台
+      <el-header style="background: #08163d;color:#fff" height="60px">
+        <div style="display: flex;flex-direction: row;height: 60px;width: 100%">
+          <div align="left" style="display: flex;height: 60px;align-items: center;margin-right: 30px">
+            <img :src="systemParam.sysLogo?systemParam.sysLogo:'../assets/img/icon_logo.svg'"
+                 style="display:inline-block;height: 28px;width: 28px">
+            <div style="display:inline-block;font-size: 16px;margin-left: 10px;letter-spacing:2px;color: #5FCAFE">
+              {{systemParam.sysName?systemParam.sysName:'图码联侦实战平台'}}
             </div>
           </div>
-          <div align="center" style="flex: 1;height: 70px;align-items: center;justify-content: center">
+          <div align="center" style="flex: 1;height: 60px;align-items: center;justify-content: flex-start">
             <!--fa-th-large fa-tachometer-->
-            <el-button v-for="item in menu" :key="item.permissionUrl"
-                       v-bind:class="indx==item.orders?'item active':'item'"
-                       @click="handleSelectItem(item)">
-              <i :class="item.icon"
-                 v-bind:style="item.orders<6?'font-size: 1.9em':item.orders>5?'font-size: 2.3em':'font-size: 2.1em'"></i>
-              <span class="title" v-bind:style="item.orders<6?'margin-top: 6px':'margin-top: 2px'">{{item.name}}</span>
-            </el-button>
+            <el-menu :default-active="$route.path" background-color="#08163d" text-color="#B3B3B3" router
+                     active-text-color="#fff" mode="horizontal" @select="handleSelectItem">
+              <el-menu-item :index="item.permissionUrl" v-for="item in menu" :key="item.permissionUrl">
+                <template slot="title">
+                  <i :class="item.icon"
+                     v-bind:style="item.orders<6?'font-size: 1.5em':item.orders>5?'font-size: 1.7em':'font-size: 1.6em'"></i>
+                  <span>{{item.name}}</span>
+                  <el-badge class="mark" :value="imsiCount+faceCount" :max="99"
+                            v-show="item.orders==2&&imsiCount+faceCount>0"/>
+                </template>
+              </el-menu-item>
+            </el-menu>
           </div>
-          <div align="right" style="display: flex;height: 70px;align-items: center">
+          <div align="right" style="display: flex;height: 60px;align-items: center">
             <!--<div class="item" style="text-align: center" @click="runMsg = true">-->
             <!--<i class="fa fa-bell-o fa-2x" style="padding-top: 20px;font-size: 1.8em"></i>-->
             <!--</div>-->
@@ -32,22 +38,23 @@
               </el-col>
             </el-popover>
             <el-button class="item" style="text-align: center;width: auto" v-popover:modifyPsw>
-              <i class="fa fa-user fa-2x" style="display: inline-block;padding-top: 0"></i>
+              <i class="fa fa-user" style="display: inline-block;padding-top: 0;font-size: 2.3em"></i>
               <span style="display: inline-block;padding-left: 5px">{{userName}}</span>
             </el-button>
             <!--<div class="item" style="text-align: center" @click="$router.push({path: '/platforms'})">-->
             <!--<i class="fa fa-retweet fa-2x" style="padding-top: 13px"></i>-->
             <!--</div>-->
             <div class="item" style="text-align: center" @click="loginOut()">
-              <i class="fa fa-sign-out fa-2x" style="padding-top: 20px"></i>
+              <i class="fa fa-sign-out fa-2x" style="padding-top: 15px"></i>
             </div>
           </div>
         </div>
       </el-header>
-      <el-main style="background: #060450;border-top: 3px #02023F solid;width: 100%;padding: 0;margin: 0">
+      <el-main style="background: #040d2e;width: 100%;padding: 0;margin: 0">
         <el-col :span="24" style="padding: 0;margin: 0">
           <transition name="fade" mode="out-in">
-            <router-view @handleSelectTab="handleSelectTab"></router-view>
+            <router-view @handleSelectTab="handleSelectTab" v-bind:faceCount="faceCount"
+                         v-bind:imsiCount="imsiCount"></router-view>
           </transition>
         </el-col>
       </el-main>
@@ -72,7 +79,7 @@
     <!--IMSI告警 :close-on-click-modal="false"-->
     <div class="warning">
       <transition name="fade" mode="out-in" appear>
-        <el-dialog width="500px" :visible.sync="runImsiWarning" style="border-radius: 6px" top="70px" title="嫌疑告警">
+        <el-dialog width="500px" :visible.sync="runImsiWarning" style="border-radius: 6px" top="60px" title="嫌疑告警">
           <el-form :model="imsiWarning" align="left" style="padding: 10px 50px;border-top: 1px #efefef solid"
                    label-width="100px" label-position="left">
             <el-form-item label="IMSI" style="margin:0">
@@ -105,7 +112,7 @@
     <!--头像告警 :close-on-click-modal="false"-->
     <div class="warning">
       <transition name="fade" mode="out-in" appear>
-        <el-dialog width="500px" :visible.sync="runFaceWarning" style="border-radius: 6px" top="70px" title="嫌疑告警">
+        <el-dialog width="500px" :visible.sync="runFaceWarning" style="border-radius: 6px" top="60px" title="嫌疑告警">
           <div style="padding: 20px 20px 10px;text-align: left;position: relative;border-top: 1px #efefef solid">
             <img :src="faceWarning.faceUrl?faceWarning.faceUrl:imgPath">
             <el-form :model="faceWarning" align="left" label-width="80px" label-position="left"
@@ -182,6 +189,9 @@
       };
       return {
         indx: 1,
+        imsiCount: 0,
+        faceCount: 0,
+        systemParam: {sysLogo: '../assets/img/icon_logo.svg'},
         runMsg: false,
         runImsiWarning: false,
         runFaceWarning: false,
@@ -221,17 +231,26 @@
           this.intervalid = setInterval(() => {
             this.getImsiWarning();
             this.getFaceWarning();
+            this.getWarningCount();
           }, 10 * 1000);
         }
       },
       //页面变化-->导航栏选中状态变化
-      handleSelectTab(val) {
-        this.indx = val;
+      handleSelectTab(val, sys) {
+        if (val) {
+          this.indx = val;
+        } else {
+          if (sys == 'sys') {
+            this.systemParam = JSON.parse(sessionStorage.getItem("system"));
+          } else if (sys == 'warning') {
+            this.getWarningCount();
+          }
+        }
       },
       //上方导航栏点击切换页面
       handleSelectItem(item) {
-        this.indx = item.orders;
-        this.$router.push(item.permissionUrl);
+        // this.indx = item.orders;
+        // this.$router.push(item.permissionUrl);
         sessionStorage.removeItem("query");
         sessionStorage.removeItem("qTime");
         sessionStorage.removeItem("page");
@@ -300,6 +319,21 @@
           query: {id: this.faceWarning.id, faceId: this.faceWarning.faceId}
         });
       },
+      //告警数量
+      getWarningCount() {
+        this.$post('/warning/countNoDealWithImsiWarning', {}).then((data) => {
+          if ("000000" === data.code) {
+            this.imsiCount = data.data;
+          }
+        }).catch((err) => {
+        });
+        this.$post('/warning/countNoDealWithFaceWarning', {}).then((data) => {
+          if ("000000" === data.code) {
+            this.faceCount = data.data;
+          }
+        }).catch((err) => {
+        });
+      },
       //退出
       loginOut() {
         this.$confirm('确认退出系统吗?', '提示', {type: 'info'}).then(() => {
@@ -354,10 +388,46 @@
         this.$post('/manager/permission/listByType/' + JSON.parse(sessionStorage.getItem("user")).userId + '/3', {}).then((data) => {
           sessionStorage.setItem("button", JSON.stringify(data.data));
         });
+      },
+      //获取系统参数配置
+      getSystemDetail() {
+        this.$post('sysparam/query', {}).then((data) => {
+          if ("000000" === data.code) {
+            if (data.data.length > 0) {
+              data.data.forEach((item) => {
+                if (item.code == 'sys_name') {
+                  this.systemParam.sysName = item.value;
+                }
+                if (item.code == 'sys_logo') {
+                  this.systemParam.sysLogo = item.value;
+                }
+                if (item.code == 'sys_map_location') {
+                  this.systemParam.localPoint = item.value;
+                }
+                if (item.code == 'heatChart_refresh_freq') {
+                  this.systemParam.refreshTime = item.value;
+                }
+                if (item.code == 'heatChart_time_limit') {
+                  this.systemParam.limitTime = item.value;
+                }
+                if (item.code == 'heatChart_color_range') {
+                  this.systemParam.heatRanges = item.value;
+                }
+                if (item.code == 'image_search_threshold') {
+                  this.systemParam.similarThreshold = item.value;
+                }
+                sessionStorage.setItem("system", JSON.stringify(this.systemParam));
+              });
+            }
+          }
+        }).catch((err) => {
+          this.$message.error(err);
+        });
       }
     },
     mounted() {
       this.getButton();
+      this.getSystemDetail();
 
       this.indx = sessionStorage.getItem("index") ? sessionStorage.getItem("index") : 1;
       this.userName = JSON.parse(sessionStorage.getItem("user")).realName || '';
@@ -366,6 +436,9 @@
       this.menu = JSON.parse(sessionStorage.getItem("menu")) || [];
       this.audio = document.getElementById('audio');
 
+      this.getImsiWarning();
+      this.getFaceWarning();
+      this.getWarningCount();
       this.statusTask();
     }
   }
@@ -424,15 +497,18 @@
     display: inline-block;
     cursor: pointer;
     width: 80px;
-    height: 70px;
+    height: 60px;
     padding: 0;
     margin: 0;
     color: #fff;
     background: transparent;
     font-size: 14px;
-    vertical-align: middle;
     border: none;
     border-radius: 0;
+  }
+
+  .item * {
+    vertical-align: middle;
   }
 
   .item.active {
@@ -443,11 +519,11 @@
     background: #181663;
   }
 
-  .title {
+  .item .title {
     display: block;
   }
 
-  i {
+  .item i {
     display: block;
     margin-top: 3px;
   }

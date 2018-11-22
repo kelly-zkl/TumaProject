@@ -35,6 +35,7 @@
         deviceImsi: {},
         icon: require('../../assets/img/icon.png'),
         camera: {},
+        systemParam: {},
         myChart: null,
         drawingManager: null,
         bMap: null,
@@ -156,7 +157,7 @@
             },
             grid: {left: 0, right: 0, bottom: 0, top: 0, containLabel: true},
             bmap: {
-              center: [116.404, 39.915],
+              center: this.systemParam.localPoint,
               zoom: 14,
               roam: true
             },
@@ -173,7 +174,7 @@
           if (!app.inNode) {
             this.bMap = this.myChart.getModel().getComponent('bmap').getBMap();
             var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
-            this.bMap.addControl(mapType);
+            // this.bMap.addControl(mapType);
             //实例化鼠标绘制工具
             this.drawingManager = new BMapLib.DrawingManager(_this.bMap, {
               isOpen: false, //是否开启绘制模式
@@ -271,7 +272,7 @@
                 },
                 hoverAnimation: true,
                 itemStyle: {
-                  color: '#29A75D',
+                  color: '#24A6FE',
                   shadowBlur: 10,
                   shadowColor: '#333'
                 },
@@ -293,7 +294,7 @@
                 },
                 hoverAnimation: true,
                 itemStyle: {
-                  color: '#29A75D',
+                  color: '#24A6FE',
                   shadowBlur: 10,
                   shadowColor: '#333'
                 },
@@ -302,24 +303,24 @@
             ]
           });
         }
-
+        this.bMap.centerAndZoom(this.point, this.zoom);
         //IP定位l
-        if (!this.point) {
-          var point = new BMap.Point(116.331398, 39.897445);
-          this.bMap.centerAndZoom(point, this.zoom);
-
-          function myFun(result) {
-            var cityName = result.name;
-            _this.bMap.setCenter(cityName);
-            _this.bMap.setZoom(_this.zoom);
-            _this.point = _this.bMap.getCenter();
-          }
-
-          var myCity = new BMap.LocalCity();
-          myCity.get(myFun);
-        } else {
-          this.bMap.centerAndZoom(this.point, this.zoom);
-        }
+        // if (!this.point) {
+        //   var point = new BMap.Point(116.331398, 39.897445);
+        //   this.bMap.centerAndZoom(point, this.zoom);
+        //
+        //   function myFun(result) {
+        //     var cityName = result.name;
+        //     _this.bMap.setCenter(cityName);
+        //     _this.bMap.setZoom(_this.zoom);
+        //     _this.point = _this.bMap.getCenter();
+        //   }
+        //
+        //   var myCity = new BMap.LocalCity();
+        //   myCity.get(myFun);
+        // } else {
+        //   this.bMap.centerAndZoom(this.point, this.zoom);
+        // }
         //点聚合
         // this.getMarkNumber();
         //添加鼠标绘制工具监听事件，用于获取绘制结果
@@ -435,6 +436,8 @@
       }
     },
     mounted() {
+      this.systemParam = JSON.parse(sessionStorage.getItem("system"));
+      this.point = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
       this.deviceMap();
       this.getMapData();
       this.statusTask();

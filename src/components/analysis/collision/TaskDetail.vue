@@ -185,13 +185,16 @@
       <!--任务详情-->
       <el-dialog title="任务详情" :width="dialogWidth" :visible.sync="runTaskDetail">
         <div class="block gray-form">
-          <el-form label-width="100px" :model="task" label-position="right" style="margin-right: 20px">
+          <el-form label-width="100px" :model="task" label-position="right">
             <el-form-item label="任务名称" align="left" style="margin: 0">{{task.taskName}}</el-form-item>
             <el-form-item label="创建时间" align="left" style="margin: 0">{{task.timeStr}}</el-form-item>
+            <el-form-item label="任务类型" align="left" style="margin: 0">
+              {{task.conditionType == 0 ? '多条件碰撞' : task.conditionType == 1 ? '单条件碰撞' : '--'}}
+            </el-form-item>
             <el-form-item label="数据类型" align="left" style="margin: 0">
               {{collisionType == 'IMSI' ? 'IMSI' : collisionType == 'FACE' ? '图像' : 'MAC'}}
             </el-form-item>
-            <el-form-item label="数据组合" align="left" style="margin: 0">
+            <el-form-item label="数据组合" align="left" style="margin: 0" v-show="task.conditionType == 0">
               {{task.collisionMode == 'INTERSECT' ? '交集' : task.collisionMode == 'UNION' ? '并集' : '差集'}}
             </el-form-item>
             <el-form-item label="条件1" align="left" style="margin: 0">
@@ -200,7 +203,7 @@
                   style="display:inline-block;width:90%;word-wrap:break-word;white-space:normal">{{item}}</span>
               </div>
             </el-form-item>
-            <el-form-item label="条件2" align="left" style="margin: 0">
+            <el-form-item label="条件2" align="left" style="margin: 0" v-show="task.condition2">
               <div v-for="(item,indx) in task.condition2" :key="indx">
                 <span
                   style="display:inline-block;width:90%;word-wrap:break-word;white-space:normal">{{item}}</span>
@@ -419,7 +422,9 @@
         this.$post('/collision/get/' + this.taskId, {}).then((data) => {
           this.task = data.data;
           this.task.condition1 = this.task.condition1.split("\r\n");
-          this.task.condition2 = this.task.condition2.split("\r\n");
+          if (this.task.condition2) {
+            this.task.condition2 = this.task.condition2.split("\r\n");
+          }
           this.task.timeStr = formatDate(new Date(this.task.createTime * 1000), 'yyyy-MM-dd hh:mm:ss')
         }).catch((err) => {
         });

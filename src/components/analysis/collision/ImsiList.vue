@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryRecord')"
-               style="text-align: left">
+               style="text-align: left;width: 1000px;">
         <el-form-item style="margin-bottom: 10px">
           <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 160px"
                     :maxlength=50></el-input>
@@ -19,20 +19,23 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.isp" placeholder="选择运营商" style="width: 120px" size="medium" clearable>
-            <el-option v-for="item in operators" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.regional" placeholder="IMSI归属地" style="width: 160px" size="medium"
-                    :maxlength=20></el-input>
+          <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearData()">重置</el-button>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="isMore">
+          <el-select v-model="query.isp" placeholder="选择运营商" style="width: 120px" size="medium" clearable>
+            <el-option v-for="item in operators" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="isMore">
+          <el-input v-model="query.regional" placeholder="IMSI归属地" style="width: 160px" size="medium"
+                    :maxlength=20></el-input>
         </el-form-item>
       </el-form>
       <el-table :data="records" v-loading="listLoading" class="center-block" stripe>
@@ -75,6 +78,7 @@
   export default {
     data() {
       return {
+        isMore: false,
         taskId: this.$route.query.taskId || '',
         collisionType: this.$route.query.collisionType || '',
         listLoading: false,

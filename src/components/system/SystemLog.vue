@@ -19,7 +19,7 @@
           <el-button @click.stop="clearData()" size="medium">重置</el-button>
         </el-form-item>
       </el-form>
-      <el-table :data="logs" v-loading="listLoading" class="center-block" stripe>
+      <el-table :data="logs" v-loading="listLoading" class="center-block" stripe :max-height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="账号" prop="account" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -51,6 +51,7 @@
       return {
         listLoading: false,
         query: {page: 1, size: 10},
+        tableHeight: window.innerHeight - 230,
         qTime: '',
         count: 0,
         logs: [],

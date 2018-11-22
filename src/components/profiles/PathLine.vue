@@ -20,6 +20,7 @@
         <el-form-item>
           <el-button @click="luShu()" size="medium" type="primary" v-show="query.merge == false">轨迹回放
           </el-button>
+          <el-button @click="lushu.pause()" size="medium" type="primary" v-show="isPause">暂停</el-button>
         </el-form-item>
       </el-form>
       <el-row v-show="query.merge == false" style="margin: 0;padding: 0">
@@ -82,6 +83,7 @@
         pathLines: [],
         faces: [],
         imsis: [],
+        isPause: false,
         records: [],
         isShow: true,
         isCenter: false,
@@ -274,6 +276,7 @@
       //轨迹回放
       luShu() {
         this.lushu.start();
+        this.isPause = true;
       }
     },
     mounted() {

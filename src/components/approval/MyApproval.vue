@@ -37,7 +37,7 @@
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
       </el-form>
-      <el-table :data="imsiList" v-loading="listLoading" class="center-block" stripe>
+      <el-table :data="imsiList" v-loading="listLoading" class="center-block" stripe :max-height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="编号" prop="recordNo" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
@@ -88,6 +88,7 @@
         activeItem: 'EXECUTION',
         imsiList: [],
         query: {page: 1, size: 10, approveStatus: 1},
+        tableHeight: window.innerHeight - 280,
         qTime: '',
         count: 0,
         timeColumn: [],

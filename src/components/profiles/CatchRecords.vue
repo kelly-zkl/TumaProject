@@ -9,7 +9,7 @@
           </el-tabs>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1120px">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
                      :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -24,6 +24,9 @@
             </el-button>
           </el-upload>
         </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
+          <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"></el-input>
+        </el-form-item>
         <el-form-item label="年龄段" style="margin-bottom: 10px">
           <el-input-number v-model="query.startAge" controls-position="right" :min="1"
                            :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
@@ -37,27 +40,8 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
-          <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
-            <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-if="activeItem == 'H'">
-          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
-                          start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
-                          :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
-                          :picker-options="pickerBeginDate" style="width: 360px">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
-          <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
-                          style="width: 230px" value-format="HH:mm:ss" end-placeholder="结束时间"
-                          placeholder="选择时间范围" @change="handleTime">
-          </el-time-picker>
-        </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"></el-input>
+          <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索
@@ -66,8 +50,27 @@
         <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="isMore">
+          <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
+            <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem == 'H'&&isMore">
+          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
+                          start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
+                          :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                          :picker-options="pickerBeginDate" style="width: 360px">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'&&isMore">
+          <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
+                          style="width: 230px" value-format="HH:mm:ss" end-placeholder="结束时间"
+                          placeholder="选择时间范围" @change="handleTime">
+          </el-time-picker>
+        </el-form-item>
       </el-form>
-      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
+      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe :max-height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="人员图像" prop="imageUrl" min-width="125" max-width="250">
           <template slot-scope="scope">
@@ -124,6 +127,8 @@
     data() {
       return {
         runBigPic: false,
+        isMore: false,
+        tableHeight: window.innerHeight - 280,
         bigUrl: '',
         activeItem: 'T',
         query: {size: 100},
@@ -158,6 +163,14 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      showMore() {
+        this.isMore = !this.isMore;
+        if (this.isMore) {
+          this.tableHeight = window.innerHeight - 330
+        } else {
+          this.tableHeight = window.innerHeight - 280
+        }
+      },
       handleChange(val) {
         if (!val || val.length == 0) {
           this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
@@ -174,6 +187,7 @@
         this.getData();
       },
       handleType(val) {
+        this.isMore = false;
         this.clearData();
 
         if (this.activeItem === 'H') {
@@ -202,7 +216,8 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
-            this.query.similarThreshold = 60;
+            let param = JSON.parse(sessionStorage.getItem("system")).similarThreshold;
+            this.query.similarThreshold = param ? param : 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.isSearch = true;
             this.getData();
