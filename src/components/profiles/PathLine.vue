@@ -20,7 +20,7 @@
         <el-form-item>
           <el-button @click="luShu()" size="medium" type="primary" v-show="query.merge == false">轨迹回放
           </el-button>
-          <el-button @click="lushu.pause()" size="medium" type="primary" v-show="isPause">暂停</el-button>
+          <el-button @click="pause()" size="medium" type="primary" v-show="isPause">暂停</el-button>
         </el-form-item>
       </el-form>
       <el-row v-show="query.merge == false" style="margin: 0;padding: 0">
@@ -83,8 +83,10 @@
         pathLines: [],
         faces: [],
         imsis: [],
+        arrPois: [],
         isPause: false,
         records: [],
+        walking: {},
         isShow: true,
         isCenter: false,
         lushu: null,
@@ -142,15 +144,22 @@
       //选择imsi轨迹
       handleImsi(val) {
         this.choose.imsi = val;
+        this.lushu = null;
+        this.walking.clearResults();
+        this.arrPois = [];
         this.imsiLine();
       },
       imsiLine() {
+        this.lushu = null;
+        this.walking.clearResults();
+        this.arrPois = [];
         this.map.clearOverlays();
         this.pathLines.forEach((item) => {
           if (item.value == this.choose.imsi) {
             var pois = [];
             this.records = [];
             if (item.locs && item.locs.length > 0) {
+              var point1, point2;
               for (var i = 0; i < item.locs.length; i++) {
                 let recData = item.locs[i];
                 if (i == 0 && !this.isCenter) {
@@ -161,16 +170,15 @@
                 pois.push(new BMap.Point(item.locs[i].lon, item.locs[i].lat));
                 recData.timeStr = formatDate(new Date(recData.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss');
                 this.records.push(recData);
+                if (i < item.locs.length - 1 && item.locs.length > 1) {
+                  point1 = new BMap.Point(item.locs[i].lon, item.locs[i].lat);
+                  point2 = new BMap.Point(item.locs[i + 1].lon, item.locs[i + 1].lat);
+                  if (item.locs[i].lon != item.locs[i + 1].lon || item.locs[i].lat != item.locs[i + 1].lat) {
+                    this.walking.search(point1, point2);
+                  }
+                }
               }
               this.pathLine(pois, 1);
-              this.lushu = new BMapLib.LuShu(this.map, pois, {// 回放
-                defaultContent: "",
-                autoView: true,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
-                icon: new BMap.Icon('http://lbsyun.baidu.com/jsdemo/img/Mario.png', new BMap.Size(52, 26), {anchor: new BMap.Size(27, 13)}),
-                speed: 2000,
-                enableRotation: true,//是否设置marker随着道路的走向进行旋转
-                landmarkPois: []
-              });
             }
           }
         });
@@ -218,36 +226,19 @@
         });
       },
       pathLine(point, type) {
-        var sy = new BMap.Symbol(BMap_Symbol_SHAPE_BACKWARD_OPEN_ARROW, {
-          scale: 0.6,//图标缩放大小
-          strokeColor: '#fff',//设置矢量图标的线填充颜色
-          strokeWeight: '1',//设置线宽
-        });
-        var icons = new BMap.IconSequence(sy, '10', '30');
-        // 创建polyline对象
         var pois = point;
-        var polyline = new BMap.Polyline(pois, {
-          enableEditing: false,//是否启用线编辑，默认为false
-          enableClicking: true,//是否响应点击事件，默认为true
-          // icons: [icons],
-          strokeWeight: '4',//折线的宽度，以像素为单位
-          strokeOpacity: 1,//折线的透明度，取值范围0 - 1
-          strokeColor: type == 0 ? "#FF6600" : '#6699FF' //折线颜色#6699FF#325EDA
-        });
         for (var i = 0; i < pois.length; i++) {
           var pt = pois[i];
           // var myIcon = new BMap.Icon(type == 0 ? this.icon1 : this.icon2, new BMap.Size(23, 25));, {icon: myIcon}
           var marker2 = new BMap.Marker(pt);
-          var label = new BMap.Label(i + 1, {
-            offset: new BMap.Size(1, 2)
-          });
+          let content = "<div style='width: 16px;height: 22px;line-height: 22px;text-align: center'>" + (i + 1) + "</div>";
+          var label = new BMap.Label(content);
           label.setStyle({
             background: 'none', color: '#fff', border: 'none'//只要对label样式进行设置就可达到在标注图标上显示数字的效果
           });
           marker2.setLabel(label);//显示地理名称 a
           this.map.addOverlay(marker2);
         }
-        this.map.addOverlay(polyline);
       },
       //设置地图中心点
       setMapCenter() {
@@ -273,19 +264,56 @@
           }
         }
       },
+      //路线规划结果
+      onSearchComplete(res) {
+        if (this.walking.getStatus() == 0) {
+          var plan = res.getPlan(0);
+          for (var j = 0; j < plan.getNumRoutes(); j++) {
+            var route = plan.getRoute(j);
+            this.arrPois = this.arrPois.concat(route.getPath());
+            this.map.addOverlay(new BMap.Polyline(route.getPath(), {strokeColor: '#0000ff', strokeOpacity: 1}));
+            this.map.setViewport(route.getPath());
+          }
+          this.lushu = new BMapLib.LuShu(this.map, this.arrPois, {// 回放
+            defaultContent: "",
+            autoView: true,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
+            icon: new BMap.Icon('http://lbsyun.baidu.com/jsdemo/img/Mario.png', new BMap.Size(52, 26), {anchor: new BMap.Size(27, 13)}),
+            speed: 2000,
+            enableRotation: true,//是否设置marker随着道路的走向进行旋转
+            landmarkPois: []
+          });
+        }
+      },
       //轨迹回放
       luShu() {
-        this.lushu.start();
+        if (this.lushu) {
+          this.lushu.start();
+        }
         this.isPause = true;
+      },
+      //暂停回放
+      pause() {
+        if (this.lushu) {
+          this.lushu.pause();
+        }
       }
     },
     mounted() {
+      let _this = this;
       this.map = new BMap.Map("path");
       this.map.enableScrollWheelZoom(true);
       this.map.enableDragging();
 
       var point = new BMap.Point(116.331398, 39.897445);
       this.map.centerAndZoom(point, 12);
+      this.walking = new BMap.WalkingRoute(this.map, {
+        renderOptions: {map: this.map, autoViewport: true},
+        onSearchComplete: this.onSearchComplete,
+        onMarkersSet: function (routes) {
+          _this.map.removeOverlay(routes[0].marker); //删除起点
+          _this.map.removeOverlay(routes[1].marker);//删除终点
+        }
+      });
 
       this.imsi = this.$route.query.imsi || 0;
       this.face = this.$route.query.face || 0;

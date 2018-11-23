@@ -84,11 +84,11 @@
                   </el-form-item>
                   <el-form-item label="关联IMSI" style="margin:0">
                     <span
-                      style="font-size: 14px;color:#000">{{imsiList.length>0?imsiList[0].imsi:'--'}}</span>
+                      style="font-size: 14px;color:#000">{{persons.imsiList.length>0?persons.imsiList[0].imsi:'--'}}</span>
                   </el-form-item>
                   <el-form-item style="margin:0">
                     <span style="font-size: 14px;color:#000;margin-right: 20px">
-                      {{'置信度['+(imsiList.length>0&&imsiList[0].weight>=0?imsiList[0].weight/10:'--')+'%]'}} {{'关联次数['+(imsiList.length>0&&imsiList[0].fnIn>=0?imsiList[0].fnIn:'--')+']'}}</span>
+                      {{'置信度['+(persons.imsiList.length>0&&persons.imsiList[0].weight>=0?persons.imsiList[0].weight/10:'--')+'%]'}} {{'关联次数['+(persons.imsiList.length>0&&persons.imsiList[0].fnIn>=0?persons.imsiList[0].fnIn:'--')+']'}}</span>
                   </el-form-item>
                 </el-form>
               </div>
@@ -182,6 +182,7 @@
               <el-button type="text" @click="gotoIMSI(scope.row)"
                          v-show="getButtonVial('archives:getImsiRecordByImsi')">查看IMSI
               </el-button>
+
             </template>
           </el-table-column>
         </el-table>
@@ -339,8 +340,8 @@
           if ("000000" === data.code) {
             this.listLoading = false;
             if (data.data && data.data.length > 0) {
-              this.persons = data.data;
-              this.imsiList = data.data[0].imsiWeightBOList;
+              this.persons = data.data.personBOList;
+              this.imsiList = data.data.imsiWeightBOList;
             }
           } else if ("100000" === data.code) {//执行中
             setTimeout(() => {
