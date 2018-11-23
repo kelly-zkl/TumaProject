@@ -86,7 +86,7 @@
                        v-show="getButtonVial('collision:delete')">删除
             </el-button>
             <el-button type="text" @click="reAnalysis(scope.row.id)"
-                       v-show="getButtonVial('collision:reanalysis')">重新分析
+                       v-show="getButtonVial('collision:reanalysis') && scope.row.taskStatus == 'FAILE'">重新分析
             </el-button>
           </template>
         </el-table-column>
@@ -187,7 +187,7 @@
         if (column.property === 'collisionType') {
           return row.collisionType[0] ? row.collisionType[0] === 'IMSI' ? 'IMSI' : row.collisionType[0] === 'FACE' ? '图像' : row.collisionType[0] === 'MAC' ? '' : 'MAC' : '--';
         } else if (column.property === 'conditionType') {
-          return row.conditionType ? row.conditionType == 0 ? '多条件碰撞' : row.conditionType == 1 ? '单条件碰撞' : '--' : '--'
+          return row.conditionType == 0 ? '多条件碰撞' : row.conditionType == 1 ? '单条件碰撞' : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'taskStatus') {

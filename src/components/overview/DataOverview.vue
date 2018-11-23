@@ -1,7 +1,7 @@
 <template>
-  <div style="padding:10px 20px 10px 30px">
+  <div style="padding:10px 20px 0 30px">
     <el-row :gutter="30">
-      <el-col :span="15" style="background: #08163d;border-radius: 6px;padding: 0">
+      <el-col :span="15" v-bind:style="'background: #08163d;border-radius: 6px;padding: 0;height:'+tableHeight+'px'">
         <el-row style="height: 60px;line-height: 60px">
           <el-col :span="24">
             <span v-bind:class="activeItem== 'device'?'map-tap-active':'map-tap'"
@@ -11,7 +11,7 @@
           </el-col>
         </el-row>
         <div v-show="activeItem== 'device'">
-          <div id="devicemap" style="width:100%;height: 551px;display: block"></div>
+          <div id="devicemap" v-bind:style="'width:100%;display: block;height:'+(tableHeight-282)+'px'"></div>
           <div style="padding-bottom: 10px;display: block">
             <el-row style="border-bottom: 1px #3D3D8D solid">
               <el-col :span="24" align="left">
@@ -29,8 +29,8 @@
           </div>
         </div>
         <div v-show="activeItem== 'data'">
-          <div style="display: block;width:100%; height: 501px;position: relative">
-            <div id="dataheat" style="display: block;width:100%; height: 501px"></div>
+          <div style="display: block;width:100%;position: relative">
+            <div id="dataheat" v-bind:style="'display: block;width:100%; height:'+(tableHeight-350)+'px'"></div>
             <div style="background: rgba(0, 0, 0, .5);height: 30px;position: absolute;bottom: 0;width: 100%">
               <el-row>
                 <el-col :span="12" align="left" style="text-align: left">
@@ -74,7 +74,7 @@
           </div>
         </div>
       </el-col>
-      <el-col :span="9">
+      <el-col :span="9" v-bind:style="'height:'+tableHeight+'px'">
         <!--今日告警 柱状图-->
         <div style="display: block;background: #08163d;border-radius: 6px;height: 400px">
           <el-row style="border-bottom: 1px #3D3D8D solid">
@@ -89,7 +89,8 @@
           <div id="warning" style="height: 300px;padding: 10px 20px"></div>
         </div>
         <!--今日图码碰撞 列表-->
-        <div style="display: block;background: #08163d;border-radius: 6px;height: 440px;margin-top: 15px">
+        <div
+          v-bind:style="'display: block;background: #08163d;border-radius: 6px;margin-top: 15px;height:'+(tableHeight-415)+'px'">
           <el-row style="border-bottom: 1px #3D3D8D solid">
             <el-col :span="12" align="left">
               <span class="header-title">今日图码碰撞</span>
@@ -99,8 +100,9 @@
               <span class="header-unit">次</span>
             </el-col>
           </el-row>
-          <div class="overview">
-            <el-table :data="imgList" :header-cell-style="{background:'#08163d'}" stripe>
+          <div class="overview" v-bind:style="'height:'+(tableHeight-450)+'px'">
+            <el-table :data="imgList" :header-cell-style="{background:'#08163d'}" stripe
+                      v-bind:style="'height:'+(tableHeight-490)+'px'">
               <el-table-column align="left" label="图像" style="align-content: center" min-width="90" max-width="200">
                 <template slot-scope="scope">
                   <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" class="user-img"/>
@@ -137,6 +139,7 @@
     data() {
       return {
         activeItem: 'device',
+        tableHeight: window.innerHeight - 100,
         systemParam: {refreshTime: 10, limitTime: 30, similarThreshold: 60, localPoint: [116.331398, 39.897445]},
         imgList: [],
         mapData: [],//设备实况数据
@@ -922,6 +925,8 @@
   }
 
   .heat-tip-color {
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
     line-height: 30px;
     height: 30px;

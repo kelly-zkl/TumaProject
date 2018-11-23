@@ -17,18 +17,18 @@
             <!--</el-select>-->
             <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px">
-              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
-                              start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
-                              :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
-                              :picker-options="pickerBeginDate" style="width:360px">
-              </el-date-picker>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
               <el-select v-model="query.taskStatus" placeholder="任务状态" style="width: 120px"
                          size="medium" filterable clearable>
                 <el-option v-for="item in taskTypes" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
+                              start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
+                              :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                              :picker-options="pickerBeginDate" style="width:360px">
+              </el-date-picker>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
@@ -76,7 +76,7 @@
                        v-show="getButtonVial('follow:delete')">删除
             </el-button>
             <el-button type="text" @click="reAnalysis(scope.row.id)"
-                       v-show="getButtonVial('follow:reanalysis')">重新分析
+                       v-show="getButtonVial('follow:reanalysis') && scope.row.taskStatus == 'FAILE'">重新分析
             </el-button>
           </template>
         </el-table-column>

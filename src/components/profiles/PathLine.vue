@@ -45,8 +45,8 @@
         <div style="border-top: #6699FF 3px solid;margin-top: 15px">
           <div style="font-size: 14px;color: #333;text-align: center;padding: 10px">侦码记录</div>
           <div v-for="(item,idx) in records">
-            <div
-              style="margin-bottom: 10px;text-align: left;display: flex;height: 60px;align-items: center">
+            <div class="item-line"
+                 style="text-align: left;display:-webkit-box;display:-ms-flexbox;display:flex;height: 60px;align-items: center">
               <div style="display: inline-block;width: 24px;height: 24px;text-align: center;margin: 0 10px">
                 <div
                   style="width: 22px;height: 24px;line-height:24px;border-radius: 12px;background:#6699FF;color: #fff;font-size: 13px;text-align: center">
@@ -263,13 +263,13 @@
       },
       //删除地图上的覆盖物
       deleteOverlay() {
-        var allOverlay = map.getOverlays();
+        var allOverlay = this.map.getOverlays();
         for (var i = 0; i < allOverlay.length; i++) {
           if (allOverlay[i].toString().indexOf("Marker") > 0) {//删除标志点
-            map.removeOverlay(allOverlay[i]);
+            this.map.removeOverlay(allOverlay[i]);
           }
           if (allOverlay[i].toString().indexOf("Polyline") > 0) {//删除折线
-            map.removeOverlay(allOverlay[i]);
+            this.map.removeOverlay(allOverlay[i]);
           }
         }
       },
@@ -372,5 +372,14 @@
     -moz-box-shadow: -6px 6px 12px rgba(40, 40, 40, .5); /*firefox*/
     -webkit-box-shadow: -6px 6px 12px rgba(40, 40, 40, .5); /*webkit*/
     box-shadow: -6px 6px 12px rgba(40, 40, 40, .5); /*opera或ie9*/
+  }
+
+  .item-line {
+    padding: 5px 0;
+  }
+
+  .item-line:hover, .item-line:active, .item-line:focus {
+    cursor: pointer;
+    background: #eee;
   }
 </style>

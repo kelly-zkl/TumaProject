@@ -52,7 +52,8 @@
                   <el-input-number v-model="item.end" controls-position="right" :min="item.start+1"
                                    style="width: 100px" size="medium" v-show="item.end"></el-input-number>
                 </el-col>
-                <el-col :span="6" align="left" style="display: flex;height: 40px;align-items: center;text-align: left">
+                <el-col :span="6" align="left"
+                        style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 40px;align-items: center;text-align: left">
                   <el-color-picker v-model="item.color" size="small"
                                    :predefine="colorArr"></el-color-picker>
                   <i class="el-icon-remove" @click="minusColor(idx)" v-show="item.end && idx!=0"

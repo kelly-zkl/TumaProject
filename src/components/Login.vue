@@ -8,7 +8,7 @@
           <!--<i class="fa fa-retweet" style="margin-right: 5px;font-size: 1.4em"></i>切换系统-->
           <!--</el-button>-->
           <!--</el-form-item>-->
-          <div style="display: flex;height: 80px;align-items: center">
+          <div style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 80px;align-items: center">
             <img :src="systemParam.sysLogo?systemParam.sysLogo:'../assets/img/icon_logo.svg'"
                  style="display:inline-block;height: 34px;width: 34px;margin-right: 10px">
             <div style="display:inline-block;font-size: 20px;color: #fff;text-align: center">

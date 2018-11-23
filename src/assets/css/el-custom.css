@@ -88,7 +88,9 @@
 /**表格样式结束*/
 /**首页的表格样式----开始*/
 .overview {
-  height: 365px;
+  /*height: -moz-calc(100% - 450px);*/
+  /*height: -webkit-calc(100% - 450px);*/
+  /*height: calc(100% - 450px);*/
   overflow: hidden;
   padding: 0;
 }
@@ -418,6 +420,8 @@
 
 /*关联人员/疑似人员的css*/
 .face-main {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap

@@ -22,8 +22,8 @@
           </el-form-item>
           <el-form-item label="任务类型" align="left" style="margin:15px 0 0 0" prop="conditionType">
             <el-radio-group v-model="collision.conditionType">
-              <el-radio label="0">多条件碰撞</el-radio>
-              <el-radio label="1">单条件碰撞</el-radio>
+              <el-radio :label="0">多条件碰撞</el-radio>
+              <el-radio :label="1">单条件碰撞</el-radio>
             </el-radio-group>
           </el-form-item>
         </div>

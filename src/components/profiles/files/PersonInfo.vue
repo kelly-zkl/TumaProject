@@ -81,7 +81,7 @@
                     v-for="item in imsiList" :key="item.imsi" v-if="imsiList.length>0">
               <el-button type="text" @click="gotoDetail(item)">
                 {{item.imsi}} {{'关联次数['+(item.fnIn>=0?item.fnIn:'--')+']'}}
-                {{'置信度['+(item.weight>=0?item.weight/10:'--')+'%]'}}
+                {{'置信度['+(item.weight>=0?(item.weight/10).toFixed(1):'--')+'%]'}}
               </el-button>
             </el-col>
             <div v-else style="width:100%;color: #909399;font-size: 14px;text-align: center">暂无数据</div>
@@ -337,6 +337,8 @@
 </script>
 <style scoped>
   .person-main {
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

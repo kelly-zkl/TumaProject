@@ -2,8 +2,9 @@
   <div>
     <el-container class="main-container">
       <el-header style="background: #08163d;color:#fff" height="60px">
-        <div style="display: flex;flex-direction: row;height: 60px;width: 100%">
-          <div align="left" style="display: flex;height: 60px;align-items: center;margin-right: 30px">
+        <div style="display:-webkit-box;display:-ms-flexbox;display:flex;flex-direction: row;height: 60px;width: 100%">
+          <div align="left"
+               style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 60px;align-items: center;margin-right: 30px">
             <img :src="systemParam.sysLogo?systemParam.sysLogo:'../assets/img/icon_logo.svg'"
                  style="display:inline-block;height: 28px;width: 28px">
             <div style="display:inline-block;font-size: 16px;margin-left: 10px;letter-spacing:2px;color: #5FCAFE">
@@ -25,7 +26,8 @@
               </el-menu-item>
             </el-menu>
           </div>
-          <div align="right" style="display: flex;height: 60px;align-items: center">
+          <div align="right"
+               style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 60px;align-items: center">
             <!--<div class="item" style="text-align: center" @click="runMsg = true">-->
             <!--<i class="fa fa-bell-o fa-2x" style="padding-top: 20px;font-size: 1.8em"></i>-->
             <!--</div>-->
@@ -51,12 +53,10 @@
         </div>
       </el-header>
       <el-main style="background: #040d2e;width: 100%;padding: 0;margin: 0">
-        <el-col :span="24" style="padding: 0;margin: 0">
-          <transition name="fade" mode="out-in">
-            <router-view @handleSelectTab="handleSelectTab" v-bind:faceCount="faceCount"
-                         v-bind:imsiCount="imsiCount"></router-view>
-          </transition>
-        </el-col>
+        <transition name="fade" mode="out-in">
+          <router-view @handleSelectTab="handleSelectTab" v-bind:faceCount="faceCount"
+                       v-bind:imsiCount="imsiCount" ref="mychild"></router-view>
+        </transition>
       </el-main>
     </el-container>
     <!--告警通知-->
@@ -324,12 +324,16 @@
         this.$post('/warning/countNoDealWithImsiWarning', {}).then((data) => {
           if ("000000" === data.code) {
             this.imsiCount = data.data;
+            this.$refs.mychild.imsi = this.imsiCount;
+            this.$refs.mychild.face = this.faceCount;
           }
         }).catch((err) => {
         });
         this.$post('/warning/countNoDealWithFaceWarning', {}).then((data) => {
           if ("000000" === data.code) {
             this.faceCount = data.data;
+            this.$refs.mychild.imsi = this.imsiCount;
+            this.$refs.mychild.face = this.faceCount;
           }
         }).catch((err) => {
         });

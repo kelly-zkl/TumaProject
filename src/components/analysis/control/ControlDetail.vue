@@ -659,6 +659,8 @@
 </script>
 <style scoped>
   .img-main {
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

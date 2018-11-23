@@ -26,7 +26,7 @@
                      v-show="getButtonVial('case:add')">创建新案件
           </el-button>
           <el-button-group>
-            <el-button @click="showCaseType()">管理案件属性</el-button>
+            <el-button @click="showCaseType()" v-show="getButtonVial('lookup:get:caseType')">管理案件属性</el-button>
             <el-button icon="el-icon-more" v-popover:moreBtn></el-button>
           </el-button-group>
         </el-col>
@@ -156,7 +156,9 @@
             <el-table-column align="left" :formatter="formatterAddress" prop="label" label="属性"></el-table-column>
             <el-table-column align="left" label="操作" width="180" fixed="right">
               <template slot-scope="scope">
-                <el-button type="text" @click="deleteCaseType(scope.row)">删除</el-button>
+                <el-button type="text" @click="deleteCaseType(scope.row)"
+                           v-show="getButtonVial('lookup:remove:caseType')">删除
+                </el-button>
               </template>
             </el-table-column>
           </el-table>

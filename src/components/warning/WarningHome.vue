@@ -48,6 +48,8 @@
     watch: {
       deviceId: function () {
         this.imsi = this.imsiCount;
+      },
+      faceCount: function () {
         this.face = this.faceCount;
       }
     },
