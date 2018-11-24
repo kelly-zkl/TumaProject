@@ -33,9 +33,9 @@
             <div id="dataheat" v-bind:style="'display: block;width:100%; height:'+(tableHeight-350)+'px'"></div>
             <div style="background: rgba(0, 0, 0, .5);height: 30px;position: absolute;bottom: 0;width: 100%">
               <el-row>
-                <el-col :span="12" align="left" style="text-align: left">
-                  <span class="heat-tip-text">根据最近30分钟的抓取IMSI数量生成</span></el-col>
-                <el-col :span="12" align="right" class="heat-tip-color">
+                <el-col :span="7" align="left" style="text-align: left">
+                  <span class="heat-tip-text">根据最近{{systemParam.limitTime}}分钟的抓取IMSI数量生成</span></el-col>
+                <el-col :span="17" align="right" class="heat-tip-color">
                   <div v-for="(item,idx) in systemParam.heatRanges" :key="idx">
                     <div class="dot-heat" v-bind:style='{backgroundColor:item.color?item.color:""}'></div>
                     <div class="heat-tip-content">{{item.end?item.start+'-'+item.end:item.start+'及以上'}}</div>

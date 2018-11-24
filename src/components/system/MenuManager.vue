@@ -95,7 +95,7 @@
             <el-input v-model="menu.permissionUrl" placeholder="请输入菜单URL" :maxlength="20"></el-input>
           </el-form-item>
           <el-form-item label="授权标识" prop="permissionValue">
-            <el-input v-model="menu.permissionValue" placeholder="请输入授权标识" :maxlength="40"></el-input>
+            <el-input v-model="menu.permissionValue" placeholder="请输入授权标识" :maxlength="60"></el-input>
           </el-form-item>
           <el-form-item label="排序" v-show="menu.type != '3'" :maxlength="2">
             <el-input v-model="menu.orders"></el-input>
@@ -189,7 +189,7 @@
             this.$post(url, this.menu, msg).then((data) => {
               if ("000000" === data.code) {
                 this.addMenuVisible = false;
-                this.$emit('setSystem','menu');
+                this.$emit('setSystem', 'menu');
                 this.getMenus();
                 this.getMenuTree();
               }
