@@ -6,7 +6,7 @@
           <div align="left"
                style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 60px;align-items: center;margin-right: 30px">
             <img :src="systemParam.sysLogo?systemParam.sysLogo:'../assets/img/icon_logo.svg'"
-                 style="display:inline-block;height: 28px;width: 28px">
+                 style="display:inline-block;max-height: 36px;max-width: 36px">
             <div style="display:inline-block;font-size: 16px;margin-left: 10px;letter-spacing:2px;color: #5FCAFE">
               {{systemParam.sysName?systemParam.sysName:'图码联侦实战平台'}}
             </div>
@@ -240,10 +240,12 @@
         if (val) {
           this.indx = val;
         } else {
-          if (sys == 'sys') {
+          if (sys == 'sys') {//系统参数变动
             this.systemParam = JSON.parse(sessionStorage.getItem("system"));
-          } else if (sys == 'warning') {
+          } else if (sys == 'warning') {//告警数量变动
             this.getWarningCount();
+          } else if (sys == 'menu') {//权限变动
+            this.getButton();
           }
         }
       },

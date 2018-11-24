@@ -83,9 +83,9 @@
         pathLines: [],
         faces: [],
         imsis: [],
-        arrPois: [],
         isPause: false,
         records: [],
+        routeList: [],
         walking: {},
         isShow: true,
         isCenter: false,
@@ -100,12 +100,6 @@
           }
         }
       }
-    },
-    //页面关闭时删除时间、imsi和图像的缓存
-    beforeDestroy() {
-      // sessionStorage.removeItem("pathTime");
-      // sessionStorage.removeItem("pathImsi");
-      // sessionStorage.removeItem("pathFace");
     },
     methods: {
       //显示-隐藏列表
@@ -144,15 +138,15 @@
       //选择imsi轨迹
       handleImsi(val) {
         this.choose.imsi = val;
-        this.lushu = null;
-        this.walking.clearResults();
-        this.arrPois = [];
+        if (this.lushu) {
+          this.lushu.stop();
+        }
         this.imsiLine();
       },
       imsiLine() {
         this.lushu = null;
         this.walking.clearResults();
-        this.arrPois = [];
+        this.routeList = [];
         this.map.clearOverlays();
         this.pathLines.forEach((item) => {
           if (item.value == this.choose.imsi) {
@@ -173,8 +167,9 @@
                 if (i < item.locs.length - 1 && item.locs.length > 1) {
                   point1 = new BMap.Point(item.locs[i].lon, item.locs[i].lat);
                   point2 = new BMap.Point(item.locs[i + 1].lon, item.locs[i + 1].lat);
-                  if (item.locs[i].lon != item.locs[i + 1].lon || item.locs[i].lat != item.locs[i + 1].lat) {
-                    this.walking.search(point1, point2);
+                  if (point1.lat != point2.lat || point1.lng != point2.lng) {
+                    this.routeList.push({index: i + ''});
+                    this.walking.search({title: i + '', point: point1}, {title: i + '', point: point2});
                   }
                 }
               }
@@ -193,9 +188,6 @@
         }
         this.$post('route/query', this.query).then((data) => {
           this.pathLines = data.data.routeList;
-          let pos = [{lon: 116.350658, lat: 39.938285}, {lon: 116.386446, lat: 39.939281},
-            {lon: 116.389034, lat: 39.913828}, {lon: 116.442501, lat: 39.914603}];
-          // this.pathLines[0].locs = pos;
           let imsi = {locs: []}, face = {locs: []};
           this.pathLines.forEach((item) => {
             if (item.value == this.choose.imsi) {
@@ -266,30 +258,45 @@
       },
       //路线规划结果
       onSearchComplete(res) {
+        var isDone = true;
         if (this.walking.getStatus() == 0) {
           var plan = res.getPlan(0);
           for (var j = 0; j < plan.getNumRoutes(); j++) {
             var route = plan.getRoute(j);
-            this.arrPois = this.arrPois.concat(route.getPath());
-            this.map.addOverlay(new BMap.Polyline(route.getPath(), {strokeColor: '#0000ff', strokeOpacity: 1}));
+            this.map.addOverlay(new BMap.Polyline(route.getPath(), {strokeColor: '#5A56FA', strokeOpacity: 1}));
             this.map.setViewport(route.getPath());
+            this.routeList.forEach((item) => {//按照路线规划的顺序来设置路书的点集合
+              if (item.index == res.getStart().title) {
+                item.value = route.getPath();
+              }
+              if (item.value == null) {
+                isDone = false;
+              }
+            });
           }
-          this.lushu = new BMapLib.LuShu(this.map, this.arrPois, {// 回放
-            defaultContent: "",
-            autoView: true,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
-            icon: new BMap.Icon('http://lbsyun.baidu.com/jsdemo/img/Mario.png', new BMap.Size(52, 26), {anchor: new BMap.Size(27, 13)}),
-            speed: 2000,
-            enableRotation: true,//是否设置marker随着道路的走向进行旋转
-            landmarkPois: []
-          });
+
+          if (isDone) {
+            var arrPois = [];
+            this.routeList.forEach((item) => {
+              arrPois = arrPois.concat(item.value);
+            });
+            this.lushu = new BMapLib.LuShu(this.map, arrPois, {// 回放
+              defaultContent: "",
+              autoView: true,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
+              icon: new BMap.Icon('http://lbsyun.baidu.com/jsdemo/img/Mario.png', new BMap.Size(52, 26), {anchor: new BMap.Size(27, 13)}),
+              speed: 2000,
+              enableRotation: true,//是否设置marker随着道路的走向进行旋转
+              landmarkPois: []
+            });
+          }
         }
       },
       //轨迹回放
       luShu() {
         if (this.lushu) {
           this.lushu.start();
+          this.isPause = true;
         }
-        this.isPause = true;
       },
       //暂停回放
       pause() {

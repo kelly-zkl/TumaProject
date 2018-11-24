@@ -237,7 +237,7 @@
                   this.systemParam.similarThreshold = item.value;
                 }
                 sessionStorage.setItem("system", JSON.stringify(this.systemParam));
-                this.$emit('setSystem');
+                this.$emit('setSystem','sys');
               });
             }
           }

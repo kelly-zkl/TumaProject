@@ -58,11 +58,11 @@
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
-            <el-button type="text" @click="cancel(scope.row)"
-                       v-show="activeItem=='EXECUTION' && getButtonVial('workflow:translation:cancelapply')">撤销
-            </el-button>
             <el-button type="text" @click="gotoDetail(scope.row)"
                        v-show="getButtonVial('workflow:translation:detail')">查看
+            </el-button>
+            <el-button type="text" @click="cancel(scope.row)"
+                       v-show="activeItem=='EXECUTION' && getButtonVial('workflow:translation:cancelapply')">撤销
             </el-button>
           </template>
         </el-table-column>

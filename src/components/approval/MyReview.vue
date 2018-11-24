@@ -69,11 +69,11 @@
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
-            <el-button type="text" @click="sels = [];sels.push(scope.row);updateStatus()"
-                       v-show="activeItem=='UNREAD' && getButtonVial('workflow:translation:ccread')">标记已读
-            </el-button>
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('workflow:translation:detail')">
               查看
+            </el-button>
+            <el-button type="text" @click="sels = [];sels.push(scope.row);updateStatus()"
+                       v-show="activeItem=='UNREAD' && getButtonVial('workflow:translation:ccread')">标记已读
             </el-button>
           </template>
         </el-table-column>

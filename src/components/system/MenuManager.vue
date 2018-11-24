@@ -189,6 +189,7 @@
             this.$post(url, this.menu, msg).then((data) => {
               if ("000000" === data.code) {
                 this.addMenuVisible = false;
+                this.$emit('setSystem','menu');
                 this.getMenus();
                 this.getMenuTree();
               }

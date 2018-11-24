@@ -49,8 +49,8 @@
           this.collapseWidth = '200px';
         }
       },
-      setSystem() {
-        this.$emit('handleSelectTab', null, 'sys');
+      setSystem(val) {
+        this.$emit('handleSelectTab', null, val);
       },
       //菜单激活回调
       handleActive(index, indexPath) {

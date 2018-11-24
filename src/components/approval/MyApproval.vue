@@ -58,14 +58,14 @@
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="200" fixed="right">
           <template slot-scope="scope">
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('workflow:translation:detail')">
+              查看
+            </el-button>
             <el-button type="text" @click="handlePass(scope.row,0)"
                        v-show="activeItem=='EXECUTION' && getButtonVial('workflow:translation:approve')">通过
             </el-button>
             <el-button type="text" @click="handlePass(scope.row,1)"
                        v-show="activeItem=='EXECUTION' && getButtonVial('workflow:translation:approve')">不通过
-            </el-button>
-            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('workflow:translation:detail')">
-              查看
             </el-button>
           </template>
         </el-table-column>

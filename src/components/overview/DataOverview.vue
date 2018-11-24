@@ -38,7 +38,7 @@
                 <el-col :span="12" align="right" class="heat-tip-color">
                   <div v-for="(item,idx) in systemParam.heatRanges" :key="idx">
                     <div class="dot-heat" v-bind:style='{backgroundColor:item.color?item.color:""}'></div>
-                    <div class="heat-tip-content">{{item.end?item.start+'-'+item.end:item.start+'以上'}}</div>
+                    <div class="heat-tip-content">{{item.end?item.start+'-'+item.end:item.start+'及以上'}}</div>
                   </div>
                 </el-col>
               </el-row>

@@ -3,18 +3,18 @@
     <section class="content">
       <div class="add-appdiv">
         <el-row>
-          <el-col :span="8" align="left" style="border-right: 1px #e5e5e5 solid">
+          <el-col :span="8" align="left">
             <span style="color: #999;margin-right: 20px;font-size: 14px">IMSI信息</span>
             <span style="font-size: 15px">{{imsi}}</span>
           </el-col>
-          <el-col :span="8" align="left" style="border-right: 1px #e5e5e5 solid">
+          <el-col :span="8" align="left" style="border-left: 1px #e5e5e5 solid">
             <span style="color: #999;margin:auto 20px;font-size: 14px">条件1</span>
             <div v-for="(item,indx) in task.condition1" :key="indx" style="margin-left: 70px">
                 <span
                   style="display:inline-block;width:90%;word-wrap:break-word;white-space:normal;margin-bottom: 10px;font-size: 15px">{{item}}</span>
             </div>
           </el-col>
-          <el-col :span="8" align="left">
+          <el-col :span="8" align="left" style="border-left: 1px #e5e5e5 solid" v-show="task.condition2">
             <span style="color: #999;margin:auto 20px;font-size: 14px">条件2</span>
             <div v-for="(item,indx) in task.condition2" :key="indx" style="margin-left: 70px">
                 <span
