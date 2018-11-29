@@ -3,18 +3,18 @@
     <section class="content dialog">
       <el-form :model="systemParam" style="margin: 0;padding: 0" labelPosition="right"
                label-width="140px" v-loading="listLoading">
-        <h5 class="add-label" style="margin-top: 0">系统名称</h5>
-        <div class="add-appdiv" style="padding: 30px 30px 15px 30px">
-          <el-form-item label="系统名称" align="left" style="text-align: left">
-            <el-input v-model="systemParam.sysName" placeholder="系统名称" style="width: 300px" :maxlength=15></el-input>
-          </el-form-item>
-          <el-form-item label="系统LOGO" align="left" style="margin: 0;text-align: left">
-            <el-upload :action="uploadUrl" :show-file-list="false"
-                       :on-success="handleChange" :before-upload="beforeAvatarUpload">
-              <img :src="systemParam.sysLogo?systemParam.sysLogo:imgPath" class="avatar">
-            </el-upload>
-          </el-form-item>
-        </div>
+        <!--<h5 class="add-label" style="margin-top: 0">系统名称</h5>-->
+        <!--<div class="add-appdiv" style="padding: 30px 30px 15px 30px">-->
+        <!--<el-form-item label="系统名称" align="left" style="text-align: left">-->
+        <!--<el-input v-model="systemParam.sysName" placeholder="系统名称" style="width: 300px" :maxlength=15></el-input>-->
+        <!--</el-form-item>-->
+        <!--<el-form-item label="系统LOGO" align="left" style="margin: 0;text-align: left">-->
+        <!--<el-upload :action="uploadUrl" :show-file-list="false"-->
+        <!--:on-success="handleChange" :before-upload="beforeAvatarUpload">-->
+        <!--<img :src="systemParam.sysLogo?systemParam.sysLogo:imgPath" class="avatar">-->
+        <!--</el-upload>-->
+        <!--</el-form-item>-->
+        <!--</div>-->
         <h5 class="add-label" style="margin-top: 0">地图定位坐标</h5>
         <div class="add-appdiv">
           <el-form-item label="定位城市" align="left" style="margin: 0;text-align: left">
@@ -46,8 +46,10 @@
             <el-tooltip effect="dark" content="在该范围内，将显示对应的色值" placement="right" :disabled="idx!=0">
               <el-row>
                 <el-col :span="18" align="left" style="text-align: left">
-                  <el-input-number v-model="item.start" controls-position="right" :min="item.start" :disabled="idx==0"
-                                   :max="item.end-1" style="width: 100px" size="medium"></el-input-number>
+                  <el-input-number v-model="item.start" controls-position="right"
+                                   :min="idx>0?systemParam.heatRanges[idx-1].end + 1:0"
+                                   :disabled="idx==0" :max="item.end-1" style="width: 100px"
+                                   size="medium"></el-input-number>
                   <span>~<span v-show="!item.end" style="margin-left: 10px">以上</span></span>
                   <el-input-number v-model="item.end" controls-position="right" :min="item.start+1"
                                    style="width: 100px" size="medium" v-show="item.end"></el-input-number>
@@ -122,18 +124,18 @@
       //设置系统参数
       saveSet() {
         let param = [];
-        if (this.systemParam.sysName.length > 0) {//系统名称
-          param.push({code: 'sys_name', name: '系统名称', value: this.systemParam.sysName});
-        } else {
-          this.$message.error('请输入系统名称');
-          return;
-        }
-        if (this.systemParam.sysLogo.length > 0) {//系统LOGO
-          param.push({code: 'sys_logo', name: '系统LOGO', value: this.systemParam.sysLogo});
-        } else {
-          this.$message.error('请上传系统LOGO');
-          return;
-        }
+        // if (this.systemParam.sysName.length > 0) {//系统名称
+        //   param.push({code: 'sys_name', name: '系统名称', value: this.systemParam.sysName});
+        // } else {
+        //   this.$message.error('请输入系统名称');
+        //   return;
+        // }
+        // if (this.systemParam.sysLogo.length > 0) {//系统LOGO
+        //   param.push({code: 'sys_logo', name: '系统LOGO', value: this.systemParam.sysLogo});
+        // } else {
+        //   this.$message.error('请上传系统LOGO');
+        //   return;
+        // }
         if (this.selectedOptions2.length > 0) {//定位城市
           let city = this.getAreaLable(this.selectedOptions2[this.selectedOptions2.length - 1]);
           // 将地址解析结果显示在地图上,并调整地图视野
@@ -170,6 +172,7 @@
           return;
         }
         if (this.systemParam.heatRanges.length > 0) {//热力图档位范围
+
           param.push({code: 'heatChart_color_range', name: '热力图档位范围', value: this.systemParam.heatRanges});
         } else {
           this.$message.error('请输入热力图档位范围');
@@ -192,7 +195,7 @@
         }
         this.listLoading = true;
         setTimeout(() => {
-          if (param.length == 8) {
+          if (param.length == 6) {
             this.setSystem(param);
           }
         }, 1000);
@@ -237,7 +240,7 @@
                   this.systemParam.similarThreshold = item.value;
                 }
                 sessionStorage.setItem("system", JSON.stringify(this.systemParam));
-                this.$emit('setSystem','sys');
+                this.$emit('setSystem', 'sys');
               });
             }
           }

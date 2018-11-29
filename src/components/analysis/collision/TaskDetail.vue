@@ -24,7 +24,7 @@
         </el-row>
       </div>
       <el-row v-show="activeType == 'IMSI'" style="margin-bottom: 10px">
-        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
+        <el-col :span="16" align="left" class="tab-card no" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="分析结果" name="first"></el-tab-pane>
             <el-tab-pane label="归属地统计" name="second"></el-tab-pane>
@@ -105,7 +105,7 @@
         </div>
       </div>
       <el-row v-show="activeType == 'FACE'" style="margin-bottom: 10px">
-        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
+        <el-col :span="16" align="left" class="tab-card no" style="text-align: left">
           <el-tabs v-model="imageItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="图像" name="image"></el-tab-pane>
             <el-tab-pane label="图像记录" name="list"></el-tab-pane>

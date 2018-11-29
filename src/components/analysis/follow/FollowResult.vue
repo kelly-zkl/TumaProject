@@ -25,7 +25,7 @@
         </el-row>
       </div>
       <el-row style="margin-bottom: 15px">
-        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
+        <el-col :span="16" align="left" class="tab-card no" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="分析结果" name="result"></el-tab-pane>
             <el-tab-pane label="所有记录" name="list"></el-tab-pane>

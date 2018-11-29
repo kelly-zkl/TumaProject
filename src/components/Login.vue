@@ -9,10 +9,9 @@
           <!--</el-button>-->
           <!--</el-form-item>-->
           <div style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 80px;align-items: center">
-            <img :src="systemParam.sysLogo?systemParam.sysLogo:'../assets/img/icon_logo.svg'"
-                 style="display:inline-block;max-height: 36px;max-width: 36px;margin-right: 10px">
-            <div style="display:inline-block;font-size: 20px;color: #fff;text-align: center">
-              {{systemParam.sysName?systemParam.sysName:'图码联侦实战平台'}}
+            <img src="../assets/img/icon_logo.svg"
+                 style="display:inline-block;height: 36px;width: 36px;margin-right: 10px">
+            <div style="display:inline-block;font-size: 24px;color: #22CEFC;text-align: center">图码联侦实战布控平台
             </div>
           </div>
           <el-form-item class="login-box">

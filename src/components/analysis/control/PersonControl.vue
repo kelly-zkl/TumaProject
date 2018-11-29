@@ -45,7 +45,7 @@
         </el-form-item>
       </el-form>
       <el-table :data="controlList" v-loading="listLoading" class="center-block" stripe
-                @selection-change="selsChange" :max-height="tableHeight">
+                @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="布控编号" prop="taskNo" min-width="150"
@@ -93,7 +93,7 @@
       return {
         activeItem: 'EXECUTION',
         query: {page: 1, size: 10},
-        tableHeight: window.innerHeight - 280,
+        tableHeight: window.innerHeight - 295,
         statuses: [{label: '进行中', value: 'EXECUTION'}, {label: '已结案', value: 'FINISH'}],
         areaList: [],
         count: 0,

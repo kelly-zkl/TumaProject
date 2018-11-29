@@ -1,135 +1,132 @@
 <template>
-  <div style="padding:10px 20px 0 30px">
-    <el-row :gutter="30">
-      <el-col :span="15" v-bind:style="'background: #08163d;border-radius: 6px;padding: 0;height:'+tableHeight+'px'">
-        <el-row style="height: 60px;line-height: 60px">
-          <el-col :span="24">
+  <section style="margin: 0;padding: 0">
+    <div style="padding: 10px 15px 0 30px">
+      <el-row :gutter="30" style="height: 100%">
+        <el-col :span="15" v-bind:style="'background: #08163d;border-radius: 6px;padding: 0;height:'+tableHeight+'px'">
+          <el-row style="height: 40px;line-height: 40px">
+            <el-col :span="24">
             <span v-bind:class="activeItem== 'device'?'map-tap-active':'map-tap'"
                   @click="handleType('device')">设备分布实况</span>
-            <span v-bind:class="activeItem== 'data'?'map-tap-active':'map-tap'"
-                  @click="handleType('data')">实时数据热力图</span>
-          </el-col>
-        </el-row>
-        <div v-show="activeItem== 'device'">
-          <div id="devicemap" v-bind:style="'width:100%;display: block;height:'+(tableHeight-282)+'px'"></div>
-          <div style="padding-bottom: 10px;display: block">
-            <el-row style="border-bottom: 1px #3D3D8D solid">
-              <el-col :span="24" align="left">
-                <span class="header-title" style=" height: 50px;line-height: 50px">设备实况</span>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="12">
-                <div id="camera" style="width: 300px;height: 180px"></div>
-              </el-col>
-              <el-col :span="12">
-                <div id="device" style="width: 300px;height: 180px"></div>
-              </el-col>
-            </el-row>
-          </div>
-        </div>
-        <div v-show="activeItem== 'data'">
-          <div style="display: block;width:100%;position: relative">
-            <div id="dataheat" v-bind:style="'display: block;width:100%; height:'+(tableHeight-350)+'px'"></div>
-            <div style="background: rgba(0, 0, 0, .5);height: 30px;position: absolute;bottom: 0;width: 100%">
-              <el-row>
-                <el-col :span="7" align="left" style="text-align: left">
-                  <span class="heat-tip-text">根据最近{{systemParam.limitTime}}分钟的抓取IMSI数量生成</span></el-col>
-                <el-col :span="17" align="right" class="heat-tip-color">
-                  <div v-for="(item,idx) in systemParam.heatRanges" :key="idx">
-                    <div class="dot-heat" v-bind:style='{backgroundColor:item.color?item.color:""}'></div>
-                    <div class="heat-tip-content">{{item.end?item.start+'-'+item.end:item.start+'及以上'}}</div>
-                  </div>
+              <span v-bind:class="activeItem== 'data'?'map-tap-active':'map-tap'"
+                    @click="handleType('data')">实时数据热力图</span>
+            </el-col>
+          </el-row>
+          <div v-show="activeItem== 'device'">
+            <div id="devicemap"
+                 v-bind:style="'width:100%;display: block;height:'+((tableHeight-40)*0.30>200?(tableHeight-240):(tableHeight-40)*0.70)+'px'"></div>
+            <div style="padding: 10px 20px">
+              <el-row style="margin: 0;padding: 0">
+                <el-col :span="12" style="text-align: center">
+                  <div id="camera"
+                       v-bind:style="'width: 300px;max-height:200px;height:'+(tableHeight-40)*0.30+'px'"></div>
+                </el-col>
+                <el-col :span="12" style="text-align: center">
+                  <div id="device"
+                       v-bind:style="'width: 300px;max-height:200px;height:'+(tableHeight-40)*0.30+'px'"></div>
                 </el-col>
               </el-row>
             </div>
           </div>
-          <div style="display: block;padding-bottom: 10px">
-            <el-row style="border-bottom: 1px #3D3D8D solid">
-              <el-col :span="24" align="left">
-                <span class="header-title" style=" height: 50px;line-height: 50px">图码抓取数据</span>
+          <div v-show="activeItem== 'data'">
+            <div style="display: block;width:100%;position: relative">
+              <div id="dataheat" v-bind:style="'display: block;width:100%; height:'+(tableHeight-40)*0.70+'px'"></div>
+              <div style="background: rgba(0, 0, 0, .6);height: 30px;position: absolute;bottom: 0;width: 100%">
+                <el-row>
+                  <el-col :span="7" align="left" style="text-align: left">
+                    <span class="heat-tip-text">根据最近{{systemParam.limitTime}}分钟的抓取IMSI数量生成</span></el-col>
+                  <el-col :span="17" align="right" class="heat-tip-color">
+                    <div v-for="(item,idx) in systemParam.heatRanges" :key="idx">
+                      <div class="dot-heat" v-bind:style='{backgroundColor:item.color?item.color:""}'></div>
+                      <div class="heat-tip-content">{{item.end?item.start+'-'+item.end:item.start+'及以上'}}</div>
+                    </div>
+                  </el-col>
+                </el-row>
+              </div>
+            </div>
+            <div style="display: block;padding: 10px 20px">
+              <el-row style="padding: 0;margin: 0">
+                <el-col :span="8" align="center" v-bind:style="'height:'+(tableHeight-40)*0.30+'px'">
+                  <div
+                    v-bind:style="'display:flex;align-items: center;justify-content: center;background: rgba(0,0,0,.3);border-radius: 6px;text-align: center;width: 160px;padding: 10px 20px;height:'+(((tableHeight-180)*0.30-20)/2)+'px'">
+                    <div style="display: block">
+                      <div style="color: #fff;font-size: 14px">今日抓取IMSI</div>
+                      <div style="color: #fff;font-size: 20px;margin-top: 10px">{{addImsiCount}}<span
+                        style="color: #fff;font-size: 14px">条</span></div>
+                    </div>
+                  </div>
+                  <div
+                    v-bind:style="'display:flex;align-items: center;justify-content: center;background: rgba(0,0,0,.3);border-radius: 6px;width: 160px; margin-top: 10px;padding: 10px 20px;height:'+(((tableHeight-180)*0.30-20)/2)+'px'">
+                    <div style="display: block">
+                      <div style="color: #fff;font-size: 14px">今日抓取图像</div>
+                      <div style="color: #fff;font-size: 20px;margin-top: 10px">{{addFaceCount}}<span
+                        style="color: #fff;font-size: 14px">条</span></div>
+                    </div>
+                  </div>
+                </el-col>
+                <el-col :span="16" align="center">
+                  <div id="imsi" v-bind:style="'width: 500px;height:'+((tableHeight-40)*0.30-10)+'px'"></div>
+                </el-col>
+              </el-row>
+            </div>
+          </div>
+        </el-col>
+        <el-col :span="9" v-bind:style="'height:'+tableHeight+'px'">
+          <!--今日告警 柱状图-->
+          <div v-bind:style="'display: block;background: #08163d;border-radius: 6px;height: '+(tableHeight*0.44)+'px'">
+            <el-row style="border-bottom: 1px #3D3D8D solid;height: 40px;line-height: 40px">
+              <el-col :span="12" align="left">
+                <span class="header-title">今日告警</span>
+              </el-col>
+              <el-col :span="12" align="right">
+                <span class="header-content">{{warningCount}}</span>
+                <span class="header-unit">次</span>
               </el-col>
             </el-row>
-            <el-row>
-              <el-col :span="8" align="center">
-                <div
-                  style="background: rgba(0,0,0,.3);border-radius: 6px;height: 60px;width: 160px; margin-top: 20px;padding: 15px 20px">
-                  <div style="color: #fff;font-size: 14px">今日抓取IMSI</div>
-                  <br/>
-                  <div style="color: #fff;font-size: 20px">{{addImsiCount}}<span
-                    style="color: #fff;font-size: 14px">条</span></div>
-                </div>
-                <div
-                  style="background: rgba(0,0,0,.3);border-radius: 6px;height: 60px;width: 160px;margin-top: 20px;padding: 15px 20px">
-                  <div style="color: #fff;font-size: 14px">今日抓取图像</div>
-                  <br/>
-                  <div style="color: #fff;font-size: 20px">{{addFaceCount}}<span
-                    style="color: #fff;font-size: 14px">条</span></div>
-                </div>
+            <div id="warning" v-bind:style="'padding: 10px 20px;height:'+(tableHeight*0.44-60)+'px'"></div>
+          </div>
+          <!--今日图码碰撞 列表-->
+          <div
+            v-bind:style="'display: block;background: #08163d;border-radius: 6px;margin-top: 15px;height:'+(tableHeight*0.56-15)+'px'">
+            <el-row style="border-bottom: 1px #3D3D8D solid;height: 40px;line-height: 40px">
+              <el-col :span="12" align="left">
+                <span class="header-title">今日图码碰撞</span>
               </el-col>
-              <el-col :span="16" align="center">
-                <div id="imsi" style="width: 500px;height: 230px"></div>
+              <el-col :span="12" align="right">
+                <span class="header-content">{{collCount}}</span>
+                <span class="header-unit">次</span>
               </el-col>
             </el-row>
+            <div class="overview" v-bind:style="'height:'+(tableHeight*0.56-55)+'px'">
+              <el-table :data="imgList" :header-cell-style="{background:'#08163d'}" stripe
+                        v-bind:style="'height:'+(tableHeight*0.56-55)+'px'">
+                <el-table-column align="left" label="图像" style="align-content: center" min-width="90" max-width="200">
+                  <template slot-scope="scope">
+                    <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" class="user-img"/>
+                  </template>
+                </el-table-column>
+                <el-table-column align="left" label="关联IMSI" prop="imsiList" min-width="140" max-width="200">
+                  <template slot-scope="scope">
+                    <div v-for="item in scope.row.imsiList">
+                      <span>{{item.imsi}}</span>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column align="left" label="置信度" prop="imsiList" min-width="70" max-width="250">
+                  <template slot-scope="scope">
+                    <div v-for="item in scope.row.imsiList">
+                      <span>{{(item.weight/10).toFixed(1) + '%'}}</span>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column align="left" label="碰撞时间" prop="uptime" min-width="160" max-width="200"
+                                 :formatter="formatterAddress"></el-table-column>
+              </el-table>
+            </div>
           </div>
-        </div>
-      </el-col>
-      <el-col :span="9" v-bind:style="'height:'+tableHeight+'px'">
-        <!--今日告警 柱状图-->
-        <div style="display: block;background: #08163d;border-radius: 6px;height: 400px">
-          <el-row style="border-bottom: 1px #3D3D8D solid">
-            <el-col :span="12" align="left">
-              <span class="header-title">今日告警</span>
-            </el-col>
-            <el-col :span="12" align="right">
-              <span class="header-content">{{warningCount}}</span>
-              <span class="header-unit">次</span>
-            </el-col>
-          </el-row>
-          <div id="warning" style="height: 300px;padding: 10px 20px"></div>
-        </div>
-        <!--今日图码碰撞 列表-->
-        <div
-          v-bind:style="'display: block;background: #08163d;border-radius: 6px;margin-top: 15px;height:'+(tableHeight-415)+'px'">
-          <el-row style="border-bottom: 1px #3D3D8D solid">
-            <el-col :span="12" align="left">
-              <span class="header-title">今日图码碰撞</span>
-            </el-col>
-            <el-col :span="12" align="right">
-              <span class="header-content">{{collCount}}</span>
-              <span class="header-unit">次</span>
-            </el-col>
-          </el-row>
-          <div class="overview" v-bind:style="'height:'+(tableHeight-450)+'px'">
-            <el-table :data="imgList" :header-cell-style="{background:'#08163d'}" stripe
-                      v-bind:style="'height:'+(tableHeight-490)+'px'">
-              <el-table-column align="left" label="图像" style="align-content: center" min-width="90" max-width="200">
-                <template slot-scope="scope">
-                  <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" class="user-img"/>
-                </template>
-              </el-table-column>
-              <el-table-column align="left" label="关联IMSI" prop="imsiList" min-width="140" max-width="200">
-                <template slot-scope="scope">
-                  <div v-for="item in scope.row.imsiList">
-                    <span>{{item.imsi}}</span>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column align="left" label="置信度" prop="imsiList" min-width="70" max-width="250">
-                <template slot-scope="scope">
-                  <div v-for="item in scope.row.imsiList">
-                    <span>{{(item.weight/10).toFixed(1) + '%'}}</span>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column align="left" label="碰撞时间" prop="uptime" min-width="160" max-width="200"
-                               :formatter="formatterAddress"></el-table-column>
-            </el-table>
-          </div>
-        </div>
-      </el-col>
-    </el-row>
-  </div>
+        </el-col>
+      </el-row>
+    </div>
+  </section>
 </template>
 <script>
   import echarts from "echarts";
@@ -169,7 +166,6 @@
         intervalid: null,//定时器
         icon: require('../../assets/img/icon.png'),
         imgPath: require('../../assets/img/icon_people.png'),
-        count: 0,
         markers: [],
         markerClusterer: null
       }
@@ -179,18 +175,16 @@
       clearInterval(this.intervalid);
     },
     methods: {
+      getWarningCount() {
+      },
       //定时刷新设备的在线状态
       statusTask() {
         if (!this.intervalid) {
           this.intervalid = setInterval(() => {
-            this.count = this.count + 1;
-            if (this.count == 6) {
-              this.count = 0;
-              if (this.activeItem === 'device') {
-                this.getMapData();
-              } else {//热力图
-                this.getHotSpot();
-              }
+            if (this.activeItem === 'device') {
+              this.getMapData();
+            } else {//热力图
+              this.getHotSpot();
             }
             this.getWarningCount();
             this.getImsiList();
@@ -274,7 +268,7 @@
           this.heatMap.enableScrollWheelZoom(); // 允许滚轮缩放
           this.heatMap.setMinZoom(5);
           var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
-          this.heatMap.setMapStyle({style: 'midnight'});
+          // this.heatMap.setMapStyle({style: 'midnight'});
           // this.heatMap.addControl(mapType);//左上角，默认地图控件
         } else {
           this.hotPoint = this.heatMap.getCenter();
@@ -282,22 +276,6 @@
         }
 
         this.heatMap.centerAndZoom(this.hotPoint, this.hotZoom);
-        // if (!this.hotPoint) {
-        //   var point = new BMap.Point(116.331398, 39.897445);
-        //   this.heatMap.centerAndZoom(point, this.hotZoom);
-        //
-        //   function myFun(result) {
-        //     var cityName = result.name;
-        //     _this.heatMap.setCenter(cityName);
-        //     _this.heatMap.setZoom(_this.hotZoom);
-        //     _this.hotPoint = _this.heatMap.getCenter();
-        //   }
-        //
-        //   var myCity = new BMap.LocalCity();
-        //   myCity.get(myFun);
-        // } else {
-        //   this.heatMap.centerAndZoom(this.hotPoint, this.hotZoom);
-        // }
 
         function zoom() {
           _this.heatMap.centerAndZoom(_this.heatMap.getCenter(), _this.heatMap.getZoom());
@@ -329,6 +307,7 @@
       },
       //设备地图
       getMapData() {
+        this.mapData = [];
         this.$post('/home/getAllDevice', {}).then((data) => {
           if (data.code === '000000') {
             var deviceImsi = data.data.imsiDeviceDistribute;
@@ -370,6 +349,7 @@
               };
               this.mapData.push(param);
             });
+            // console.log(this.mapData);
             this.getDeviceMap();
             this.getCamera();
             this.getDevice();
@@ -507,23 +487,6 @@
           });
         }
         this.deviceMap.centerAndZoom(this.mapPoint, this.mapZoom);
-        //IP定位
-        // if (!this.mapPoint) {
-        //   var point = new BMap.Point(116.331398, 39.897445);
-        //   this.deviceMap.centerAndZoom(point, this.mapZoom);
-        //
-        //   function myFun(result) {
-        //     var cityName = result.name;
-        //     _this.deviceMap.setCenter(cityName);
-        //     _this.deviceMap.setZoom(_this.mapZoom);
-        //     _this.mapPoint = _this.deviceMap.getCenter();
-        //   }
-        //
-        //   var myCity = new BMap.LocalCity();
-        //   myCity.get(myFun);
-        // } else {
-        //   this.deviceMap.centerAndZoom(this.mapPoint, this.mapZoom);
-        // }
 
         function map() {
           _this.deviceMap.centerAndZoom(_this.deviceMap.getCenter(), _this.deviceMap.getZoom());
@@ -543,7 +506,7 @@
         // var pointCollection = new BMap.PointCollection(points, options);
         // this.deviceMap.addOverlay(pointCollection);
 
-        // this.getMarkNumber();
+        this.getMarkNumber();
 
         this.deviceMap.addEventListener("zoomend", map);
         this.deviceMap.addEventListener("dragend", map);
@@ -579,7 +542,7 @@
             color: ['#25A4FE', '#F04864'],
             title: {
               text: '相机总数\n\n' + (this.devicePie.device2 ? this.devicePie.device2.count : 0),
-              textStyle: {color: '#fff', fontSize: '14'},
+              textStyle: {color: '#fff', fontSize: 12},
               top: 'center',
               left: 'center',
               bottom: 'center',
@@ -609,7 +572,7 @@
           this.cameraPieChart.setOption({
             title: {
               text: '相机总数\n\n' + (this.devicePie.device2 ? this.devicePie.device2.count : 0),
-              textStyle: {color: '#fff', fontSize: '14'},
+              textStyle: {color: '#fff', fontSize: 12},
               top: 'center',
               left: 'center',
               bottom: 'center',
@@ -739,7 +702,7 @@
               text: '近7天抓取数量统计',
               textStyle: {color: '#999', fontSize: '14'}
             },
-            grid: {left: 0, right: 0, bottom: 0, containLabel: true},
+            grid: {left: 0, right: 0, bottom: 0, top: 30, containLabel: true},
             color: ['#3fa9f5', '#FFBF00'],
             tooltip: {trigger: 'axis', axisPointer: {type: 'cross'}},
             legend: {textStyle: {color: '#999'}, data: ['IMSI', '图像'], right: '20'},
@@ -789,7 +752,7 @@
               text: '近7天告警数量统计',
               textStyle: {color: '#999', fontSize: '14'}
             },
-            grid: {left: 0, right: 0, bottom: 0, containLabel: true},
+            grid: {left: 0, right: 0, bottom: 0, top: 30, containLabel: true},
             color: ['#3fa9f5', '#FFBF00'],
             tooltip: {trigger: 'axis', axisPointer: {type: 'cross'}},
             legend: {textStyle: {color: '#999'}, data: ['IMSI', '图像'], right: '20'},
@@ -865,22 +828,22 @@
 </script>
 <style scoped>
   .map-tap {
-    height: 50px;
-    line-height: 50px;
+    height: 40px;
+    line-height: 40px;
     cursor: pointer;
     color: #fff;
-    font-size: 18px;
+    font-size: 16px;
     margin: 0 15px;
     padding: 0 20px 10px 20px;
     border-bottom: 3px transparent solid;
   }
 
   .map-tap-active {
-    height: 50px;
-    line-height: 50px;
+    height: 40px;
+    line-height: 40px;
     cursor: pointer;
     color: #3FA8F3;
-    font-size: 18px;
+    font-size: 16px;
     margin: 0 15px;
     padding: 0 20px 10px 20px;
     border-bottom: 3px #3FA8F3 solid;
@@ -888,23 +851,23 @@
 
   .header-title {
     color: #fff;
-    height: 60px;
-    line-height: 60px;
+    height: 40px;
+    line-height: 40px;
     text-align: left;
     padding-left: 30px
   }
 
   .header-content {
     color: #fff;
-    height: 60px;
-    line-height: 60px;
+    height: 40px;
+    line-height: 40px;
     padding-right: 20px
   }
 
   .header-unit {
     color: #999;
-    height: 60px;
-    line-height: 60px;
+    height: 40px;
+    line-height: 40px;
     padding-right: 30px
   }
 
@@ -917,7 +880,7 @@
   .heat-tip-content {
     display: inline-block;
     text-align: left;
-    color: #999;
+    color: #fff;
     font-size: 13px;
     margin: 0 10px 0 5px;
     line-height: 30px;

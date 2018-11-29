@@ -1,9 +1,9 @@
 <template>
   <div>
     <section class="content">
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left">
-        <el-row>
-          <el-col :span="20" align="left" v-show="getButtonVial('manager:group:query')" style="text-align: left">
+      <el-row>
+        <el-col :span="18" align="left" v-show="getButtonVial('manager:group:query')" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="组织名称" v-model="query.groupName" :maxlength="20" size="medium"></el-input>
             </el-form-item>
@@ -14,17 +14,18 @@
             <el-form-item style="margin-bottom: 10px">
               <el-button @click.stop="clearData()" size="medium">重置</el-button>
             </el-form-item>
-          </el-col>
-          <el-col :span="4" align="right" style="text-align: right">
-            <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" icon="el-icon-plus" @click="addOrganization()"
-                         v-show="getButtonVial('manager:group:create')" size="medium">创建组织
-              </el-button>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <el-table :data="organizations" v-loading="listLoading" class="center-block" stripe :max-height="tableHeight">
+          </el-form>
+        </el-col>
+        <el-col :span="6" align="right" style="text-align: right">
+          <el-button type="primary" v-show="getButtonVial('manager:group:create')"
+                     size="medium" @click="addOrganization()">创建公安机关
+          </el-button>
+          <el-button type="primary" v-show="getButtonVial('manager:group:create')"
+                     size="medium" @click="addPolice()">创建派出所
+          </el-button>
+        </el-col>
+      </el-row>
+      <el-table :data="organizations" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
         <el-table-column align="left" prop="groupName" label="组织名称" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
@@ -46,6 +47,11 @@
                        v-show="getButtonVial('manager:group:delete:*') && scope.row.groupId.length > 3
                                 && groupId != scope.row.groupId">删除
             </el-button>
+            <el-button type="text" @click="deleteOrganization(scope.row)"
+                       v-show="getButtonVial('manager:user:update') &&scope.row.groupId.length > 3
+                                && groupId != scope.row.groupId">
+              {{scope.row.locked == 0 ? '停用' : '启用'}}
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -54,34 +60,76 @@
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
-      <!--创建/修改组织-->
+      <!--创建/修改公安机关-->
       <el-dialog :title="addOrganizationTitle" :visible.sync="addOrganizationVisible" :width="dialogWidth">
-        <el-form ref="group" :model="group" label-width="100px" :rules="rules" labelPosition="right">
-          <el-form-item label="组织名称" prop="groupName" align="left">
-            <el-input v-model="group.groupName" placeholder="请输入组织名称" :maxlength="20" :minlength="2"></el-input>
+        <el-form ref="group" :model="group" label-width="100px" labelPosition="right">
+          <el-form-item label="公安机关名称" prop="groupName" align="left">
+            <el-input v-model="group.groupName" placeholder="请输入公安机关名称" :maxlength="20" :minlength="2"></el-input>
           </el-form-item>
-          <el-form-item label="备注" align="left">
-            <el-input v-model="group.remark" placeholder="备注信息" type="textarea" :maxlength="50"></el-input>
-          </el-form-item>
-          <el-form-item label="组织管理员" align="left" required>
-            <el-select v-model="group.adminId" placeholder="请选择管理员" v-show="isShow" filterable>
+          <el-form-item label="管辖区域" align="left">
+            <el-select v-model="group.areas" placeholder="请选择用户" filterable multiple>
               <el-option v-for="item in users" :key="item.userId" :label="item.account" :value="item.userId"
                          v-show="item.groupAdmin != true">
               </el-option>
             </el-select>
-            <span v-show="!isShow">{{group.account}}</span>
           </el-form-item>
-          <el-form-item label="上级组织" align="left" required>
-            <el-select v-model="group.pgroupId" placeholder="请选择上级组织" filterable>
-              <el-option v-for="item in groups" :key="item.groupId" :label="item.groupName" :value="item.groupId"
-                         v-show="group.groupId != item.groupId">
+          <el-form-item label="组织管理员" align="left" required>
+            <el-radio-group v-model="group.conditionType">
+              <el-radio :label="0">注册新用户</el-radio>
+              <el-radio :label="1">选择已注册的用户</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="选择用户" align="left" v-show="group.conditionType==1">
+            <el-select v-model="group.adminId" placeholder="请选择用户" filterable>
+              <el-option v-for="item in users" :key="item.userId" :label="item.account" :value="item.userId"
+                         v-show="item.groupAdmin != true">
               </el-option>
             </el-select>
           </el-form-item>
+          <el-form-item label="用户名" align="left" v-show="group.conditionType==0">
+            <el-input v-model="group.account" placeholder="请输入用户名" :maxlength="20" :minlength="2"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" align="left" v-show="group.conditionType==0">
+            <el-input v-model="group.password" placeholder="请输入密码" :maxlength="20" :minlength="2"></el-input>
+          </el-form-item>
         </el-form>
         <div class="block" style="margin-top: 20px">
-          <el-button @click="cancelSubmit(addOrganizationTitle)">取消</el-button>
-          <el-button type="primary" @click="onSubmit('group',addOrganizationTitle)">确认</el-button>
+          <el-button @click="addOrganizationVisible = false" size="medium">取消</el-button>
+          <el-button type="primary" @click="onSubmit('group',addOrganizationTitle)" size="medium">确认</el-button>
+        </div>
+      </el-dialog>
+      <!--创建/修改派出所-->
+      <el-dialog :title="addPoliceTitle" :visible.sync="addPoliceVisible" :width="dialogWidth">
+        <el-form ref="police" :model="police" label-width="100px" labelPosition="right">
+          <el-form-item label="派出所名称" prop="groupName" align="left">
+            <el-input v-model="police.groupName" placeholder="请输入派出所名称" :maxlength="20" :minlength="2"></el-input>
+          </el-form-item>
+          <el-form-item label="所属组织" align="left">
+            <span>{{police.account}}</span>
+          </el-form-item>
+          <el-form-item label="组织管理员" align="left" required>
+            <el-radio-group v-model="police.conditionType">
+              <el-radio :label="0">注册新用户</el-radio>
+              <el-radio :label="1">选择已注册的用户</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="选择用户" align="left" v-show="police.conditionType==1">
+            <el-select v-model="police.adminId" placeholder="请选择用户" filterable>
+              <el-option v-for="item in users" :key="item.userId" :label="item.account" :value="item.userId"
+                         v-show="item.groupAdmin != true">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="用户名" align="left" v-show="police.conditionType==0">
+            <el-input v-model="police.account" placeholder="请输入用户名" :maxlength="20" :minlength="2"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" align="left" v-show="police.conditionType==0">
+            <el-input v-model="police.password" placeholder="请输入密码" :maxlength="20" :minlength="2"></el-input>
+          </el-form-item>
+        </el-form>
+        <div class="block" style="margin-top: 20px">
+          <el-button @click="addPoliceVisible=false" size="medium">取消</el-button>
+          <el-button type="primary" @click="savePolice()" size="medium">确认</el-button>
         </div>
       </el-dialog>
     </section>
@@ -109,18 +157,21 @@
         listLoading: false,
         isShow: true,
         addAdminVisible: false,
-        tableHeight: window.innerHeight - 230,
+        tableHeight: window.innerHeight - 245,
         organizations: [],
+        addPoliceTitle: '创建派出所',
+        addPoliceVisible: false,
         dialogWidth: isPC ? '40%' : '90%',
         groupId: JSON.parse(sessionStorage.getItem("user")).groupId,
         query: {page: 1, size: 10, groupName: '', userId: JSON.parse(sessionStorage.getItem("user")).userId},
         count: 0,
-        group: {},
-        addOrganizationTitle: '创建组织',
+        group: {areas: []},
+        police: {},
+        addOrganizationTitle: '创建公安机关',
         addOrganizationVisible: false,
         rules: {
           groupName: [
-            {required: true, message: '请输入组织名称', trigger: 'blur'},
+            {required: true, message: '请输入公安机关名称', trigger: 'blur'},
             {validator: nickValidate, trigger: "change,blur"},
           ]
         },
@@ -133,9 +184,45 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
-      //取消
-      cancelSubmit(title) {
-        this.addOrganizationVisible = false;
+      addPolice() {
+        this.police = {};
+        this.addPoliceTitle = '创建派出所';
+        this.addPoliceVisible = true;
+      },
+      modifyPolice(row) {
+        this.police = Object.assign({}, row);
+        this.addPoliceTitle = '修改派出所';
+        this.addPoliceVisible = true;
+      },
+      savePolice() {
+        this.$refs['police'].validate((valid) => {
+          if (valid) {
+            let url = '/manager/group/create';
+            let msg = '创建成功';
+            if (this.addPoliceTitle == '修改派出所') {
+              url = '/manager/group/update';
+              msg = '修改成功';
+            } else {
+              this.police.creatorId = JSON.parse(sessionStorage.getItem("user")).userId;
+            }
+            if (!this.police.adminId) {
+              this.$message.error('请选择组织管理员');
+              return;
+            }
+            if (!this.police.pgroupId) {
+              this.$message.error('请选择上级组织');
+              return;
+            }
+            this.$post(url, this.police, msg).then((data) => {
+              if ("000000" === data.code) {
+                this.addPoliceVisible = false;
+                this.getOrganizations();
+                this.getAllGroups();
+                this.getUserList();
+              }
+            });
+          }
+        });
       },
       //确认提交
       onSubmit(formName, title) {
@@ -143,7 +230,7 @@
           if (valid) {
             let url = '/manager/group/create';
             let msg = '创建成功';
-            if (title === '修改组织') {
+            if (title === '修改公安机关') {
               url = '/manager/group/update';
               msg = '修改成功';
             } else {
@@ -170,15 +257,15 @@
       },
       //创建组织
       addOrganization() {
-        this.group = {};
-        this.addOrganizationTitle = '创建组织';
+        this.group = {areas: []};
+        this.addOrganizationTitle = '创建公安机关';
         this.isShow = true;
         this.addOrganizationVisible = true;
       },
       //修改组织
       modifyOrganization(row) {
         this.group = Object.assign({}, row);
-        this.addOrganizationTitle = '修改组织';
+        this.addOrganizationTitle = '修改公安机关';
         this.isShow = false;
         this.addOrganizationVisible = true;
       },

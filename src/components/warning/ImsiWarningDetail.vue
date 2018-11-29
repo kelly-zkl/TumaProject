@@ -62,7 +62,7 @@
         </el-form>
       </div>
       <el-row>
-        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
+        <el-col :span="16" align="left" class="tab-card no" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="关联人员" name="person"></el-tab-pane>
             <el-tab-pane label="侦码记录" name="list"></el-tab-pane>
@@ -283,8 +283,8 @@
         }
         let imsis = [this.imsi];
 
-        sessionStorage.setItem("pathImsi", JSON.stringify(imsis));
-        sessionStorage.setItem("pathTime", JSON.stringify(this.qTime));
+        localStorage.setItem("pathImsi", JSON.stringify(imsis));
+        localStorage.setItem("pathTime", JSON.stringify(this.qTime));
         // this.$router.push({path: '/pathLine', query: {imsi: 1}});
         let routeData = this.$router.resolve({path: '/pathLine', query: {imsi: 1}});
         window.open(routeData.href, '_blank');

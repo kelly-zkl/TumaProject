@@ -57,7 +57,7 @@
         } else {
           this.line[0] == 'imsi' ? imsi = 1 : face = 1;
         }
-        sessionStorage.setItem("pathTime", JSON.stringify(this.qTime));
+        localStorage.setItem("pathTime", JSON.stringify(this.qTime));
         // this.$router.push({path: '/pathLine', query: {imsi: imsi, face: face}});
         let routeData = this.$router.resolve({path: '/pathLine', query: {imsi: imsi, face: face}});
         window.open(routeData.href, '_blank');

@@ -1,77 +1,95 @@
 <template>
   <div>
     <section class="content">
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left">
-        <el-row>
-          <el-col :span="20" align="left" v-show="getButtonVial('manager:user:query')" style="text-align: left">
-            <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="账号/用户名" v-model="query.keyword" :maxlength="30"
-                        style="width: 200px" size="medium"></el-input>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.myGroupId" placeholder="全部组织" size="medium" filterable>
-                <el-option v-for="item in organizations" :key="item.groupId" :label="item.groupName"
-                           :value="item.groupId">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.roleId" placeholder="全部岗位" size="medium" filterable clearable>
-                <el-option v-for="item in roles" :key="item.roleId" :label="item.roleName" :value="item.roleId">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" icon="search" @click.stop="query.page=1;getUserList()" size="medium">搜索
+      <el-row>
+        <el-col :span="4" style="padding-right: 10px;border-right: 1px solid #e5e5e5">
+          <div v-bind:style="'overflow-y: scroll;height:'+leftHeight+'px'">
+            <div v-bind:class="currentIdx==idx?'depart-main active':'depart-main'" v-for="(tab,idx) in departments"
+                 :key="idx+''" @click="handleClick(idx)">
+              <span class="depart-item">{{tab.name}}</span>
+              <i class="btn-delete el-icon-delete" @click.stop="deleteDepart(tab)"></i>
+              <i class="btn-delete el-icon-edit"
+                 @click.stop="addDepart='修改部门';departName=tab.name;departId='';addDepartVisible=true"></i>
+            </div>
+          </div>
+          <el-button type="primary" icon="el-icon-plus" size="medium" style="width: 100%;margin-top: 15px"
+                     @click="addDepart='创建部门';departName='';addDepartVisible=true">创建部门
+          </el-button>
+        </el-col>
+        <el-col :span="20" style="padding-left: 10px">
+          <el-row>
+            <el-col :span="20" align="left" v-show="getButtonVial('manager:user:query')" style="text-align: left">
+              <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left;width: 680px">
+                <el-form-item style="margin-bottom: 10px">
+                  <el-input placeholder="账号/用户名" v-model="query.keyword" :maxlength="30"
+                            style="width: 200px" size="medium"></el-input>
+                </el-form-item>
+                <el-form-item style="margin-bottom: 10px">
+                  <el-select v-model="query.myGroupId" placeholder="全部组织" size="medium" filterable>
+                    <el-option v-for="item in organizations" :key="item.groupId" :label="item.groupName"
+                               :value="item.groupId">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item style="margin-bottom: 10px">
+                  <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
+                </el-form-item>
+                <el-form-item style="margin-bottom: 10px">
+                  <el-button type="primary" icon="search" @click.stop="query.page=1;getUserList()" size="medium">搜索
+                  </el-button>
+                </el-form-item>
+                <el-form-item style="margin-bottom: 10px">
+                  <el-button @click.stop="clearData()" size="medium">重置</el-button>
+                </el-form-item>
+                <el-form-item style="margin-bottom: 10px" v-show="isMore">
+                  <el-select v-model="query.roleId" placeholder="全部岗位" size="medium" filterable clearable>
+                    <el-option v-for="item in roles" :key="item.roleId" :label="item.roleName" :value="item.roleId">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-form>
+            </el-col>
+            <el-col :span="4" align="right" style="text-align: right">
+              <el-button type="primary" @click="addInfo()" v-show="getButtonVial('manager:user:create')"
+                         size="medium">创建用户
               </el-button>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-button @click.stop="clearData()" size="medium">重置</el-button>
-            </el-form-item>
-          </el-col>
-          <el-col :span="4" align="right" style="text-align: right">
-            <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" icon="el-icon-plus" @click="addInfo()"
-                         v-show="getButtonVial('manager:user:create')" size="medium">添加成员
-              </el-button>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-
-      <el-table :data="users" v-loading="listLoading" class="center-block" stripe :max-height="tableHeight">
-        <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" prop="account" label="账号" min-width="150"
-                         max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="realName" label="用户名" min-width="150"
-                         max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="groupName" label="所属组织" min-width="150"
-                         max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="roleNameList" label="角色" min-width="120"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="groupAdmin" label="用户类型" width="130"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="createTime" label="创建时间" width="170"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="locked" label="状态" width="80"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="120" fixed="right">
-          <template slot-scope="scope">
-            <el-button type="text" style="margin-right: 10px" @click.stop="updateInfo(scope.row)"
-                       v-show="getButtonVial('manager:user:update')">修改
-            </el-button>
-            <el-button type="text" @click="userUse(scope.row)"
-                       v-show="getButtonVial('manager:user:update') && scope.row.groupAdmin != true">
-              {{scope.row.locked == 0 ? '停用' : '启用'}}
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
-                       :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
-                       layout="total, sizes, prev, pager, next, jumper"></el-pagination>
-      </div>
+            </el-col>
+          </el-row>
+          <el-table :data="users" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
+            <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
+            <el-table-column align="left" prop="account" label="账号" min-width="150"
+                             max-width="300" :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="realName" label="用户名" min-width="150"
+                             max-width="300" :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="groupName" label="所属组织" min-width="150"
+                             max-width="300" :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="roleNameList" label="角色" min-width="120"
+                             max-width="200" :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="groupAdmin" label="用户类型" width="130"
+                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="createTime" label="创建时间" width="170"
+                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="locked" label="状态" width="80"
+                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" label="操作" width="120" fixed="right">
+              <template slot-scope="scope">
+                <el-button type="text" style="margin-right: 10px" @click.stop="updateInfo(scope.row)"
+                           v-show="getButtonVial('manager:user:update')">修改
+                </el-button>
+                <el-button type="text" @click="userUse(scope.row)"
+                           v-show="getButtonVial('manager:user:update') && scope.row.groupAdmin != true">
+                  {{scope.row.locked == 0 ? '停用' : '启用'}}
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div class="block" style="margin-top: 20px" align="right">
+            <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
+                           :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
+                           layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+          </div>
+        </el-col>
+      </el-row>
       <!--添加成员-->
       <el-dialog :title="addUserTitle" :visible.sync="addUserVisible" :width="dialogWidth">
         <el-form ref="admin" :model="admin" label-width="100px" :rules="rules" labelPosition="right">
@@ -105,8 +123,8 @@
           </el-form-item>
         </el-form>
         <div class="block" style="margin-top: 20px">
-          <el-button @click="cancelSubmit()">取消</el-button>
-          <el-button type="primary" @click="onSubmit('admin',addUserTitle)">确认</el-button>
+          <el-button @click="cancelSubmit()" size="medium">取消</el-button>
+          <el-button type="primary" @click="onSubmit('admin',addUserTitle)" size="medium">确认</el-button>
         </div>
       </el-dialog>
       <!--修改账号-->
@@ -149,8 +167,8 @@
           </el-form-item>
         </el-form>
         <div class="block" style="margin-top: 20px">
-          <el-button @click="cancelSubmit()">取消</el-button>
-          <el-button type="primary" @click="onSubmit('admin',addUserTitle)">确认</el-button>
+          <el-button @click="cancelSubmit()" size="medium">取消</el-button>
+          <el-button type="primary" @click="onSubmit('admin',addUserTitle)" size="medium">确认</el-button>
         </div>
       </el-dialog>
       <!--修改密码-->
@@ -169,8 +187,8 @@
           </el-form-item>
         </el-form>
         <div class="block" style="margin-top: 20px">
-          <el-button @click="modifyPswVisible = false">取消</el-button>
-          <el-button type="primary" @click="modifyPsw()">确认修改</el-button>
+          <el-button @click="modifyPswVisible = false" size="medium">取消</el-button>
+          <el-button type="primary" @click="modifyPsw()" size="medium">确认修改</el-button>
         </div>
       </el-dialog>
       <!--重置密码-->
@@ -181,8 +199,19 @@
           </el-form-item>
         </el-form>
         <div class="block" style="margin-top: 20px">
-          <el-button @click="resetPswVisible = false">取消</el-button>
-          <el-button type="primary" @click="resetPsw()">确认重置</el-button>
+          <el-button @click="resetPswVisible = false" size="medium">取消</el-button>
+          <el-button type="primary" @click="resetPsw()" size="medium">确认重置</el-button>
+        </div>
+      </el-dialog>
+      <el-dialog :title="addDepart" :visible.sync="addDepartVisible" :width="dialogWidth">
+        <el-form label-width="100px" labelPosition="right">
+          <el-form-item label="部门名称">
+            <el-input v-model="departName" placeholder="请输入部门名称" :maxlength="6"></el-input>
+          </el-form-item>
+        </el-form>
+        <div class="block" style="margin-top: 20px">
+          <el-button @click="addDepartVisible=false" size="medium">取消</el-button>
+          <el-button type="primary" @click="editDepart()" size="medium">{{addDepart=='创建部门'?'确认创建':'确认修改'}}</el-button>
         </div>
       </el-dialog>
     </section>
@@ -236,7 +265,13 @@
         modifyPswVisible: false,
         resetPswVisible: false,
         addUserTitle: '添加成员',
-        tableHeight: window.innerHeight - 230,
+        addDepart: '创建部门',
+        departName: '',
+        departId: '',
+        addDepartVisible: false,
+        isMore: false,
+        leftHeight: window.innerHeight - 200,
+        tableHeight: window.innerHeight - 245,
         dialogWidth: isPC() ? '35%' : '90%',
         userId: JSON.parse(sessionStorage.getItem("user")).userId,
         admin: {
@@ -269,17 +304,54 @@
         count: 0,
         query: {page: 1, size: 10, myGroupId: JSON.parse(sessionStorage.getItem("user")).groupId},
         users: [],
+        departments: [{name: "部门和第三方财富地方吃饭"}, {name: "部门B"}, {name: "部门C"}, {name: "部门D"},
+          {name: "部门Aqqqqqqqqq"}, {name: "部门B"}, {name: "部门C"}, {name: "部门D"}, {name: "部门Aqqqqqqqqq"},
+          {name: "部门B"}, {name: "部门C"}, {name: "部门D"}, {name: "部门Aqqqqqqqqq"}, {name: "部门B"}, {name: "部门C"},
+          {name: "部门D"}, {name: "部门Aqqqqqqqqq"}, {name: "部门B"}, {name: "部门C"}, {name: "部门D"}],
         setPsw: 'defaultPsw',
         role: '',
         roles: [],
         organizations: [],
         modify: {adminPsw: '', newPsw: '', newPsw1: ''},
-        reset: {adminPsw: ''}
+        reset: {adminPsw: ''},
+        currentIdx: 0
       }
     },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      //删除部门
+      deleteDepart(item) {
+        this.$confirm('确定要删除该部门吗？', '提示', {type: 'warning'}).then(() => {
+          // this.$post('/manager/user/update', param, '操作成功').then((data) => {
+          //   this.getUserList();
+          // });
+        }).catch((err) => {
+        });
+      },
+      //修改部门
+      editDepart() {
+        let url = '/manager/user/create';
+        let msg = '添加成功';
+        if (this.addDepart === '修改部门') {
+          url = '/manager/user/update';
+          msg = '修改成功';
+        }
+        // this.$post('/manager/user/update', param, '操作成功').then((data) => {
+        //   this.getUserList();
+        // });
+      },
+      handleClick(idx) {
+        this.currentIdx = idx
+      },
+      showMore() {
+        this.isMore = !this.isMore;
+        if (this.isMore) {
+          this.tableHeight = window.innerHeight - 295
+        } else {
+          this.tableHeight = window.innerHeight - 245
+        }
       },
       //是否默认密码
       changePsw(val) {
@@ -450,3 +522,61 @@
     }
   }
 </script>
+<style scoped>
+  .depart-main {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-left: 3px solid #fff;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    line-height: 40px;
+  }
+
+  .depart-item {
+    flex: 1 1 auto;
+    cursor: pointer;
+    height: 40px;
+    line-height: 40px;
+    text-align: left;
+    padding-left: 15px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: -moz-calc(100% - 80px);
+    width: -webkit-calc(100% - 80px);
+    width: calc(100% - 80px);
+  }
+
+  .depart-main.active {
+    border-left: 3px solid #6699ff;
+    color: #6699ff;
+    -webkit-transition: -webkit-transform .3s cubic-bezier(.645, .045, .355, 1);
+    transition: -webkit-transform .3s cubic-bezier(.645, .045, .355, 1);
+    transition: transform .3s cubic-bezier(.645, .045, .355, 1);
+    transition: transform .3s cubic-bezier(.645, .045, .355, 1), -webkit-transform .3s cubic-bezier(.645, .045, .355, 1);
+  }
+
+  .depart-main:focus, .depart-main:hover {
+    color: #6699ff;
+  }
+
+  .depart-main .btn-delete {
+    display: none;
+  }
+
+  .depart-main:focus > .btn-delete, .depart-main:hover > .btn-delete, .depart-main:active > .btn-delete {
+    display: block;
+    font-size: 16px;
+    margin-right: 10px;
+    color: #999;
+    flex: 0 0 auto;
+  }
+
+  .btn-delete:focus, .btn-delete:hover, .btn-delete:active {
+    color: #6699ff;
+  }
+</style>

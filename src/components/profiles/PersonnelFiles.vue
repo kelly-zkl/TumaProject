@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="24" align="left" class="tab-card">
+        <el-col :span="24" align="left" class="tab-card no">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="人员信息" name="0" style="padding-top: 15px">
               <PersonInfo ref="personInfo"></PersonInfo>

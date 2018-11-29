@@ -4,21 +4,19 @@
       <el-header style="background: #08163d;color:#fff" height="60px">
         <div style="display:-webkit-box;display:-ms-flexbox;display:flex;flex-direction: row;height: 60px;width: 100%">
           <div align="left"
-               style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 60px;align-items: center;margin-right: 30px">
-            <img :src="systemParam.sysLogo?systemParam.sysLogo:'../assets/img/icon_logo.svg'"
-                 style="display:inline-block;max-height: 36px;max-width: 36px">
-            <div style="display:inline-block;font-size: 16px;margin-left: 10px;letter-spacing:2px;color: #5FCAFE">
-              {{systemParam.sysName?systemParam.sysName:'图码联侦实战平台'}}
-            </div>
+               style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 60px;align-items: center;margin-right: 20px">
+            <img src="../assets/img/icon_logo.svg"
+                 style="display:inline-block;height: 30px;width: 30px">
+            <span style="display:inline-block;font-size: 16px;margin-left: 10px;letter-spacing:2px;color: #22CEFC">图码联侦实战布控平台
+            </span>
           </div>
-          <div align="center" style="flex: 1;height: 60px;align-items: center;justify-content: flex-start">
-            <!--fa-th-large fa-tachometer-->
+          <div style="flex: 1;height: 60px;align-items: center;justify-content: flex-start">
             <el-menu :default-active="$route.path" background-color="#08163d" text-color="#B3B3B3" router
                      active-text-color="#fff" mode="horizontal" @select="handleSelectItem">
               <el-menu-item :index="item.permissionUrl" v-for="item in menu" :key="item.permissionUrl">
                 <template slot="title">
                   <i :class="item.icon"
-                     v-bind:style="item.orders<6?'font-size: 1.5em':item.orders>5?'font-size: 1.7em':'font-size: 1.6em'"></i>
+                     v-bind:style="item.orders<5?'font-size: 1.6em':item.orders>5?'font-size: 1.8em':'font-size: 1.7em'"></i>
                   <span>{{item.name}}</span>
                   <el-badge class="mark" :value="imsiCount+faceCount" :max="99"
                             v-show="item.orders==2&&imsiCount+faceCount>0"/>
@@ -28,6 +26,50 @@
           </div>
           <div align="right"
                style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 60px;align-items: center">
+            <div class="all-search" style="margin-right: 20px">
+              <el-popover ref="imsi" placement="bottom-end" width="200" trigger="click" v-model="imsiShow">
+                <el-row style="background-color: #efefef">
+                  <el-col :span="12" style="text-align: left;padding-left: 10px">
+                    <span style="height: 40px;line-height: 40px;color:#888">搜索记录</span>
+                  </el-col>
+                  <el-col :span="12" style="text-align: right;padding-right: 10px">
+                    <el-button type="text" @click="clearImsi()">清空</el-button>
+                  </el-col>
+                </el-row>
+                <el-row v-for="item in searchImsis" v-show="searchImsis.length>0">
+                  <el-col :span="12" style="text-align: left;padding-left: 10px">
+                    <span style="height: 40px;line-height: 40px;color:#333">{{item}}</span>
+                  </el-col>
+                  <el-col :span="12" style="text-align: right;padding-right: 10px">
+                    <el-button type="text" @click="imsi=item;searchImsi()">IMSI</el-button>
+                  </el-col>
+                </el-row>
+                <div v-show="searchImsis.length==0"
+                     style="height: 40px;line-height: 40px;font-size:13px;color:#999;text-align: center;width: 194px">
+                  无记录
+                </div>
+              </el-popover>
+              <el-popover ref="image" placement="bottom-start" width="235" trigger="click"
+                          :offset="10" v-model="imgShow">
+                <div style="padding: 15px 4px 15px 10px">
+                  <el-upload :action="uploadUrl" :show-file-list="false" :on-success="handleAvatarSuccess"
+                             :before-upload="beforeAvatarUpload">
+                    <img :src="imageUrl?imageUrl:imgPath" class="avatar">
+                    <span style="display:inline-block;font-size: 12px;color: #5F6165">请选择人脸照片。支持：JPG、JPEG、PNG格式，且文件大小不超过2M。</span>
+                  </el-upload>
+                  <el-button type="primary" size="medium" @click="searchImage()"
+                             style="width: 100%;margin-top: 10px">搜索
+                  </el-button>
+                </div>
+              </el-popover>
+              <el-input placeholder="请输入IMSI" :maxlength="15" style="width: 235px" v-popover:imsi
+                        @click.stop="imsiShow=true;imgShow=false" v-model="imsi" @keyup.13.native="searchImsi()">
+                <el-button slot="prepend" icon="el-icon-picture" v-popover:image
+                           @click.stop="imsiShow=false;imgShow=true"></el-button>
+                <el-button slot="append" icon="el-icon-search" @click.stop="imsiShow=false;imgShow=false"
+                           @click="searchImsi()"></el-button>
+              </el-input>
+            </div>
             <!--<div class="item" style="text-align: center" @click="runMsg = true">-->
             <!--<i class="fa fa-bell-o fa-2x" style="padding-top: 20px;font-size: 1.8em"></i>-->
             <!--</div>-->
@@ -39,7 +81,7 @@
                 </el-button>
               </el-col>
             </el-popover>
-            <el-button class="item" style="text-align: center;width: auto" v-popover:modifyPsw>
+            <el-button class="item" style="text-align: center;width: auto" v-popover:modifyPsw type="text">
               <i class="fa fa-user" style="display: inline-block;padding-top: 0;font-size: 2.3em"></i>
               <span style="display: inline-block;padding-left: 5px">{{userName}}</span>
             </el-button>
@@ -166,12 +208,19 @@
         </div>
       </div>
     </el-dialog>
+    <!--搜索弹框全局-->
+    <div class="search">
+      <el-dialog title="" :visible.sync="runSearch" fullscreen style="margin-top: 60px" :modal="false">
+        <searchAll v-bind:searchParam="searchParam" ref="search"></searchAll>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
 <script>
   import md5 from 'js-md5';
-  import {pswValidator} from '../assets/js/api';
+  import searchAll from './SearchAll.vue'
+  import {numValid, pswValidator, globalValidImg} from '../assets/js/api';
   import {formatDate, isPC, buttonValidator} from "../assets/js/util";
 
   export default {
@@ -191,6 +240,14 @@
         indx: 1,
         imsiCount: 0,
         faceCount: 0,
+        imsiShow: false,
+        imgShow: false,
+        runSearch: false,
+        imageUrl: '',
+        imsi: '',
+        searchImsis: [],
+        searchParam: {},
+        uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         systemParam: {sysLogo: '../assets/img/icon_logo.svg'},
         runMsg: false,
         runImsiWarning: false,
@@ -219,12 +276,72 @@
         }
       }
     },
+    components: {searchAll},
     //页面关闭时停止更新设备在线状态
     beforeDestroy() {
       this.audio = null;
       clearInterval(this.intervalid);
     },
     methods: {
+      //以图搜图
+      searchImage() {
+        if (this.imageUrl.length == 0) {
+          this.$message.error("请先上传头像");
+          return;
+        }
+        this.imsi = '';
+        this.searchParam = JSON.stringify({type: 'img', value: this.imageUrl});
+        this.runSearch = true;
+      },
+      //以码搜图
+      searchImsi() {
+        if (this.imsi.length == 0) {
+          this.$message.error("请输入IMSI");
+          return;
+        }
+        if (!numValid(this.imsi) || this.imsi.length != 15) {
+          this.$message.error('请输入15位正确的IMSI');
+          return;
+        }
+        if (this.isMultiple(this.imsi)) {
+          this.searchImsis.unshift(this.imsi);
+          localStorage.setItem("imsis", JSON.stringify({imsi: this.searchImsis}));
+        }
+        this.imageUrl = '';
+        this.searchParam = JSON.stringify({type: 'imsi', value: this.imsi});
+        this.runSearch = true;
+      },
+      //是否重复
+      isMultiple(val) {
+        let bol = true;
+        if (this.searchImsis.length > 0) {
+          this.searchImsis.forEach((item) => {
+            if (val == item) {
+              bol = false;
+            }
+          });
+        }
+        return bol;
+      },
+      //清空搜索IMSI记录
+      clearImsi() {
+        localStorage.removeItem('imsis');
+        this.searchImsis = [];
+      },
+      handleAvatarSuccess(res, file) {
+        if (res.code === '000000') {
+          if (res.data) {
+            this.imageUrl = res.data.fileUrl;
+          }
+        } else {
+          this.$message.error(res.msg);
+        }
+      },
+      beforeAvatarUpload(file) {
+        if (globalValidImg(file, this.$message)) {
+        }
+        return globalValidImg(file, this.$message);
+      },
       //IMSI/图像告警-->10s请求一次
       statusTask() {
         if (!this.intervalid) {
@@ -258,9 +375,10 @@
         sessionStorage.removeItem("page");
         sessionStorage.removeItem("activeItem");
         sessionStorage.removeItem("secItem");
-        sessionStorage.removeItem("pathTime");//轨迹
-        sessionStorage.removeItem("pathImsi");
-        sessionStorage.removeItem("pathFace");
+        localStorage.removeItem("pathTime");//轨迹
+        localStorage.removeItem("pathImsi");
+        localStorage.removeItem("pathFace");
+        localStorage.removeItem("pathUrl");
       },
       getImsiWarning() {
         this.imsiWarning = JSON.parse(sessionStorage.getItem("imsi"));
@@ -268,7 +386,7 @@
           if (data.data && data.data.length > 0) {
             let imsi = data.data[0];
             // console.log(new Date().getTime() - imsi.createTime * 1000);
-            if ((new Date().getTime() - imsi.createTime * 1000) >= -30 * 1000 && (new Date().getTime() - imsi.createTime * 1000) <= 30 * 1000) {//30s内的数据
+            if ((new Date().getTime() - imsi.createTime * 1000) >= -60 * 3 * 1000 && (new Date().getTime() - imsi.createTime * 1000) <= 60 * 3 * 1000) {//30s内的数据
               // console.log(this.imsiWarning.id);
               if (this.imsiWarning.id !== imsi.id) {
                 // console.log(imsi.id);
@@ -292,7 +410,7 @@
           if (data.data && data.data.length > 0) {
             let face = data.data[0];
             // console.log(new Date().getTime() - face.createTime * 1000);
-            if ((new Date().getTime() - face.createTime * 1000) >= -30 * 1000 && (new Date().getTime() - face.createTime * 1000) <= 30 * 1000) {//30s内的数据
+            if ((new Date().getTime() - face.createTime * 1000) >= -60 * 3 * 1000 && (new Date().getTime() - face.createTime * 1000) <= 60 * 3 * 1000) {//30s内的数据
               // console.log(this.faceWarning.id);
               if (this.faceWarning.id !== face.id) {
                 // console.log(face.id);
@@ -355,6 +473,7 @@
               sessionStorage.removeItem("face");
               sessionStorage.removeItem("imsi");
               localStorage.removeItem("login");
+              sessionStorage.removeItem("search");
               this.$router.push("/login");
             }
           });
@@ -435,6 +554,8 @@
       this.getButton();
       this.getSystemDetail();
 
+      this.searchImsis = localStorage.getItem("imsis") ? JSON.parse(localStorage.getItem("imsis")).imsi : [];
+
       this.indx = sessionStorage.getItem("index") ? sessionStorage.getItem("index") : 1;
       this.userName = JSON.parse(sessionStorage.getItem("user")).realName || '';
 
@@ -446,6 +567,10 @@
       this.getFaceWarning();
       this.getWarningCount();
       this.statusTask();
+
+      // window.onresize = function () {
+      //   window.location.reload();
+      // }
     }
   }
 </script>
@@ -532,5 +657,12 @@
   .item i {
     display: block;
     margin-top: 3px;
+  }
+
+  .avatar {
+    width: 130px;
+    height: 130px;
+    border: 1px dashed #ccc;
+    border-radius: 6px;
   }
 </style>

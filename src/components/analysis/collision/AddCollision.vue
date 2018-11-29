@@ -65,7 +65,7 @@
                   <el-date-picker v-model="date1" type="datetimerange" range-separator="至" style="width: 300px"
                                   value-format="timestamp" start-placeholder="开始日期" end-placeholder="结束日期"
                                   :default-time="['00:00:00', '23:59:59']" format="yyyy-MM-dd"
-                                  :picker-options="pickerBeginDate">
+                                  :picker-options="pickerBeginDate" @change="handleChange">
                   </el-date-picker>
                 </el-tooltip>
               </el-form-item>
@@ -131,7 +131,7 @@
                   <el-date-picker v-model="date2" type="datetimerange" range-separator="至" style="width: 300px"
                                   value-format="timestamp" start-placeholder="开始日期" end-placeholder="结束日期"
                                   :default-time="['00:00:00', '23:59:59']" format="yyyy-MM-dd"
-                                  :picker-options="pickerBeginDate">
+                                  :picker-options="pickerBeginDate" @change="handleChange">
                   </el-date-picker>
                 </el-tooltip>
               </el-form-item>
@@ -191,7 +191,10 @@
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-input placeholder="安装场所" v-model="query.placeName" :maxlength="30" size="medium"></el-input>
+            <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
+              <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button type="primary" @click.stop="query.page=1;getData()" size="medium">搜索</el-button>
@@ -238,7 +241,10 @@
             </el-cascader>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-input placeholder="安装场所" v-model="query.placeName" :maxlength="30" size="medium"></el-input>
+            <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
+              <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button type="primary" size="medium" @click="query.page=1;getData1()">搜索</el-button>
@@ -337,6 +343,15 @@
       }
     },
     methods: {
+      handleChange(val) {
+        if (val && val.length == 2) {
+          let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 7 * 1000);
+          if (bol) {
+            this.$message.error('日期范围不能超过7天');
+            return;
+          }
+        }
+      },
       //地图选择设备，显示dialog
       selectDevice(val) {
         let param = {deviceType: this.collisionType, dataType: val};
@@ -684,8 +699,16 @@
         });
         return lable;
       },
+      getPlaces() {
+        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+          this.places = data.data.list;
+        }).catch((err) => {
+          this.places = [];
+        });
+      }
     },
     mounted() {
+      this.getPlaces();
       this.getDevice();
       this.getCameras();
       this.getDeviceTypeAndForm();

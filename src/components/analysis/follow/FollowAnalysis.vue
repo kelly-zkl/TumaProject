@@ -48,7 +48,7 @@
         </el-col>
       </el-row>
       <el-table :data="tasks" v-loading="listLoading" class="center-block" stripe
-                @selection-change="selsChange" :max-height="tableHeight">
+                @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="任务名称" prop="taskName" min-width="150"
@@ -99,7 +99,7 @@
         tasks: [],
         qTime: "",
         query: {page: 1, size: 10},
-        tableHeight: window.innerHeight - 230,
+        tableHeight: window.innerHeight - 245,
         followTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '图像'}],//{value: 'MAC', label: 'MAC'}
         taskTypes: [{value: 'EXECUTION', label: '进行中'}, {value: 'FINISH', label: '已完成'},
           {value: 'WAIT', label: '等待中'}, {value: 'FAILE', label: '失败'}],

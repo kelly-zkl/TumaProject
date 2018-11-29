@@ -14,11 +14,10 @@
               </el-cascader>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="安装场所" v-model="query.placeName" :maxlength="30" size="medium"></el-input>
-              <!--<el-select v-model="query.placeId" placeholder="安装场所" size="medium">-->
-              <!--<el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">-->
-              <!--</el-option>-->
-              <!--</el-select>-->
+              <el-select v-model="query.placeId" placeholder="安装场所" size="medium">
+                <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
@@ -29,7 +28,7 @@
           </el-form>
         </el-col>
       </el-row>
-      <el-table :data="deviceList" v-loading="listLoading" class="center-block" stripe :max-height="tableHeight">
+      <el-table :data="deviceList" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="相机编码" prop="cameraCode" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -93,7 +92,7 @@
       return {
         dialogWidth: isPC() ? '40%' : '90%',
         labelWidth: isPC() ? '100px' : '80px',
-        tableHeight: window.innerHeight - 230,
+        tableHeight: window.innerHeight - 245,
         labelPosition: 'right',
         runningSetPlace: false,
         activeItem: 'EXECUTION',

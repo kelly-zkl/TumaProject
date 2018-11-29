@@ -25,14 +25,14 @@
           </el-col>
           <el-col :span="4" align="right" style="text-align: right">
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" icon="el-icon-plus" @click="addMenu()" size="medium"
+              <el-button type="primary" @click="addMenu()" size="medium"
                          v-show="getButtonVial('manager:permission:create')">创建菜单
               </el-button>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
-      <el-table :data="menus" v-loading="listLoading" class="center-block" stripe :max-height="tableHeight">
+      <el-table :data="menus" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
         <el-table-column align="left" prop="name" label="菜单名称" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
@@ -126,7 +126,7 @@
         listLoading: false,
         addMenuVisible: false,
         dialogWidth: isPC() ? '35%' : '90%',
-        tableHeight: window.innerHeight - 230,
+        tableHeight: window.innerHeight - 245,
         menus: [],
         query: {page: 1, size: 10},
         count: 0,

@@ -52,6 +52,8 @@
         },
         mapData: [],
         intervalid: null,
+        markers: [],
+        markerClusterer: null
       }
     },
     //页面关闭时停止更新设备在线状态
@@ -322,7 +324,7 @@
         //   this.bMap.centerAndZoom(this.point, this.zoom);
         // }
         //点聚合
-        // this.getMarkNumber();
+        this.getMarkNumber();
         //添加鼠标绘制工具监听事件，用于获取绘制结果
         this.drawingManager.addEventListener('overlaycomplete', this.overlaycomplete);
 
@@ -332,14 +334,19 @@
       },
       //点聚合功能
       getMarkNumber() {
-        var markers = [];
+        if (!this.markerClusterer) {
+          // var _styles = [{url: this.imgPath, size: new BMap.Size(40, 40)}];, styles: _styles
+          this.markerClusterer = new BMapLib.MarkerClusterer(this.bMap, {markers: this.markers});
+        }
+        this.markerClusterer.clearMarkers();
+        this.markers = [];
         for (var i = 0; i < this.mapData.length; i++) {
           var pt = new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]);
-          var myIcon = new BMap.Icon(this.icon, new BMap.Size(2, 3));
-          markers.push(new BMap.Marker(pt, {icon: myIcon}));
+          var myIcon = new BMap.Icon(this.icon, new BMap.Size(1, 1));
+          this.markers.push(new BMap.Marker(pt, {icon: myIcon}));
         }
         //最简单的用法，生成一个marker数组，然后调用markerClusterer类即可。
-        var markerClusterer = new BMapLib.MarkerClusterer(this.bMap, {markers: markers});
+        this.markerClusterer.addMarkers(this.markers);
         // markers {Array} 要聚合的标记数组
         // girdSize {Number} 聚合计算时网格的像素大小，默认60
         // maxZoom {Number} 最大的聚合级别，大于该级别就不进行相应的聚合

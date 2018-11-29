@@ -9,7 +9,7 @@
           </el-tabs>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left;width: 1120px">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left;width: 1110px">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
                     style="width: 160px"></el-input>
@@ -51,7 +51,7 @@
           </el-time-picker>
         </el-form-item>
       </el-form>
-      <el-table :data="list10" class="center-block" v-loading="listLoading" stripe :max-height="tableHeight">
+      <el-table :data="list10" class="center-block" v-loading="listLoading" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
@@ -96,7 +96,7 @@
       return {
         isMore: false,
         activeItem: 'first',
-        tableHeight: window.innerHeight - 280,
+        tableHeight: window.innerHeight - 295,
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         count: 0,
@@ -129,9 +129,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 330
+          this.tableHeight = window.innerHeight - 345
         } else {
-          this.tableHeight = window.innerHeight - 280
+          this.tableHeight = window.innerHeight - 295
         }
       },
       handleChange(val) {

@@ -73,6 +73,7 @@
     data() {
       return {
         query: {imsis: [], faceIds: [], merge: false},
+        pathUrl: '',
         map: {},
         imsi: this.$route.query.imsi || 0,
         face: this.$route.query.face || 0,
@@ -283,8 +284,12 @@
             this.lushu = new BMapLib.LuShu(this.map, arrPois, {// 回放
               defaultContent: "",
               autoView: true,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
-              icon: new BMap.Icon('http://lbsyun.baidu.com/jsdemo/img/Mario.png', new BMap.Size(52, 26), {anchor: new BMap.Size(27, 13)}),
-              speed: 2000,
+              icon: new BMap.Icon(this.pathUrl ? this.pathUrl : 'http://lbsyun.baidu.com/jsdemo/img/Mario.png', this.pathUrl ? new BMap.Size(32, 32) : new BMap.Size(52, 26),
+                {
+                  anchor: new BMap.Size(27, 13),
+                  imageSize: this.pathUrl ? new BMap.Size(32, 32) : new BMap.Size(32, 32),
+                }),
+              speed: 2000,//覆盖物移动速度，单位米/秒
               enableRotation: true,//是否设置marker随着道路的走向进行旋转
               landmarkPois: []
             });
@@ -325,9 +330,10 @@
       this.imsi = this.$route.query.imsi || 0;
       this.face = this.$route.query.face || 0;
 
-      this.cTime = JSON.parse(sessionStorage.getItem("pathTime"));
-      let pathImsi = JSON.parse(sessionStorage.getItem("pathImsi"));
-      let pathFace = JSON.parse(sessionStorage.getItem("pathFace"));
+      this.cTime = JSON.parse(localStorage.getItem("pathTime"));
+      let pathImsi = JSON.parse(localStorage.getItem("pathImsi"));
+      let pathFace = JSON.parse(localStorage.getItem("pathFace"));
+      this.pathUrl = JSON.parse(localStorage.getItem("pathUrl"));
       if (pathImsi && this.imsi == 1) {
         this.query.imsis = pathImsi;
         this.imsis = pathImsi;

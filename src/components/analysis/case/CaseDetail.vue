@@ -55,7 +55,7 @@
       <h5 style="border-left: 3px #6699FF solid;text-align: left;font-size: 16px;padding-left: 10px;color:#343434">
         已关联任务</h5>
       <el-row style="margin-bottom: 15px">
-        <el-col :span="24" align="left" class="tab-card" style="text-align: left">
+        <el-col :span="24" align="left" class="tab-card no" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="碰撞任务" name="collision"></el-tab-pane>
             <el-tab-pane label="伴随任务" name="follow"></el-tab-pane>

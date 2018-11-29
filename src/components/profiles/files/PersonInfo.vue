@@ -270,8 +270,9 @@
             this.userInfo.timeStr = formatDate(new Date(data.data.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
             this.userInfo.area = data.data.areaCode ? this.getAreaLable(data.data.areaCode) : '--';
 
-            sessionStorage.setItem("pathImsi", JSON.stringify(imsis));
-            sessionStorage.setItem("pathFace", JSON.stringify(faces));
+            localStorage.setItem("pathUrl", JSON.stringify(this.userInfo.faceUrl));
+            localStorage.setItem("pathImsi", JSON.stringify(imsis));
+            localStorage.setItem("pathFace", JSON.stringify(faces));
           }
         }).catch((err) => {
           this.$message.error(err);

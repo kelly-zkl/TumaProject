@@ -8,7 +8,7 @@ import axios from "axios";
 import VueAxios from "vue-axios";
 import 'babel-polyfill';
 
-// import 'element-ui/lib/theme-chalk/index.css';
+import 'element-ui/lib/theme-chalk/index.css';
 
 import './assets/css/element-variables.scss'
 import "./assets/css/font-awesome.min.css";

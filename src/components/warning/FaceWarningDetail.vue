@@ -61,7 +61,7 @@
         </el-form>
       </div>
       <el-row>
-        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
+        <el-col :span="16" align="left" class="tab-card no" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="疑似人员" name="person"></el-tab-pane>
             <el-tab-pane label="疑似IMSI" name="imsi"></el-tab-pane>
@@ -84,11 +84,11 @@
                   </el-form-item>
                   <el-form-item label="关联IMSI" style="margin:0">
                     <span
-                      style="font-size: 14px;color:#000">{{persons.imsiList.length>0?persons.imsiList[0].imsi:'--'}}</span>
+                      style="font-size: 14px;color:#000">{{item.imsiList.length>0?item.imsiList[0].imsi:'--'}}</span>
                   </el-form-item>
                   <el-form-item style="margin:0">
                     <span style="font-size: 14px;color:#000;margin-right: 20px">
-                      {{'置信度['+(persons.imsiList.length>0&&persons.imsiList[0].weight>=0?persons.imsiList[0].weight/10:'--')+'%]'}} {{'关联次数['+(persons.imsiList.length>0&&persons.imsiList[0].fnIn>=0?persons.imsiList[0].fnIn:'--')+']'}}</span>
+                      {{'置信度['+(item.imsiList.length>0&&item.imsiList[0].weight>=0?item.imsiList[0].weight/10:'--')+'%]'}} {{'关联次数['+(item.imsiList.length>0&&item.imsiList[0].fnIn>=0?item.imsiList[0].fnIn:'--')+']'}}</span>
                   </el-form-item>
                 </el-form>
               </div>
@@ -324,8 +324,8 @@
           return;
         }
         let faces = [this.faceId];
-        sessionStorage.setItem("pathFace", JSON.stringify(faces));
-        sessionStorage.setItem("pathTime", JSON.stringify(this.qTime));
+        localStorage.setItem("pathFace", JSON.stringify(faces));
+        localStorage.setItem("pathTime", JSON.stringify(this.qTime));
         // this.$router.push({path: '/pathLine', query: {face: 1}});
         let routeData = this.$router.resolve({path: '/pathLine', query: {face: 1}});
         window.open(routeData.href, '_blank');
@@ -334,14 +334,13 @@
       getPersons() {
         this.listLoading = true;
         this.$post('common/listPersonByUrl', {
-            type: "faceWarning", url: this.faceDetail.faceUrl + '?t=' + this.timeStamp
-          },
-          undefined, undefined, "login").then((data) => {
+          type: "faceWarning", url: this.faceDetail.faceUrl + '?t=' + this.timeStamp
+        }, undefined, undefined, "login").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
-            if (data.data && data.data.length > 0) {
-              this.persons = data.data.personBOList;
-              this.imsiList = data.data.imsiWeightBOList;
+            if (data.data) {
+              this.persons = data.data.personBOList ? data.data.personBOList : [];
+              this.imsiList = data.data.imsiWeightBOList ? data.data.imsiWeightBOList : [];
             }
           } else if ("100000" === data.code) {//执行中
             setTimeout(() => {

@@ -21,7 +21,7 @@
         <el-button type="text" style="margin: 0;padding: 0;position: absolute;right: 10px"
                    icon="el-icon-close" @click="showTip=false"></el-button>
       </div>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1120px">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1110px">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
                      :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -56,7 +56,7 @@
           </el-select>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable>
+          <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable style="width: 200px">
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
           </el-select>
@@ -86,7 +86,7 @@
         </el-form-item>
       </el-form>
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe
-                @selection-change="selsChange" :max-height="tableHeight">
+                @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150">
@@ -164,7 +164,7 @@
         bigUrl: '',
         activeItem: 'T',
         imgPath: require('../../assets/img/icon_people.png'),
-        tableHeight: window.innerHeight - 280,
+        tableHeight: window.innerHeight - 295,
         query: {size: 100},
         statuses: [{label: '待处理', value: 0}, {label: '已处理', value: 2}, {label: '误报', value: 3}],
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
@@ -203,9 +203,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 330
+          this.tableHeight = window.innerHeight - 345
         } else {
-          this.tableHeight = window.innerHeight - 280
+          this.tableHeight = window.innerHeight - 295
         }
       },
       //是否有进行中的布控任务

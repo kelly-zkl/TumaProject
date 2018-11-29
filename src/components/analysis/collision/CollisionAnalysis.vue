@@ -3,7 +3,7 @@
     <section class="content">
       <el-row>
         <el-col :span="19" align="left" v-show="getButtonVial('collision:query')" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 920px">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.taskName" placeholder="任务名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
@@ -57,7 +57,7 @@
         </el-col>
       </el-row>
       <el-table :data="records" v-loading="listLoading" class="center-block" stripe
-                @selection-change="selsChange" :max-height="tableHeight">
+                @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="任务名称" prop="taskName" min-width="125"
@@ -109,7 +109,7 @@
         records: [],
         listLoading: false,
         isMore: false,
-        tableHeight: window.innerHeight - 230,
+        tableHeight: window.innerHeight - 245,
         taskTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '图像'}],//,{value: 'MAC', label: 'MAC'}
         conditionTypes: [{value: 0, label: '多条件碰撞'}, {value: 1, label: '单条件碰撞'}],
         taskStatus: [{value: 'FINISH', label: '已完成'}, {value: 'FAILE', label: '失败'},
@@ -135,9 +135,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 280
+          this.tableHeight = window.innerHeight - 295
         } else {
-          this.tableHeight = window.innerHeight - 230
+          this.tableHeight = window.innerHeight - 245
         }
       },
       //全选

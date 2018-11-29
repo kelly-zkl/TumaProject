@@ -22,7 +22,7 @@
           </el-col>
         </el-row>
       </div>
-      <!--<div align="left" class="tab-card">-->
+      <!--<div align="left" class="tab-card no">-->
       <!--<el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">-->
       <!--<el-tab-pane label="所有记录" name="imsi"></el-tab-pane>-->
       <!--<el-tab-pane label="关联身份" name="identity"></el-tab-pane>-->

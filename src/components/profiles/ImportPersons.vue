@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('person:query')"
-               style="text-align: left;width: 1120px">
+               style="text-align: left;width: 1110px">
         <el-form-item style="margin-bottom: 10px">
           <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
                      :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -61,7 +61,7 @@
         </el-form-item>
       </el-form>
       <el-table ref="table" :data="list10" v-loading="listLoading" class="center-block" stripe
-                :max-height="tableHeight">
+                :height="tableHeight" :max-height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="人员编号" prop="faceId" min-width="180"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -76,8 +76,9 @@
         <el-table-column align="left" label="关联IMSI[置信度]" prop="imsiList" min-width="220" max-width="250">
           <template slot-scope="scope">
             <div v-for="item in scope.row.imsiList">
-              <span>{{item.imsi}}<span
-                style="color:#000;font-weight: bold">[{{(item.weight/10).toFixed(1)}}%]</span></span>
+              <span
+                v-bind:style="query.imsi&&query.imsi.length>0&&item.imsi.indexOf(query.imsi)>-1?'color:#ff0000':'color:#000'">{{item.imsi}}<span
+                style="font-weight: bold">[{{(item.weight/10).toFixed(1)}}%]</span></span>
             </div>
           </template>
         </el-table-column>
@@ -91,7 +92,7 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="身份证号" prop="idCard" min-width="170"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="建档时间" prop="createTime" min-width="170"
+        <el-table-column align="left" label="碰撞时间" prop="uptime" min-width="170"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="150" fixed="right">
           <template slot-scope="scope">
@@ -130,7 +131,7 @@
       return {
         isMore: false,
         query: {size: 100},
-        tableHeight: window.innerHeight - 230,
+        tableHeight: window.innerHeight - 245,
         provinceList: json,
         imgPath: require('../../assets/img/icon_people.png'),
         props: {value: 'o', label: 'n', children: 'c'},
@@ -178,9 +179,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 280
+          this.tableHeight = window.innerHeight - 295
         } else {
-          this.tableHeight = window.innerHeight - 230
+          this.tableHeight = window.innerHeight - 245
         }
       },
       beforeAvatarUpload(file) {
@@ -290,7 +291,7 @@
         if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
           (this.list.length % 100 === 0 || this.list.length === this.couple)) {
           this.firstPage = this.list.length;
-          this.query.pageTime = this.list[this.list.length - 1].createTime;
+          this.query.pageTime = this.list[this.list.length - 1].uptime;
           this.getData();
         }
         this.list10 = this.list;
@@ -316,8 +317,8 @@
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
         } else if (column.property === 'startAge') {
           return row.startAge >= 0 ? row.startAge == row.endAge ? (row.startAge - 3) + '~' + (row.startAge + 3) : row.startAge + '~' + row.endAge : '--';
-        } else if (column.property === 'createTime') {
-          return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
+        } else if (column.property === 'uptime') {
+          return row.uptime ? formatDate(new Date(row.uptime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

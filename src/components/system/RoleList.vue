@@ -24,14 +24,14 @@
           </el-col>
           <el-col :span="4" align="right" style="text-align: right">
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" icon="el-icon-plus" @click="addrole()" size="medium"
+              <el-button type="primary" @click="addrole()" size="medium"
                          v-show="getButtonVial('manager:role:create')">创建角色
               </el-button>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
-      <el-table :data="roles" v-loading="listLoading" class="center-block" stripe :max-height="tableHeight">
+      <el-table :data="roles" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
         <el-table-column align="left" prop="roleName" label="角色名称" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
@@ -106,7 +106,7 @@
         isShow: false,
         dialogWidth: isPC() ? '40%' : '90%',
         labelWidth: isPC() ? '120px' : '80px',
-        tableHeight: window.innerHeight - 230,
+        tableHeight: window.innerHeight - 245,
         query: {
           page: 1, size: 10, roleName: '', roleType: '', lastNode: true,
           creatorGroupId: JSON.parse(sessionStorage.getItem("user")).groupId

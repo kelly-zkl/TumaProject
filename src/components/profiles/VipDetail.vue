@@ -48,7 +48,7 @@
         </el-form>
       </div>
       <el-row>
-        <el-col :span="16" align="left" class="tab-card" style="text-align: left">
+        <el-col :span="16" align="left" class="tab-card no" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="疑似人员" name="person"></el-tab-pane>
             <el-tab-pane label="疑似IMSI" name="imsi"></el-tab-pane>
@@ -72,11 +72,11 @@
                   </el-form-item>
                   <el-form-item label="关联IMSI" style="margin:0">
                     <span
-                      style="font-size: 14px;color:#000">{{persons.imsiList.length>0?persons.imsiList[0].imsi:'--'}}</span>
+                      style="font-size: 14px;color:#000">{{item.imsiList.length>0?item.imsiList[0].imsi:'--'}}</span>
                   </el-form-item>
                   <el-form-item style="margin:0">
                     <span style="font-size: 14px;color:#000;margin-right: 20px">
-                      {{'置信度['+(persons.imsiList.length>0&&persons.imsiList[0].weight>=0?persons.imsiList[0].weight/10:'--')+'%]'}} {{'关联次数['+(persons.imsiList.length>0&&persons.imsiList[0].fnIn>=0?persons.imsiList[0].fnIn:'--')+']'}}</span>
+                      {{'置信度['+(item.imsiList.length>0&&item.imsiList[0].weight>=0?item.imsiList[0].weight/10:'--')+'%]'}} {{'关联次数['+(item.imsiList.length>0&&item.imsiList[0].fnIn>=0?item.imsiList[0].fnIn:'--')+']'}}</span>
                   </el-form-item>
                 </el-form>
               </div>
@@ -195,7 +195,13 @@
         this.getPersons();
       },
       handleAvatarSuccess(res, file) {
-        this.modifyPerson.faceUrl = URL.createObjectURL(file.raw);
+        if (res.code === '000000') {
+          if (res.data) {
+            this.modifyPerson.faceUrl = res.data.fileUrl;
+          }
+        } else {
+          this.$message.error(res.msg);
+        }
       },
       beforeAvatarUpload(file) {
         if (globalValidImg(file, this.$message)) {
@@ -244,9 +250,9 @@
           undefined, undefined, "login").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
-            if (data.data && data.data.length > 0) {
-              this.persons = data.data.personBOList;
-              this.imsiList = data.data.imsiWeightBOList;
+            if (data.data) {
+              this.persons = data.data.personBOList ? data.data.personBOList : [];
+              this.imsiList = data.data.imsiWeightBOList ? data.data.imsiWeightBOList : [];
             }
           } else if ("100000" === data.code) {//执行中
             setTimeout(() => {

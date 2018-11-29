@@ -21,7 +21,7 @@
         <el-button type="text" style="margin: 0;padding: 0;position: absolute;right: 10px"
                    icon="el-icon-close" @click="showTip=false"></el-button>
       </div>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1120px"
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1110px"
                v-show="getButtonVial(exportKey)">
         <el-form-item style="margin-bottom: 10px">
           <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 160px"
@@ -68,7 +68,7 @@
         </el-form-item>
       </el-form>
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe
-                @selection-change="selsChange" :max-height="tableHeight">
+                @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="IMSI" prop="imsi" min-width="150"
@@ -114,7 +114,7 @@
         query: {size: 100},
         listLoading: false,
         isMore: false,
-        tableHeight: window.innerHeight - 280,
+        tableHeight: window.innerHeight - 290,
         statuses: [{label: '待处理', value: 0}, {label: '已处理', value: 2}, {label: '误报', value: 3}],
         exportKey: 'warning:get:listImsiToday',
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
@@ -148,9 +148,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 330
+          this.tableHeight = window.innerHeight - 340
         } else {
-          this.tableHeight = window.innerHeight - 280
+          this.tableHeight = window.innerHeight - 290
         }
       },
       //是否有进行中的布控任务

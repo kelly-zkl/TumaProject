@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <div class="center-block">
-        <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1120px">
+        <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1110px">
           <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('device:query')">
             <el-input placeholder="设备标识/ID" v-model="query.deviceName" :maxlength="30"
                       @change="changeDevice" size="medium"></el-input>
@@ -42,7 +42,7 @@
           </el-form-item>
         </el-form>
 
-        <el-table :data="deviceList" v-loading="listLoading" class="center-block" stripe :max-height="tableHeight">
+        <el-table :data="deviceList" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
@@ -112,7 +112,7 @@
         lineStatus: '',
         areaList: [],
         provinceList: json,
-        tableHeight: window.innerHeight - 230,
+        tableHeight: window.innerHeight - 245,
         dialogWidth: isPC() ? '40%' : '90%',
         labelWidth: isPC() ? '100px' : '80px',
         listLoading: false,
@@ -140,9 +140,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 280
+          this.tableHeight = window.innerHeight - 295
         } else {
-          this.tableHeight = window.innerHeight - 230
+          this.tableHeight = window.innerHeight - 245
         }
       },
       //省市县变化

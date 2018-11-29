@@ -3,7 +3,7 @@
     <section class="content">
       <el-row>
         <el-col :span="20" align="left" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 930px">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 920px">
             <el-form-item style="margin-bottom: 10px">
               <el-upload ref="upload" class="upload img" :action="uploadImgUrl" name="file"
                          :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -73,7 +73,7 @@
         </el-col>
       </el-row>
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe
-                @selection-change="selsChange" :max-height="tableHeight">
+                @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="130"
@@ -261,7 +261,7 @@
         runningImports: false,
         runningImportResult: false,
         runningImportNumber: false,
-        tableHeight: window.innerHeight - 230,
+        tableHeight: window.innerHeight - 245,
         count: 0,
         list: [],
         list10: [],
@@ -309,9 +309,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 280
+          this.tableHeight = window.innerHeight - 295
         } else {
-          this.tableHeight = window.innerHeight - 230
+          this.tableHeight = window.innerHeight - 245
         }
       },
       showModify(row) {
@@ -472,7 +472,13 @@
         });
       },
       handleAvatarSuccess(res, file) {
-        this.modifyPerson.faceUrl = URL.createObjectURL(file.raw);
+        if (res.code === '000000') {
+          if (res.data) {
+            this.modifyPerson.faceUrl = res.data.fileUrl;
+          }
+        } else {
+          this.$message.error(res.msg);
+        }
       },
       beforeAvatarUpload(file) {
         if (globalValidImg(file, this.$message)) {

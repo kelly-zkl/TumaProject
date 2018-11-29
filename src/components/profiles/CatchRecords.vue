@@ -9,7 +9,7 @@
           </el-tabs>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1120px">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1110px">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
                      :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -70,7 +70,7 @@
           </el-time-picker>
         </el-form-item>
       </el-form>
-      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe :max-height="tableHeight">
+      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="人员图像" prop="imageUrl" min-width="125" max-width="250">
           <template slot-scope="scope">
@@ -128,7 +128,7 @@
       return {
         runBigPic: false,
         isMore: false,
-        tableHeight: window.innerHeight - 280,
+        tableHeight: window.innerHeight - 295,
         bigUrl: '',
         activeItem: 'T',
         query: {size: 100},
@@ -166,9 +166,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 330
+          this.tableHeight = window.innerHeight - 345
         } else {
-          this.tableHeight = window.innerHeight - 280
+          this.tableHeight = window.innerHeight - 295
         }
       },
       handleChange(val) {

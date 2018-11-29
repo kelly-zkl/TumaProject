@@ -1,3 +1,38 @@
+/*滚动条的样式*/
+::-webkit-scrollbar {
+  z-index: 11;
+  width: 6px;
+}
+
+::-webkit-scrollbar:horizontal {
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  width: 6px;
+  background: #D5D5D8
+}
+
+::-webkit-scrollbar-corner {
+  background: #fff
+}
+
+::-webkit-scrollbar-track {
+  background: #fff
+}
+
+::-webkit-scrollbar-track-piece {
+  background: #fff;
+  width: 6px
+}
+
+/* 滚动条两端按钮不显示 */
+.scrollbar .scrollbarbutton {
+  display: none ! important;
+}
+
+/*输入框的禁止状态颜色，默认颜色*/
 .el-input.is-disabled .el-input__inner {
   background-color: #f5f7fa;
   border-color: #e4e7ed;
@@ -17,6 +52,7 @@
   color: #999
 }
 
+/*登录页面登录框css*/
 .login-box .el-input__inner {
   background: rgba(0, 0, 0, 0);
   border-color: #CFCFCF;
@@ -39,16 +75,18 @@
   border-color: #6699FF;
 }
 
-.el-tag + .el-tag {
-  margin-left: 10px;
-}
-
+/*左侧导航栏二级菜单的popu框*/
 .content-aside-close .el-menu, .content-aside .el-menu {
   border-right: none;
 }
 
 .content-aside-close .el-menu--popup, .content-aside .el-menu--popup {
   min-width: 170px
+}
+
+/*输入框+标签*/
+.el-tag + .el-tag {
+  margin-left: 10px;
 }
 
 .button-tag {
@@ -98,7 +136,7 @@
 .overview .el-table {
   overflow-y: scroll;
   box-sizing: content-box;
-  padding-right: 17px;
+  padding-right: 6px;
   height: 365px;
   font-size: 14px;
   color: #fff;
@@ -156,6 +194,37 @@
   border: 1px solid #6699FF;
 }
 
+/*全局搜索*/
+.all-search .el-input-group__append, .all-search .el-input-group__prepend {
+  background-color: #2B3F6E;
+  color: #fff;
+  border: none;
+  padding: 0 10px;
+}
+
+.all-search .el-button [class*=el-icon-] {
+  background-color: #2B3F6E;
+  color: #fff;
+  border: none;
+  padding: 0;
+  font-size: 24px;
+}
+
+.all-search .el-input__inner {
+  background-color: #2B3F6E;
+  border: none;
+  border-right: 1px solid #08163D;
+  border-left: 1px solid #08163D;
+  color: #fff;
+  padding: 0 10px;
+}
+
+.el-popover {
+  max-height: 250px;
+  overflow-y: scroll;
+}
+
+/*系统参数配置*/
 .sys .el-input-group__append, .sys .el-input-group__prepend {
   background-color: #fff;
   color: #999;
@@ -208,7 +277,7 @@
 
 /*标签页*/
 .tab-card .el-tabs--border-card {
-  background: #E9ECF0;
+  background: #fff;
   border: none;
   -webkit-box-shadow: none;
   box-shadow: none;
@@ -221,7 +290,7 @@
 }
 
 .tab-card .el-tabs--border-card > .el-tabs__header {
-  background-color: #E9ECF0;
+  background-color: #fff;
   border-bottom: none;
   margin: 0;
   padding: 0;
@@ -231,10 +300,33 @@
   color: #343434 !important;
   font-weight: bold;
   font-size: 15px;
-  border-top: 4px #E9ECF0 solid;
+  border-top: 4px #fff solid;
 }
 
 .tab-card .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
+  color: #6699FF !important;
+  background-color: #fff;
+  border-top: 4px #6699FF solid;
+  border-right-color: transparent;
+  border-left-color: transparent
+}
+
+.tab-card.no .el-tabs--border-card {
+  background: #E9ECF0;
+}
+
+.tab-card.no .el-tabs--border-card > .el-tabs__header {
+  background-color: #E9ECF0;
+}
+
+.tab-card.no .el-tabs--border-card > .el-tabs__header .el-tabs__item {
+  color: #343434 !important;
+  font-weight: bold;
+  font-size: 15px;
+  border-top: 4px #E9ECF0 solid;
+}
+
+.tab-card.no .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
   color: #6699FF !important;
   background-color: #E9ECF0;
   border-top: 4px #6699FF solid;
@@ -265,6 +357,11 @@
 
 .view-msg .el-dialog__header, .view-msg .el-dialog__body, .warning .el-dialog__body {
   padding: 0;
+}
+
+.search .el-dialog__headerbtn .el-dialog__close {
+  color: #D0CACF;
+  font-size: 30px
 }
 
 .warning .el-dialog {
@@ -369,11 +466,10 @@
 }
 
 .content-main {
-  padding-right: 20px;
   background-color: #E9ECF0;
   flex: 1;
   overflow-y: scroll;
-  padding-top: 10px;
+  padding: 10px 20px 20px 20px;
 }
 
 .content-aside-close .el-menu-item:focus, .content-aside-close .el-menu-item:hover, .content-aside .el-menu-item:focus, .content-aside .el-menu-item:hover {
@@ -393,11 +489,15 @@
   border-bottom: 3px solid #3FA8F3 !important
 }
 
+.el-menu--horizontal .el-menu .el-menu-item, .el-menu--horizontal .el-menu .el-submenu__title {
+  padding: 0 0;
+}
+
 .home-container {
   position: absolute;
   padding: 0;
   margin: 0;
-  top: 61px;
+  top: 60px;
   bottom: 0;
   left: 0;
   width: 100%;

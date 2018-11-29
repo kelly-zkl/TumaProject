@@ -37,7 +37,7 @@
         </el-col>
       </el-row>
       <el-table :data="placeList" v-loading="listLoading" class="center-block" stripe
-                @selection-change="selsChange" :max-height="tableHeight">
+                @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="场所编码" prop="placeCode" min-width="150"
@@ -176,7 +176,7 @@
         query: {page: 1, size: 10},
         provinceList: json,
         props: {value: 'o', label: 'n', children: 'c'},
-        tableHeight: window.innerHeight - 230,
+        tableHeight: window.innerHeight - 245,
         serviceTypes: [{value: '0', label: '网吧'}, {value: '1', label: '旅店宾馆类（住宿服务场所）'},
           {value: '2', label: '图书馆阅览室'}, {value: '3', label: '电脑培训中心类'}, {value: '4', label: '娱乐场所类'},
           {value: '5', label: '交通枢纽'}, {value: '6', label: '公共交通工具'}, {value: '7', label: '餐饮服务场所'},

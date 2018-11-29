@@ -24,7 +24,7 @@
         </el-row>
       </div>
       <el-row style="margin-bottom: 10px">
-        <el-col :span="24" align="left" class="tab-card">
+        <el-col :span="24" align="left" class="tab-card no">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="所有侦码记录" name="record"></el-tab-pane>
             <el-tab-pane label="关联人员" name="person"></el-tab-pane>

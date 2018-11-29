@@ -34,7 +34,7 @@
       <el-row style="padding-top: 10px">
         <el-col :span="24" align="left" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('case:query')"
-                   style="text-align: left;width: 1120px">
+                   style="text-align: left;width: 1110px">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.caseName" placeholder="案件编号/名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
@@ -80,7 +80,7 @@
         <!--</el-col>-->
       </el-row>
       <el-table :data="caseList" v-loading="listLoading" class="center-block" stripe
-                @selection-change="selsChange" :max-height="tableHeight">
+                @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" v-for="item in defaultProps" :key="item.value" :formatter="formatterAddress"
@@ -197,7 +197,7 @@
         dialogWidth: '600px',
         labelWidth: isPC() ? '100px' : '80px',
         props: {value: 'o', label: 'n', children: 'c'},
-        tableHeight: window.innerHeight - 280,
+        tableHeight: window.innerHeight - 295,
         areaList: [],
         caseTypeAdd: '',
         provinceList: json,
@@ -247,9 +247,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 330
+          this.tableHeight = window.innerHeight - 345
         } else {
-          this.tableHeight = window.innerHeight - 280
+          this.tableHeight = window.innerHeight - 295
         }
       },
       //案件属性
