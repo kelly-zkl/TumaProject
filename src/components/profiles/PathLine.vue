@@ -18,9 +18,10 @@
           <el-button @click="getLineData()" size="medium" type="primary">搜索</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button @click="luShu()" size="medium" type="primary" v-show="query.merge == false">轨迹回放
+          <el-button @click="luShu()" size="medium" type="primary" v-show="query.merge == false"
+                     :icon="isPause?'fa fa-pause':'fa fa-play'">
+            {{isPause?'暂停回放':'回放轨迹'}}
           </el-button>
-          <el-button @click="pause()" size="medium" type="primary" v-show="isPause">暂停</el-button>
         </el-form-item>
       </el-form>
       <el-row v-show="query.merge == false" style="margin: 0;padding: 0">
@@ -139,6 +140,7 @@
       //选择imsi轨迹
       handleImsi(val) {
         this.choose.imsi = val;
+        this.isPause = false;
         if (this.lushu) {
           this.lushu.stop();
         }
@@ -296,17 +298,11 @@
           }
         }
       },
-      //轨迹回放
+      //轨迹回放/暂停
       luShu() {
         if (this.lushu) {
-          this.lushu.start();
-          this.isPause = true;
-        }
-      },
-      //暂停回放
-      pause() {
-        if (this.lushu) {
-          this.lushu.pause();
+          this.isPause = !this.isPause;
+          this.isPause ? this.lushu.start() : this.lushu.pause();
         }
       }
     },

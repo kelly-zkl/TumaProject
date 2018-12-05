@@ -5,15 +5,14 @@
         <el-col :span="4" style="padding-right: 10px;border-right: 1px solid #e5e5e5">
           <div v-bind:style="'overflow-y: scroll;height:'+leftHeight+'px'">
             <div v-bind:class="currentIdx==idx?'depart-main active':'depart-main'" v-for="(tab,idx) in departments"
-                 :key="idx+''" @click="handleClick(idx)">
-              <span class="depart-item">{{tab.name}}</span>
+                 :key="tab.deptId" @click="handleClick(idx)">
+              <span class="depart-item">{{tab.deptName}}</span>
               <i class="btn-delete el-icon-delete" @click.stop="deleteDepart(tab)"></i>
-              <i class="btn-delete el-icon-edit"
-                 @click.stop="addDepart='修改部门';departName=tab.name;departId='';addDepartVisible=true"></i>
+              <i class="btn-delete el-icon-edit" @click.stop="showDeptDialog(1,idx)"></i>
             </div>
           </div>
           <el-button type="primary" icon="el-icon-plus" size="medium" style="width: 100%;margin-top: 15px"
-                     @click="addDepart='创建部门';departName='';addDepartVisible=true">创建部门
+                     @click="showDeptDialog(0)">创建部门
           </el-button>
         </el-col>
         <el-col :span="20" style="padding-left: 10px">
@@ -25,7 +24,8 @@
                             style="width: 200px" size="medium"></el-input>
                 </el-form-item>
                 <el-form-item style="margin-bottom: 10px">
-                  <el-select v-model="query.myGroupId" placeholder="全部组织" size="medium" filterable>
+                  <el-select v-model="query.myGroupId" placeholder="全部组织" size="medium" filterable
+                             @change="groupChange">
                     <el-option v-for="item in organizations" :key="item.groupId" :label="item.groupName"
                                :value="item.groupId">
                     </el-option>
@@ -60,6 +60,8 @@
             <el-table-column align="left" prop="account" label="账号" min-width="150"
                              max-width="300" :formatter="formatterAddress"></el-table-column>
             <el-table-column align="left" prop="realName" label="用户名" min-width="150"
+                             max-width="300" :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="deptName" label="所属部门" min-width="150"
                              max-width="300" :formatter="formatterAddress"></el-table-column>
             <el-table-column align="left" prop="groupName" label="所属组织" min-width="150"
                              max-width="300" :formatter="formatterAddress"></el-table-column>
@@ -107,10 +109,17 @@
           <el-form-item label="用户名" prop="realName">
             <el-input v-model="admin.realName" placeholder="请输入用户名" :maxlength="16" :minlength="2"></el-input>
           </el-form-item>
-          <el-form-item label="所属组织" align="left" prop="groupId">
-            <el-select v-model="admin.groupId" placeholder="请选择组织" filterable>
-              <el-option v-for="item in organizations" :key="item.groupId" :label="item.groupName"
-                         :value="item.groupId">
+          <!--<el-form-item label="所属组织" align="left" prop="groupId">-->
+          <!--<el-select v-model="admin.groupId" placeholder="请选择组织" filterable>-->
+          <!--<el-option v-for="item in organizations" :key="item.groupId" :label="item.groupName"-->
+          <!--:value="item.groupId">-->
+          <!--</el-option>-->
+          <!--</el-select>-->
+          <!--</el-form-item>-->
+          <el-form-item label="所属部门" align="left" prop="deptId">
+            <el-select v-model="admin.deptId" placeholder="请选择部门" filterable>
+              <el-option v-for="item in departments" :key="item.deptId" :label="item.deptName"
+                         :value="item.deptId">
               </el-option>
             </el-select>
           </el-form-item>
@@ -149,13 +158,21 @@
           <el-form-item label="用户名" prop="realName">
             <el-input v-model="admin.realName" placeholder="请输入用户名" :maxlength="10" :minlength="2"></el-input>
           </el-form-item>
-          <el-form-item label="所属组织" align="left" prop="groupId">
-            <el-select v-model="admin.groupId" placeholder="请选择组织" v-if="admin.groupAdmin != true" filterable>
-              <el-option v-for="item in organizations" :key="item.groupId" :label="item.groupName"
-                         :value="item.groupId">
+          <!--<el-form-item label="所属组织" align="left" prop="groupId">-->
+          <!--<el-select v-model="admin.groupId" placeholder="请选择组织" v-if="admin.groupAdmin != true" filterable>-->
+          <!--<el-option v-for="item in organizations" :key="item.groupId" :label="item.groupName"-->
+          <!--:value="item.groupId">-->
+          <!--</el-option>-->
+          <!--</el-select>-->
+          <!--<span v-else>{{admin.groupName}}</span>-->
+          <!--</el-form-item>-->
+          <el-form-item label="所属部门" align="left" prop="deptId">
+            <el-select v-model="admin.deptId" placeholder="请选择部门" filterable v-if="admin.groupAdmin != true">
+              <el-option v-for="item in departments" :key="item.deptId" :label="item.deptName"
+                         :value="item.deptId">
               </el-option>
             </el-select>
-            <span v-else>{{admin.groupName}}</span>
+            <span v-else>{{admin.deptName}}</span>
           </el-form-item>
           <el-form-item label="设置岗位" align="left" required>
             <el-select v-model="role" placeholder="请选择岗位" v-if="admin.groupAdmin != true" filterable>
@@ -206,7 +223,7 @@
       <el-dialog :title="addDepart" :visible.sync="addDepartVisible" :width="dialogWidth">
         <el-form label-width="100px" labelPosition="right">
           <el-form-item label="部门名称">
-            <el-input v-model="departName" placeholder="请输入部门名称" :maxlength="6"></el-input>
+            <el-input v-model="departObj.deptName" placeholder="请输入部门名称" :maxlength="10"></el-input>
           </el-form-item>
         </el-form>
         <div class="block" style="margin-top: 20px">
@@ -266,8 +283,7 @@
         resetPswVisible: false,
         addUserTitle: '添加成员',
         addDepart: '创建部门',
-        departName: '',
-        departId: '',
+        departObj: {deptName: ''},
         addDepartVisible: false,
         isMore: false,
         leftHeight: window.innerHeight - 200,
@@ -289,7 +305,8 @@
             {required: true, message: '请输入密码', trigger: 'blur'},
             {validator: pswValidate, trigger: "change,blur"},
           ],
-          groupId: [{required: true, message: '请选择组织', trigger: 'blur'}]
+          // groupId: [{required: true, message: '请选择组织', trigger: 'blur'}],
+          deptId: [{required: true, message: '请选择部门', trigger: 'blur'}]
         },
         rules1: {
           newPsw: [
@@ -304,10 +321,8 @@
         count: 0,
         query: {page: 1, size: 10, myGroupId: JSON.parse(sessionStorage.getItem("user")).groupId},
         users: [],
-        departments: [{name: "部门和第三方财富地方吃饭"}, {name: "部门B"}, {name: "部门C"}, {name: "部门D"},
-          {name: "部门Aqqqqqqqqq"}, {name: "部门B"}, {name: "部门C"}, {name: "部门D"}, {name: "部门Aqqqqqqqqq"},
-          {name: "部门B"}, {name: "部门C"}, {name: "部门D"}, {name: "部门Aqqqqqqqqq"}, {name: "部门B"}, {name: "部门C"},
-          {name: "部门D"}, {name: "部门Aqqqqqqqqq"}, {name: "部门B"}, {name: "部门C"}, {name: "部门D"}],
+        departments: [{deptName: "部门和第三方财富地方吃饭", deptId: 0}, {deptName: "部门B", deptId: 1},
+          {deptName: "部门C", deptId: 2}, {deptName: "部门D", deptId: 3}],
         setPsw: 'defaultPsw',
         role: '',
         roles: [],
@@ -321,29 +336,72 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      showDeptDialog(val, indx) {
+        if (val == 0) {//创建
+          this.addDepart = '创建部门';
+          this.departObj = {deptName: ''};
+        } else {//修改
+          this.addDepart = '修改部门';
+          this.departObj = {deptName: this.departments[indx].deptName, deptId: this.departments[indx].deptId};
+        }
+        this.addDepartVisible = true
+      },
+      //组织变化=》部门变化、用户变化
+      groupChange(val) {
+        this.getDepartments(val);
+        this.handleClick(0);
+      },
+      //获取部门列表
+      getDepartments(id) {
+        let param = {page: 1, size: 9999, groupId: id ? id : JSON.parse(sessionStorage.getItem("user")).groupId};
+        this.$post('/manager/dept/query', param).then((data) => {
+          this.departments = data.data.depts;
+          if (this.departments.length > 0) {
+            this.query.deptId = this.departments[0].deptId;
+            this.getUserList();
+          }
+        })
+      },
       //删除部门
       deleteDepart(item) {
         this.$confirm('确定要删除该部门吗？', '提示', {type: 'warning'}).then(() => {
-          // this.$post('/manager/user/update', param, '操作成功').then((data) => {
-          //   this.getUserList();
-          // });
+          this.$post('/manager/dept/delete', {deptId: item.deptId}, '操作成功').then((data) => {
+            this.getDepartments();
+          });
         }).catch((err) => {
         });
       },
       //修改部门
       editDepart() {
-        let url = '/manager/user/create';
+        if (this.departObj.deptName.length == 0) {
+          this.$message.error('请输入部门名称');
+          return;
+        }
+        let param = {};
+        let url = '/manager/dept/create';
         let msg = '添加成功';
         if (this.addDepart === '修改部门') {
-          url = '/manager/user/update';
+          url = '/manager/dept/update';
           msg = '修改成功';
+          param = {deptId: this.departObj.deptId, deptName: this.departObj.deptName};
+        } else {
+          let groupId = JSON.parse(sessionStorage.getItem("user")).groupId;
+          let groupName = this.getGroupName(groupId);
+          let creatorId = JSON.parse(sessionStorage.getItem("user")).userId;
+          param = {
+            groupId: groupId, creatorId: creatorId,
+            groupName: groupName, deptName: this.departObj.deptName, remark: ''
+          };
         }
-        // this.$post('/manager/user/update', param, '操作成功').then((data) => {
-        //   this.getUserList();
-        // });
+        this.addDepartVisible = false;
+        this.$post(url, param, msg).then((data) => {
+          this.getDepartments();
+        });
       },
       handleClick(idx) {
-        this.currentIdx = idx
+        this.currentIdx = idx;
+        this.query.deptId = this.departments[idx].deptId;
+        this.getUserList();
       },
       showMore() {
         this.isMore = !this.isMore;
@@ -500,6 +558,15 @@
           }
         })
       },
+      getGroupName(groupId) {
+        let str = '';
+        this.organizations.forEach((item) => {
+          if (item.groupId == groupId) {
+            str = item.groupName
+          }
+        });
+        return str;
+      },
       //获取角色列表
       getRoles() {
         this.$post('/manager/role/query', {
@@ -518,6 +585,7 @@
     mounted() {
       this.getOrganizations();
       this.getRoles();
+      this.getDepartments();
       this.getUserList();
     }
   }

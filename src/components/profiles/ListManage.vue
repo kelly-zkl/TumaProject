@@ -80,7 +80,7 @@
                          max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
             <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
-                 @click="bigUrl=scope.row.faceUrl;runBigPic=true"
+                 @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
                  style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
@@ -150,7 +150,7 @@
           <el-form-item label="对应头像" prop="faceUrl" style="margin: 0">
             <el-upload :action="uploadImgUrl" :show-file-list="false"
                        :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-              <img :src="modifyPerson.faceUrl?modifyPerson.faceUrl:imgPath" class="avatar">
+              <img :src="modifyPerson.faceUrl?modifyPerson.faceUrl:imgPath" class="avatar" :onerror="img404">
             </el-upload>
           </el-form-item>
           <div style="color:#999;margin-left: 120px;margin-bottom: 20px">
@@ -224,7 +224,7 @@
         <el-table :data="importList" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="left" prop="imageUrl" label="头像" min-width="100" max-width="250">
             <template slot-scope="scope">
-              <img v-bind:src="scope.row.imageUrl?scope.row.imageUrl:imgPath"
+              <img v-bind:src="scope.row.imageUrl?scope.row.imageUrl:imgPath" :onerror="img404"
                    style="max-width: 90px;max-height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
@@ -274,6 +274,7 @@
         query: {size: 100, type: 1},
         addList: '',
         imgPath: require('../../assets/img/icon_people.png'),
+        img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         runAddList: false,
         runningModifyPerson: false,
         uploadFileUrl: this.axios.defaults.baseURL + 'person/importKeyPerson',

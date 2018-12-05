@@ -19,7 +19,7 @@
           <el-button type="text" style="margin: 0;padding: 0" @click="$router.push('/addControl')">添加布控任务</el-button>
         </span>
         <el-button type="text" style="margin: 0;padding: 0;position: absolute;right: 10px"
-                   icon="el-icon-close" @click="showTip=false"></el-button>
+                   icon="el-icon-close" @click="showTip=false;calcuHeight()"></el-button>
       </div>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1110px">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
@@ -86,13 +86,13 @@
         </el-form-item>
       </el-form>
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe
-                @selection-change="selsChange" :height="tableHeight">
+                @selection-change="selsChange" :height="tableHeight" :max-height="tableHeight">
         <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150">
           <template slot-scope="scope">
             <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath"
-                 @click="bigUrl=scope.row.sceneUrl;runBigPic=true"
+                 @click="bigUrl=scope.row.sceneUrl;runBigPic=true" :onerror="img404"
                  style="max-height:70px;border-radius: 6px"/>
           </template>
         </el-table-column>
@@ -120,7 +120,7 @@
                          max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
             <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
-                 @click="bigUrl=scope.row.faceUrl;runBigPic=true"
+                 @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
                  style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
@@ -163,8 +163,9 @@
         isMore: false,
         bigUrl: '',
         activeItem: 'T',
-        imgPath: require('../../assets/img/icon_people.png'),
         tableHeight: window.innerHeight - 295,
+        imgPath: require('../../assets/img/icon_people.png'),
+        img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         query: {size: 100},
         statuses: [{label: '待处理', value: 0}, {label: '已处理', value: 2}, {label: '误报', value: 3}],
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
@@ -202,16 +203,26 @@
       },
       showMore() {
         this.isMore = !this.isMore;
+        this.calcuHeight();
+      },
+      calcuHeight() {
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 345
+          this.tableHeight = window.innerHeight - 345;
+          if (this.showTip) {
+            this.tableHeight = window.innerHeight - 395
+          }
         } else {
-          this.tableHeight = window.innerHeight - 295
+          this.tableHeight = window.innerHeight - 295;
+          if (this.showTip) {
+            this.tableHeight = window.innerHeight - 345
+          }
         }
       },
       //是否有进行中的布控任务
       getTask() {
         this.$post('disposition/query', {page: 1, size: 10, taskStatus: "EXECUTION"}).then((data) => {
           this.showTip = data.data.list.length == 0;
+          this.calcuHeight();
         }).catch((err) => {
           this.showTip = false;
         });

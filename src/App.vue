@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" v-cloak>
     <router-view></router-view>
   </div>
 </template>
@@ -29,5 +29,9 @@
     margin: 0;
     padding: 0;
     -webkit-overflow-scrolling: touch; /*流畅滚动,ios7下会有滑一下滑不动的情况，所以需要写上*/
+  }
+
+  [v-cloak] {
+    display: none
   }
 </style>

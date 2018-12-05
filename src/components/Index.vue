@@ -1,16 +1,16 @@
 <template>
   <div>
     <el-container class="main-container">
-      <el-header style="background: #08163d;color:#fff" height="60px">
+      <el-header style="background: #08163d;color:#fff;padding: 0 10px" height="60px">
         <div style="display:-webkit-box;display:-ms-flexbox;display:flex;flex-direction: row;height: 60px;width: 100%">
           <div align="left"
-               style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 60px;align-items: center;margin-right: 20px">
-            <img src="../assets/img/icon_logo.svg"
-                 style="display:inline-block;height: 30px;width: 30px">
-            <span style="display:inline-block;font-size: 16px;margin-left: 10px;letter-spacing:2px;color: #22CEFC">图码联侦实战布控平台
+               style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 60px;align-items: center;flex: 0 0 auto;margin-right:10px">
+            <img src="../assets/img/icon_logo.svg" style="display:inline-block;height: 30px;width: 30px">
+            <span style="display:inline-block;font-size:16px;margin-left:10px;color:#22CEFC">图码联侦实战布控平台
             </span>
           </div>
-          <div style="flex: 1;height: 60px;align-items: center;justify-content: flex-start">
+          <div class="head-menu"
+               style="flex:1 1 auto;height:60px;align-items:center;justify-content:flex-start;white-space:nowrap;overflow:hidden">
             <el-menu :default-active="$route.path" background-color="#08163d" text-color="#B3B3B3" router
                      active-text-color="#fff" mode="horizontal" @select="handleSelectItem">
               <el-menu-item :index="item.permissionUrl" v-for="item in menu" :key="item.permissionUrl">
@@ -22,11 +22,17 @@
                             v-show="item.orders==2&&imsiCount+faceCount>0"/>
                 </template>
               </el-menu-item>
+              <el-menu-item :index="'/listManage'">
+                <template slot="title">
+                  <i class="fa fa-address-book" style="font-size: 1.5em"></i>
+                  <span>重点人员</span>
+                </template>
+              </el-menu-item>
             </el-menu>
           </div>
           <div align="right"
-               style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 60px;align-items: center">
-            <div class="all-search" style="margin-right: 20px">
+               style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 60px;flex: 0 0 auto;align-items: center">
+            <div class="all-search" style="margin-right: 10px">
               <el-popover ref="imsi" placement="bottom-end" width="200" trigger="click" v-model="imsiShow">
                 <el-row style="background-color: #efefef">
                   <el-col :span="12" style="text-align: left;padding-left: 10px">
@@ -54,7 +60,7 @@
                 <div style="padding: 15px 4px 15px 10px">
                   <el-upload :action="uploadUrl" :show-file-list="false" :on-success="handleAvatarSuccess"
                              :before-upload="beforeAvatarUpload">
-                    <img :src="imageUrl?imageUrl:imgPath" class="avatar">
+                    <img :src="imageUrl?imageUrl:imgPath" class="avatar" :onerror="img404">
                     <span style="display:inline-block;font-size: 12px;color: #5F6165">请选择人脸照片。支持：JPG、JPEG、PNG格式，且文件大小不超过2M。</span>
                   </el-upload>
                   <el-button type="primary" size="medium" @click="searchImage()"
@@ -62,7 +68,7 @@
                   </el-button>
                 </div>
               </el-popover>
-              <el-input placeholder="请输入IMSI" :maxlength="15" style="width: 235px" v-popover:imsi
+              <el-input placeholder="请输入IMSI" :maxlength="15" style="width: 235px" v-popover:imsi clearable
                         @click.stop="imsiShow=true;imgShow=false" v-model="imsi" @keyup.13.native="searchImsi()">
                 <el-button slot="prepend" icon="el-icon-picture" v-popover:image
                            @click.stop="imsiShow=false;imgShow=true"></el-button>
@@ -73,11 +79,19 @@
             <!--<div class="item" style="text-align: center" @click="runMsg = true">-->
             <!--<i class="fa fa-bell-o fa-2x" style="padding-top: 20px;font-size: 1.8em"></i>-->
             <!--</div>-->
-            <el-popover ref="modifyPsw" placement="bottom" width="200" trigger="click">
+            <el-popover ref="modifyPsw" placement="bottom-start" width="180" trigger="click">
               <el-col :span="24">
-                <el-button
-                  style="width: 100%;border-radius: 0 0 0 4px;border: none;height: 45px"
-                  type="text" @click="runModifyPsw = true;psw={}">修改密码
+                <el-button type="text" @click="runModifyPsw = true;psw={}"
+                           style="width: 100%;border-radius: 0 0 0 4px;border: none;height: 40px">
+                  <i class="fa fa-edit" style="margin-right: 5px;font-size: 1.1em"></i>
+                  修改密码
+                </el-button>
+              </el-col>
+              <el-col :span="24">
+                <el-button type="text" @click="loginOut()"
+                           style="width: 100%;border-radius: 0 0 0 4px;border: none;height: 40px">
+                  <i class="fa fa-sign-out" style="margin-right: 5px;font-size: 1.2em"></i>
+                  退出登录
                 </el-button>
               </el-col>
             </el-popover>
@@ -88,13 +102,13 @@
             <!--<div class="item" style="text-align: center" @click="$router.push({path: '/platforms'})">-->
             <!--<i class="fa fa-retweet fa-2x" style="padding-top: 13px"></i>-->
             <!--</div>-->
-            <div class="item" style="text-align: center" @click="loginOut()">
-              <i class="fa fa-sign-out fa-2x" style="padding-top: 15px"></i>
-            </div>
+            <!--<div class="item" style="text-align: center" @click="loginOut()">-->
+            <!--<i class="fa fa-sign-out fa-2x" style="padding-top: 15px"></i>-->
+            <!--</div>-->
           </div>
         </div>
       </el-header>
-      <el-main style="background: #040d2e;width: 100%;padding: 0;margin: 0">
+      <el-main style="width: 100%;padding: 0;margin: 0;background: #E9ECF0">
         <transition name="fade" mode="out-in">
           <router-view @handleSelectTab="handleSelectTab" v-bind:faceCount="faceCount"
                        v-bind:imsiCount="imsiCount" ref="mychild"></router-view>
@@ -156,7 +170,7 @@
       <transition name="fade" mode="out-in" appear>
         <el-dialog width="500px" :visible.sync="runFaceWarning" style="border-radius: 6px" top="60px" title="嫌疑告警">
           <div style="padding: 20px 20px 10px;text-align: left;position: relative;border-top: 1px #efefef solid">
-            <img :src="faceWarning.faceUrl?faceWarning.faceUrl:imgPath">
+            <img :src="faceWarning.faceUrl?faceWarning.faceUrl:imgPath" :onerror="img404">
             <el-form :model="faceWarning" align="left" label-width="80px" label-position="left"
                      style="display:inline-block;position: absolute;top: 20px">
               <el-form-item label="年龄段" style="margin:0">
@@ -255,6 +269,7 @@
         runModifyPsw: false,
         warning: require('../assets/warning.mp3'),
         imgPath: require('../assets/img/icon_people.png'),
+        img404: "this.onerror='';this.src='" + require('../assets/img/icon_people.png') + "'",
         userName: JSON.parse(sessionStorage.getItem("user")).realName || '',
         userId: JSON.parse(sessionStorage.getItem("user")).userId,
         psw: {password: '', password1: '', password2: ''},
@@ -286,10 +301,9 @@
       //以图搜图
       searchImage() {
         if (this.imageUrl.length == 0) {
-          this.$message.error("请先上传头像");
+          this.$message.error("请上传头像");
           return;
         }
-        this.imsi = '';
         this.searchParam = JSON.stringify({type: 'img', value: this.imageUrl});
         this.runSearch = true;
       },
@@ -307,7 +321,6 @@
           this.searchImsis.unshift(this.imsi);
           localStorage.setItem("imsis", JSON.stringify({imsi: this.searchImsis}));
         }
-        this.imageUrl = '';
         this.searchParam = JSON.stringify({type: 'imsi', value: this.imsi});
         this.runSearch = true;
       },

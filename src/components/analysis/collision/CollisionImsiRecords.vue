@@ -78,9 +78,9 @@
           <el-col :span="24" style="margin: 0;padding: 0">
             <div class="face-main">
               <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
-                <img :src="item.faceUrl?item.faceUrl:imgPath"/>
+                <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
                 <el-form :model="item" align="left" label-width="80px" label-position="right"
-                         style="position: absolute;top: 15px;left:150px;text-align: left">
+                         style="text-align: left">
                   <el-form-item label="档案ID" style="margin:0">
                     <span
                       style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
@@ -115,6 +115,8 @@
       return {
         listLoading: false,
         activeItem: 'record',
+        imgPath: require('../../../assets/img/icon_people.png'),
+        img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
         taskId: this.$route.query.taskId || '',
         imsi: this.$route.query.imsi || '',
         collisionType: this.$route.query.collisionType || '',
@@ -247,39 +249,3 @@
     }
   }
 </script>
-<style scoped>
-  .face-main {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap
-  }
-
-  .face-item {
-    width: -moz-calc(50% - 42px);
-    width: -webkit-calc(50% - 42px);
-    width: calc(50% - 42px);
-    height: 122px;
-    border: 1px #D7D7D7 solid;
-    border-radius: 8px;
-    background: #fff;
-    padding: 15px;
-    margin-bottom: 20px;
-    position: relative;
-  }
-
-  .face-item img {
-    position: absolute;
-    left: 15px;
-    width: 120px;
-    height: 120px;
-    border: 1px #D7D7D7 dashed;
-    border-radius: 8px;
-    text-align: left;
-  }
-
-  .face-item:nth-child(odd) {
-    margin-right: 20px;
-  }
-</style>

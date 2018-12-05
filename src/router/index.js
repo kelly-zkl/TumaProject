@@ -5,6 +5,7 @@ import Login from '@/components/Login'
 import Platforms from '@/components/Platforms'
 import PageError from "@/components/404";
 
+import DataHome from '@/components/overview/DataHome'
 import DataOverview from '@/components/overview/DataOverview'
 
 import WarningHome from '@/components/warning/WarningHome'
@@ -14,6 +15,7 @@ import FaceWarningDetail from '@/components/warning/FaceWarningDetail'
 import ImsiWarningDetail from '@/components/warning/ImsiWarningDetail'
 
 import FileHome from '@/components/profiles/FileHome'
+import VipHome from '@/components/profiles/VipHome'
 import ImsiRecords from '@/components/profiles/ImsiRecords'
 import CatchRecords from '@/components/profiles/CatchRecords'
 import ImportPersons from '@/components/profiles/ImportPersons'
@@ -76,7 +78,22 @@ export default new Router({
       name: '',
       component: Index,
       children: [
-        {path: '/dataOverview', component: DataOverview, name: '概览'},
+        {
+          path: '/dataOverview',
+          component: DataHome,
+          name: '概览',
+          children: [
+            {path: '/dataOverview', component: DataOverview, name: '概览'},
+          ]
+        },
+        {
+          path: '/listManage',
+          component: VipHome,
+          name: '重点人员',
+          children: [
+            {path: '/listManage', component: ListManage, name: '重点人员列表'},
+          ]
+        },
         {
           path: '/imsiWarnings',
           component: WarningHome,
@@ -95,7 +112,6 @@ export default new Router({
             {path: '/imsiRecords', component: ImsiRecords, name: 'IMSI记录'},
             {path: '/catchRecords', component: CatchRecords, name: '图像记录'},
             {path: '/normalPersons', component: NormalPersons, name: '普通人员'},
-            {path: '/listManage', component: ListManage, name: '重点人员名单'},
             {path: '/listData', component: ListData, name: '名单入库'}
           ]
         },
@@ -146,6 +162,21 @@ export default new Router({
             {path: '/menuManager', component: MenuManager, name: '菜单管理'},
             {path: '/organizationManager', component: OrganizationManager, name: '组织管理'},
             {path: '/systemParams', component: SystemParams, name: '系统参数配置'}
+          ]
+        }
+      ]
+    },
+    {
+      path: '/listManage',
+      name: '重点人员',
+      component: Index,
+      children: [
+        {
+          path: '/listManage',
+          component: VipHome,
+          name: '重点人员列表',
+          children: [
+            {path: '/vipDetail', component: VipDetail, name: '重点人员详情'}
           ]
         }
       ]
@@ -236,21 +267,6 @@ export default new Router({
           name: '图像记录',
           children: [
             {path: '/faceDetail', component: FaceDetail, name: '图像详情'}
-          ]
-        }
-      ]
-    },
-    {
-      path: '/importPersons',
-      name: '档案',
-      component: Index,
-      children: [
-        {
-          path: '/listManage',
-          component: FileHome,
-          name: '重点人员名单',
-          children: [
-            {path: '/vipDetail', component: VipDetail, name: '重点人员详情'}
           ]
         }
       ]

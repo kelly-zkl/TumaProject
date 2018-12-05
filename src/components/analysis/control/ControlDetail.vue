@@ -176,7 +176,7 @@
           <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150">
             <template slot-scope="scope">
               <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath"
-                   @click="bigUrl=scope.row.sceneUrl;runBigPic=true"
+                   @click="bigUrl=scope.row.sceneUrl;runBigPic=true" :onerror="img404"
                    style="max-height:70px;border-radius: 6px"/>
             </template>
           </el-table-column>
@@ -198,7 +198,7 @@
                            max-width="250" :formatter="formatterAddress">
             <template slot-scope="scope">
               <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
-                   @click="bigUrl=scope.row.faceUrl;runBigPic=true"
+                   @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
                    style="max-width: 90px;max-height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
@@ -225,7 +225,8 @@
           <el-form-item label="布控人员" align="left" style="margin: 0" v-if="task.featureList || task.imsiList">
             <div class="img-main" v-if="task.featureList">
               <div class="img-item" v-for="item in task.featureList" :key="item.imageId">
-                <img :src="item.imageUrl?item.imageUrl:imgPath" style="max-width: 100%;border-radius: 4px"/>
+                <img :src="item.imageUrl?item.imageUrl:imgPath" style="max-width: 100%;border-radius: 4px"
+                     :onerror="img404"/>
               </div>
             </div>
             <el-row v-if="task.imsiList">
@@ -290,6 +291,7 @@
         runTaskDetail: false,
         taskId: this.$route.query.taskId || '',
         imgPath: require('../../../assets/img/icon_people.png'),
+        img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
         activeItem: "IMSI",
         query: {size: 100},
         qTime: '',

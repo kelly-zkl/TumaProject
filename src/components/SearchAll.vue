@@ -26,23 +26,24 @@
             <div class="face-main">
               <div class="face-item" v-for="item in searchResults" :key="item.id" v-show="searchResults.length >0"
                    style="height: 130px">
-                <img :src="item.faceUrl?item.faceUrl:imgPath"/>
-                <el-form :model="item" align="left" label-width="90px" label-position="right" size="medium"
-                         style="position: absolute;top: 7px;left:160px;text-align: left">
-                  <el-form-item label="IMSI置信度" style="margin:0">
+                <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
+                <el-form :model="item" align="left" label-width="100px" label-position="right" size="medium"
+                         style="text-align: left">
+                  <el-form-item label="IMSI置信度" style="margin:0" v-for="imsi in item.imsiList"
+                                v-show="imsi.imsi==param.value">
                     <span
-                      style="font-size:18px;color:#000;font-weight:bold">{{item.weight?item.weight/10+'%':'--'}}</span>
+                      style="font-size:18px;color:#000;font-weight:bold">{{imsi.weight?imsi.weight/10+'%':'--'}}</span>
                   </el-form-item>
                   <el-form-item label="年龄段" style="margin:0">
-                    <span style="font-size: 15px;color:#000">{{item.fnIn<0?'--':item.fnIn}}</span>
+                    <span style="font-size: 15px;color:#000">
+                      {{item.startAge>= 0?item.startAge==item.endAge?(item.startAge-3)+ '~'+(item.startAge+3):item.startAge+ '~'+ item.endAge:'--'}}
+                    </span>
                   </el-form-item>
                   <el-form-item label="性别" style="margin:0">
-                    <span style="font-size: 15px;color:#000">{{item.fnIn<0?'--':item.fnIn}}</span>
+                    <span style="font-size: 15px;color:#000">{{item.sex==0?'男':item.sex==1?'女':'--'}}</span>
                   </el-form-item>
                   <el-form-item label="档案ID" style="margin:0">
-                    <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">
-                      {{item.personId?item.personId:'--'}}
-                    </el-button>
+                    <el-button type="text" @click="gotoPerson(item)">{{item.faceId?item.faceId:'--'}}</el-button>
                   </el-form-item>
                 </el-form>
               </div>
@@ -59,39 +60,43 @@
           <el-col :span="24" style="margin: 0;padding: 0">
             <div class="face-main">
               <div class="face-item" v-for="item in searchResults" :key="item.id" v-show="searchResults.length >0"
-                   style="height: 190px">
-                <img :src="item.faceUrl?item.faceUrl:imgPath" style="width: 140px;height: 140px"/>
-                <el-form :model="item" align="left" label-width="0" size="mini"
-                         style="position: absolute;top: 5px;left:170px;text-align: left">
-                  <el-form-item style="margin:0">
-                    <span style="font-size: 14px;margin: 0">IMSI置信度</span>
-                    <div v-for="imsi in item.imsiList" style="height: 20px;line-height: 20px;margin:0">
+                   style="height: 200px">
+                <div class="face-img">
+                  <img :src="item.faceUrl?item.faceUrl:imgPath" style="max-width: 145px;max-height: 145px"
+                       :onerror="img404"/>
+                  <el-form :model="item" align="left" label-width="0" size="mini"
+                           style="text-align: left;margin-left: 20px">
+                    <el-form-item style="margin:0">
+                      <span style="font-size: 14px;margin: 0;color:#999">IMSI置信度</span>
+                      <div v-for="imsi in item.imsiList" style="height: 20px;line-height: 20px;margin:0">
                       <span
                         style="font-size: 14px;margin: 0;color:#000">{{imsi.imsi+'['+imsi.weight/10+'%]'}}</span>
-                    </div>
-                    <div v-bind:style="'height:'+(5-item.imsiList.length)*20+'px'"
-                         v-show="item.imsiList.length<5"></div>
-                  </el-form-item>
-                  <el-form-item style="margin:0">
-                    <span style="font-size: 14px;margin-right: 10px">档案ID</span>
-                    <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">
-                      {{item.personId?item.personId:'--'}}
-                    </el-button>
-                  </el-form-item>
-                </el-form>
-                <el-row style="position: absolute;top: 170px;left:0;width: 100%">
+                      </div>
+                      <div v-bind:style="'height:'+(5-item.imsiList.length)*20+'px'"
+                           v-show="item.imsiList.length<5"></div>
+                    </el-form-item>
+                    <el-form-item style="margin:0">
+                      <span style="font-size: 14px;color:#999;margin-right: 10px">档案ID</span>
+                      <el-button type="text" @click="gotoPerson(item)">{{item.faceId?item.faceId:'--'}}</el-button>
+                    </el-form-item>
+                  </el-form>
+                </div>
+                <el-row style="margin-top: 10px;width: 100%">
                   <el-col :span="8" style="text-align: center">
-                    <div
-                      style="font-size:18px;color:#000;font-weight:bold">{{item.weight?item.weight/10+'%':'--'}}
+                    <div style="font-size:18px;color:#000;font-weight:bold">
+                      {{item.similarThreshold>0?item.similarThreshold.toFixed(1)+'%':'--'}}
                     </div>
                     <div style="font-size:14px;color:#999">人脸相似度</div>
                   </el-col>
                   <el-col :span="8" style="text-align: center">
-                    <div style="font-size:14px;color:#000">{{item.weight?item.weight/10+'%':'--'}}</div>
+                    <div style="font-size:14px;color:#000">{{item.sex==0?'男':item.sex==1?'女':'--'}}</div>
                     <div style="font-size:14px;color:#999">性别</div>
                   </el-col>
                   <el-col :span="8" style="text-align: center">
-                    <div style="font-size:14px;color:#000">{{item.weight?item.weight/10+'%':'--'}}</div>
+                    <div style="font-size:14px;color:#000">
+                      {{item.startAge>= 0?item.startAge==item.endAge?(item.startAge-3)+
+                      '~'+(item.startAge+3):item.startAge+ '~'+ item.endAge:'--'}}
+                    </div>
                     <div style="font-size:14px;color:#999">年龄</div>
                   </el-col>
                 </el-row>
@@ -117,15 +122,13 @@
     data() {
       return {
         param: {},
-        imsi: '',
-        imageUrl: '',
-        num: 10,
-        searchResults: [{weight: 960, imsiList: [0]}, {weight: 960, imsiList: [0, 1]},
-          {weight: 960, imsiList: [0, 1, 2]}, {weight: 960, imsiList: [0, 1, 2, 3]},
-          {weight: 960, imsiList: [0, 1, 2, 3, 4]}],
+        num: 9,
+        searchResults: [],
         imgPath: require('../assets/img/icon_people.png'),
+        img404: "this.onerror='';this.src='" + require('../assets/img/icon_people.png') + "'",
         query: {size: 100},
         listLoading: false,
+        timeStamp: new Date().getTime()
       }
     },
     watch: {
@@ -149,10 +152,35 @@
         // this.$router.push({path: '/personnelFiles', query: {faceId: row.faceId}});
       },
       getData() {
+        this.listLoading = true;
+        let paramData = {};
+        if (this.param.type == 'imsi') {
+          paramData = {size: 9, imsi: this.param.value}
+        } else {
+          paramData = {size: 9, url: this.param.value + '?t=' + this.timeStamp}
+        }
+        this.$post('home/allSearch', paramData, undefined, undefined, "login").then((data) => {
+          if ("000000" === data.code) {
+            this.listLoading = false;
+            this.searchResults = data.data ? data.data : [];
+          } else if ("100000" === data.code) {//执行中
+            setTimeout(() => {
+              this.getData();
+            }, 1000);
+          } else {
+            this.searchResults = [];
+            this.listLoading = false;
+            this.$message.error(data.msg);
+          }
+        }).catch((err) => {
+          this.searchResults = [];
+          this.listLoading = false;
+          this.$message.error(err);
+        });
       },
       //关联人员加载更多
       loadMore() {
-        this.num += 10;
+        this.num += 9;
         this.getData();
       }
     },
@@ -180,14 +208,26 @@
     background: #fff;
     padding: 15px;
     margin-bottom: 15px;
-    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
   }
 
-  .face-item img {
-    position: absolute;
-    left: 15px;
-    width: 130px;
-    height: 130px;
+  .face-img {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .face-item img, .face-item .face-img img {
+    max-width: 130px;
+    max-height: 130px;
     border: 1px #D7D7D7 dashed;
     border-radius: 8px;
     text-align: left;

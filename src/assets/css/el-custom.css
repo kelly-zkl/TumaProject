@@ -15,15 +15,15 @@
 }
 
 ::-webkit-scrollbar-corner {
-  background: #fff
+  background: rgba(0, 0, 0, 0);
 }
 
 ::-webkit-scrollbar-track {
-  background: #fff
+  background: rgba(0, 0, 0, 0);
 }
 
 ::-webkit-scrollbar-track-piece {
-  background: #fff;
+  background: rgba(0, 0, 0, 0);
   width: 6px
 }
 
@@ -481,16 +481,21 @@
   border-left: 5px solid #6699FF;
 }
 
-.el-menu--horizontal {
-  border-bottom: none;
+/*一级导航栏*/
+.head-menu .el-menu--horizontal {
+  border-bottom: none !important
 }
 
-.el-menu--horizontal > .el-menu-item.is-active {
+.head-menu .el-menu--horizontal > .el-menu-item.is-active {
   border-bottom: 3px solid #3FA8F3 !important
 }
 
-.el-menu--horizontal .el-menu .el-menu-item, .el-menu--horizontal .el-menu .el-submenu__title {
-  padding: 0 0;
+.head-menu .el-menu--horizontal .el-menu .el-menu-item, .el-menu--horizontal .el-menu .el-submenu__title {
+  padding: 0 !important
+}
+
+.head-menu .el-menu-item {
+  padding: 0 13px;
 }
 
 .home-container {
@@ -506,6 +511,12 @@
 /*去除百度地图左下角的Logo*/
 .anchorBL {
   display: none;
+}
+
+.BMapLib_Drawing_panel {
+  height: 47px;
+  border: 1px solid #666;
+  border-radius: 5px 0 0 5px;
 }
 
 /*去除高德地图左下角的logo*/
@@ -537,14 +548,16 @@
   background: #fff;
   padding: 15px;
   margin-bottom: 20px;
-  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .face-item img {
-  position: absolute;
-  left: 15px;
-  width: 120px;
-  height: 120px;
+  max-width: 120px;
+  max-height: 120px;
   border: 1px #D7D7D7 dashed;
   border-radius: 8px;
   text-align: left;

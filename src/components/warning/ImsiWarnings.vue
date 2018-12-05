@@ -19,7 +19,7 @@
           <el-button type="text" style="margin: 0;padding: 0" @click="$router.push('/addControl')">添加布控任务</el-button>
         </span>
         <el-button type="text" style="margin: 0;padding: 0;position: absolute;right: 10px"
-                   icon="el-icon-close" @click="showTip=false"></el-button>
+                   icon="el-icon-close" @click="showTip=false;calcuHeight()"></el-button>
       </div>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1110px"
                v-show="getButtonVial(exportKey)">
@@ -147,16 +147,27 @@
       },
       showMore() {
         this.isMore = !this.isMore;
+        this.calcuHeight();
+      },
+      //计算表格高度
+      calcuHeight() {
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 340
+          this.tableHeight = window.innerHeight - 295;
+          if (!this.showTip) {
+            this.tableHeight = window.innerHeight - 345
+          }
         } else {
-          this.tableHeight = window.innerHeight - 290
+          this.tableHeight = window.innerHeight - 245;
+          if (!this.showTip) {
+            this.tableHeight = window.innerHeight - 295
+          }
         }
       },
       //是否有进行中的布控任务
       getTask() {
         this.$post('disposition/query', {page: 1, size: 10, taskStatus: "EXECUTION"}).then((data) => {
           this.showTip = data.data.list.length == 0;
+          this.calcuHeight();
         }).catch((err) => {
           this.showTip = false;
         });

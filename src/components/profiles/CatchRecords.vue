@@ -75,7 +75,7 @@
         <el-table-column align="left" label="人员图像" prop="imageUrl" min-width="125" max-width="250">
           <template slot-scope="scope">
             <img v-bind:src="scope.row.imageUrl?scope.row.imageUrl:imgPath"
-                 @click="bigUrl=scope.row.imageUrl;runBigPic=true"
+                 @click="bigUrl=scope.row.imageUrl;runBigPic=true" :onerror="img404"
                  style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
@@ -133,6 +133,7 @@
         activeItem: 'T',
         query: {size: 100},
         imgPath: require('../../assets/img/icon_people.png'),
+        img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],

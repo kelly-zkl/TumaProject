@@ -9,14 +9,19 @@
 <script type="text/javascript"
         src="http://api.map.baidu.com/getscript?v=2.0&ak=hXs1Y60Zu38CA63OTvLLOYogfycrz5aw"></script>
 <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css"/>
+<!--<script type="text/javascript" src="./static/bmap/bmap.js"></script>-->
+<!--<script type="text/javascript" src="./static/bmap/DrawingManager_min.css"></script>-->
+<!--<script type="text/javascript" src="./static/bmap/LuShu_min.js"></script>-->
+<!--<script type="text/javascript" src="./static/bmap/TextIconOverlay.js"></script>-->
+<!--<script type="text/javascript" src="./static/bmap/MarkerClusterer.js"></script>-->
+<!--<script type="text/javascript" src="./static/bmap/DrawingManager.js"></script>-->
+<!--<script type="text/javascript" src="./static/bmap/GeoUtils.js"></script>-->
+<!--<script type="text/javascript" src="./static/bmap/Heatmap_min.js"></script>-->
 <body>
 <div id="app"></div>
 <!-- built files will be auto injected -->
 <!--轨迹回放-->
 <script type="text/javascript" src="http://api.map.baidu.com/library/LuShu/1.2/src/LuShu_min.js"></script>
-<!--拉框放大-->
-<script type="text/javascript"
-        src="http://api.map.baidu.com/library/RectangleZoom/1.2/src/RectangleZoom_min.js"></script>
 <!--点聚合-->
 <script type="text/javascript"
         src="http://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></script>
@@ -28,9 +33,12 @@
 <script type="text/javascript" src="http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></script>
 <!--热力图-->
 <script type="text/javascript" src="http://api.map.baidu.com/library/Heatmap/2.0/src/Heatmap_min.js"></script>
-<!--海量点-->
-<script type="text/javascript" src="http://lbsyun.baidu.com/jsdemo/data/points-sample-data.js"></script>
 </body>
+<script type="text/javascript">
+  window.BMAP_SERVER = './static/bmap/';
+
+  window.BMAP_OFFLINE_SERVER = 'http://ip:port/tile';//指定到发布的地图瓦片层级上一级目录tile
+</script>
 <style type="text/css">
   html, body {
     -webkit-overflow-scrolling: touch; /*流畅滚动,ios7下会有滑一下滑不动的情况，所以需要写上*/

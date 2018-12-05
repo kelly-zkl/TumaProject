@@ -81,7 +81,7 @@
             <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="150"
                              max-width="250" :formatter="formatterAddress">
               <template slot-scope="scope">
-                <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
+                <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" :onerror="img404"
                      style="max-width: 90px;max-height:90px;border-radius: 6px"/>
               </template>
             </el-table-column>
@@ -264,6 +264,8 @@
         mapVisible: false,
         query: {page: 1, size: 10},
         followTask: {followType: "IMSI", interval: 120},
+        imgPath: require('../../../assets/img/icon_people.png'),
+        img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
         cases: [],
         tasks: [{value: "IMSI", label: "IMSI"}],
         qTime: '',

@@ -183,7 +183,7 @@
               enableDrawingTool: true, //是否显示工具栏
               drawingToolOptions: {
                 anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
-                offset: new BMap.Size(55, 5), //偏离值
+                offset: new BMap.Size(65, 5), //偏离值
                 drawingModes: [BMAP_DRAWING_CIRCLE, BMAP_DRAWING_POLYGON, BMAP_DRAWING_RECTANGLE]
               },
               circleOptions: _this.styleOptions, //圆的样式
@@ -209,15 +209,18 @@
               // 设置样式
               div.className = "el-icon-delete";
               div.style.cursor = "pointer";
-              div.style.border = "1px solid gray";
+              div.style.border = "1px solid #666";
+              div.style.borderLeft = "1px solid #d2d2d2";
               div.style.backgroundColor = "white";
-              div.style.fontSize = "25px";
+              div.style.boxShadow = "1px 1px 3px rgba(0,0,0,0.3)";
+              div.style.fontSize = "28px";
+              div.style.fontWeight = "bold";
               div.style.color = "#2074B0";
-              div.style.width = "50px";
+              div.style.width = "60px";
               div.style.height = "47px";
               div.style.lineHeight = "47px";
               div.style.textAlign = "center";
-              div.style.borderRadius = "0 4px 4px 0";
+              div.style.borderRadius = "0 5px 5px 0";
 
               // 绑定事件,点击一次放大两级
               div.onclick = function (e) {

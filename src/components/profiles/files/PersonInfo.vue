@@ -5,7 +5,8 @@
         <el-col :span="18" style="text-align: center" align="center">
           <div style="font-size:14px;text-align: center">基本信息</div>
         </el-col>
-        <el-col :span="6" style="text-align: right" align="right" v-show="getButtonVial('archives:updateDetails')">
+        <el-col :span="6" style="text-align: right;padding-right: 20px" align="right"
+                v-show="getButtonVial('archives:updateDetails')">
           <el-button type="text" style="margin: 0;padding: 0" @click="clickModify()">修改基本信息</el-button>
         </el-col>
       </el-row>
@@ -67,23 +68,22 @@
       <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px;padding:0"
            v-if="persons.length>0 || imsiList.length>0">
         <el-row>
-          <el-col :span="12" style="border-right: 1px solid #D0CACF">
+          <el-col :span="12" style="border-right: 1px solid #D0CACF;padding: 10px 20px">
             <div class="person-main" v-if="persons.length>0">
               <div class="person-item" v-for="item in persons" :key="item.id">
-                <img :src="item.faceUrl?item.faceUrl:imgPath">
+                <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404">
                 <div style="font-size:14px;height: 20px;line-height: 20px">{{item.timeStr}}</div>
               </div>
             </div>
             <div v-else style="width:100%;color: #909399;font-size: 14px;text-align: center">暂无数据</div>
           </el-col>
-          <el-col :span="12">
-            <el-col :span="24" align="left" style="text-align: left;margin-left: 20px"
-                    v-for="item in imsiList" :key="item.imsi" v-if="imsiList.length>0">
-              <el-button type="text" @click="gotoDetail(item)">
+          <el-col :span="12" style="padding: 10px 20px">
+            <div style="text-align: left" v-for="item in imsiList" :key="item.imsi" v-if="imsiList.length>0">
+              <span @click="gotoDetail(item)" style="height: 32px;line-height: 32px;color: #343434;font-size: 14px">
                 {{item.imsi}} {{'关联次数['+(item.fnIn>=0?item.fnIn:'--')+']'}}
                 {{'置信度['+(item.weight>=0?(item.weight/10).toFixed(1):'--')+'%]'}}
-              </el-button>
-            </el-col>
+              </span>
+            </div>
             <div v-else style="width:100%;color: #909399;font-size: 14px;text-align: center">暂无数据</div>
           </el-col>
         </el-row>
@@ -151,6 +151,7 @@
         provinceList: json,
         faceId: this.$route.query.faceId || '',
         imgPath: require('../../../assets/img/icon_people.png'),
+        img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         userInfo: {},
         imsiList: [],
@@ -346,26 +347,26 @@
   }
 
   .person-item {
-    width: 28%;
+    width: -moz-calc((100% - 40px) / 3);
+    width: -webkit-calc((100% - 40px) / 3);
+    width: calc((100% - 40px) / 3);
     height: 162px;
-    margin-bottom: 20px;
-    position: relative;
+    margin: 5px 0;
+    text-align: center;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   .person-item img {
-    position: absolute;
-    left: 20px;
-    width: 130px;
-    height: 130px;
+    max-width: 130px;
+    max-height: 130px;
     border: 1px #D7D7D7 dashed;
     border-radius: 6px;
     text-align: left;
-  }
-
-  .person-item div {
-    position: absolute;
-    left: 20px;
-    top: 132px;
   }
 
   .person-item:nth-child(3n+1) {

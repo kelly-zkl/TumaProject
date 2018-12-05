@@ -190,7 +190,7 @@
                            max-width="300" :formatter="formatterAddress">
             <template slot-scope="scope">
               <img v-bind:src="scope.row.userFacePicURL?scope.row.userFacePicURL:imgPath"
-                   @click="bigUrl=scope.row.userFacePicURL;runBigPic=true"
+                   @click="bigUrl=scope.row.userFacePicURL;runBigPic=true" :onerror="img404"
                    style="max-width: 90px;max-height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
@@ -252,7 +252,7 @@
                            max-width="300" :formatter="formatterAddress">
             <template slot-scope="scope">
               <img v-bind:src="scope.row.userFacePicURL?scope.row.userFacePicURL:imgPath"
-                   @click="bigUrl=scope.row.userFacePicURL;runBigPic=true"
+                   @click="bigUrl=scope.row.userFacePicURL;runBigPic=true" :onerror="img404"
                    style="max-width: 90px;max-height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
@@ -334,6 +334,7 @@
         taskId: this.$route.query.taskId || '',
         followType: this.$route.query.followType || '',
         imgPath: require('../../../assets/img/icon_people.png'),
+        img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
         dialogWidth: isPC() ? '35%' : '90%',
         runTaskDetail: false,
         activeItem: 'result',

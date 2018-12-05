@@ -10,12 +10,12 @@
         <el-form :model="faceDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8" align="center">
-              <img :src="faceDetail.senceImageUrl?faceDetail.senceImageUrl:imgPath"
-                   style="width: 90%;border: 1px #D7D7D7 dashed;border-radius: 10px"/>
+              <img :src="faceDetail.senceImageUrl?faceDetail.senceImageUrl:imgPath" :onerror="img404"
+                   style="max-width: 90%;border: 1px #D7D7D7 dashed;border-radius: 10px;max-height: 250px"/>
             </el-col>
             <el-col :span="8" align="left">
-              <img :src="faceDetail.imageUrl?faceDetail.imageUrl:imgPath"
-                   style="height: 160px;width: 160px;border: 1px #D7D7D7 dashed;border-radius: 8px"/>
+              <img :src="faceDetail.imageUrl?faceDetail.imageUrl:imgPath" :onerror="img404"
+                   style="max-height:160px;max-width:160px;border: 1px #D7D7D7 dashed;border-radius: 8px"/>
               <el-form-item label="年龄段" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{faceDetail.age > 0 ? (faceDetail.age-3)+"~"+(faceDetail.age+3):'--'}}</span>
               </el-form-item>
@@ -61,9 +61,9 @@
           <el-col :span="24">
             <div class="face-main">
               <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
-                <img :src="item.faceUrl?item.faceUrl:imgPath"/>
+                <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
                 <el-form :model="item" align="left" label-width="80px" label-position="right"
-                         style="position: absolute;top: 10px;left:150px;text-align: left">
+                         style="text-align: left">
                   <el-form-item label="档案ID" style="margin:0">
                     <!--<span-->
                     <!--style="font-size: 14px;color:#000;margin-right: 20px">{{item.faceId?item.faceId:'&#45;&#45;'}}</span>-->
@@ -131,7 +131,7 @@
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="人员图像" prop="fileUrl" min-width="125" max-width="250">
             <template slot-scope="scope">
-              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
+              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" :onerror="img404"
                    style="width: 90px;height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
@@ -160,7 +160,7 @@
                          :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
       </div>
-      <div v-show="activeItem=='imsi'" style="margin-top: 10px">
+      <div v-show="activeItem=='imsi'" style="margin-top: 10px;margin-bottom: 20px">
         <el-table :data="imsiList" class="center-block" v-loading="listLoading" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="200"
@@ -197,7 +197,9 @@
         qTime: '',
         provinceList: json,
         imgPath: require('../../assets/img/icon_people.png'),
+        img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         id: this.$route.query.id || '',
+        tableHeight: window.innerHeight - 460,
         imageId: this.$route.query.imageId || '',
         faceDetail: {},
         imsiList: [],

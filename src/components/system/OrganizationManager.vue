@@ -13,7 +13,7 @@
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button @click.stop="clearData()" size="medium">重置</el-button>
-            </el-form-item>
+            </el-form-item>k
           </el-form>
         </el-col>
         <el-col :span="6" align="right" style="text-align: right">
@@ -29,7 +29,9 @@
         <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
         <el-table-column align="left" prop="groupName" label="组织名称" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="account" label="组织管理员" min-width="150"
+        <el-table-column align="left" prop="type" label="组织类型" min-width="100"
+                         max-width="150" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" prop="pgroupName" label="管辖区域" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="pgroupName" label="上级组织" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
@@ -37,6 +39,8 @@
                          max-width="300" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="createTime" label="创建时间" width="160"
                          :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" prop="account" label="组织管理员" min-width="150"
+                         max-width="300" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="180" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click.stop="modifyOrganization(scope.row)"
@@ -74,23 +78,23 @@
             </el-select>
           </el-form-item>
           <el-form-item label="组织管理员" align="left" required>
-            <el-radio-group v-model="group.conditionType">
-              <el-radio :label="0">注册新用户</el-radio>
-              <el-radio :label="1">选择已注册的用户</el-radio>
+            <el-radio-group v-model="group.isCreateAdmin">
+              <el-radio :label="1">注册新用户</el-radio>
+              <el-radio :label="0">选择已注册的用户</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="选择用户" align="left" v-show="group.conditionType==1">
+          <el-form-item label="选择用户" align="left" v-show="group.isCreateAdmin==0">
             <el-select v-model="group.adminId" placeholder="请选择用户" filterable>
               <el-option v-for="item in users" :key="item.userId" :label="item.account" :value="item.userId"
                          v-show="item.groupAdmin != true">
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="用户名" align="left" v-show="group.conditionType==0">
-            <el-input v-model="group.account" placeholder="请输入用户名" :maxlength="20" :minlength="2"></el-input>
+          <el-form-item label="用户名" align="left" v-show="group.isCreateAdmin==1">
+            <el-input v-model="group.adminName" placeholder="请输入用户名" :maxlength="20" :minlength="2"></el-input>
           </el-form-item>
-          <el-form-item label="密码" align="left" v-show="group.conditionType==0">
-            <el-input v-model="group.password" placeholder="请输入密码" :maxlength="20" :minlength="2"></el-input>
+          <el-form-item label="密码" align="left" v-show="group.isCreateAdmin==1">
+            <el-input v-model="group.adminPsw" placeholder="请输入密码" :maxlength="20" :minlength="2"></el-input>
           </el-form-item>
         </el-form>
         <div class="block" style="margin-top: 20px">
@@ -105,26 +109,26 @@
             <el-input v-model="police.groupName" placeholder="请输入派出所名称" :maxlength="20" :minlength="2"></el-input>
           </el-form-item>
           <el-form-item label="所属组织" align="left">
-            <span>{{police.account}}</span>
+            <span>{{police.pgroupName}}</span>
           </el-form-item>
           <el-form-item label="组织管理员" align="left" required>
-            <el-radio-group v-model="police.conditionType">
-              <el-radio :label="0">注册新用户</el-radio>
-              <el-radio :label="1">选择已注册的用户</el-radio>
+            <el-radio-group v-model="police.isCreateAdmin">
+              <el-radio :label="1">注册新用户</el-radio>
+              <el-radio :label="0">选择已注册的用户</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="选择用户" align="left" v-show="police.conditionType==1">
+          <el-form-item label="选择用户" align="left" v-show="police.isCreateAdmin==0">
             <el-select v-model="police.adminId" placeholder="请选择用户" filterable>
               <el-option v-for="item in users" :key="item.userId" :label="item.account" :value="item.userId"
                          v-show="item.groupAdmin != true">
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="用户名" align="left" v-show="police.conditionType==0">
-            <el-input v-model="police.account" placeholder="请输入用户名" :maxlength="20" :minlength="2"></el-input>
+          <el-form-item label="用户名" align="left" v-show="police.isCreateAdmin==1">
+            <el-input v-model="police.adminName" placeholder="请输入用户名" :maxlength="20" :minlength="2"></el-input>
           </el-form-item>
-          <el-form-item label="密码" align="left" v-show="police.conditionType==0">
-            <el-input v-model="police.password" placeholder="请输入密码" :maxlength="20" :minlength="2"></el-input>
+          <el-form-item label="密码" align="left" v-show="police.isCreateAdmin==1">
+            <el-input v-model="police.adminPsw" placeholder="请输入密码" :maxlength="20" :minlength="2"></el-input>
           </el-form-item>
         </el-form>
         <div class="block" style="margin-top: 20px">
@@ -264,10 +268,17 @@
       },
       //修改组织
       modifyOrganization(row) {
-        this.group = Object.assign({}, row);
-        this.addOrganizationTitle = '修改公安机关';
-        this.isShow = false;
-        this.addOrganizationVisible = true;
+        if (row.type == 0) {
+          this.group = Object.assign({}, row);
+          this.addOrganizationTitle = '修改公安机关';
+          this.isShow = false;
+          this.addOrganizationVisible = true;
+        } else {
+          this.police = Object.assign({}, row);
+          this.addPoliceTitle = '修改派出所';
+          this.isShow = false;
+          this.addPoliceVisible = true;
+        }
       },
       //删除组织
       deleteOrganization(id) {
@@ -317,7 +328,11 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
+        if (column.property == 'type') {
+          return row[column.property] == 0 ? '公安机关' : row[column.property] == 1 ? '派出所' : '--';
+        } else {
+          return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
+        }
       },
       //获取用户列表
       getUserList() {

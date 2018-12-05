@@ -46,15 +46,17 @@
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150" max-width="250"
+          <el-table-column align="left" prop="deviceTypeVal" label="类型" min-width="120" max-width="200"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="deviceFormVal" label="形态" min-width="120" max-width="200"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="安装地区" prop="areaCode" min-width="150"
+                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="detailAddress" label="详细地址" min-width="180" max-width="300"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="placeName" label="安装场所" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="deviceTypeVal" label="类型" min-width="150" max-width="250"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="deviceFormVal" label="形态" min-width="150" max-width="250"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="detailAddress" label="位置" min-width="180" max-width="300"
+          <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="lineStatus" label="在线状态" min-width="100"
                            max-width="120"></el-table-column>
@@ -269,9 +271,39 @@
         this.areaList = [];
         this.getData();
       },
+      //获得省市县
+      getAreaLable(code) {
+        let lable = '';
+        this.provinceList.forEach((province) => {
+          if (province.c) {
+            province.c.forEach((city) => {
+              if (city.c) {//省级+市级+县级
+                city.c.forEach((country) => {
+                  if (code === country.o) {
+                    lable = province.n + city.n + country.n;
+                  }
+                })
+              } else {//省级+市级
+                if (code === city.o) {
+                  lable = province.n + city.n;
+                }
+              }
+            })
+          } else {//只包含省级
+            if (code === province.o) {
+              lable = province.n;
+            }
+          }
+        });
+        return lable;
+      },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
+        if (column.property === 'areaCode') {
+          return row.areaCode ? this.getAreaLable(row.areaCode) : '--';
+        } else {
+          return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
+        }
       },
       //获取场所列表
       getPlaceName(id) {

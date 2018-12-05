@@ -16,8 +16,8 @@
         <el-form :model="person" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8" align="left" style="text-align: left">
-              <img :src="person.faceUrl?person.faceUrl:imgPath"
-                   style="height: 160px;width: 160px;border: 1px #D7D7D7 dashed;border-radius: 8px"/>
+              <img :src="person.faceUrl?person.faceUrl:imgPath" :onerror="img404"
+                   style="max-height: 160px;max-width: 160px;border: 1px #D7D7D7 dashed;border-radius: 8px"/>
             </el-col>
             <el-col :span="8" align="left" style="text-align: left">
               <el-form-item label="姓名" align="left" style="margin: 0;text-align: left">
@@ -60,9 +60,9 @@
           <el-col :span="24">
             <div class="face-main">
               <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
-                <img :src="item.faceUrl?item.faceUrl:imgPath"/>
+                <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
                 <el-form :model="item" align="left" label-width="80px" label-position="right"
-                         style="position: absolute;top: 10px;left:150px;text-align: left">
+                         style="text-align: left">
                   <el-form-item label="档案ID" style="margin:0">
                     <!--<span-->
                     <!--style="font-size: 14px;color:#000;margin-right: 20px">{{item.faceId?item.faceId:'&#45;&#45;'}}</span>-->
@@ -85,7 +85,7 @@
           </el-col>
         </el-row>
       </div>
-      <div v-show="activeItem=='imsi'" style="margin-top: 10px">
+      <div v-show="activeItem=='imsi'" style="margin-top: 10px;margin-bottom: 20px">
         <el-table :data="imsiList" class="center-block" v-loading="listLoading" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="200"
@@ -114,7 +114,7 @@
           <el-form-item label="对应头像" prop="faceUrl" style="margin: 0">
             <el-upload :action="uploadUrl" :show-file-list="false"
                        :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-              <img :src="modifyPerson.faceUrl?modifyPerson.faceUrl:imgPath" class="avatar">
+              <img :src="modifyPerson.faceUrl?modifyPerson.faceUrl:imgPath" class="avatar" :onerror="img404">
             </el-upload>
           </el-form-item>
           <div style="color:#999;margin-left: 120px;margin-bottom: 20px">
@@ -159,6 +159,7 @@
       return {
         activeItem: 'person',
         imgPath: require('../../assets/img/icon_people.png'),
+        img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         faceId: this.$route.query.faceId || '',
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         person: {},

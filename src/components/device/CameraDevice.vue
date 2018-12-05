@@ -30,18 +30,18 @@
       </el-row>
       <el-table :data="deviceList" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="相机编码" prop="cameraCode" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备标识" prop="name" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="相机状态" prop="status" min-width="120"
-                         max-width="150" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="相机编码" prop="cameraCode" min-width="120"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="安装地区" prop="areaCode" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="详细地址" prop="detailAddress" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="安装场所" prop="placeName" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="设备标识" prop="name" min-width="150"
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="相机状态" prop="status" min-width="120"
+                         max-width="150" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="runningSetPlace=true;addPlace=scope.row"

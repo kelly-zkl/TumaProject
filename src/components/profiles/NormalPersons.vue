@@ -78,7 +78,7 @@
                          max-width="250" :formatter="formatterAddress">
           <template slot-scope="scope">
             <img v-bind:src="scope.row.faceUrl?faceUrl+scope.row.faceUrl:imgPath"
-                 @click="bigUrl=scope.row.faceUrl;runBigPic=true"
+                 @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
                  style="max-width: 90px;max-height:90px;border-radius: 6px"/>
           </template>
         </el-table-column>
@@ -182,6 +182,7 @@
         query: {page: 1, size: 10},
         provinceList: json,
         imgPath: require('../../assets/img/icon_people.png'),
+        img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         props: {value: 'o', label: 'n', children: 'c'},
         statuses: [{label: '全部', value: ''}, {label: '待处理', value: '1'}, {label: '处理中', value: '2'},
           {label: '已处理', value: '3'}, {label: '误报', value: '4'}],

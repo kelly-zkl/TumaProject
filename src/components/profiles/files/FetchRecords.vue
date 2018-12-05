@@ -126,7 +126,7 @@
           <el-table-column align="left" label="人员图像" prop="imageUrl" min-width="150" max-width="200">
             <template slot-scope="scope">
               <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
-                   @click="bigUrl=scope.row.faceUrl;runBigPic=true"
+                   @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
                    style="max-width: 90px;max-height:90px;border-radius: 6px"/>
             </template>
           </el-table-column>
@@ -180,6 +180,7 @@
         bigUrl: '',
         faceId: this.$route.query.faceId || '',
         imgPath: require('../../../assets/img/icon_people.png'),
+        img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
         queryImsi: {size: 100},
         query: {size: 100},
         qTime: [new Date((formatDate(new Date((new Date().getTime() - 30 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),

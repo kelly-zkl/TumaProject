@@ -47,7 +47,7 @@
               <el-row style="padding: 0;margin: 0">
                 <el-col :span="8" align="center" v-bind:style="'height:'+(tableHeight-40)*0.30+'px'">
                   <div
-                    v-bind:style="'display:flex;align-items: center;justify-content: center;background: rgba(0,0,0,.3);border-radius: 6px;text-align: center;width: 160px;padding: 10px 20px;height:'+(((tableHeight-180)*0.30-20)/2)+'px'">
+                    v-bind:style="'display:-webkit-box;display:-ms-flexbox;display:flex;align-items: center;justify-content: center;background: rgba(0,0,0,.3);border-radius: 6px;text-align: center;width: 160px;padding: 10px 20px;height:'+(((tableHeight-180)*0.30-20)/2)+'px'">
                     <div style="display: block">
                       <div style="color: #fff;font-size: 14px">今日抓取IMSI</div>
                       <div style="color: #fff;font-size: 20px;margin-top: 10px">{{addImsiCount}}<span
@@ -55,7 +55,7 @@
                     </div>
                   </div>
                   <div
-                    v-bind:style="'display:flex;align-items: center;justify-content: center;background: rgba(0,0,0,.3);border-radius: 6px;width: 160px; margin-top: 10px;padding: 10px 20px;height:'+(((tableHeight-180)*0.30-20)/2)+'px'">
+                    v-bind:style="'display:-webkit-box;display:-ms-flexbox;display:flex;align-items: center;justify-content: center;background: rgba(0,0,0,.3);border-radius: 6px;width: 160px; margin-top: 10px;padding: 10px 20px;height:'+(((tableHeight-180)*0.30-20)/2)+'px'">
                     <div style="display: block">
                       <div style="color: #fff;font-size: 14px">今日抓取图像</div>
                       <div style="color: #fff;font-size: 20px;margin-top: 10px">{{addFaceCount}}<span
@@ -101,7 +101,7 @@
                         v-bind:style="'height:'+(tableHeight*0.56-55)+'px'">
                 <el-table-column align="left" label="图像" style="align-content: center" min-width="90" max-width="200">
                   <template slot-scope="scope">
-                    <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" class="user-img"/>
+                    <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" class="user-img" :onerror="img404"/>
                   </template>
                 </el-table-column>
                 <el-table-column align="left" label="关联IMSI" prop="imsiList" min-width="140" max-width="200">
@@ -166,6 +166,7 @@
         intervalid: null,//定时器
         icon: require('../../assets/img/icon.png'),
         imgPath: require('../../assets/img/icon_people.png'),
+        img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         markers: [],
         markerClusterer: null
       }
@@ -175,8 +176,6 @@
       clearInterval(this.intervalid);
     },
     methods: {
-      getWarningCount() {
-      },
       //定时刷新设备的在线状态
       statusTask() {
         if (!this.intervalid) {
@@ -805,8 +804,7 @@
       this.systemParam = JSON.parse(sessionStorage.getItem("system"));
       this.hotPoint = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
       this.mapPoint = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
-      sessionStorage.setItem("index", 1);
-      this.$emit('handleSelectTab', 1);
+
       let arr = this.set7adyData([]);
       this.warning = this.getLast7Days(arr);
       this.catchData = this.getLast7Days(arr);

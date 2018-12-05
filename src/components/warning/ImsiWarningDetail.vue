@@ -74,9 +74,9 @@
           <el-col :span="24" style="margin: 0;padding: 0">
             <div class="face-main">
               <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
-                <img :src="item.faceUrl?item.faceUrl:imgPath"/>
+                <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
                 <el-form :model="item" align="left" label-width="80px" label-position="right"
-                         style="position: absolute;top: 15px;left:150px;text-align: left">
+                         style="text-align: left">
                   <el-form-item label="档案ID" style="margin:0">
                     <span
                       style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
@@ -177,6 +177,7 @@
         activeItem: 'person',
         provinceList: json,
         imgPath: require('../../assets/img/icon_people.png'),
+        img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         id: this.$route.query.id || '',
         imsi: this.$route.query.imsi || '',
         qTime: '',
