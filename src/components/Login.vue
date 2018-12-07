@@ -93,6 +93,7 @@
               sessionStorage.setItem("imsi", JSON.stringify({id: ''}));
               this.getMenuTree();
               this.getButton();
+              this.getAreas();
             }
           } else {
             this.$message.error(data.msg);
@@ -139,6 +140,13 @@
         //菜单类型(1:目录,2:菜单,3:按钮)
         this.$post('/manager/permission/listByType/' + JSON.parse(sessionStorage.getItem("user")).userId + '/3', {}).then((data) => {
           sessionStorage.setItem("button", JSON.stringify(data.data));
+        });
+      },
+      //获取地区的权限
+      getAreas() {
+        localStorage.setItem("areas", JSON.stringify([]));
+        this.$post('/manager/area/query', {}).then((data) => {
+          localStorage.setItem("areas", JSON.stringify(data.data ? data.data : []));
         });
       },
       //获取系统参数配置

@@ -175,7 +175,6 @@
         listLoading: false,
         runDealDetail: false,
         activeItem: 'person',
-        provinceList: json,
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         id: this.$route.query.id || '',
@@ -402,7 +401,7 @@
       //获得省市县
       getAreaLable(code) {
         let lable = '';
-        this.provinceList.forEach((province) => {
+        json.forEach((province) => {
           if (province.c) {
             province.c.forEach((city) => {
               if (city.c) {//省级+市级+县级

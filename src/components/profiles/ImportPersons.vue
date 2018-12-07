@@ -122,7 +122,6 @@
   </div>
 </template>
 <script>
-  import json from '../../assets/city.json';
   import {globalValidImg, doubleValid, mobileValidator, mobileValidator2} from "../../assets/js/api";
   import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
 
@@ -132,7 +131,6 @@
         isMore: false,
         query: {size: 100},
         tableHeight: window.innerHeight - 245,
-        provinceList: json,
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         props: {value: 'o', label: 'n', children: 'c'},

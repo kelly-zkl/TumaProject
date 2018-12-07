@@ -141,7 +141,7 @@
           </el-form>
           <div slot="footer" class="dialog-footer" align="center">
             <el-button @click="runningCreateCase = false">取消</el-button>
-            <el-button type="primary" @click="createNewCase()">确认创建</el-button>
+            <el-button type="primary" @click="createNewCase()" :disabled="listLoading">确认创建</el-button>
           </div>
         </div>
       </el-dialog>
@@ -196,11 +196,11 @@
         listLoading: false,
         dialogWidth: '600px',
         labelWidth: isPC() ? '100px' : '80px',
-        props: {value: 'o', label: 'n', children: 'c'},
+        props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
+        provinceList: JSON.parse(localStorage.getItem("areas")),
         tableHeight: window.innerHeight - 295,
         areaList: [],
         caseTypeAdd: '',
-        provinceList: json,
         qTime: '',
         query: {page: 1, size: 10, status: 'EXECUTION'},
         caseTypes: [],
@@ -333,6 +333,7 @@
       //创建新案件
       showCreate() {
         this.createCase = {startTime: []};
+        this.listLoading = false;
         this.runningCreateCase = true;
       },
       createNewCase() {
@@ -347,8 +348,10 @@
             delete this.createCase['startTime'];
             delete this.createCase['caseArea'];
 
+            this.listLoading = true;
             this.$post("case/add", this.createCase, "创建成功").then((data) => {
               this.createCase = {startTime: []};
+              this.listLoading = false;
               this.runningCreateCase = false;
               this.getData();
             });
@@ -441,7 +444,7 @@
       //获得省市县
       getAreaLable(code) {
         let lable = '';
-        this.provinceList.forEach((province) => {
+        json.forEach((province) => {
           if (province.c) {
             province.c.forEach((city) => {
               if (city.c) {//省级+市级+县级

@@ -1,8 +1,9 @@
 <template>
   <div>
     <el-container class="main-container">
-      <el-header style="background: #08163d;color:#fff;padding: 0 10px" height="60px">
-        <div style="display:-webkit-box;display:-ms-flexbox;display:flex;flex-direction: row;height: 60px;width: 100%">
+      <el-header style="background: #08163d;color:#fff;padding: 0 20px" height="60px">
+        <div style="display:-webkit-box;display:-ms-flexbox;display:flex;flex-direction: row;height: 60px;width: 100%"
+             @click="runSearch=false">
           <div align="left"
                style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 60px;align-items: center;flex: 0 0 auto;margin-right:10px">
             <img src="../assets/img/icon_logo.svg" style="display:inline-block;height: 30px;width: 30px">
@@ -13,19 +14,14 @@
                style="flex:1 1 auto;height:60px;align-items:center;justify-content:flex-start;white-space:nowrap;overflow:hidden">
             <el-menu :default-active="$route.path" background-color="#08163d" text-color="#B3B3B3" router
                      active-text-color="#fff" mode="horizontal" @select="handleSelectItem">
-              <el-menu-item :index="item.permissionUrl" v-for="item in menu" :key="item.permissionUrl">
+              <el-menu-item :index="item.permissionUrl" v-for="item in menu" :key="item.permissionUrl"
+                            v-if="item.permissionUrl!='/searchAll'">
                 <template slot="title">
                   <i :class="item.icon"
-                     v-bind:style="item.orders<5?'font-size: 1.6em':item.orders>5?'font-size: 1.8em':'font-size: 1.7em'"></i>
+                     v-bind:style="item.orders<6?'font-size: 1.6em':item.orders>6?'font-size: 1.8em':'font-size: 1.7em'"></i>
                   <span>{{item.name}}</span>
                   <el-badge class="mark" :value="imsiCount+faceCount" :max="99"
                             v-show="item.orders==2&&imsiCount+faceCount>0"/>
-                </template>
-              </el-menu-item>
-              <el-menu-item :index="'/listManage'">
-                <template slot="title">
-                  <i class="fa fa-address-book" style="font-size: 1.5em"></i>
-                  <span>重点人员</span>
                 </template>
               </el-menu-item>
             </el-menu>
@@ -42,7 +38,7 @@
                     <el-button type="text" @click="clearImsi()">清空</el-button>
                   </el-col>
                 </el-row>
-                <el-row v-for="item in searchImsis" v-show="searchImsis.length>0">
+                <el-row v-for="(item,idx) in searchImsis" :key="idx+''" v-show="searchImsis.length>0">
                   <el-col :span="12" style="text-align: left;padding-left: 10px">
                     <span style="height: 40px;line-height: 40px;color:#333">{{item}}</span>
                   </el-col>
@@ -69,7 +65,8 @@
                 </div>
               </el-popover>
               <el-input placeholder="请输入IMSI" :maxlength="15" style="width: 235px" v-popover:imsi clearable
-                        @click.stop="imsiShow=true;imgShow=false" v-model="imsi" @keyup.13.native="searchImsi()">
+                        @click.stop="imsiShow=true;imgShow=false" v-model="imsi" @keyup.13.native="searchImsi()"
+                        v-show="getButtonVial('home:allSearch')">
                 <el-button slot="prepend" icon="el-icon-picture" v-popover:image
                            @click.stop="imsiShow=false;imgShow=true"></el-button>
                 <el-button slot="append" icon="el-icon-search" @click.stop="imsiShow=false;imgShow=false"
@@ -204,16 +201,16 @@
       <div class="block">
         <el-form label-width="100px" :rules="rules" ref="psw" :model="psw">
           <el-form-item label="当前密码" prop="password">
-            <el-input type="password" :maxlength="18" :minlength="6" placeholder="输入密码"
+            <el-input type="password" :maxlength="16" :minlength="6" placeholder="输入密码"
                       v-model="psw.password"></el-input>
           </el-form-item>
           <el-form-item label="新密码" prop="password1">
             <el-input type="password" v-model="psw.password1"
-                      placeholder="请输入6-16位密码" :maxlength="18" :minlength="6"></el-input>
+                      placeholder="请输入6-16位密码" :maxlength="16" :minlength="6"></el-input>
           </el-form-item>
           <el-form-item label="密码确认" prop="password2">
             <el-input type="password" v-model="psw.password2"
-                      placeholder="请再次输入新密码" :maxlength="18" :minlength="6"></el-input>
+                      placeholder="请再次输入新密码" :maxlength="16" :minlength="6"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer" align="center">
@@ -242,8 +239,8 @@
       let pswValidate = (rule, value, callback) => {
         if (value.length < 6) {
           callback(new Error('密码不能小于6位'));
-        } else if (value.length > 18) {
-          callback(new Error('密码不能大于18位'));
+        } else if (value.length > 16) {
+          callback(new Error('密码不能大于16位'));
         } else if (!pswValidator(value)) {
           callback(new Error("密码由英文字母、数字以及~!@#$%^&*=+/-组成"));
         } else {
@@ -298,13 +295,16 @@
       clearInterval(this.intervalid);
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       //以图搜图
       searchImage() {
         if (this.imageUrl.length == 0) {
           this.$message.error("请上传头像");
           return;
         }
-        this.searchParam = JSON.stringify({type: 'img', value: this.imageUrl});
+        this.searchParam = JSON.stringify({type: 'img', value: this.imageUrl, time: new Date().getTime()});
         this.runSearch = true;
       },
       //以码搜图
@@ -321,7 +321,7 @@
           this.searchImsis.unshift(this.imsi);
           localStorage.setItem("imsis", JSON.stringify({imsi: this.searchImsis}));
         }
-        this.searchParam = JSON.stringify({type: 'imsi', value: this.imsi});
+        this.searchParam = JSON.stringify({type: 'imsi', value: this.imsi, time: new Date().getTime()});
         this.runSearch = true;
       },
       //是否重复

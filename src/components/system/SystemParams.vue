@@ -18,9 +18,9 @@
         <h5 class="add-label" style="margin-top: 0">地图定位坐标</h5>
         <div class="add-appdiv">
           <el-form-item label="定位城市" align="left" style="margin: 0;text-align: left">
-            <el-tooltip effect="dark" content="系统所有地图都根据所选的城市来定位初始位置" placement="bottom">
-              <el-cascader :options="provinceList" :props="props" change-on-select filterable @change="cityChange"
-                           v-model="selectedOptions2" placeholder="省市县区" clearable style="width: 350px">
+            <el-tooltip effect="dark" content="系统所有地图都根据所选的城市来定位初始位置" placement="center">
+              <el-cascader :options="provinceList" :props="props" clearable filterable style="width: 280px"
+                           v-model="systemParam.codes" placeholder="选择城市">
               </el-cascader>
             </el-tooltip>
           </el-form-item>
@@ -80,12 +80,11 @@
           <el-button type="primary" @click="saveSet()" size="medium" style="width: 100px">保存</el-button>
         </el-form-item>
       </el-form>
-      <div id="allmap" style="width: 100px;height: 100px;display: none"></div>
     </section>
   </div>
 </template>
 <script>
-  import json from '../../assets/city.json';
+  import json from '../../assets/area.json';
   import {globalValidImg, doubleValid, numValid} from "../../assets/js/api";
   import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
 
@@ -94,21 +93,45 @@
       return {
         listLoading: false,
         systemParam: {
-          sysName: '', sysLogo: '', refreshTime: 10, limitTime: 30, similarThreshold: 60,
+          sysName: '', sysLogo: '', refreshTime: 10, limitTime: 30, similarThreshold: 60, codes: [],
           heatRanges: [{start: 0, end: 500, color: '#0000FF'}, {start: 501, color: '#ff0000'}]
         },
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         imgPath: require('../../assets/img/icon_people.png'),
         provinceList: json,
         props: {value: 'o', label: 'n', children: 'c'},
-        selectedOptions2: [],
+        position: {},
         colorArr: ['#0000FF', '#007F0A', '#FDFE1F', '#FE4404', '#ff0000'],
-        myGeo: null,
       }
     },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      getLocaPoint(code) {
+        let point = [];
+        json.forEach((province) => {
+          if (province.c) {
+            province.c.forEach((city) => {
+              if (city.c) {//省级+市级+县级
+                city.c.forEach((country) => {
+                  if (code === country.o) {
+                    point = [country.x, country.y];
+                  }
+                })
+              } else {//省级+市级
+                if (code === city.o) {
+                  point = [city.x, city.y];
+                }
+              }
+            })
+          } else {//只包含省级
+            if (code === province.o) {
+              point = [province.x, province.y];
+            }
+          }
+        });
+        return point;
       },
       //添加热力图范围
       plusColor(indx) {
@@ -136,17 +159,11 @@
         //   this.$message.error('请上传系统LOGO');
         //   return;
         // }
-        if (this.selectedOptions2.length > 0) {//定位城市
-          let city = this.getAreaLable(this.selectedOptions2[this.selectedOptions2.length - 1]);
-          // 将地址解析结果显示在地图上,并调整地图视野
-          this.myGeo.getPoint(city, function (point) {
-            if (point) {
-              param.push({code: 'sys_map_location', name: '地图定位坐标', value: [point.lng, point.lat]});
-            } else {
-              param.push({code: 'sys_map_location', name: '地图定位坐标', value: [116.331398, 39.897445]});
-            }
-          });
-          param.push({code: 'sys_map_code', name: '省市区编码', value: this.selectedOptions2});
+        if (this.systemParam.codes.length > 0) {//定位城市
+          let point = [];
+          point = this.getLocaPoint(this.systemParam.codes[this.systemParam.codes.length - 1]);
+          param.push({code: 'sys_map_location', name: '地图定位坐标', value: point});
+          param.push({code: 'sys_map_code', name: '地图定位城市', value: this.systemParam.codes});
         } else {
           this.$message.error('请选择定位的城市');
           return;
@@ -172,7 +189,6 @@
           return;
         }
         if (this.systemParam.heatRanges.length > 0) {//热力图档位范围
-
           param.push({code: 'heatChart_color_range', name: '热力图档位范围', value: this.systemParam.heatRanges});
         } else {
           this.$message.error('请输入热力图档位范围');
@@ -193,14 +209,11 @@
           this.$message.error('请输入正确的图片搜索阈值');
           return;
         }
-        this.listLoading = true;
-        setTimeout(() => {
-          if (param.length == 6) {
-            this.setSystem(param);
-          }
-        }, 1000);
+
+        this.setSystem(param);
       },
       setSystem(param) {
+        this.listLoading = true;
         this.$post('sysparam/update', param, '保存成功').then((data) => {
           this.listLoading = false;
           this.getSystemDetail();
@@ -222,7 +235,7 @@
                   this.systemParam.sysLogo = item.value;
                 }
                 if (item.code == 'sys_map_code') {
-                  this.selectedOptions2 = item.value;
+                  this.systemParam.codes = item.value;
                 }
                 if (item.code == 'sys_map_location') {
                   this.systemParam.localPoint = item.value;
@@ -260,60 +273,9 @@
         if (globalValidImg(file, this.$message)) {
         }
         return globalValidImg(file, this.$message);
-      },
-      //场所省市县变化
-      cityChange(value) {
-        this.selectedOptions2 = value;
-      },
-      //获得省市县
-      getAreaLable(code) {
-        let lable = '';
-        this.provinceList.forEach((province) => {
-          if (province.c) {
-            province.c.forEach((city) => {
-              if (city.c) {//省级+市级+县级
-                city.c.forEach((country) => {
-                  if (code === province.o) {
-                    lable = province.n;
-                    return;
-                  }
-                  if (code === city.o) {
-                    lable = province.n + city.n;
-                    return;
-                  }
-                  if (code === country.o) {
-                    lable = province.n + city.n + country.n;
-                    return;
-                  }
-                })
-              } else {//省级+市级
-                if (code === province.o) {
-                  lable = province.n;
-                  return;
-                }
-                if (code === city.o) {
-                  lable = province.n + city.n;
-                  return;
-                }
-              }
-            })
-          } else {//只包含省级
-            if (code === province.o) {
-              lable = province.n;
-              return;
-            }
-          }
-        });
-        return lable;
       }
     },
     mounted() {
-      // 百度地图API功能
-      var map = new BMap.Map("allmap");
-      var point = new BMap.Point(116.331398, 39.897445);
-      map.centerAndZoom(point, 12);
-      // 创建地址解析器实例
-      this.myGeo = new BMap.Geocoder();
       this.getSystemDetail();
     }
   }

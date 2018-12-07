@@ -134,7 +134,7 @@
           </el-form>
           <div slot="footer" class="dialog-footer" align="center">
             <el-button @click="cancelSubmit()">取消</el-button>
-            <el-button type="primary" @click="placeAdd(addTitle)">确定</el-button>
+            <el-button type="primary" @click="placeAdd(addTitle)" :disabled="listLoading1">确定</el-button>
           </div>
         </div>
       </el-dialog>
@@ -174,8 +174,8 @@
       return {
         addTitle: '新建场所',
         query: {page: 1, size: 10},
-        provinceList: json,
-        props: {value: 'o', label: 'n', children: 'c'},
+        props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
+        provinceList: JSON.parse(localStorage.getItem("areas")),
         tableHeight: window.innerHeight - 245,
         serviceTypes: [{value: '0', label: '网吧'}, {value: '1', label: '旅店宾馆类（住宿服务场所）'},
           {value: '2', label: '图书馆阅览室'}, {value: '3', label: '电脑培训中心类'}, {value: '4', label: '娱乐场所类'},
@@ -298,6 +298,7 @@
         this.numberCode = '';
         this.selectedOptions2 = [];
         this.code = '';
+        this.listLoading1 = false;
         this.runAddPlace = true;
         this.addTitle = '新建场所';
       },
@@ -307,10 +308,12 @@
         this.numberCode = row.placeCode.substring(row.placeCode.length - 4, row.placeCode.length);
         this.selectedOptions2 = this.getCode(row.areaCode);
         this.code = row.areaCode;
+        this.listLoading1 = false;
         this.runAddPlace = true;
         this.addTitle = '修改场所';
       },
       cancelSubmit() {
+        this.listLoading1 = false;
         this.runAddPlace = false;
         this.placeCode = '';
         this.numberCode = '';
@@ -338,8 +341,10 @@
         }
         this.$refs['addPlace'].validate((valid) => {
           if (valid) {
+            this.listLoading1 = true;
             this.addPlace.groupName = this.getGroupName(this.addPlace.groupId);
             this.$post(url, this.addPlace, msg).then((data) => {
+              this.listLoading1 = false;
               this.runAddPlace = false;
               this.addPlace = {};
               this.placeCode = '';
@@ -509,7 +514,7 @@
       //获得省市县
       getAreaLable(code) {
         let lable = '';
-        this.provinceList.forEach((province) => {
+        json.forEach((province) => {
           if (province.c) {
             province.c.forEach((city) => {
               if (city.c) {//省级+市级+县级

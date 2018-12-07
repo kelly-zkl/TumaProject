@@ -293,9 +293,9 @@
       return {
         dialogDevice: false,
         dialogCamera: false,
-        props: {value: 'o', label: 'n', children: 'c'},
+        props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
+        provinceList: JSON.parse(localStorage.getItem("areas")),
         areaList: [],
-        provinceList: json,
         mapVisible: false,
         collisionType: 'IMSI',
         collision: {taskName: '', collisionMode: "INTERSECT", caseId: "", conditionType: 0},
@@ -676,7 +676,7 @@
       //获得省市县
       getAreaLable(code) {
         let lable = '';
-        this.provinceList.forEach((province) => {
+        json.forEach((province) => {
           if (province.c) {
             province.c.forEach((city) => {
               if (city.c) {//省级+市级+县级

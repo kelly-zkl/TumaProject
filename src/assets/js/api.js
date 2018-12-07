@@ -152,15 +152,16 @@ export const globalValidImg = (file, msg) => {
 export const globalValidZIP = (file, msg) => {
   let isZIP = false;
   const isLt100M = (file.size / 1024 / 1024 <= 100);
-  if (file.name.indexOf('.rar') > 0 || file.name.indexOf('.zip') > 0 || file.name.indexOf('.cab') > 0
-    || file.name.indexOf('.arj') > 0 || file.name.indexOf('.lzh') > 0 || file.name.indexOf('.ace') > 0
-    || file.name.indexOf('.7-zip') > 0 || file.name.indexOf('.tar') > 0 || file.name.indexOf('.gzip') > 0
-    || file.name.indexOf('.uue') > 0 || file.name.indexOf('.bz2') > 0 || file.name.indexOf('.jar') > 0
-    || file.name.indexOf('.7z') > 0) {
+  // file.name.indexOf('.rar') > 0 || || file.name.indexOf('.cab') > 0
+  //     || file.name.indexOf('.arj') > 0 || file.name.indexOf('.lzh') > 0 || file.name.indexOf('.ace') > 0
+  //     || file.name.indexOf('.7-zip') > 0 || file.name.indexOf('.tar') > 0 || file.name.indexOf('.gzip') > 0
+  //     || file.name.indexOf('.uue') > 0 || file.name.indexOf('.bz2') > 0 || file.name.indexOf('.jar') > 0
+  //     || file.name.indexOf('.7z') > 0
+  if (file.name.indexOf('.zip') > 0) {
     isZIP = true;
   }
   if (!isZIP) {
-    msg.error('上传文件只能是压缩文件!');
+    msg.error('上传文件只能是ZIP压缩文件!');
   }
   if (!isLt100M) {
     msg.error('上传文件大小不能超过 100MB!');

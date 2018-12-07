@@ -262,10 +262,9 @@
       getDataHeat() {
         var _this = this;
         if (!this.heatMap) {
-          this.heatMap = new BMap.Map("dataheat");// 创建地图实例
+          this.heatMap = new BMap.Map("dataheat", {minZoom: 5, maxZoom: 18});// 创建地图实例
 
           this.heatMap.enableScrollWheelZoom(); // 允许滚轮缩放
-          this.heatMap.setMinZoom(5);
           var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
           // this.heatMap.setMapStyle({style: 'midnight'});
           // this.heatMap.addControl(mapType);//左上角，默认地图控件
@@ -409,6 +408,8 @@
           this.deviceChart.setOption(option);
           if (!app.inNode) {
             this.deviceMap = this.deviceChart.getModel().getComponent('bmap').getBMap();
+            this.deviceMap.setMinZoom(5);
+            this.deviceMap.setMaxZoom(18);
             var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
             this.deviceMap.setMapStyle({style: 'midnight'});
             // this.deviceMap.addControl(mapType);          //左上角，默认地图控件

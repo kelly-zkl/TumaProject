@@ -98,8 +98,8 @@
         activeItem: 'EXECUTION',
         addPlace: {},
         query: {page: 1, size: 10},
-        provinceList: json,
-        props: {value: 'o', label: 'n', children: 'c'},
+        props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
+        provinceList: JSON.parse(localStorage.getItem("areas")),
         areaList: [],
         count: 0,
         listLoading: false,
@@ -199,7 +199,7 @@
       //获得省市县
       getAreaLable(code) {
         let lable = '';
-        this.provinceList.forEach((province) => {
+        json.forEach((province) => {
           if (province.c) {
             province.c.forEach((city) => {
               if (city.c) {//省级+市级+县级

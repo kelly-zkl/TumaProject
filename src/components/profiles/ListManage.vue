@@ -194,8 +194,8 @@
               <el-button type="primary">选择文件</el-button>
             </el-upload>
           </el-input>
-          <div style="color:#999;margin-top: 20px;font-weight: bold" v-show="!fileFlag">
-            选择压缩文件，导入后，文件将自动解压。<br/>文件夹需要以名单名称来命名；<br/>
+          <div style="color:#999;margin-top: 20px;font-weight: bold;text-align: left" v-show="!fileFlag">
+            选择ZIP压缩文件，导入后，文件将自动解压。<br/>文件夹需要以名单名称来命名；<br/>
             人员图片请选择清晰的人头像照片；<br/>图片文件的命名规则以姓名（汉字）+身份证号（18位数字）
           </div>
           <div v-show="fileFlag" style="margin-bottom: 20px">文件名：{{importFile}}</div>

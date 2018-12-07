@@ -185,8 +185,8 @@
           startDate: [{required: true, message: '请选择布控有效期', trigger: 'blur'}]
         },
         query: {page: 1, size: 10},
-        provinceList: json,
-        props: {value: 'o', label: 'n', children: 'c'},
+        props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
+        provinceList: JSON.parse(localStorage.getItem("areas")),
         serviceTypes: [{value: '0', label: '网吧'}, {value: '1', label: '旅店宾馆类（住宿服务场所）'},
           {value: '2', label: '图书馆阅览室'}, {value: '3', label: '电脑培训中心类'}, {value: '4', label: '娱乐场所类'},
           {value: '5', label: '交通枢纽'}, {value: '6', label: '公共交通工具'}, {value: '7', label: '餐饮服务场所'},
@@ -468,7 +468,7 @@
       //获得省市县
       getAreaLable(code) {
         let lable = '';
-        this.provinceList.forEach((province) => {
+        json.forEach((province) => {
           if (province.c) {
             province.c.forEach((city) => {
               if (city.c) {//省级+市级+县级

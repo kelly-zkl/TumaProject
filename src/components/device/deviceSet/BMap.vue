@@ -1,10 +1,10 @@
 <template>
   <div>
     <section class="content">
-      <el-cascader :options="provinceList" :props="props" change-on-select filterable @change="placeChange"
-                   v-model="selectedOptions2" placeholder="省市县区" clearable
-                   style="position: absolute;top: 10px;left: 10px;width: 90%">
-      </el-cascader>
+      <!--<el-cascader :options="provinceList" :props="props" change-on-select filterable @change="placeChange"-->
+      <!--v-model="selectedOptions2" placeholder="省市县区" clearable-->
+      <!--style="position: absolute;top: 10px;left: 10px;width: 90%">-->
+      <!--</el-cascader>-->
       <div id="container" style="width: 100%;height:400px"></div>
     </section>
   </div>
@@ -16,14 +16,15 @@
     props: ['formattedAddress'],
     data() {
       return {
-        provinceList: json,
-        props: {value: 'o', label: 'n', children: 'c'},
+        props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
+        provinceList: JSON.parse(localStorage.getItem("areas")),
         selectedOptions2: [],
         position: {},
         map: {},
         geolocation: {},//定位
         geocoder: {},//地址（区域编码）与经纬度的转换
         marker: {},
+        systemParam: {},
         detailAddress: ''
       }
     },
@@ -36,7 +37,7 @@
       }
     },
     created() {
-      this.map = new BMap.Map("container");
+      this.map = new BMap.Map("container", {minZoom: 5, maxZoom: 18});
       this.geocoder = new BMap.Geocoder();
       this.geolocation = new BMap.Geolocation();
       let param = JSON.parse(this.formattedAddress);
@@ -58,7 +59,7 @@
       //获得省市县
       getAreaLable(code) {
         let lable = '';
-        this.provinceList.forEach((province) => {
+        json.forEach((province) => {
           if (province.c) {
             province.c.forEach((city) => {
               if (city.c) {//省级+市级+县级
@@ -84,7 +85,7 @@
       //获得城市名称
       getCityName(code) {
         let lable = '';
-        this.provinceList.forEach((province) => {
+        json.forEach((province) => {
           if (province.c) {
             province.c.forEach((city) => {
               if (city.c) {//省级+市级+县级
@@ -110,7 +111,7 @@
       //获取城市编码
       getCityCode(cName, code, type) {
         let lable = '';
-        this.provinceList.forEach((province) => {
+        json.forEach((province) => {
           if (province.c) {
             if (type == 0) {//省市县都有
               province.c.forEach((city) => {
@@ -177,21 +178,23 @@
       },
       //设置地图的中心点
       setCenter() {
-        let _this = this;
-        let city = this.getCityName(this.selectedOptions2[this.selectedOptions2.length - 1]);
-        this.geocoder.getPoint(this.detailAddress, function (point) {
-          console.log(point);
-          if (point) {
-            _this.map.clearOverlays();
-            _this.position.lng = point.lng;
-            _this.position.lat = point.lat;
-            _this.map.centerAndZoom(point, 15);
-            _this.map.addOverlay(new BMap.Marker(point));
-            _this.setLocation();
-          } else {
-            alert("您选择地址没有解析到结果!");
-          }
-        }, city);
+        var point = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
+        this.map.centerAndZoom(point, 12);
+        // let _this = this;
+        // let city = this.getCityName(this.selectedOptions2[this.selectedOptions2.length - 1]);
+        // this.geocoder.getPoint(this.detailAddress, function (point) {
+        //   console.log(point);
+        //   if (point) {
+        //     _this.map.clearOverlays();
+        //     _this.position.lng = point.lng;
+        //     _this.position.lat = point.lat;
+        //     _this.map.centerAndZoom(point, 12);
+        //     _this.map.addOverlay(new BMap.Marker(point));
+        //     _this.setLocation();
+        //   } else {
+        //     alert("您选择地址没有解析到结果!");
+        //   }
+        // }, city);
       },
       //经纬度转换地址
       setLocation() {
@@ -215,31 +218,34 @@
     },
     mounted() {
       let _this = this;
+      this.systemParam = JSON.parse(sessionStorage.getItem("system"));
 
-      this.map = new BMap.Map("container");
+      this.map = new BMap.Map("container", {minZoom: 5, maxZoom: 18});
       this.map.enableScrollWheelZoom(true);
       this.geocoder = new BMap.Geocoder();
+      var point = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
+      this.map.centerAndZoom(point, 12);
 
-      if (this.selectedOptions2.length === 0) {
-        var point = new BMap.Point(116.331398, 39.897445);
-        this.map.centerAndZoom(point, 12);
-
-        function myFun(result) {
-          var cityName = result.name;
-          _this.map.setCenter(cityName);
-        }
-
-        var myCity = new BMap.LocalCity();
-        myCity.get(myFun);
-        this.geolocation.getCurrentPosition(function (r) {
-          console.log(r);
-          _this.map.clearOverlays();
-          _this.map.addOverlay(new BMap.Marker(r.point));
-          _this.position.lng = r.point.lng;
-          _this.position.lat = r.point.lat;
-          _this.setLocation();
-        }, {enableHighAccuracy: true});
-      }
+      // if (this.selectedOptions2.length === 0) {
+      //   var point = new BMap.Point(116.331398, 39.897445);
+      //   this.map.centerAndZoom(point, 12);
+      //
+      //   function myFun(result) {
+      //     var cityName = result.name;
+      //     _this.map.setCenter(cityName);
+      //   }
+      //
+      //   var myCity = new BMap.LocalCity();
+      //   myCity.get(myFun);
+      //   this.geolocation.getCurrentPosition(function (r) {
+      //     console.log(r);
+      //     _this.map.clearOverlays();
+      //     _this.map.addOverlay(new BMap.Marker(r.point));
+      //     _this.position.lng = r.point.lng;
+      //     _this.position.lat = r.point.lat;
+      //     _this.setLocation();
+      //   }, {enableHighAccuracy: true});
+      // }
 
       this.map.addEventListener("click", function (e) {
         console.log(e);
@@ -249,7 +255,8 @@
         _this.position.detailAddress = '';
         _this.map.clearOverlays();  // 清除地图覆盖物
         _this.map.addOverlay(new BMap.Marker(pt));
-        _this.setLocation();
+        _this.$emit('getLocation', _this.position);
+        // _this.setLocation();
       });
     }
   }

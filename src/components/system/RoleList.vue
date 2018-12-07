@@ -81,7 +81,7 @@
         </el-form>
         <div class="block" style="margin-top: 20px" v-show="isShow">
           <el-button @click="cancelSubmit(addroleTitle)">取消</el-button>
-          <el-button type="primary" @click="onSubmit('role',addroleTitle)">确认</el-button>
+          <el-button type="primary" @click="onSubmit('role',addroleTitle)" :disabled="listLoading">确认</el-button>
         </div>
       </el-dialog>
     </section>
@@ -134,6 +134,7 @@
         this.role = {};
         this.addroleTitle = '创建角色';
         this.isShow = true;
+        this.listLoading = false;
         this.addroleVisible = true;
         this.$refs.tree.setCheckedKeys([]);
       },
@@ -142,6 +143,7 @@
         this.role = Object.assign({}, row);
         this.addroleTitle = '修改角色';
         this.isShow = true;
+        this.listLoading = false;
         this.addroleVisible = true;
         this.$refs.tree.setCheckedKeys(this.role.permissions);
       },
@@ -177,10 +179,12 @@
               this.role.state = '0';
               this.role.roleType = 1;
             }
+            this.listLoading = true;
             this.$post(url, this.role, msg).then((data) => {
               this.$refs.tree.setCheckedKeys([]);
+              this.listLoading = false;
+              this.addroleVisible = false;
               if ("000000" === data.code) {
-                this.addroleVisible = false;
                 this.getRoles();
               } else {
                 this.$message.error(data.msg);

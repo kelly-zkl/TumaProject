@@ -148,7 +148,7 @@
       },
       imsiLine() {
         this.lushu = null;
-        this.walking.clearResults();
+        // this.walking.clearResults();
         this.routeList = [];
         this.map.clearOverlays();
         this.pathLines.forEach((item) => {
@@ -167,16 +167,28 @@
                 pois.push(new BMap.Point(item.locs[i].lon, item.locs[i].lat));
                 recData.timeStr = formatDate(new Date(recData.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss');
                 this.records.push(recData);
-                if (i < item.locs.length - 1 && item.locs.length > 1) {
-                  point1 = new BMap.Point(item.locs[i].lon, item.locs[i].lat);
-                  point2 = new BMap.Point(item.locs[i + 1].lon, item.locs[i + 1].lat);
-                  if (point1.lat != point2.lat || point1.lng != point2.lng) {
-                    this.routeList.push({index: i + ''});
-                    this.walking.search({title: i + '', point: point1}, {title: i + '', point: point2});
-                  }
-                }
+                // if (i < item.locs.length - 1 && item.locs.length > 1) {
+                //   point1 = new BMap.Point(item.locs[i].lon, item.locs[i].lat);
+                //   point2 = new BMap.Point(item.locs[i + 1].lon, item.locs[i + 1].lat);
+                //   if (point1.lat != point2.lat || point1.lng != point2.lng) {
+                //     this.routeList.push({index: i + ''});
+                //     this.walking.search({title: i + '', point: point1}, {title: i + '', point: point2});
+                //   }
+                // }
               }
               this.pathLine(pois, 1);
+              this.lushu = new BMapLib.LuShu(this.map, pois, {// 回放
+                defaultContent: "",
+                autoView: true,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
+                icon: new BMap.Icon(this.pathUrl ? this.pathUrl : 'http://lbsyun.baidu.com/jsdemo/img/Mario.png', this.pathUrl ? new BMap.Size(32, 32) : new BMap.Size(52, 26),
+                  {
+                    anchor: new BMap.Size(27, 13),
+                    imageSize: this.pathUrl ? new BMap.Size(32, 32) : new BMap.Size(32, 32),
+                  }),
+                speed: 2000,//覆盖物移动速度，单位米/秒
+                enableRotation: true,//是否设置marker随着道路的走向进行旋转
+                landmarkPois: []
+              });
             }
           }
         });
@@ -221,7 +233,16 @@
         });
       },
       pathLine(point, type) {
+        // 创建polyline对象
         var pois = point;
+        var polyline = new BMap.Polyline(pois, {
+          enableEditing: false,//是否启用线编辑，默认为false
+          enableClicking: true,//是否响应点击事件，默认为true
+          // icons: [icons],
+          strokeWeight: '4',//折线的宽度，以像素为单位
+          strokeOpacity: 1,//折线的透明度，取值范围0 - 1
+          strokeColor: type == 0 ? "#FF6600" : '#6699FF' //折线颜色#6699FF#325EDA
+        });
         for (var i = 0; i < pois.length; i++) {
           var pt = pois[i];
           // var myIcon = new BMap.Icon(type == 0 ? this.icon1 : this.icon2, new BMap.Size(23, 25));, {icon: myIcon}
@@ -234,6 +255,7 @@
           marker2.setLabel(label);//显示地理名称 a
           this.map.addOverlay(marker2);
         }
+        this.map.addOverlay(polyline);
       },
       //设置地图中心点
       setMapCenter() {
@@ -308,7 +330,7 @@
     },
     mounted() {
       let _this = this;
-      this.map = new BMap.Map("path");
+      this.map = new BMap.Map("path", {minZoom: 5, maxZoom: 18});
       this.map.enableScrollWheelZoom(true);
       this.map.enableDragging();
 

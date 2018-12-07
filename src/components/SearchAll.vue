@@ -29,7 +29,7 @@
                 <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
                 <el-form :model="item" align="left" label-width="100px" label-position="right" size="medium"
                          style="text-align: left">
-                  <el-form-item label="IMSI置信度" style="margin:0" v-for="imsi in item.imsiList"
+                  <el-form-item label="IMSI置信度" style="margin:0" v-for="imsi in item.imsiList" :key="imsi.imsi"
                                 v-show="imsi.imsi==param.value">
                     <span
                       style="font-size:18px;color:#000;font-weight:bold">{{imsi.weight?imsi.weight/10+'%':'--'}}</span>

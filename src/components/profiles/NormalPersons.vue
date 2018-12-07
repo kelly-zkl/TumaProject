@@ -171,7 +171,6 @@
   </div>
 </template>
 <script>
-  import json from '../../assets/city.json';
   import {globalValidImg, noSValidator, noValidator} from "../../assets/js/api";
 
   export default {
@@ -180,7 +179,6 @@
         runBigPic: false,
         bigUrl: '',
         query: {page: 1, size: 10},
-        provinceList: json,
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         props: {value: 'o', label: 'n', children: 'c'},

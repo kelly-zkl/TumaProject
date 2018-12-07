@@ -132,6 +132,8 @@
           this.myChart.setOption(option);
           if (!app.inNode) {
             this.bMap = this.myChart.getModel().getComponent('bmap').getBMap();
+            this.bMap.setMinZoom(5);
+            this.bMap.setMaxZoom(18);
             var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
             // this.bMap.addControl(mapType);
             //实例化鼠标绘制工具

@@ -110,10 +110,10 @@
     data() {
       return {
         isMore: false,
-        props: {value: 'o', label: 'n', children: 'c'},
+        props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
+        provinceList: JSON.parse(localStorage.getItem("areas")),
         lineStatus: '',
         areaList: [],
-        provinceList: json,
         tableHeight: window.innerHeight - 245,
         dialogWidth: isPC() ? '40%' : '90%',
         labelWidth: isPC() ? '100px' : '80px',
@@ -274,7 +274,7 @@
       //获得省市县
       getAreaLable(code) {
         let lable = '';
-        this.provinceList.forEach((province) => {
+        json.forEach((province) => {
           if (province.c) {
             province.c.forEach((city) => {
               if (city.c) {//省级+市级+县级

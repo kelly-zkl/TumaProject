@@ -103,7 +103,7 @@
         </el-form>
         <div class="block" style="margin-top: 20px">
           <el-button @click="cancelSubmit(addMenuTitle)">取消</el-button>
-          <el-button type="primary" @click="onSubmit('menu',addMenuTitle)">确认</el-button>
+          <el-button type="primary" @click="onSubmit('menu',addMenuTitle)" :disabled="listLoading">确认</el-button>
         </div>
       </el-dialog>
     </section>
@@ -186,9 +186,11 @@
             delete this.menu['pid'];
           }
           this.$confirm(tip, '提示', {type: 'warning'}).then(() => {
+            this.listLoading = true;
             this.$post(url, this.menu, msg).then((data) => {
+              this.listLoading = false;
+              this.addMenuVisible = false;
               if ("000000" === data.code) {
-                this.addMenuVisible = false;
                 this.$emit('setSystem', 'menu');
                 this.getMenus();
                 this.getMenuTree();
@@ -203,12 +205,14 @@
       addMenu() {
         this.menu = {type: 1};
         this.addMenuTitle = '创建菜单';
+        this.listLoading = false;
         this.addMenuVisible = true;
       },
       //修改菜单
       modifyMenu(row) {
         this.menu = Object.assign({}, row);
         this.addMenuTitle = '修改菜单';
+        this.listLoading = false;
         this.addMenuVisible = true;
       },
       //菜单启用/停用

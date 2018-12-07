@@ -3,16 +3,25 @@
     <section class="content">
       <el-row>
         <el-col :span="4" style="padding-right: 10px;border-right: 1px solid #e5e5e5">
+          <div v-bind:class="currentIdx==-1?'group-name active':'group-name'"
+               @click="handleClick(-1)" :title="groupName+'（'+count+'人）'">
+            {{groupName+'（'+count+'人）'}}
+          </div>
           <div v-bind:style="'overflow-y: scroll;height:'+leftHeight+'px'">
+            <div class="group" style="color:#999;text-align:center;margin-top: 20px" v-show="departments.length==0">
+              暂无部门
+            </div>
             <div v-bind:class="currentIdx==idx?'depart-main active':'depart-main'" v-for="(tab,idx) in departments"
-                 :key="tab.deptId" @click="handleClick(idx)">
+                 :key="tab.deptId" @click="handleClick(idx)" v-show="departments.length>0">
               <span class="depart-item">{{tab.deptName}}</span>
-              <i class="btn-delete el-icon-delete" @click.stop="deleteDepart(tab)"></i>
-              <i class="btn-delete el-icon-edit" @click.stop="showDeptDialog(1,idx)"></i>
+              <i class="btn-delete el-icon-delete" @click.stop="deleteDepart(tab)"
+                 v-show="getButtonVial('manager:dept:delete')"></i>
+              <i class="btn-delete el-icon-edit" @click.stop="showDeptDialog(1,idx)"
+                 v-show="getButtonVial('manager:dept:update')"></i>
             </div>
           </div>
           <el-button type="primary" icon="el-icon-plus" size="medium" style="width: 100%;margin-top: 15px"
-                     @click="showDeptDialog(0)">创建部门
+                     @click="showDeptDialog(0)" v-show="getButtonVial('manager:dept:create')">创建部门
           </el-button>
         </el-col>
         <el-col :span="20" style="padding-left: 10px">
@@ -96,7 +105,7 @@
       <el-dialog :title="addUserTitle" :visible.sync="addUserVisible" :width="dialogWidth">
         <el-form ref="admin" :model="admin" label-width="100px" :rules="rules" labelPosition="right">
           <el-form-item label="账号" prop="account">
-            <el-input v-model="admin.account" placeholder="请输入帐号" :maxlength="18" :minlength="6"></el-input>
+            <el-input v-model="admin.account" placeholder="请输入账号" :maxlength="16" :minlength="6"></el-input>
           </el-form-item>
           <el-form-item label="密码" align="left" required>
             <el-radio-group v-model="setPsw" @change="changePsw">
@@ -104,7 +113,7 @@
               <el-radio :label="'newPsw'">自定义</el-radio>
             </el-radio-group>
             <el-input v-show="setPsw =='newPsw'" type="password" v-model="admin.password"
-                      placeholder="请输入6-16位密码" :maxlength="18" :minlength="6"></el-input>
+                      placeholder="请输入6-16位密码" :maxlength="16" :minlength="6"></el-input>
           </el-form-item>
           <el-form-item label="用户名" prop="realName">
             <el-input v-model="admin.realName" placeholder="请输入用户名" :maxlength="16" :minlength="2"></el-input>
@@ -133,7 +142,9 @@
         </el-form>
         <div class="block" style="margin-top: 20px">
           <el-button @click="cancelSubmit()" size="medium">取消</el-button>
-          <el-button type="primary" @click="onSubmit('admin',addUserTitle)" size="medium">确认</el-button>
+          <el-button type="primary" @click="onSubmit('admin',addUserTitle)" size="medium"
+                     :disabled="listLoading">确认
+          </el-button>
         </div>
       </el-dialog>
       <!--修改账号-->
@@ -167,7 +178,7 @@
           <!--<span v-else>{{admin.groupName}}</span>-->
           <!--</el-form-item>-->
           <el-form-item label="所属部门" align="left" prop="deptId">
-            <el-select v-model="admin.deptId" placeholder="请选择部门" filterable v-if="admin.groupAdmin != true">
+            <el-select v-model="admin.deptId" placeholder="请选择部门" filterable v-if="admin.groupId==query.myGroupId">
               <el-option v-for="item in departments" :key="item.deptId" :label="item.deptName"
                          :value="item.deptId">
               </el-option>
@@ -185,7 +196,9 @@
         </el-form>
         <div class="block" style="margin-top: 20px">
           <el-button @click="cancelSubmit()" size="medium">取消</el-button>
-          <el-button type="primary" @click="onSubmit('admin',addUserTitle)" size="medium">确认</el-button>
+          <el-button type="primary" @click="onSubmit('admin',addUserTitle)" size="medium"
+                     :disabled="listLoading">确认
+          </el-button>
         </div>
       </el-dialog>
       <!--修改密码-->
@@ -195,12 +208,12 @@
             <el-input v-model="modify.adminPsw" placeholder="请输入管理员密码" type="password"></el-input>
           </el-form-item>
           <el-form-item label="新密码" prop="newPsw">
-            <el-input v-model="modify.newPsw" placeholder="6-18位英文字母、数字、下划线"
-                      :maxlength="18" :minlength="6" type="password"></el-input>
+            <el-input v-model="modify.newPsw" placeholder="6-16位英文字母、数字、下划线"
+                      :maxlength="16" :minlength="6" type="password"></el-input>
           </el-form-item>
           <el-form-item label="密码确认" prop="newPsw1">
             <el-input v-model="modify.newPsw1" placeholder="请再次输入新密码"
-                      :maxlength="18" :minlength="6" type="password"></el-input>
+                      :maxlength="16" :minlength="6" type="password"></el-input>
           </el-form-item>
         </el-form>
         <div class="block" style="margin-top: 20px">
@@ -228,7 +241,9 @@
         </el-form>
         <div class="block" style="margin-top: 20px">
           <el-button @click="addDepartVisible=false" size="medium">取消</el-button>
-          <el-button type="primary" @click="editDepart()" size="medium">{{addDepart=='创建部门'?'确认创建':'确认修改'}}</el-button>
+          <el-button type="primary" @click="editDepart()" size="medium" :disabled="listLoading">
+            {{addDepart=='创建部门'?'确认创建':'确认修改'}}
+          </el-button>
         </div>
       </el-dialog>
     </section>
@@ -244,11 +259,11 @@
     data() {
       let nameValidate = (rule, value, callback) => {
         if (value.length < 6) {
-          callback(new Error('帐号不能小于6位'));
-        } else if (value.length > 18) {
-          callback(new Error('帐号不能大于18位'));
+          callback(new Error('账号不能小于6位'));
+        } else if (value.length > 16) {
+          callback(new Error('账号不能大于16位'));
         } else if (noValidator(value)) {
-          callback(new Error("帐号由英文字母、数字、下划线组成"));
+          callback(new Error("账号由英文字母、数字、下划线组成"));
         } else {
           callback();
         }
@@ -267,8 +282,8 @@
       let pswValidate = (rule, value, callback) => {
         if (value.length < 6) {
           callback(new Error('密码不能小于6位'));
-        } else if (value.length > 18) {
-          callback(new Error('密码不能大于18位'));
+        } else if (value.length > 16) {
+          callback(new Error('密码不能大于16位'));
         } else if (!pswValidator(value)) {
           callback(new Error("密码由英文字母、数字以及~!@#$%^&*=+/-组成"));
         } else {
@@ -286,7 +301,8 @@
         departObj: {deptName: ''},
         addDepartVisible: false,
         isMore: false,
-        leftHeight: window.innerHeight - 200,
+        groupName: '',
+        leftHeight: window.innerHeight - 240,
         tableHeight: window.innerHeight - 245,
         dialogWidth: isPC() ? '35%' : '90%',
         userId: JSON.parse(sessionStorage.getItem("user")).userId,
@@ -321,15 +337,14 @@
         count: 0,
         query: {page: 1, size: 10, myGroupId: JSON.parse(sessionStorage.getItem("user")).groupId},
         users: [],
-        departments: [{deptName: "部门和第三方财富地方吃饭", deptId: 0}, {deptName: "部门B", deptId: 1},
-          {deptName: "部门C", deptId: 2}, {deptName: "部门D", deptId: 3}],
+        departments: [],
         setPsw: 'defaultPsw',
         role: '',
         roles: [],
         organizations: [],
         modify: {adminPsw: '', newPsw: '', newPsw1: ''},
         reset: {adminPsw: ''},
-        currentIdx: 0
+        currentIdx: -1
       }
     },
     methods: {
@@ -344,21 +359,28 @@
           this.addDepart = '修改部门';
           this.departObj = {deptName: this.departments[indx].deptName, deptId: this.departments[indx].deptId};
         }
+        this.listLoading = false;
         this.addDepartVisible = true
       },
       //组织变化=》部门变化、用户变化
       groupChange(val) {
+        this.currentIdx = -1;
+        delete this.query['deptId'];
         this.getDepartments(val);
-        this.handleClick(0);
+        this.groupName = this.getGroupName(val);
+        this.getUserList();
+        // this.handleClick(0);
       },
       //获取部门列表
       getDepartments(id) {
-        let param = {page: 1, size: 9999, groupId: id ? id : JSON.parse(sessionStorage.getItem("user")).groupId};
+        let param = {groupId: id ? id : JSON.parse(sessionStorage.getItem("user")).groupId};
         this.$post('/manager/dept/query', param).then((data) => {
-          this.departments = data.data.depts;
-          if (this.departments.length > 0) {
-            this.query.deptId = this.departments[0].deptId;
-            this.getUserList();
+          if ("000000" === data.code) {
+            this.departments = data.data ? data.data : [];
+            // if (this.departments.length > 0) {
+            //   this.query.deptId = this.departments[0].deptId;
+            //   this.getUserList();
+            // }
           }
         })
       },
@@ -393,14 +415,20 @@
             groupName: groupName, deptName: this.departObj.deptName, remark: ''
           };
         }
-        this.addDepartVisible = false;
+        this.listLoading = true;
         this.$post(url, param, msg).then((data) => {
+          this.listLoading = false;
+          this.addDepartVisible = false;
           this.getDepartments();
         });
       },
       handleClick(idx) {
         this.currentIdx = idx;
-        this.query.deptId = this.departments[idx].deptId;
+        if (idx < 0) {
+          delete this.query['deptId'];
+        } else {
+          this.query.deptId = this.departments[idx].deptId;
+        }
         this.getUserList();
       },
       showMore() {
@@ -426,11 +454,13 @@
         };
         this.setPsw = 'defaultPsw';
         this.role = '';
+        this.listLoading = false;
         this.addUserVisible = true;
         this.addUserTitle = '添加成员';
       },
       updateInfo(row) {
         this.admin = Object.assign({}, row);
+        this.listLoading = false;
         this.modifyUserVisible = true;
         this.addUserTitle = '修改成员';
         this.role = this.admin.roleList[0];
@@ -526,7 +556,9 @@
       },
       clearData() {
         this.query = {page: 1, size: 10, myGroupId: JSON.parse(sessionStorage.getItem("user")).groupId};
+        this.currentIdx = -1;
         this.getUserList();
+        this.getDepartments(JSON.parse(sessionStorage.getItem("user")).groupId);
       },
       onSubmit(formName, title) {
         this.$refs[formName].validate((valid) => {
@@ -548,7 +580,9 @@
             }
             this.admin.roleList = [];
             this.admin.roleList.push(this.role);
+            this.listLoading = true;
             this.$post(url, this.admin, msg).then((data) => {
+              this.listLoading = false;
               if ("000000" === data.code) {
                 this.addUserVisible = false;
                 this.modifyUserVisible = false;
@@ -579,6 +613,7 @@
       getOrganizations() {
         this.$post('/manager/group/query', {page: 1, size: 9999, userId: this.userId}).then((data) => {
           this.organizations = data.data.content;
+          this.groupName = this.getGroupName(JSON.parse(sessionStorage.getItem("user")).groupId);
         });
       }
     },
@@ -591,6 +626,23 @@
   }
 </script>
 <style scoped>
+  .group-name {
+    height: 36px;
+    line-height: 36px;
+    text-align: left;
+    padding-left: 6px;
+    color: #6699ff;
+    cursor: pointer;
+    border-left: 3px solid #fff;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .group-name.active {
+    border-left: 3px solid #6699ff;
+  }
+
   .depart-main {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -600,15 +652,15 @@
     border-left: 3px solid #fff;
     justify-content: center;
     align-items: center;
-    height: 40px;
-    line-height: 40px;
+    height: 36px;
+    line-height: 36px;
   }
 
   .depart-item {
     flex: 1 1 auto;
     cursor: pointer;
-    height: 40px;
-    line-height: 40px;
+    height: 36px;
+    line-height: 36px;
     text-align: left;
     padding-left: 15px;
     text-overflow: ellipsis;
