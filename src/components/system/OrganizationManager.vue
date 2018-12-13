@@ -84,11 +84,11 @@
       </div>
       <!--创建/修改公安机关-->
       <el-dialog :title="addOrganizationTitle" :visible.sync="addOrganizationVisible" :width="dialogWidth">
-        <el-form ref="group" :model="group" label-width="100px" labelPosition="right">
+        <el-form ref="group" :model="group" label-width="120px" labelPosition="right" :rules="rules">
           <el-form-item label="公安机关名称" prop="groupName" align="left">
             <el-input v-model="group.groupName" placeholder="请输入公安机关名称" :maxlength="20" :minlength="2"></el-input>
           </el-form-item>
-          <el-form-item label="管辖区域" align="left">
+          <el-form-item label="管辖区域" align="left" prop="areaCodes">
             <el-select v-model="group.areaCodes" multiple placeholder="请选择" collapse-tags filterable>
               <el-option v-for="item in provinceList" :key="item.areaCode" :label="item.areaName"
                          :value="item.areaCode">
@@ -127,7 +127,7 @@
       </el-dialog>
       <!--创建/修改派出所-->
       <el-dialog :title="addPoliceTitle" :visible.sync="addPoliceVisible" :width="dialogWidth">
-        <el-form ref="police" :model="police" label-width="100px" labelPosition="right">
+        <el-form ref="police" :model="police" label-width="100px" labelPosition="right" :rules="rules1">
           <el-form-item label="派出所名称" prop="groupName" align="left">
             <el-input v-model="police.groupName" placeholder="请输入派出所名称" :maxlength="20" :minlength="2"></el-input>
           </el-form-item>
@@ -210,6 +210,13 @@
           groupName: [
             {required: true, message: '请输入公安机关名称', trigger: 'blur'},
             {validator: nickValidate, trigger: "change,blur"}
+          ],
+          areaCodes: [{required: true, message: '请选择管辖区域', trigger: 'blur'}]
+        },
+        rules1: {
+          groupName: [
+            {required: true, message: '请输入派出所名称', trigger: 'blur'},
+            {validator: nickValidate, trigger: "change,blur"}
           ]
         },
         setPsw: 'defaultPsw',
@@ -245,25 +252,27 @@
               url = '/manager/group/update';
               msg = '修改成功';
             } else {
+              if (this.police.isCreateAdmin == 0) {//选择已有
+                if (!this.police.adminId) {
+                  this.$message.error('请选择组织管理员');
+                  return;
+                }
+              } else {//新建管理员
+                if (noValidator(this.police.adminAccount)) {
+                  this.$message.error('请输入正确的账号');
+                  return;
+                }
+                if (!pswValidator(this.police.adminPsw)) {
+                  this.$message.error('请输入正确的密码');
+                  return;
+                }
+                this.police.adminPsw = md5(this.police.adminPsw);
+              }
               this.police.creatorId = JSON.parse(sessionStorage.getItem("user")).userId;
               this.police.pgroupId = this.groupId;
               this.police.type = 1;//0：公安机关，1：派出所
             }
-            if (this.police.isCreateAdmin == 0) {//选择已有
-              if (!this.police.adminId) {
-                this.$message.error('请选择组织管理员');
-                return;
-              }
-            } else {//新建管理员
-              if (noValidator(this.police.adminAccount)) {
-                this.$message.error('请输入正确的账号');
-                return;
-              }
-              if (!pswValidator(this.police.adminPsw)) {
-                this.$message.error('请输入正确的密码');
-                return;
-              }
-            }
+
             this.listLoading = true;
             this.$post(url, this.police, msg).then((data) => {
               if ("000000" === data.code) {
@@ -281,35 +290,41 @@
       onSubmit(formName, title) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            if (this.group.areaCodes.length === 0) {
-              this.$message.error('请选择管辖区域');
-              return;
-            }
             let url = '/manager/group/create';
             let msg = '创建成功';
             if (title === '修改公安机关') {
               url = '/manager/group/update';
               msg = '修改成功';
             } else {
+              if (this.group.isCreateAdmin == 0) {//选择已有
+                if (!this.group.adminId) {
+                  this.$message.error('请选择组织管理员');
+                  return;
+                }
+              } else {//新建管理员
+                if (!this.group.adminAccount) {
+                  this.$message.error('请输入账号');
+                  return;
+                }
+                if (!(/^[A-Za-z0-9-_]+$/.test(this.group.adminAccount))) {
+                  this.$message.error('请输入正确的账号');
+                  return;
+                }
+                if (!this.group.adminPsw) {
+                  this.$message.error('请输入密码');
+                  return;
+                }
+                if (!pswValidator(this.group.adminPsw)) {
+                  this.$message.error('请输入正确的密码');
+                  return;
+                }
+                this.group.adminPsw = md5(this.group.adminPsw);
+              }
               this.group.creatorId = JSON.parse(sessionStorage.getItem("user")).userId;
               this.group.pgroupId = this.groupId;
               this.group.type = 0;//0：公安机关，1：派出所
             }
-            if (this.group.isCreateAdmin == 0) {//选择已有
-              if (!this.group.adminId) {
-                this.$message.error('请选择组织管理员');
-                return;
-              }
-            } else {//新建管理员
-              if (noValidator(this.group.adminAccount)) {
-                this.$message.error('请输入正确的账号');
-                return;
-              }
-              if (!pswValidator(this.group.adminPsw)) {
-                this.$message.error('请输入正确的密码');
-                return;
-              }
-            }
+
             this.listLoading = true;
             this.$post(url, this.group, msg).then((data) => {
               if ("000000" === data.code) {

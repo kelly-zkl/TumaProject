@@ -65,7 +65,7 @@
           <div style="font-size:14px;padding:10px 20px">已关联的侦码信息</div>
         </el-col>
       </el-row>
-      <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px;padding:0"
+      <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px;padding:0;margin-bottom: 20px"
            v-if="persons.length>0 || imsiList.length>0">
         <el-row>
           <el-col :span="12" style="border-right: 1px solid #D0CACF;padding: 10px 20px">
@@ -347,9 +347,9 @@
   }
 
   .person-item {
-    width: -moz-calc((100% - 40px) / 3);
-    width: -webkit-calc((100% - 40px) / 3);
-    width: calc((100% - 40px) / 3);
+    width: -moz-calc((100% - 46px) / 3);
+    width: -webkit-calc((100% - 46px) / 3);
+    width: calc((100% - 46px) / 3);
     height: 162px;
     margin: 5px 0;
     text-align: center;
@@ -375,5 +375,9 @@
 
   .person-item:nth-child(3n+2) {
     margin-right: 20px;
+  }
+
+  .person-item:nth-child(3n+3) {
+    margin-right: 0;
   }
 </style>

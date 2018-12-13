@@ -30,7 +30,7 @@
         <el-table-column align="left" label="IMSI数量" prop="count1" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
+      <div class="block" style="margin: 20px 0" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" background
                        layout="sizes, prev, pager, next, jumper"></el-pagination>

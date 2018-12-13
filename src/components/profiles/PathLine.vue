@@ -334,7 +334,8 @@
       this.map.enableScrollWheelZoom(true);
       this.map.enableDragging();
 
-      var point = new BMap.Point(116.331398, 39.897445);
+      let systemParam = JSON.parse(sessionStorage.getItem("system"));
+      var point = new BMap.Point(systemParam.localPoint[0], systemParam.localPoint[1]);
       this.map.centerAndZoom(point, 12);
       this.walking = new BMap.WalkingRoute(this.map, {
         renderOptions: {map: this.map, autoViewport: true},

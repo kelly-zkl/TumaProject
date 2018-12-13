@@ -90,7 +90,7 @@
           </el-form-item>
         </div>
       </el-form>
-      <div class="block" style="margin-top: 30px">
+      <div class="block" style="margin:20px 0">
         <el-button type="primary" @click="createControlTask()">确认创建布控</el-button>
       </div>
       <!--在地图上选择场所-->

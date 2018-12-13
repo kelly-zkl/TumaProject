@@ -175,8 +175,8 @@
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150">
             <template slot-scope="scope">
-              <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath"
-                   @click="bigUrl=scope.row.sceneUrl;runBigPic=true" :onerror="img404"
+              <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath2"
+                   @click="bigUrl=scope.row.sceneUrl;runBigPic=true" :onerror="img2404"
                    style="max-height:70px;border-radius: 6px"/>
             </template>
           </el-table-column>
@@ -291,7 +291,9 @@
         runTaskDetail: false,
         taskId: this.$route.query.taskId || '',
         imgPath: require('../../../assets/img/icon_people.png'),
+        imgPath2: require('../../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
+        img2404: "this.onerror='';this.src='" + require('../../../assets/img/icon_img.svg') + "'",
         activeItem: "IMSI",
         query: {size: 100},
         qTime: '',

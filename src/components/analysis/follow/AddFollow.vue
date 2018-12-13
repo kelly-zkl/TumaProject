@@ -67,7 +67,7 @@
           </el-form-item>
         </div>
       </el-form>
-      <div class="block" style="margin-top: 30px">
+      <div class="block" style="margin: 20px 0">
         <el-button type="primary" @click="createFollowTask()">确认分析</el-button>
       </div>
       <!--档案列表-->

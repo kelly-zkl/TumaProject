@@ -78,7 +78,7 @@
           <el-table-column align="left" label="安装场所" prop="placeName" min-width="150"
                            max-width="200" :formatter="formatterAddress"></el-table-column>
         </el-table>
-        <div class="block" style="margin-top: 20px" align="right">
+        <div class="block" style="margin:20px 0" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                          :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                          layout="total, sizes, prev, pager, next, jumper"></el-pagination>
@@ -132,7 +132,7 @@
           <el-table-column align="left" prop="lineStatus" label="在线状态" min-width="100"
                            max-width="120"></el-table-column>
         </el-table>
-        <div class="block" style="margin-top: 20px">
+        <div class="block" style="margin:20px 0" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                          background :page-sizes="[10, 15, 20, 30]" :page-size="query.size"
                          layout="total, sizes, prev, pager, next, jumper" :total="count"></el-pagination>

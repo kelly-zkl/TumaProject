@@ -60,7 +60,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <div class="block" style="margin-top: 20px" align="right">
+        <div class="block" style="margin: 20px 0" align="right">
           <el-pagination @size-change="handleImsiSizeChange" @current-change="imsiPageChange" :current-page.sync="page"
                          :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
@@ -146,7 +146,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <div class="block" style="margin-top: 20px" align="right">
+        <div class="block" style="margin: 20px 0" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                          :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>

@@ -5,7 +5,7 @@
       <!--v-model="selectedOptions2" placeholder="省市县区" clearable-->
       <!--style="position: absolute;top: 10px;left: 10px;width: 90%">-->
       <!--</el-cascader>-->
-      <div id="container" style="width: 100%;height:400px"></div>
+      <div id="container" style="width: 100%;height:600px"></div>
     </section>
   </div>
 </template>
@@ -25,7 +25,8 @@
         geocoder: {},//地址（区域编码）与经纬度的转换
         marker: {},
         systemParam: {},
-        detailAddress: ''
+        detailAddress: '',
+        point: []
       }
     },
     watch: {
@@ -33,6 +34,7 @@
         let param = JSON.parse(this.formattedAddress);
         this.selectedOptions2 = param.codes;
         this.detailAddress = this.getAreaLable(this.selectedOptions2[this.selectedOptions2.length - 1]) + param.address;
+        this.point = param.point;
         this.setCenter();
       }
     },
@@ -43,6 +45,7 @@
       let param = JSON.parse(this.formattedAddress);
       this.selectedOptions2 = param.codes;
       this.detailAddress = this.getAreaLable(this.selectedOptions2[this.selectedOptions2.length - 1]) + param.address;
+      this.point = param.point;
       this.setCenter();
     },
     methods: {
@@ -178,7 +181,11 @@
       },
       //设置地图的中心点
       setCenter() {
-        var point = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
+        let localPoint = this.systemParam.localPoint;
+        if (this.point.length > 0) {
+          localPoint = this.point;
+        }
+        var point = new BMap.Point(localPoint[0], localPoint[1]);
         this.map.centerAndZoom(point, 12);
         // let _this = this;
         // let city = this.getCityName(this.selectedOptions2[this.selectedOptions2.length - 1]);

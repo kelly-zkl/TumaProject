@@ -515,7 +515,11 @@
       getMarkNumber() {
         if (!this.markerClusterer) {
           // var _styles = [{url: this.imgPath, size: new BMap.Size(40, 40)}];, styles: _styles
-          this.markerClusterer = new BMapLib.MarkerClusterer(this.deviceMap, {markers: this.markers});
+          this.markerClusterer = new BMapLib.MarkerClusterer(this.deviceMap, {
+            markers: this.markers,
+            gridSize: 40,
+            maxZoom: 18
+          });
         }
         this.markerClusterer.clearMarkers();
         this.markers = [];

@@ -4,16 +4,17 @@
       <el-row>
         <el-col :span="4" style="padding-right: 10px;border-right: 1px solid #e5e5e5">
           <div v-bind:class="currentIdx==-1?'group-name active':'group-name'"
-               @click="handleClick(-1)" :title="groupName+'（'+count+'人）'">
-            {{groupName+'（'+count+'人）'}}
+               @click="handleClick(-1)" :title="groupName+'（'+groupMem+'人）'">
+            {{groupName+'（'+groupMem+'人）'}}
           </div>
-          <div v-bind:style="'overflow-y: scroll;height:'+leftHeight+'px'">
+          <div v-bind:style="'overflow-y:auto;height:'+leftHeight+'px'">
             <div class="group" style="color:#999;text-align:center;margin-top: 20px" v-show="departments.length==0">
               暂无部门
             </div>
             <div v-bind:class="currentIdx==idx?'depart-main active':'depart-main'" v-for="(tab,idx) in departments"
-                 :key="tab.deptId" @click="handleClick(idx)" v-show="departments.length>0">
-              <span class="depart-item">{{tab.deptName}}</span>
+                 :key="tab.deptId" @click="handleClick(idx)" v-show="departments.length>0"
+                 :title="currentIdx==idx?tab.deptName+'（'+depmMem+'人）':tab.deptName">
+              <span class="depart-item">{{currentIdx==idx?tab.deptName+'（'+depmMem+'人）':tab.deptName}}</span>
               <i class="btn-delete el-icon-delete" @click.stop="deleteDepart(tab)"
                  v-show="getButtonVial('manager:dept:delete')"></i>
               <i class="btn-delete el-icon-edit" @click.stop="showDeptDialog(1,idx)"
@@ -27,7 +28,7 @@
         <el-col :span="20" style="padding-left: 10px">
           <el-row>
             <el-col :span="20" align="left" v-show="getButtonVial('manager:user:query')" style="text-align: left">
-              <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left;width: 680px">
+              <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left;width: 700px">
                 <el-form-item style="margin-bottom: 10px">
                   <el-input placeholder="账号/用户名" v-model="query.keyword" :maxlength="30"
                             style="width: 200px" size="medium"></el-input>
@@ -262,7 +263,7 @@
           callback(new Error('账号不能小于6位'));
         } else if (value.length > 16) {
           callback(new Error('账号不能大于16位'));
-        } else if (noValidator(value)) {
+        } else if (!(/^[A-Za-z0-9-_]+$/.test(value))) {
           callback(new Error("账号由英文字母、数字、下划线组成"));
         } else {
           callback();
@@ -301,7 +302,7 @@
         departObj: {deptName: ''},
         addDepartVisible: false,
         isMore: false,
-        groupName: '',
+        groupName: '', groupMem: 0, depmMem: 0,
         leftHeight: window.innerHeight - 240,
         tableHeight: window.innerHeight - 245,
         dialogWidth: isPC() ? '35%' : '90%',
@@ -312,7 +313,7 @@
         },
         rules: {
           account: [
-            {required: true, message: '请输入账号', trigger: 'blur'}, {validator: nameValidate, trigger: "change,blur"}],
+            {required: true, message: '请输入账号', trigger: 'blur'}, {validator: nameValidate, trigger: "blur"}],
           realName: [
             {required: true, message: '请输入用户名', trigger: 'blur'},
             {validator: nickValidate, trigger: "change,blur"},
@@ -537,6 +538,11 @@
         this.$post("/manager/user/query", this.query).then((data) => {
           this.users = data.data.content;
           this.count = data.data.totalElements;
+          if (this.currentIdx < 0) {
+            this.groupMem = data.data.totalElements;
+          } else {
+            this.depmMem = data.data.totalElements;
+          }
           setTimeout(() => {
             this.listLoading = false
           }, 500);
@@ -557,6 +563,7 @@
       clearData() {
         this.query = {page: 1, size: 10, myGroupId: JSON.parse(sessionStorage.getItem("user")).groupId};
         this.currentIdx = -1;
+        this.groupName = this.getGroupName(JSON.parse(sessionStorage.getItem("user")).groupId);
         this.getUserList();
         this.getDepartments(JSON.parse(sessionStorage.getItem("user")).groupId);
       },
@@ -567,7 +574,6 @@
               this.$message.error('请选择岗位');
               return;
             }
-
             let url = '/manager/user/create';
             let msg = '添加成功';
             if (title === '修改成员') {

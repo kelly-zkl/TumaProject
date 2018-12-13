@@ -85,7 +85,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <div class="block" style="margin-top: 20px" align="right">
+        <div class="block" style="margin: 20px 0" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange"
                          :current-page.sync="queryResult.page" :page-sizes="[10, 15, 20, 30]"
                          :page-size="queryResult.size" :total="count1" background
@@ -150,7 +150,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <div class="block" style="margin-top: 20px" align="right">
+        <div class="block" style="margin: 20px 0" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange"
                          :current-page.sync="queryRecord.page" :page-sizes="[10, 15, 20, 30]"
                          :page-size="queryRecord.size" :total="count2" background
@@ -207,7 +207,7 @@
           <!--</template>-->
           <!--</el-table-column>-->
         </el-table>
-        <div class="block" style="margin-top: 20px" align="right">
+        <div class="block" style="margin: 20px 0" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange"
                          :current-page.sync="queryResult.page" :page-sizes="[10, 15, 20, 30]"
                          :page-size="queryResult.size" :total="count1" background
@@ -273,7 +273,7 @@
           <!--</template>-->
           <!--</el-table-column>-->
         </el-table>
-        <div class="block" style="margin-top: 20px" align="right">
+        <div class="block" style="margin: 20px 0" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange"
                          :current-page.sync="queryRecord.page" :page-sizes="[10, 15, 20, 30]"
                          :page-size="queryRecord.size" :total="count2" background

@@ -1,7 +1,7 @@
 <template>
   <div>
     <section class="content dialog">
-      <el-form :model="systemParam" style="margin: 0;padding: 0" labelPosition="right"
+      <el-form :model="systemParam" style="margin: 0 0 20px 0;padding: 0" labelPosition="right"
                label-width="140px" v-loading="listLoading">
         <!--<h5 class="add-label" style="margin-top: 0">系统名称</h5>-->
         <!--<div class="add-appdiv" style="padding: 30px 30px 15px 30px">-->
@@ -20,7 +20,7 @@
           <el-form-item label="定位城市" align="left" style="margin: 0;text-align: left">
             <el-tooltip effect="dark" content="系统所有地图都根据所选的城市来定位初始位置" placement="center">
               <el-cascader :options="provinceList" :props="props" clearable filterable style="width: 280px"
-                           v-model="systemParam.codes" placeholder="选择城市">
+                           v-model="systemParam.codes" placeholder="选择城市" change-on-select>
               </el-cascader>
             </el-tooltip>
           </el-form-item>

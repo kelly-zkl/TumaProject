@@ -18,7 +18,7 @@
                             v-if="item.permissionUrl!='/searchAll'">
                 <template slot="title">
                   <i :class="item.icon"
-                     v-bind:style="item.orders<6?'font-size: 1.6em':item.orders>6?'font-size: 1.8em':'font-size: 1.7em'"></i>
+                     v-bind:style="item.orders<6?'font-size: 1.5em':item.orders>6?'font-size: 1.7em':'font-size: 1.6em'"></i>
                   <span>{{item.name}}</span>
                   <el-badge class="mark" :value="imsiCount+faceCount" :max="99"
                             v-show="item.orders==2&&imsiCount+faceCount>0"/>
@@ -28,7 +28,7 @@
           </div>
           <div align="right"
                style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 60px;flex: 0 0 auto;align-items: center">
-            <div class="all-search" style="margin-right: 10px">
+            <div class="all-search" style="margin-right: 15px">
               <el-popover ref="imsi" placement="bottom-end" width="200" trigger="click" v-model="imsiShow">
                 <el-row style="background-color: #efefef">
                   <el-col :span="12" style="text-align: left;padding-left: 10px">
@@ -39,12 +39,14 @@
                   </el-col>
                 </el-row>
                 <el-row v-for="(item,idx) in searchImsis" :key="idx+''" v-show="searchImsis.length>0">
-                  <el-col :span="12" style="text-align: left;padding-left: 10px">
-                    <span style="height: 40px;line-height: 40px;color:#333">{{item}}</span>
-                  </el-col>
-                  <el-col :span="12" style="text-align: right;padding-right: 10px">
-                    <el-button type="text" @click="imsi=item;searchImsi()">IMSI</el-button>
-                  </el-col>
+                  <div @click.stop="imsi=item;searchImsi()" style="cursor: pointer">
+                    <el-col :span="12" style="text-align: left;padding-left: 10px">
+                      <span style="height: 40px;line-height: 40px;color:#333">{{item}}</span>
+                    </el-col>
+                    <el-col :span="12" style="text-align: right;padding-right: 10px">
+                      <el-button type="text">IMSI</el-button>
+                    </el-col>
+                  </div>
                 </el-row>
                 <div v-show="searchImsis.length==0"
                      style="height: 40px;line-height: 40px;font-size:13px;color:#999;text-align: center;width: 194px">
@@ -53,24 +55,23 @@
               </el-popover>
               <el-popover ref="image" placement="bottom-start" width="235" trigger="click"
                           :offset="10" v-model="imgShow">
-                <div style="padding: 15px 4px 15px 10px">
+                <div style="padding:10px">
                   <el-upload :action="uploadUrl" :show-file-list="false" :on-success="handleAvatarSuccess"
                              :before-upload="beforeAvatarUpload">
-                    <img :src="imageUrl?imageUrl:imgPath" class="avatar" :onerror="img404">
-                    <span style="display:inline-block;font-size: 12px;color: #5F6165">请选择人脸照片。支持：JPG、JPEG、PNG格式，且文件大小不超过2M。</span>
+                    <img v-if="imageUrl" :src="imageUrl?imageUrl:imgPath" class="avatar" :onerror="img404">
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    <span style="display:inline-block;font-size:12px;color:#5F6165;margin:10px 0">请选择人脸照片。支持：JPG、JPEG、PNG格式，且文件大小不超过2M。</span>
                   </el-upload>
-                  <el-button type="primary" size="medium" @click="searchImage()"
-                             style="width: 100%;margin-top: 10px">搜索
-                  </el-button>
+                  <el-button type="primary" size="medium" @click="searchImage()" style="width: 100%">搜索</el-button>
                 </div>
               </el-popover>
               <el-input placeholder="请输入IMSI" :maxlength="15" style="width: 235px" v-popover:imsi clearable
-                        @click.stop="imsiShow=true;imgShow=false" v-model="imsi" @keyup.13.native="searchImsi()"
+                        @click.native="imsiShow=true;imgShow=false" v-model="imsi" @keyup.13.native="searchImsi()"
                         v-show="getButtonVial('home:allSearch')">
                 <el-button slot="prepend" icon="el-icon-picture" v-popover:image
                            @click.stop="imsiShow=false;imgShow=true"></el-button>
-                <el-button slot="append" icon="el-icon-search" @click.stop="imsiShow=false;imgShow=false"
-                           @click="searchImsi()"></el-button>
+                <el-button slot="append" icon="el-icon-search"
+                           @click.stop="imsiShow=false;imgShow=false;searchImsi()"></el-button>
               </el-input>
             </div>
             <!--<div class="item" style="text-align: center" @click="runMsg = true">-->
@@ -305,6 +306,7 @@
           return;
         }
         this.searchParam = JSON.stringify({type: 'img', value: this.imageUrl, time: new Date().getTime()});
+        this.imgShow = false;
         this.runSearch = true;
       },
       //以码搜图
@@ -673,9 +675,20 @@
   }
 
   .avatar {
+    max-width: 130px;
+    max-height: 130px;
+    border: 1px dashed #ccc;
+    border-radius: 6px;
+  }
+
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
     width: 130px;
     height: 130px;
     border: 1px dashed #ccc;
     border-radius: 6px;
+    line-height: 130px;
+    text-align: center;
   }
 </style>

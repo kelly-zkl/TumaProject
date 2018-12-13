@@ -192,6 +192,11 @@
               polygonOptions: _this.styleOptions, //多边形的样式
               rectangleOptions: _this.styleOptions //矩形的样式
             });
+            //添加鼠标绘制工具监听事件，用于获取绘制结果
+            this.drawingManager.addEventListener('overlaycomplete', this.overlaycomplete);
+            _this.bMap.addEventListener("zoomend", this.zoomEvent);
+            // _this.bMap.addEventListener("click", this.showInfo);
+            _this.bMap.addEventListener("dragend", this.zoomEvent);
 
             // 定义一个控件类,即function
             function DeleteControl() {
@@ -209,21 +214,7 @@
               // 创建一个DOM元素
               var div = document.createElement("div");
               // 设置样式
-              div.className = "el-icon-delete";
-              div.style.cursor = "pointer";
-              div.style.border = "1px solid #666";
-              div.style.borderLeft = "1px solid #d2d2d2";
-              div.style.backgroundColor = "white";
-              div.style.boxShadow = "1px 1px 3px rgba(0,0,0,0.3)";
-              div.style.fontSize = "28px";
-              div.style.fontWeight = "bold";
-              div.style.color = "#2074B0";
-              div.style.width = "60px";
-              div.style.height = "47px";
-              div.style.lineHeight = "47px";
-              div.style.textAlign = "center";
-              div.style.borderRadius = "0 5px 5px 0";
-
+              div.className = "div-delete el-icon-delete";
               // 绑定事件,点击一次放大两级
               div.onclick = function (e) {
                 _this.removePoly();
@@ -330,18 +321,16 @@
         // }
         //点聚合
         this.getMarkNumber();
-        //添加鼠标绘制工具监听事件，用于获取绘制结果
-        this.drawingManager.addEventListener('overlaycomplete', this.overlaycomplete);
-
-        _this.bMap.addEventListener("zoomend", this.zoomEvent);
-        // _this.bMap.addEventListener("click", this.showInfo);
-        _this.bMap.addEventListener("dragend", this.zoomEvent);
       },
       //点聚合功能
       getMarkNumber() {
         if (!this.markerClusterer) {
           // var _styles = [{url: this.imgPath, size: new BMap.Size(40, 40)}];, styles: _styles
-          this.markerClusterer = new BMapLib.MarkerClusterer(this.bMap, {markers: this.markers});
+          this.markerClusterer = new BMapLib.MarkerClusterer(this.bMap, {
+            markers: this.markers,
+            gridSize: 40,
+            maxZoom: 18
+          });
         }
         this.markerClusterer.clearMarkers();
         this.markers = [];
@@ -398,6 +387,7 @@
       },
       //添加鼠标绘制工具监听事件，用于获取绘制结果
       overlaycomplete(e) {
+        this.drawingManager.close();
         // this.removePoly();
         var path = e.overlay.getPath();//Array<Point> 返回多边型的点数组
         //生成多边形

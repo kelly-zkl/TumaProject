@@ -114,7 +114,7 @@
         query: {size: 100},
         listLoading: false,
         isMore: false,
-        tableHeight: window.innerHeight - 290,
+        tableHeight: window.innerHeight - 295,
         statuses: [{label: '待处理', value: 0}, {label: '已处理', value: 2}, {label: '误报', value: 3}],
         exportKey: 'warning:get:listImsiToday',
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
@@ -152,14 +152,14 @@
       //计算表格高度
       calcuHeight() {
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 295;
-          if (!this.showTip) {
-            this.tableHeight = window.innerHeight - 345
+          this.tableHeight = window.innerHeight - 345;
+          if (this.showTip) {
+            this.tableHeight = window.innerHeight - 395
           }
         } else {
-          this.tableHeight = window.innerHeight - 245;
-          if (!this.showTip) {
-            this.tableHeight = window.innerHeight - 295
+          this.tableHeight = window.innerHeight - 295;
+          if (this.showTip) {
+            this.tableHeight = window.innerHeight - 345
           }
         }
       },
@@ -170,6 +170,7 @@
           this.calcuHeight();
         }).catch((err) => {
           this.showTip = false;
+          this.calcuHeight();
         });
       },
       //全选  ==>  删除/结案
@@ -220,6 +221,13 @@
           this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         }
+        // if (val && val.length == 2) {
+        //   let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 7 * 1000);
+        //   if (bol) {
+        //     this.$message.error('日期范围不能超过7天');
+        //     return;
+        //   }
+        // }
         this.getData();
       },
       handleTime(val) {

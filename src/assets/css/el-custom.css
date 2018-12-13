@@ -11,7 +11,7 @@
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
   width: 6px;
-  background: #D5D5D8
+  background: #D8D8D8
 }
 
 ::-webkit-scrollbar-corner {
@@ -126,9 +126,6 @@
 /**表格样式结束*/
 /**首页的表格样式----开始*/
 .overview {
-  /*height: -moz-calc(100% - 450px);*/
-  /*height: -webkit-calc(100% - 450px);*/
-  /*height: calc(100% - 450px);*/
   overflow: hidden;
   padding: 0;
 }
@@ -136,8 +133,7 @@
 .overview .el-table {
   overflow-y: scroll;
   box-sizing: content-box;
-  padding-right: 6px;
-  height: 365px;
+  padding-right: 17px;
   font-size: 14px;
   color: #fff;
   background: #08163d;
@@ -221,7 +217,7 @@
 
 .el-popover {
   max-height: 250px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 /*系统参数配置*/
@@ -359,6 +355,12 @@
   padding: 0;
 }
 
+/*全局搜索的弹框大小设置 全屏*/
+.search .el-dialog.is-fullscreen {
+  width: 100%;
+  min-width: 1366px;
+}
+
 .search .el-dialog__headerbtn .el-dialog__close {
   color: #D0CACF;
   font-size: 30px
@@ -468,7 +470,7 @@
 .content-main {
   background-color: #E9ECF0;
   flex: 1;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding: 10px 20px 20px 20px;
 }
 
@@ -599,4 +601,26 @@
   padding: 11px 15px 10px 15px;
   margin-top: -2px;
   margin-left: 10px;
+}
+
+/*在地图上添加删除按钮*/
+.div-delete {
+  cursor: pointer;
+  width: 60px;
+  height: 47px;
+  line-height: 47px;
+  border: 1px solid #666;
+  border-left: 1px solid #d2d2d2;
+  background-color: #fff;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  font-size: 28px;
+  font-weight: bold;
+  color: #2074B0;
+  text-align: center;
+  border-radius: 0 5px 5px 0;
+}
+
+.div-delete:active, .div-delete:hover, .div-delete:focus {
+  color: #fff;
+  background-color: #2074B0;
 }

@@ -38,7 +38,7 @@
         <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150"
                          max-width="300" :formatter="formatterAddress">
           <template slot-scope="scope">
-            <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath" :onerror="img404"
+            <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath2" :onerror="img2404"
                  @click="bigUrl=scope.row.sceneUrl;runBigPic=true" style="max-height:70px;border-radius: 6px"/>
           </template>
         </el-table-column>
@@ -90,7 +90,9 @@
         query: {page: 1, size: 10},
         faceId: this.$route.query.faceId || '',
         imgPath: require('../../../assets/img/icon_people.png'),
+        imgPath2: require('../../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
+        img2404: "this.onerror='';this.src='" + require('../../../assets/img/icon_img.svg') + "'",
         imsiList: [],
         faceList: [],
         qTime: '',

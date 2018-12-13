@@ -34,7 +34,7 @@
           <el-col :xl="10" :lg="11" :md="11" :sm="11" :xs="11">
             <h6 style="background: #CCC;text-align: left;margin: 0;padding: 10px 20px">条件1</h6>
             <el-form label-position="right" label-width="60px" ref="param1" :model="param1"
-                     style="margin: 0;background: #F2F2F2;padding: 10px;height: 200px">
+                     style="margin: 0;background: #f2f2f2;padding: 10px 10px 0 10px">
               <el-form-item label="方式" align="left" style="margin: 0">
                 <el-radio-group v-model="param1.dataFromMode" size="medium">
                   <el-radio-button label="QUERY">输入条件</el-radio-button>
@@ -75,7 +75,7 @@
                                 placeholder="选择时间范围">
                 </el-time-picker>
               </el-form-item>
-              <el-form-item align="left" v-show="param1.dataFromMode == 'QUERY'">
+              <el-form-item align="left" style="margin: 0" v-show="param1.dataFromMode == 'QUERY'">
                 <span style="font-size:13px;color: #999">(时段非必选，默认为全天24小时)</span>
               </el-form-item>
               <el-form-item label="任务" align="left" style="margin: 10px 0 0 0"
@@ -102,7 +102,7 @@
                   v-show="collision.conditionType==0">
             <h6 style="background: #CCC;text-align: left;margin: 0;padding: 10px 20px">条件2</h6>
             <el-form label-position="right" label-width="60px" ref="param2" :model="param2"
-                     style="margin:0;background: #F2F2F2;padding: 10px;height: 200px">
+                     style="margin:0;background: #f2f2f2;padding: 10px 10px 0 10px">
               <el-form-item label="方式" align="left" style="margin: 0">
                 <el-radio-group v-model="param2.dataFromMode" size="medium">
                   <el-radio-button label="QUERY">输入条件</el-radio-button>
@@ -141,7 +141,7 @@
                                 style="width: 300px">
                 </el-time-picker>
               </el-form-item>
-              <el-form-item align="left" v-show="param2.dataFromMode == 'QUERY'">
+              <el-form-item align="left" style="margin: 0" v-show="param2.dataFromMode == 'QUERY'">
                 <span style="font-size:13px;color: #999">(时段非必选，默认为全天24小时)</span>
               </el-form-item>
               <el-form-item label="任务" align="left" style="margin: 10px 0 0 0"
@@ -154,7 +154,7 @@
           </el-col>
         </el-row>
       </div>
-      <div class="block" style="margin-top: 30px">
+      <div class="block" style="margin: 30px 0">
         <el-button type="primary" @click="createTask()">确认创建</el-button>
       </div>
       <!--在地图上选择设备-->

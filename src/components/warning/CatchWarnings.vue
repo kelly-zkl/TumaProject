@@ -91,9 +91,9 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150">
           <template slot-scope="scope">
-            <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath"
-                 @click="bigUrl=scope.row.sceneUrl;runBigPic=true" :onerror="img404"
-                 style="max-height:70px;border-radius: 6px"/>
+            <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath2"
+                 @click="bigUrl=scope.row.sceneUrl;runBigPic=true" :onerror="img2404"
+                 style="max-height:70px;border-radius: 6px;border: 1px #D7D7D7 dashed"/>
           </template>
         </el-table-column>
         <el-table-column align="left" label="年龄段" prop="age" min-width="60" max-width="120"
@@ -165,7 +165,9 @@
         activeItem: 'T',
         tableHeight: window.innerHeight - 295,
         imgPath: require('../../assets/img/icon_people.png'),
+        imgPath2: require('../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
+        img2404: "this.onerror='';this.src='" + require('../../assets/img/icon_img.svg') + "'",
         query: {size: 100},
         statuses: [{label: '待处理', value: 0}, {label: '已处理', value: 2}, {label: '误报', value: 3}],
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
@@ -275,6 +277,13 @@
           this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         }
+        // if (val && val.length == 2) {
+        //   let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 7 * 1000);
+        //   if (bol) {
+        //     this.$message.error('日期范围不能超过7天');
+        //     return;
+        //   }
+        // }
         this.getData();
       },
       handleTime(val) {

@@ -73,7 +73,7 @@
         </el-col>
       </el-row>
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe
-                @selection-change="selsChange" :height="tableHeight">
+                @selection-change="selsChange" :height="tableHeight" :max-height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="130"

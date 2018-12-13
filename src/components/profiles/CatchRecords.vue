@@ -177,6 +177,13 @@
           this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         }
+        // if (val && val.length == 2) {
+        //   let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 7 * 1000);
+        //   if (bol) {
+        //     this.$message.error('日期范围不能超过7天');
+        //     return;
+        //   }
+        // }
         this.getData();
       },
       handleTime(val) {

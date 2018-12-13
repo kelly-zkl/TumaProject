@@ -209,7 +209,7 @@
     width: 100%;
     min-width: 1366px;
     margin-left: -8px;
-    background: url("../assets/img/bg_login.jpg") no-repeat;
+    background: url("../assets/img/bg_login.svg") no-repeat;
     background-size: cover;
   }
 
@@ -233,7 +233,7 @@
     background: rgba(0, 0, 0, 0);
     padding: 30px 40px;
     border-radius: 3px;
-    left: 70%;
+    left: 75%;
     margin-left: -195px;
     top: 50%;
     margin-top: -210px;

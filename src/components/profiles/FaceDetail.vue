@@ -10,7 +10,7 @@
         <el-form :model="faceDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8" align="center">
-              <img :src="faceDetail.senceImageUrl?faceDetail.senceImageUrl:imgPath" :onerror="img404"
+              <img :src="faceDetail.senceImageUrl?faceDetail.senceImageUrl:imgPath2" :onerror="img2404"
                    style="max-width: 90%;border: 1px #D7D7D7 dashed;border-radius: 10px;max-height: 250px"/>
             </el-col>
             <el-col :span="8" align="left">
@@ -155,7 +155,7 @@
           <!--</template>-->
           <!--</el-table-column>-->
         </el-table>
-        <div class="block" style="margin-top: 20px" align="right">
+        <div class="block" style="margin: 20px 0" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                          :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
         </div>
@@ -196,7 +196,9 @@
         activeItem: 'person',
         qTime: '',
         imgPath: require('../../assets/img/icon_people.png'),
+        imgPath2: require('../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
+        img2404: "this.onerror='';this.src='" + require('../../assets/img/icon_img.svg') + "'",
         id: this.$route.query.id || '',
         tableHeight: window.innerHeight - 460,
         imageId: this.$route.query.imageId || '',

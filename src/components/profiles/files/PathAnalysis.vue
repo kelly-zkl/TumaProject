@@ -51,6 +51,7 @@
           return;
         }
         let imsi = 0, face = 0;
+
         if (this.line.length === 2) {
           imsi = 1;
           face = 1;

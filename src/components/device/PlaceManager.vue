@@ -117,12 +117,12 @@
             <el-form-item label="经纬度" required>
               <el-row :gutter="15" style="text-align: left">
                 <el-col :span="9">
-                  <el-input v-model="addPlace.longitude" readonly>
+                  <el-input v-model="addPlace.longitude">
                     <template slot="prepend">经度</template>
                   </el-input>
                 </el-col>
                 <el-col :span="9">
-                  <el-input v-model="addPlace.latitude" readonly>
+                  <el-input v-model="addPlace.latitude">
                     <template slot="prepend">纬度</template>
                   </el-input>
                 </el-col>
@@ -139,7 +139,7 @@
         </div>
       </el-dialog>
       <!--选择安装地址--》地图-->
-      <el-dialog title="" :visible.sync="mapVisible">
+      <el-dialog title="" :visible.sync="mapVisible" width="80%">
         <MapView @getLocation="getLocation" v-bind:formattedAddress="getAddress"></MapView>
         <div class="block" style="margin-top: 20px">
           <el-button @click="mapVisible = false">取消</el-button>
@@ -398,7 +398,8 @@
       //地图选址，显示dialog
       selectAdd() {
         let param = {
-          codes: this.selectedOptions2, address: this.addPlace.detailAddress ? this.addPlace.detailAddress : ''
+          codes: this.selectedOptions2, address: this.addPlace.detailAddress ? this.addPlace.detailAddress : '',
+          point: this.addPlace.longitude && this.addPlace.latitude ? [this.addPlace.longitude, this.addPlace.latitude] : []
         };
         console.log(param);
         this.getAddress = JSON.stringify(param);
@@ -409,8 +410,8 @@
       setLocation() {
         this.addPlace.longitude = this.position.lng;
         this.addPlace.latitude = this.position.lat;
-        this.addPlace.detailAddress = this.position.detailAddress;
-        this.selectedOptions2 = this.getCode(this.position.code);
+        // this.addPlace.detailAddress = this.position.detailAddress;
+        // this.selectedOptions2 = this.getCode(this.position.code);
         this.mapVisible = false;
       },
       //获得地图选择的经纬度
