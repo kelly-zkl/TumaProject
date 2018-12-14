@@ -34,7 +34,7 @@
       <el-row style="padding-top: 10px">
         <el-col :span="24" align="left" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('case:query')"
-                   style="text-align: left;width: 1110px">
+                   style="text-align: left;width: 1100px">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.caseName" placeholder="案件编号/名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
@@ -98,7 +98,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
+      <div class="block" style="margin-top: 10px" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
@@ -198,7 +198,7 @@
         labelWidth: isPC() ? '100px' : '80px',
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
         provinceList: JSON.parse(localStorage.getItem("areas")),
-        tableHeight: window.innerHeight - 295,
+        tableHeight: window.innerHeight - 280,
         areaList: [],
         caseTypeAdd: '',
         qTime: '',
@@ -247,9 +247,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 345
+          this.tableHeight = window.innerHeight - 330
         } else {
-          this.tableHeight = window.innerHeight - 295
+          this.tableHeight = window.innerHeight - 280
         }
       },
       //案件属性

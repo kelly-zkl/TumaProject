@@ -58,7 +58,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
+      <div class="block" style="margin-top:10px" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
@@ -106,7 +106,7 @@
         isShow: false,
         dialogWidth: isPC() ? '40%' : '90%',
         labelWidth: isPC() ? '120px' : '80px',
-        tableHeight: window.innerHeight - 245,
+        tableHeight: window.innerHeight - 232,
         query: {
           page: 1, size: 10, roleName: '', roleType: '', lastNode: true,
           creatorGroupId: JSON.parse(sessionStorage.getItem("user")).groupId

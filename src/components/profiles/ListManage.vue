@@ -3,7 +3,7 @@
     <section class="content">
       <el-row>
         <el-col :span="20" align="left" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 920px">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1020px">
             <el-form-item style="margin-bottom: 10px">
               <el-upload ref="upload" class="upload img" :action="uploadImgUrl" name="file"
                          :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -55,10 +55,16 @@
             <el-form-item style="margin-bottom: 10px" v-show="isMore">
               <el-select v-model="query.blackClass" placeholder="所属名单" size="medium"
                          style="width: 180px" clearable filterable>
-                <el-option v-for="item in listTypes" :key="item.id" :label="item.name" :value="item.name">
-                </el-option>
+                <el-option v-for="item in listTypes" :key="item.id" :label="item.name" :value="item.name"></el-option>
               </el-select>
             </el-form-item>
+            <!--<el-form-item style="margin-bottom: 10px" v-show="isMore">-->
+            <!--<el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleTimeChange"-->
+            <!--start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable-->
+            <!--:default-time="['00:00:00', '23:59:59']" value-format="timestamp"-->
+            <!--:picker-options="pickerBeginDate" style="width: 360px">-->
+            <!--</el-date-picker>-->
+            <!--</el-form-item>-->
           </el-form>
         </el-col>
         <el-col :span="4" align="right" style="text-align: right">
@@ -108,7 +114,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
+      <div class="block" style="margin-top: 10px" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                        :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
@@ -261,7 +267,7 @@
         runningImports: false,
         runningImportResult: false,
         runningImportNumber: false,
-        tableHeight: window.innerHeight - 245,
+        tableHeight: window.innerHeight - 232,
         count: 0,
         list: [],
         list10: [],
@@ -273,6 +279,8 @@
         listLoading: false,
         query: {size: 100, type: 1},
         addList: '',
+        qTime: [new Date((formatDate(new Date((new Date().getTime() - 7 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date((new Date().getTime())), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         runAddList: false,
@@ -300,19 +308,41 @@
         fileFlag: false,
         fileUploadPercent: 0,
         fileChoose: null,
-        isUpload: false
+        isUpload: false,
+        pickerBeginDate: {
+          disabledDate: (time) => {
+            let beginDateVal = new Date().getTime();
+            if (beginDateVal) {
+              return beginDateVal < time.getTime();
+            }
+          }
+        }
       }
     },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      handleTimeChange(val) {
+        if (!val || val.length == 0) {
+          this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 7 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+            new Date((formatDate(new Date((new Date().getTime())), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        }
+        // if (val && val.length == 2) {
+        //   let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 7 * 1000);
+        //   if (bol) {
+        //     this.$message.error('日期范围不能超过7天');
+        //     return;
+        //   }
+        // }
+        this.getData();
+      },
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 295
+          this.tableHeight = window.innerHeight - 282
         } else {
-          this.tableHeight = window.innerHeight - 245
+          this.tableHeight = window.innerHeight - 232
         }
       },
       showModify(row) {
@@ -548,6 +578,10 @@
             return;
           }
         }
+        // if (!!this.qTime) {
+        //   this.query.startUploadTime = Math.round(this.qTime[0] / 1000);
+        //   this.query.endUploadTime = Math.round(this.qTime[1] / 1000);
+        // }
         if (this.isSearch) {
           this.list = [];
           this.list10 = [];
@@ -614,6 +648,8 @@
       clearData() {
         this.list10 = [];
         this.query = {size: 100, type: 1};
+        this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 7 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date((new Date().getTime())), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         this.isSearch = true;
         delete this.query['faceUrl'];
         this.getData();

@@ -91,7 +91,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
+      <div class="block" style="margin-top:10px" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
@@ -109,7 +109,7 @@
         records: [],
         listLoading: false,
         isMore: false,
-        tableHeight: window.innerHeight - 245,
+        tableHeight: window.innerHeight - 232,
         taskTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '图像'}],//,{value: 'MAC', label: 'MAC'}
         conditionTypes: [{value: 0, label: '多条件碰撞'}, {value: 1, label: '单条件碰撞'}],
         taskStatus: [{value: 'FINISH', label: '已完成'}, {value: 'FAILE', label: '失败'},
@@ -135,9 +135,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 295
+          this.tableHeight = window.innerHeight - 282
         } else {
-          this.tableHeight = window.innerHeight - 245
+          this.tableHeight = window.innerHeight - 232
         }
       },
       //全选

@@ -81,7 +81,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
+      <div class="block" style="margin-top:10px" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
@@ -99,7 +99,7 @@
         tasks: [],
         qTime: "",
         query: {page: 1, size: 10},
-        tableHeight: window.innerHeight - 245,
+        tableHeight: window.innerHeight - 232,
         followTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '图像'}],//{value: 'MAC', label: 'MAC'}
         taskTypes: [{value: 'EXECUTION', label: '进行中'}, {value: 'FINISH', label: '已完成'},
           {value: 'WAIT', label: '等待中'}, {value: 'FAILE', label: '失败'}],

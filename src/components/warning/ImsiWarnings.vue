@@ -21,7 +21,7 @@
         <el-button type="text" style="margin: 0;padding: 0;position: absolute;right: 10px"
                    icon="el-icon-close" @click="showTip=false;calcuHeight()"></el-button>
       </div>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1110px"
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1100px"
                v-show="getButtonVial(exportKey)">
         <el-form-item style="margin-bottom: 10px">
           <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 160px"
@@ -97,7 +97,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
+      <div class="block" style="margin-top: 10px" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                        :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
@@ -114,7 +114,7 @@
         query: {size: 100},
         listLoading: false,
         isMore: false,
-        tableHeight: window.innerHeight - 295,
+        tableHeight: window.innerHeight - 280,
         statuses: [{label: '待处理', value: 0}, {label: '已处理', value: 2}, {label: '误报', value: 3}],
         exportKey: 'warning:get:listImsiToday',
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
@@ -152,14 +152,14 @@
       //计算表格高度
       calcuHeight() {
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 345;
+          this.tableHeight = window.innerHeight - 330;
           if (this.showTip) {
-            this.tableHeight = window.innerHeight - 395
+            this.tableHeight = window.innerHeight - 380
           }
         } else {
-          this.tableHeight = window.innerHeight - 295;
+          this.tableHeight = window.innerHeight - 280;
           if (this.showTip) {
-            this.tableHeight = window.innerHeight - 345
+            this.tableHeight = window.innerHeight - 330
           }
         }
       },

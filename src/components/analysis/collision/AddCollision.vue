@@ -54,9 +54,10 @@
                              :value="item.deviceId">
                   </el-option>
                 </el-select>
-                <el-button type="primary" size="medium" style="margin-left: 10px" @click="showDialog(1)">选择
+                <el-button type="primary" size="medium" style="margin-left:10px;padding:10px 15px"
+                           @click="showDialog(1)">选择
                 </el-button>
-                <el-button type="primary" size="medium" @click="selectDevice('data1')">地图选择
+                <el-button type="primary" size="medium" @click="selectDevice('data1')" style="padding:10px 15px">地图选择
                 </el-button>
               </el-form-item>
               <el-form-item label="日期" align="left" required style="margin: 10px 0 0 0"
@@ -120,9 +121,11 @@
                              :value="item.deviceId">
                   </el-option>
                 </el-select>
-                <el-button type="primary" size="medium" style="margin-left: 10px" @click="showDialog(2)">选择
+                <el-button type="primary" size="medium" style="margin-left:10px;padding:10px 15px"
+                           @click="showDialog(2)">选择
                 </el-button>
-                <el-button type="primary" size="medium" @click="selectDevice('data2')" style="margin-left: 10px">地图选择
+                <el-button type="primary" size="medium" @click="selectDevice('data2')"
+                           style="padding:10px 15px">地图选择
                 </el-button>
               </el-form-item>
               <el-form-item label="日期" align="left" required style="margin: 10px 0 0 0"

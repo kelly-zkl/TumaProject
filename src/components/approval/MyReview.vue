@@ -78,7 +78,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
+      <div class="block" style="margin-top:10px" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
@@ -96,7 +96,7 @@
         activeItem: 'UNREAD',
         imsiList: [],
         query: {page: 1, size: 10, ccReadStatus: 1},
-        tableHeight: window.innerHeight - 295,
+        tableHeight: window.innerHeight - 280,
         qTime: '',
         count: 0,
         sels: [],

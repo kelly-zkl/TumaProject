@@ -112,23 +112,21 @@
         let point = [];
         json.forEach((province) => {
           if (province.c) {
+            if (code === province.o) {
+              point = [province.x, province.y];
+            }
             province.c.forEach((city) => {
               if (city.c) {//省级+市级+县级
+                if (code === city.o) {
+                  point = [city.x, city.y];
+                }
                 city.c.forEach((country) => {
                   if (code === country.o) {
                     point = [country.x, country.y];
                   }
                 })
-              } else {//省级+市级
-                if (code === city.o) {
-                  point = [city.x, city.y];
-                }
               }
             })
-          } else {//只包含省级
-            if (code === province.o) {
-              point = [province.x, province.y];
-            }
           }
         });
         return point;

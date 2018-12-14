@@ -9,7 +9,7 @@
           </el-tabs>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left;width: 1110px">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left;width: 1100px">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
                     style="width: 160px"></el-input>
@@ -79,7 +79,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
+      <div class="block" style="margin-top: 10px" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                        :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
@@ -96,7 +96,7 @@
       return {
         isMore: false,
         activeItem: 'first',
-        tableHeight: window.innerHeight - 295,
+        tableHeight: window.innerHeight - 285,
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         count: 0,
@@ -129,9 +129,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 345
+          this.tableHeight = window.innerHeight - 335
         } else {
-          this.tableHeight = window.innerHeight - 295
+          this.tableHeight = window.innerHeight - 285
         }
       },
       handleChange(val) {

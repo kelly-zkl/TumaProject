@@ -9,7 +9,7 @@
           </el-tabs>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1110px">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1100px">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
                      :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -99,7 +99,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
+      <div class="block" style="margin-top: 10px" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                        :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
@@ -128,7 +128,7 @@
       return {
         runBigPic: false,
         isMore: false,
-        tableHeight: window.innerHeight - 295,
+        tableHeight: window.innerHeight - 280,
         bigUrl: '',
         activeItem: 'T',
         query: {size: 100},
@@ -167,9 +167,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 345
+          this.tableHeight = window.innerHeight - 330
         } else {
-          this.tableHeight = window.innerHeight - 295
+          this.tableHeight = window.innerHeight - 280
         }
       },
       handleChange(val) {

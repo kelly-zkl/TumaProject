@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('person:query')"
-               style="text-align: left;width: 1110px">
+               style="text-align: left;width: 1100px">
         <el-form-item style="margin-bottom: 10px">
           <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
                      :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -59,6 +59,13 @@
           <el-input placeholder="身份证号" v-model="query.idCard" :maxlength="18"
                     style="width: 180px" size="medium"></el-input>
         </el-form-item>
+        <!--<el-form-item style="margin-bottom: 10px" v-show="isMore">-->
+        <!--<el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"-->
+        <!--start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable-->
+        <!--:default-time="['00:00:00', '23:59:59']" value-format="timestamp"-->
+        <!--:picker-options="pickerBeginDate" style="width: 360px">-->
+        <!--</el-date-picker>-->
+        <!--</el-form-item>-->
       </el-form>
       <el-table ref="table" :data="list10" v-loading="listLoading" class="center-block" stripe
                 :height="tableHeight" :max-height="tableHeight">
@@ -101,7 +108,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
+      <div class="block" style="margin-top: 10px" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                        :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
@@ -130,7 +137,9 @@
       return {
         isMore: false,
         query: {size: 100},
-        tableHeight: window.innerHeight - 245,
+        qTime: [new Date((formatDate(new Date((new Date().getTime() - 7 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date((new Date().getTime())), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
+        tableHeight: window.innerHeight - 232,
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         props: {value: 'o', label: 'n', children: 'c'},
@@ -175,12 +184,26 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      handleChange(val) {
+        if (!val || val.length == 0) {
+          this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 7 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+            new Date((formatDate(new Date((new Date().getTime())), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        }
+        // if (val && val.length == 2) {
+        //   let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 7 * 1000);
+        //   if (bol) {
+        //     this.$message.error('日期范围不能超过7天');
+        //     return;
+        //   }
+        // }
+        this.getData();
+      },
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 295
+          this.tableHeight = window.innerHeight - 282
         } else {
-          this.tableHeight = window.innerHeight - 245
+          this.tableHeight = window.innerHeight - 232
         }
       },
       beforeAvatarUpload(file) {
@@ -240,6 +263,10 @@
             return;
           }
         }
+        // if (!!this.qTime) {
+        //   this.query.startUploadTime = Math.round(this.qTime[0] / 1000);
+        //   this.query.endUploadTime = Math.round(this.qTime[1] / 1000);
+        // }
         if (this.isSearch) {
           this.list = [];
           this.list10 = [];
@@ -306,6 +333,8 @@
       clearData() {
         this.list10 = [];
         this.query = {size: 100};
+        this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 7 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date((new Date().getTime())), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         this.isSearch = true;
         delete this.query['faceUrl'];
         this.getData();

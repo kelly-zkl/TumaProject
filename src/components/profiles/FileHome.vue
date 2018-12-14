@@ -21,7 +21,7 @@
           </el-breadcrumb>
         </div>
         <div
-          v-bind:style="$route.path =='/importPersons'||$route.path =='/imsiRecords'||$route.path =='/catchRecords'||$route.path =='/listManage'?'background: #fff;margin: 10px 0 0 0;padding: 10px':'margin: 10px 0 0 0'">
+          v-bind:style="$route.path =='/importPersons'||$route.path =='/imsiRecords'||$route.path =='/catchRecords'?'background: #fff;margin: 10px 0 0 0;padding: 10px':'margin: 10px 0 0 0'">
           <transition name="fade" mode="out-in">
             <router-view @getWarningCount="getWarningCount"></router-view>
           </transition>

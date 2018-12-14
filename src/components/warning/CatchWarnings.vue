@@ -21,7 +21,7 @@
         <el-button type="text" style="margin: 0;padding: 0;position: absolute;right: 10px"
                    icon="el-icon-close" @click="showTip=false;calcuHeight()"></el-button>
       </div>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1110px">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1100px">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
                      :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -132,7 +132,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
+      <div class="block" style="margin-top: 10px" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
                        :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
@@ -163,7 +163,7 @@
         isMore: false,
         bigUrl: '',
         activeItem: 'T',
-        tableHeight: window.innerHeight - 295,
+        tableHeight: window.innerHeight - 280,
         imgPath: require('../../assets/img/icon_people.png'),
         imgPath2: require('../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
@@ -209,14 +209,14 @@
       },
       calcuHeight() {
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 345;
+          this.tableHeight = window.innerHeight - 330;
           if (this.showTip) {
-            this.tableHeight = window.innerHeight - 395
+            this.tableHeight = window.innerHeight - 380
           }
         } else {
-          this.tableHeight = window.innerHeight - 295;
+          this.tableHeight = window.innerHeight - 280;
           if (this.showTip) {
-            this.tableHeight = window.innerHeight - 345
+            this.tableHeight = window.innerHeight - 330
           }
         }
       },

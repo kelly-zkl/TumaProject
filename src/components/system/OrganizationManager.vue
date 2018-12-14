@@ -77,7 +77,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px" align="right">
+      <div class="block" style="margin-top:10px" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
@@ -189,7 +189,7 @@
         isShow: true,
         isMore: false,
         addAdminVisible: false,
-        tableHeight: window.innerHeight - 245,
+        tableHeight: window.innerHeight - 232,
         provinceList: json,
         props: {children: 'c', label: 'n'},
         organizations: [],
@@ -231,9 +231,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 295
+          this.tableHeight = window.innerHeight - 282
         } else {
-          this.tableHeight = window.innerHeight - 245
+          this.tableHeight = window.innerHeight - 232
         }
       },
       addPolice() {

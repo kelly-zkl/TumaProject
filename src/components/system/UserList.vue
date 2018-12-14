@@ -21,7 +21,7 @@
                  v-show="getButtonVial('manager:dept:update')"></i>
             </div>
           </div>
-          <el-button type="primary" icon="el-icon-plus" size="medium" style="width: 100%;margin-top: 15px"
+          <el-button type="primary" icon="el-icon-plus" size="medium" style="width: 100%;margin-top: 10px"
                      @click="showDeptDialog(0)" v-show="getButtonVial('manager:dept:create')">创建部门
           </el-button>
         </el-col>
@@ -95,7 +95,7 @@
               </template>
             </el-table-column>
           </el-table>
-          <div class="block" style="margin-top: 20px" align="right">
+          <div class="block" style="margin-top:10px" align="right">
             <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
                            :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                            layout="total, sizes, prev, pager, next, jumper"></el-pagination>
@@ -303,8 +303,8 @@
         addDepartVisible: false,
         isMore: false,
         groupName: '', groupMem: 0, depmMem: 0,
-        leftHeight: window.innerHeight - 240,
-        tableHeight: window.innerHeight - 245,
+        leftHeight: window.innerHeight - 222,
+        tableHeight: window.innerHeight - 232,
         dialogWidth: isPC() ? '35%' : '90%',
         userId: JSON.parse(sessionStorage.getItem("user")).userId,
         admin: {
@@ -435,9 +435,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 295
+          this.tableHeight = window.innerHeight - 282
         } else {
-          this.tableHeight = window.innerHeight - 245
+          this.tableHeight = window.innerHeight - 232
         }
       },
       //是否默认密码
