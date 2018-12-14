@@ -77,15 +77,15 @@
                 <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
                 <el-form :model="item" align="left" label-width="80px" label-position="right"
                          style="text-align: left">
-                  <el-form-item label="档案ID" style="margin:0">
+                  <el-form-item label="档案ID" style="margin:0" align="left">
                     <span
                       style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
                     <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
                   </el-form-item>
-                  <el-form-item label="关联次数" style="margin:0">
+                  <el-form-item label="关联次数" style="margin:0" align="left">
                     <span style="font-size: 15px;color:#000">{{item.fnIn<0?'--':item.fnIn}}</span>
                   </el-form-item>
-                  <el-form-item label="置信度" style="margin:0">
+                  <el-form-item label="置信度" style="margin:0" align="left">
                     <span style="font-size: 15px;color:#000">{{item.weight?item.weight/10+'%':'--'}}</span>
                   </el-form-item>
                 </el-form>

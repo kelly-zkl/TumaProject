@@ -20,8 +20,8 @@
       <el-row style="margin-bottom: 15px">
         <el-col :span="24" align="left" class="tab-card no" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
-            <el-tab-pane label="所有侦码记录" name="record"></el-tab-pane>
             <el-tab-pane label="关联人员" name="person"></el-tab-pane>
+            <el-tab-pane label="侦码记录" name="record"></el-tab-pane>
           </el-tabs>
         </el-col>
       </el-row>
@@ -80,15 +80,15 @@
                 <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
                 <el-form :model="item" align="left" label-width="80px" label-position="right"
                          style="text-align: left">
-                  <el-form-item label="档案ID" style="margin:0">
+                  <el-form-item label="档案ID" style="margin:0" align="left">
                     <span
                       style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
                     <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
                   </el-form-item>
-                  <el-form-item label="关联次数" style="margin:0">
+                  <el-form-item label="关联次数" style="margin:0" align="left">
                     <span style="font-size: 15px;color:#000">{{item.fnIn<0?'--':item.fnIn}}</span>
                   </el-form-item>
-                  <el-form-item label="置信度" style="margin:0">
+                  <el-form-item label="置信度" style="margin:0" align="left">
                     <span style="font-size: 15px;color:#000">{{item.weight?item.weight/10+'%':'--'}}</span>
                   </el-form-item>
                 </el-form>
@@ -112,7 +112,7 @@
   export default {
     data() {
       return {
-        activeItem: 'record',
+        activeItem: 'person',
         qTime: "",
         imgPath: require('../../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
@@ -251,7 +251,7 @@
       this.isp = this.$route.query.isp || '';
       this.regional = this.$route.query.regional || '';
 
-      this.getList();
+      this.getPersons();
     }
   }
 </script>

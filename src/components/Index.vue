@@ -136,23 +136,23 @@
         <el-dialog width="500px" :visible.sync="runImsiWarning" style="border-radius: 6px" top="60px" title="嫌疑告警">
           <el-form :model="imsiWarning" align="left" style="padding: 10px 50px;border-top: 1px #efefef solid"
                    label-width="100px" label-position="left">
-            <el-form-item label="IMSI" style="margin:0">
+            <el-form-item label="IMSI" style="margin:0" align="left">
               <span style="font-size: 15px;color:#000">{{imsiWarning.imsi}}</span>
             </el-form-item>
-            <el-form-item label="运营商" style="margin:0">
+            <el-form-item label="运营商" style="margin:0" align="left">
               <span style="font-size: 15px;color:#000">
                 {{imsiWarning.isp == 0 ? '移动' : imsiWarning.isp == 1 ? '联通' : imsiWarning.isp == 2 ? '电信' : '--'}}
               </span>
             </el-form-item>
-            <el-form-item label="告警时间" style="margin:0">
+            <el-form-item label="告警时间" style="margin:0" align="left">
               <span style="font-size: 15px;color:#000">
                 {{imsiWarning.timeStr ? imsiWarning.timeStr : '--'}}
               </span>
             </el-form-item>
-            <el-form-item label="告警场所" style="margin:0">
+            <el-form-item label="告警场所" style="margin:0" align="left">
               <span style="font-size: 15px;color:#000">{{imsiWarning.placeName?imsiWarning.placeName:'--'}}</span>
             </el-form-item>
-            <el-form-item label="设备标识" style="margin:0">
+            <el-form-item label="设备标识" style="margin:0" align="left">
               <span style="font-size: 15px;color:#000">{{imsiWarning.deviceName?imsiWarning.deviceName:'--'}}</span>
             </el-form-item>
           </el-form>
@@ -171,21 +171,21 @@
             <img :src="faceWarning.faceUrl?faceWarning.faceUrl:imgPath" :onerror="img404">
             <el-form :model="faceWarning" align="left" label-width="80px" label-position="left"
                      style="display:inline-block;position: absolute;top: 20px">
-              <el-form-item label="年龄段" style="margin:0">
+              <el-form-item label="年龄段" style="margin:0" align="left">
                 <span style="font-size: 15px;color:#000">{{faceWarning.age<0?'--':(faceWarning.age-3)+"~"+(faceWarning.age+3)}}</span>
               </el-form-item>
-              <el-form-item label="性别" style="margin:0">
+              <el-form-item label="性别" style="margin:0" align="left">
                 <span style="font-size: 15px;color:#000">
                   {{faceWarning.sex == 0 ? '男' : faceWarning.sex == 1 ? '女' : '--'}}
                 </span>
               </el-form-item>
-              <el-form-item label="告警时间" style="margin:0">
+              <el-form-item label="告警时间" style="margin:0" align="left">
                 <span style="font-size: 15px;color:#000">{{faceWarning.timeStr ? faceWarning.timeStr : '--'}}</span>
               </el-form-item>
-              <el-form-item label="告警场所" style="margin:0">
+              <el-form-item label="告警场所" style="margin:0" align="left">
                 <span style="font-size: 15px;color:#000">{{faceWarning.placeName?faceWarning.placeName:'--'}}</span>
               </el-form-item>
-              <el-form-item label="设备标识" style="margin:0">
+              <el-form-item label="设备标识" style="margin:0" align="left">
                 <span style="font-size: 15px;color:#000">{{faceWarning.deviceName?faceWarning.deviceName:'--'}}</span>
               </el-form-item>
             </el-form>

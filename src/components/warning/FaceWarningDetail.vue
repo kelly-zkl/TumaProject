@@ -138,7 +138,7 @@
           <el-table-column align="left" label="人员图像" prop="fileUrl" min-width="125" max-width="250">
             <template slot-scope="scope">
               <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" :onerror="img404"
-                   style="width: 90px;height:90px;border-radius: 6px"/>
+                   style="max-width:90px;max-height:90px;border-radius:6px"/>
             </template>
           </el-table-column>
           <el-table-column align="left" label="年龄段" prop="age" min-width="100"

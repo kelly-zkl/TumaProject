@@ -25,14 +25,14 @@
           <el-col :span="24" style="margin: 0;padding: 0">
             <div class="face-main">
               <div class="face-item" v-for="item in searchResults" :key="item.id" v-show="searchResults.length >0"
-                   style="height: 130px">
+                   style="height: 150px">
                 <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
                 <el-form :model="item" align="left" label-width="100px" label-position="right" size="medium"
                          style="text-align: left">
                   <el-form-item label="IMSI置信度" style="margin:0" v-for="imsi in item.imsiList" :key="imsi.imsi"
                                 v-show="imsi.imsi==param.value">
                     <span
-                      style="font-size:18px;color:#000;font-weight:bold">{{imsi.weight?imsi.weight/10+'%':'--'}}</span>
+                      style="font-size:18px;color:#000;font-weight:bold">{{imsi.weight?(imsi.weight/10).toFixed(1)+'%':'--'}}</span>
                   </el-form-item>
                   <el-form-item label="年龄段" style="margin:0">
                     <span style="font-size: 15px;color:#000">
@@ -60,44 +60,44 @@
           <el-col :span="24" style="margin: 0;padding: 0">
             <div class="face-main">
               <div class="face-item" v-for="item in searchResults" :key="item.id" v-show="searchResults.length >0"
-                   style="height: 200px">
+                   style="height: 220px">
                 <div class="face-img">
                   <img :src="item.faceUrl?item.faceUrl:imgPath" style="max-width: 145px;max-height: 145px"
                        :onerror="img404"/>
                   <el-form :model="item" align="left" label-width="0" size="mini"
                            style="text-align: left;margin-left: 20px">
                     <el-form-item style="margin:0">
-                      <span style="font-size: 14px;margin: 0;color:#999">IMSI置信度</span>
+                      <span style="font-size: 14px;margin: 0;color:#888">IMSI置信度</span>
                       <div v-for="imsi in item.imsiList" style="height: 20px;line-height: 20px;margin:0">
                       <span
-                        style="font-size: 14px;margin: 0;color:#000">{{imsi.imsi+'['+imsi.weight/10+'%]'}}</span>
+                        style="font-size: 14px;margin: 0;color:#000">{{imsi.imsi+'['+(imsi.weight/10).toFixed(1)+'%]'}}</span>
                       </div>
                       <div v-bind:style="'height:'+(5-item.imsiList.length)*20+'px'"
                            v-show="item.imsiList.length<5"></div>
                     </el-form-item>
                     <el-form-item style="margin:0">
-                      <span style="font-size: 14px;color:#999;margin-right: 10px">档案ID</span>
+                      <span style="font-size: 14px;color:#888;margin-right: 10px">档案ID</span>
                       <el-button type="text" @click="gotoPerson(item)">{{item.faceId?item.faceId:'--'}}</el-button>
                     </el-form-item>
                   </el-form>
                 </div>
-                <el-row style="margin-top: 10px;width: 100%">
+                <el-row style="margin-top:10px;width:100%;margin-bottom: 5px">
                   <el-col :span="8" style="text-align: center">
                     <div style="font-size:18px;color:#000;font-weight:bold">
                       {{item.similarThreshold>0?item.similarThreshold.toFixed(1)+'%':'--'}}
                     </div>
-                    <div style="font-size:14px;color:#999">人脸相似度</div>
+                    <div style="font-size:14px;color:#888;margin-top:3px">人脸相似度</div>
                   </el-col>
                   <el-col :span="8" style="text-align: center">
                     <div style="font-size:14px;color:#000">{{item.sex==0?'男':item.sex==1?'女':'--'}}</div>
-                    <div style="font-size:14px;color:#999">性别</div>
+                    <div style="font-size:14px;color:#888;margin-top:3px">性别</div>
                   </el-col>
                   <el-col :span="8" style="text-align: center">
                     <div style="font-size:14px;color:#000">
                       {{item.startAge>= 0?item.startAge==item.endAge?(item.startAge-3)+
                       '~'+(item.startAge+3):item.startAge+ '~'+ item.endAge:'--'}}
                     </div>
-                    <div style="font-size:14px;color:#999">年龄</div>
+                    <div style="font-size:14px;color:#888;margin-top:3px">年龄</div>
                   </el-col>
                 </el-row>
               </div>
@@ -155,9 +155,9 @@
         this.listLoading = true;
         let paramData = {};
         if (this.param.type == 'imsi') {
-          paramData = {size: 9, imsi: this.param.value}
+          paramData = {size: this.num, imsi: this.param.value}
         } else {
-          paramData = {size: 9, url: this.param.value + '?t=' + this.timeStamp}
+          paramData = {size: this.num, url: this.param.value + '?t=' + this.timeStamp}
         }
         this.$post('home/allSearch', paramData, undefined, undefined, "login").then((data) => {
           if ("000000" === data.code) {
@@ -206,7 +206,7 @@
     border: 1px #D7D7D7 solid;
     border-radius: 8px;
     background: #fff;
-    padding: 15px;
+    padding: 10px 15px;
     margin-bottom: 15px;
     display: -webkit-box;
     display: -ms-flexbox;
