@@ -389,6 +389,7 @@
       deleteDepart(item) {
         this.$confirm('确定要删除该部门吗？', '提示', {type: 'warning'}).then(() => {
           this.$post('/manager/dept/delete', {deptId: item.deptId}, '操作成功').then((data) => {
+            this.currentIdx = -1;
             this.getDepartments();
           });
         }).catch((err) => {
