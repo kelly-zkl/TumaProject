@@ -450,6 +450,7 @@
         }
       },
       addInfo() {
+        this.clearData();
         this.admin = {
           account: '', realName: '', password: '12345678', roleList: [],
           groupId: JSON.parse(sessionStorage.getItem("user")).groupId

@@ -43,8 +43,7 @@
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="isMore">
           <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px" clearable>
-            <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
+            <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="isMore">
@@ -75,9 +74,16 @@
         <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="130"
                          max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
-            <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
-                 @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
-                 style="max-width: 90px;max-height:90px;border-radius: 6px"/>
+            <div>
+              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
+                   @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
+                   style="max-width: 90px;max-height:90px;border-radius: 6px"/>
+              <!--<div style="width: 40px;height: 40px;position: absolute;top: 0" v-show="scope.row.quality==1">-->
+              <!--<div class="list-quality"></div>-->
+              <!--<span-->
+              <!--style="width:40px;height:40px;position:absolute;top:0;color:#fff;padding-left:5px">优</span>-->
+              <!--</div>-->
+            </div>
           </template>
         </el-table-column>
         <el-table-column align="left" label="关联IMSI[置信度]" prop="imsiList" min-width="220" max-width="250">
@@ -142,7 +148,6 @@
         tableHeight: window.innerHeight - 232,
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
-        props: {value: 'o', label: 'n', children: 'c'},
         statuses: [{label: '全部', value: ''}, {label: '待处理', value: '1'}, {label: '处理中', value: '2'},
           {label: '已处理', value: '3'}, {label: '误报', value: '4'}],
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
@@ -368,10 +373,14 @@
   }
 </script>
 <style scoped>
-  .avatar {
-    width: 150px;
-    height: 150px;
-    border: 1px dashed #ccc;
-    border-radius: 6px;
+  .list-quality {
+    width: 0;
+    height: 0;
+    border-left: solid 40px rgba(0, 255, 0, 0.5);
+    border-bottom: solid 40px transparent;
+    /*background-color: rgba(0, 255, 0, 0.5);*/
+    color: #fff;
+    position: absolute;
+    top: 0;
   }
 </style>
