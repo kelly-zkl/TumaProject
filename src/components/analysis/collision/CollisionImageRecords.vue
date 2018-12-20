@@ -53,7 +53,10 @@
         <el-table-column align="left" label="现场图像" prop="deviceId" min-width="125"
                          max-width="250">
           <template slot-scope="scope">
-            <img v-bind:src="scope.row.userFacePicURL" style="width: 90px;height:90px"/>
+            <div style="height: 90px;line-height:90px">
+              <img v-bind:src="scope.row.userFacePicURL"
+                   style="max-width: 90px;max-height:90px;border-radius: 6px;vertical-align: middle"/>
+            </div>
           </template>
         </el-table-column>
         <el-table-column align="left" label="年龄段" prop="age" min-width="100"

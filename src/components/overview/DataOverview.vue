@@ -101,7 +101,9 @@
                         v-bind:style="'height:'+(tableHeight*0.56-55)+'px'">
                 <el-table-column align="left" label="图像" style="align-content: center" min-width="90" max-width="200">
                   <template slot-scope="scope">
-                    <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" class="user-img" :onerror="img404"/>
+                    <div style="height: 80px;line-height:80px">
+                      <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" class="user-img" :onerror="img404"/>
+                    </div>
                   </template>
                 </el-table-column>
                 <el-table-column align="left" label="关联IMSI" prop="imsiList" min-width="140" max-width="200">
@@ -878,6 +880,7 @@
     max-width: 80px;
     max-height: 80px;
     border-radius: 6px;
+    vertical-align: middle;
   }
 
   .heat-tip-content {

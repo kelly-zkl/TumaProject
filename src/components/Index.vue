@@ -597,7 +597,6 @@
     width: 200px;
     display: inline-block;
     margin-right: 20px;
-    border: 1px #ccc dashed;
     border-radius: 6px;
   }
 

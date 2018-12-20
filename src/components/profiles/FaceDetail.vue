@@ -11,11 +11,11 @@
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8" align="center">
               <img :src="faceDetail.senceImageUrl?faceDetail.senceImageUrl:imgPath2" :onerror="img2404"
-                   style="max-width: 90%;border: 1px #D7D7D7 dashed;border-radius: 10px;max-height: 250px"/>
+                   style="max-width: 90%;border-radius: 8px;max-height: 250px"/>
             </el-col>
             <el-col :span="8" align="left">
               <img :src="faceDetail.imageUrl?faceDetail.imageUrl:imgPath" :onerror="img404"
-                   style="max-height:160px;max-width:160px;border: 1px #D7D7D7 dashed;border-radius: 8px"/>
+                   style="max-height:160px;max-width:160px;border-radius: 6px"/>
               <el-form-item label="年龄段" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{faceDetail.age > 0 ? (faceDetail.age-3)+"~"+(faceDetail.age+3):'--'}}</span>
               </el-form-item>
@@ -131,8 +131,10 @@
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="人员图像" prop="fileUrl" min-width="125" max-width="250">
             <template slot-scope="scope">
-              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" :onerror="img404"
-                   style="width: 90px;height:90px;border-radius: 6px"/>
+              <div style="height: 90px;line-height:90px">
+                <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" :onerror="img404"
+                     style="max-width: 90px;max-height:90px;border-radius: 6px;vertical-align: middle"/>
+              </div>
             </template>
           </el-table-column>
           <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="150"

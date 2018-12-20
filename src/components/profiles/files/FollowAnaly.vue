@@ -38,16 +38,21 @@
         <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150"
                          max-width="300" :formatter="formatterAddress">
           <template slot-scope="scope">
-            <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath2" :onerror="img2404"
-                 @click="bigUrl=scope.row.sceneUrl;runBigPic=true" style="max-height:70px;border-radius: 6px"/>
+            <div style="height: 90px;line-height:90px">
+              <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath2" :onerror="img2404"
+                   @click="bigUrl=scope.row.sceneUrl;runBigPic=true"
+                   style="height:70px;border-radius: 6px;vertical-align: middle"/>
+            </div>
           </template>
         </el-table-column>
         <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="150"
                          max-width="250" :formatter="formatterAddress">
           <template slot-scope="scope">
-            <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
-                 @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
-                 style="max-width: 90px;max-height:90px;border-radius: 6px"/>
+            <div style="height: 90px;line-height:90px">
+              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
+                   @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
+                   style="max-width: 90px;max-height:90px;border-radius: 6px;vertical-align: middle"/>
+            </div>
           </template>
         </el-table-column>
         <el-table-column align="left" prop="age" label="年龄段" min-width="150" max-width="250"></el-table-column>

@@ -78,16 +78,18 @@
           </el-button>
         </el-col>
       </el-row>
-      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe
-                @selection-change="selsChange" :height="tableHeight" :max-height="tableHeight">
+      <el-table :data="list10" v-loading="listLoading" class="table-fixed" stripe
+                @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="130"
                          max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
-            <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
-                 @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
-                 style="max-width: 90px;max-height:90px;border-radius: 6px"/>
+            <div style="height: 90px;line-height:90px">
+              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
+                   @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
+                   style="max-width:90px;max-height:90px;border-radius:6px;vertical-align:middle"/>
+            </div>
           </template>
         </el-table-column>
         <el-table-column align="left" label="姓名" prop="name" min-width="120"
@@ -123,7 +125,7 @@
         <div class="block">
           <el-row>
             <el-col :span="24" style="text-align: center" align="center">
-              <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:8px;vertical-align:middle"/>
+              <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:6px;vertical-align:middle"/>
             </el-col>
           </el-row>
           <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">
@@ -230,8 +232,10 @@
         <el-table :data="importList" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="left" prop="imageUrl" label="头像" min-width="100" max-width="250">
             <template slot-scope="scope">
-              <img v-bind:src="scope.row.imageUrl?scope.row.imageUrl:imgPath" :onerror="img404"
-                   style="max-width: 90px;max-height:90px;border-radius: 6px"/>
+              <div style="height: 90px;line-height:90px">
+                <img v-bind:src="scope.row.imageUrl?scope.row.imageUrl:imgPath" :onerror="img404"
+                     style="max-width: 90px;max-height:90px;border-radius: 6px;vertical-align: middle"/>
+              </div>
             </template>
           </el-table-column>
           <el-table-column align="left" prop="fileName" label="文件名称" min-width="100" max-width="250"
@@ -601,9 +605,9 @@
             }
             this.list10 = this.list;
             if (this.list.length - this.page * 10 >= 0) {
-              this.list10 = this.list10.slice((this.page * 10 - 10), (this.page * 10));
+              this.list10 = this.list.slice((this.page * 10 - 10), (this.page * 10));
             } else {
-              this.list10 = this.list10.slice((this.page * 10 - 10), this.list.length);
+              this.list10 = this.list.slice((this.page * 10 - 10), this.list.length);
             }
             this.count = this.list.length;
             if (this.list.length - this.firstPage === 100) {

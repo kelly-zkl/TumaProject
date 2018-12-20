@@ -17,7 +17,7 @@
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8" align="left" style="text-align: left">
               <img :src="person.faceUrl?person.faceUrl:imgPath" :onerror="img404"
-                   style="max-height: 160px;max-width: 160px;border: 1px #D7D7D7 dashed;border-radius: 8px"/>
+                   style="max-height: 160px;max-width: 160px;border-radius: 6px"/>
             </el-col>
             <el-col :span="8" align="left" style="text-align: left">
               <el-form-item label="姓名" align="left" style="margin: 0;text-align: left">

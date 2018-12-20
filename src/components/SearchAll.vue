@@ -13,7 +13,7 @@
             <el-col :span="12" align="left" style="text-align: left">
               <el-form-item label="搜索对象" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000" v-if="param.type=='imsi'">{{param.value}}</span>
-                <img :src="param.value" v-else style="max-height: 100px;border: 1px #D7D7D7 dashed;border-radius: 8px"/>
+                <img :src="param.value" v-else style="max-height: 100px;border-radius: 6px"/>
               </el-form-item>
             </el-col>
           </el-row>
@@ -204,7 +204,7 @@
     width: -webkit-calc((100% - 126px) / 3);
     width: calc((100% - 126px) / 3);
     border: 1px #D7D7D7 solid;
-    border-radius: 8px;
+    border-radius: 6px;
     background: #fff;
     padding: 10px 15px;
     margin-bottom: 15px;
@@ -228,8 +228,7 @@
   .face-item img, .face-item .face-img img {
     max-width: 130px;
     max-height: 130px;
-    border: 1px #D7D7D7 dashed;
-    border-radius: 8px;
+    border-radius: 6px;
     text-align: left;
   }
 

@@ -123,11 +123,13 @@
         </el-form>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="人员图像" prop="imageUrl" min-width="150" max-width="200">
+          <el-table-column align="left" label="人员图像" prop="imageUrl" min-width="120" max-width="150">
             <template slot-scope="scope">
-              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
-                   @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
-                   style="max-width: 90px;max-height:90px;border-radius: 6px"/>
+              <div style="height: 90px;line-height:90px">
+                <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
+                     @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
+                     style="max-width: 90px;max-height:90px;border-radius: 6px;vertical-align: middle"/>
+              </div>
             </template>
           </el-table-column>
           <el-table-column align="left" label="年龄段" prop="age" min-width="80" max-width="120"

@@ -86,14 +86,16 @@
         </el-form-item>
       </el-form>
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe
-                @selection-change="selsChange" :height="tableHeight" :max-height="tableHeight">
+                @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150">
           <template slot-scope="scope">
-            <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath2"
-                 @click="bigUrl=scope.row.sceneUrl;runBigPic=true" :onerror="img2404"
-                 style="max-height:70px;border-radius: 6px;border: 1px #D7D7D7 dashed"/>
+            <div style="height: 90px;line-height:90px">
+              <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath2"
+                   @click="bigUrl=scope.row.sceneUrl;runBigPic=true" :onerror="img2404"
+                   style="height:70px;border-radius: 6px;vertical-align:middle"/>
+            </div>
           </template>
         </el-table-column>
         <el-table-column align="left" label="年龄段" prop="age" min-width="60" max-width="120"
@@ -119,9 +121,11 @@
         <el-table-column align="left" label="布控人员图像" prop="faceUrl" min-width="120"
                          max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
-            <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
-                 @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
-                 style="max-width: 90px;max-height:90px;border-radius: 6px"/>
+            <div style="height: 90px;line-height:90px">
+              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
+                   @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
+                   style="max-width: 90px;max-height:90px;border-radius:6px;vertical-align:middle"/>
+            </div>
           </template>
         </el-table-column>
         <el-table-column align="left" label="操作" width="160" fixed="right">
@@ -141,7 +145,7 @@
         <div class="block">
           <el-row>
             <el-col :span="24" style="text-align: center" align="center">
-              <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:8px;vertical-align:middle"/>
+              <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:6px;vertical-align:middle"/>
             </el-col>
           </el-row>
           <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">

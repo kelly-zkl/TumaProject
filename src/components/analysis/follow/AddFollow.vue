@@ -49,7 +49,7 @@
           </el-form-item>
           <el-form-item label="日期范围" align="left" required>
             <el-tooltip effect="dark" content="日期范围不能超过7天" placement="bottom">
-              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
+              <el-date-picker v-model="qTime" type="daterange" range-separator="至"
                               start-placeholder="开始日期" end-placeholder="结束日期" clearable
                               :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                               :picker-options="pickerBeginDate" @change="handleChange">
@@ -81,8 +81,10 @@
             <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="150"
                              max-width="250" :formatter="formatterAddress">
               <template slot-scope="scope">
-                <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" :onerror="img404"
-                     style="max-width: 90px;max-height:90px;border-radius: 6px"/>
+                <div style="height: 90px;line-height:90px">
+                  <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" :onerror="img404"
+                       style="max-width: 90px;max-height:90px;border-radius: 6px;vertical-align: middle"/>
+                </div>
               </template>
             </el-table-column>
             <el-table-column align="left" label="关联IMSI[置信度]" prop="imsiList" min-width="220" max-width="250">

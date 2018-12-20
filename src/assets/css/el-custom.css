@@ -106,6 +106,7 @@
 /** 表格样式开始*/
 .el-table {
   font-size: 14px;
+  overflow: auto;
   color: #666
 }
 
@@ -546,7 +547,7 @@
   width: calc(50% - 42px);
   height: 122px;
   border: 1px #D7D7D7 solid;
-  border-radius: 8px;
+  border-radius: 6px;
   background: #fff;
   padding: 15px;
   margin-bottom: 20px;
@@ -560,8 +561,7 @@
 .face-item img {
   max-width: 120px;
   max-height: 120px;
-  border: 1px #D7D7D7 dashed;
-  border-radius: 8px;
+  border-radius: 6px;
   text-align: left;
 }
 

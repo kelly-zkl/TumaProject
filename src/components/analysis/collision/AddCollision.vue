@@ -63,7 +63,7 @@
               <el-form-item label="日期" align="left" required style="margin: 10px 0 0 0"
                             v-show="param1.dataFromMode == 'QUERY'">
                 <el-tooltip effect="dark" content="日期范围不能超过7天" placement="bottom">
-                  <el-date-picker v-model="date1" type="datetimerange" range-separator="至" style="width: 300px"
+                  <el-date-picker v-model="date1" type="daterange" range-separator="至" style="width: 300px"
                                   value-format="timestamp" start-placeholder="开始日期" end-placeholder="结束日期"
                                   :default-time="['00:00:00', '23:59:59']" format="yyyy-MM-dd"
                                   :picker-options="pickerBeginDate" @change="handleChange">
@@ -131,7 +131,7 @@
               <el-form-item label="日期" align="left" required style="margin: 10px 0 0 0"
                             v-show="param2.dataFromMode == 'QUERY'">
                 <el-tooltip effect="dark" content="日期范围不能超过7天" placement="bottom">
-                  <el-date-picker v-model="date2" type="datetimerange" range-separator="至" style="width: 300px"
+                  <el-date-picker v-model="date2" type="daterange" range-separator="至" style="width: 300px"
                                   value-format="timestamp" start-placeholder="开始日期" end-placeholder="结束日期"
                                   :default-time="['00:00:00', '23:59:59']" format="yyyy-MM-dd"
                                   :picker-options="pickerBeginDate" @change="handleChange">

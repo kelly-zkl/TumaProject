@@ -61,7 +61,7 @@
         <h5 class="add-label">设置布控有效期</h5>
         <div class="add-appdiv">
           <el-form-item label="布控有效期" align="left" prop="startDate">
-            <el-date-picker v-model="controlTask.startDate" type="datetimerange" range-separator="至"
+            <el-date-picker v-model="controlTask.startDate" type="daterange" range-separator="至"
                             start-placeholder="开始日期" end-placeholder="结束日期" clearable :picker-options="pickerBeginDate"
                             :default-time="['00:00:00', '23:59:59']" value-format="timestamp" format="yyyy-MM-dd">
             </el-date-picker>

@@ -74,9 +74,11 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="人员图像" prop="imageUrl" min-width="125" max-width="250">
           <template slot-scope="scope">
-            <img v-bind:src="scope.row.imageUrl?scope.row.imageUrl:imgPath"
-                 @click="bigUrl=scope.row.imageUrl;runBigPic=true" :onerror="img404"
-                 style="max-width: 90px;max-height:90px;border-radius: 6px"/>
+            <div style="height: 90px;line-height:90px">
+              <img v-bind:src="scope.row.imageUrl?scope.row.imageUrl:imgPath"
+                   @click="bigUrl=scope.row.imageUrl;runBigPic=true" :onerror="img404"
+                   style="max-width: 90px;max-height:90px;border-radius: 6px;vertical-align: middle"/>
+            </div>
           </template>
         </el-table-column>
         <el-table-column align="left" label="年龄段" prop="age" min-width="80" max-width="120"

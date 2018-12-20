@@ -367,7 +367,6 @@
   .person-item img {
     max-width: 130px;
     max-height: 130px;
-    border: 1px #D7D7D7 dashed;
     border-radius: 6px;
     text-align: left;
   }

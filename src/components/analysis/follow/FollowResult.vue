@@ -189,9 +189,11 @@
           <el-table-column align="left" label="人员图像" prop="imsi" min-width="150"
                            max-width="300" :formatter="formatterAddress">
             <template slot-scope="scope">
-              <img v-bind:src="scope.row.userFacePicURL?scope.row.userFacePicURL:imgPath"
-                   @click="bigUrl=scope.row.userFacePicURL;runBigPic=true" :onerror="img404"
-                   style="max-width: 90px;max-height:90px;border-radius: 6px"/>
+              <div style="height: 90px;line-height:90px">
+                <img v-bind:src="scope.row.userFacePicURL?scope.row.userFacePicURL:imgPath"
+                     @click="bigUrl=scope.row.userFacePicURL;runBigPic=true" :onerror="img404"
+                     style="max-width: 90px;max-height:90px;border-radius: 6px;vertical-align: middle"/>
+              </div>
             </template>
           </el-table-column>
           <el-table-column align="left" label="年龄段" prop="age" min-width="125"
@@ -251,9 +253,11 @@
           <el-table-column align="left" label="人员图像" prop="imsi" min-width="150"
                            max-width="300" :formatter="formatterAddress">
             <template slot-scope="scope">
-              <img v-bind:src="scope.row.userFacePicURL?scope.row.userFacePicURL:imgPath"
-                   @click="bigUrl=scope.row.userFacePicURL;runBigPic=true" :onerror="img404"
-                   style="max-width: 90px;max-height:90px;border-radius: 6px"/>
+              <div style="height: 90px;line-height:90px">
+                <img v-bind:src="scope.row.userFacePicURL?scope.row.userFacePicURL:imgPath"
+                     @click="bigUrl=scope.row.userFacePicURL;runBigPic=true" :onerror="img404"
+                     style="max-width: 90px;max-height:90px;border-radius: 6px;vertical-align: middle"/>
+              </div>
             </template>
           </el-table-column>
           <el-table-column align="left" label="年龄段" prop="age" min-width="125"
@@ -310,7 +314,7 @@
       <div class="block">
         <el-row>
           <el-col :span="24" style="text-align: center" align="center">
-            <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:8px;vertical-align:middle"/>
+            <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:6px;vertical-align:middle"/>
           </el-col>
         </el-row>
         <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">

@@ -74,10 +74,10 @@
         <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="130"
                          max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
-            <div>
+            <div style="height: 90px;line-height:90px">
               <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
                    @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
-                   style="max-width: 90px;max-height:90px;border-radius: 6px"/>
+                   style="max-width: 90px;max-height:90px;border-radius:6px;vertical-align:middle"/>
               <!--<div style="width: 40px;height: 40px;position: absolute;top: 0" v-show="scope.row.quality==1">-->
               <!--<div class="list-quality"></div>-->
               <!--<span-->
@@ -123,7 +123,7 @@
         <div class="block">
           <el-row>
             <el-col :span="24" style="text-align: center" align="center">
-              <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:8px;vertical-align:middle"/>
+              <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:6px;vertical-align:middle"/>
             </el-col>
           </el-row>
           <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">

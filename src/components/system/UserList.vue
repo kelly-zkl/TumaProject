@@ -102,7 +102,7 @@
           </div>
         </el-col>
       </el-row>
-      <!--添加成员-->
+      <!--创建用户-->
       <el-dialog :title="addUserTitle" :visible.sync="addUserVisible" :width="dialogWidth">
         <el-form ref="admin" :model="admin" label-width="100px" :rules="rules" labelPosition="right">
           <el-form-item label="账号" prop="account">
@@ -297,7 +297,7 @@
         modifyUserVisible: false,
         modifyPswVisible: false,
         resetPswVisible: false,
-        addUserTitle: '添加成员',
+        addUserTitle: '创建用户',
         addDepart: '创建部门',
         departObj: {deptName: ''},
         addDepartVisible: false,
@@ -459,13 +459,13 @@
         this.role = '';
         this.listLoading = false;
         this.addUserVisible = true;
-        this.addUserTitle = '添加成员';
+        this.addUserTitle = '创建用户';
       },
       updateInfo(row) {
         this.admin = Object.assign({}, row);
         this.listLoading = false;
         this.modifyUserVisible = true;
-        this.addUserTitle = '修改成员';
+        this.addUserTitle = '修改用户';
         this.role = this.admin.roleList[0];
       },
       cancelSubmit() {
@@ -488,10 +488,10 @@
       //账号启用/停用
       userUse(user) {
         let param = {userId: user.userId};
-        let msg = '确定要启用该成员？';
+        let msg = '确定要启用该用户？';
         if (user.locked == 0) {
           param.locked = 1;
-          msg = '确定要停用该成员？'
+          msg = '确定要停用该用户？'
         } else {
           param.locked = 0;
         }
@@ -578,7 +578,7 @@
             }
             let url = '/manager/user/create';
             let msg = '添加成功';
-            if (title === '修改成员') {
+            if (title === '修改用户') {
               url = '/manager/user/update';
               msg = '修改成功';
             } else {
