@@ -42,6 +42,7 @@
   import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
 
   var fileDownload = require('js-file-download');
+  let md5 = require("crypto-js/md5");
 
   export default {
     data() {
@@ -67,11 +68,23 @@
         var param = Object.assign({}, this.query);
         param.page = 1;
         param.size = 100000;
-        this.axios.post('/collision/export/regional', param, {responseType: 'arraybuffer'}).then((res) => {
+        let config;
+        if (sessionStorage.getItem("user")) {
+          let userId = JSON.parse(sessionStorage.getItem("user")).userId;
+          if (userId) {
+            if (!param) {
+              param = {}
+            }
+            let stringify = JSON.stringify(param);
+            let token = md5(stringify + userId + "key-hz-20180123").toString();
+            config = {headers: {token: token, tokenId: userId}, responseType: 'arraybuffer'};
+          }
+        }
+        this.axios.post('/collision/export/regional', param, config).then((res) => {
           let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
           let fileName = decodeURIComponent(fileStr);
           fileDownload(res.data, fileName);
-        }).catch(function (res) {
+        }).catch((res) => {
         });
       },
       //获取地区统计记录

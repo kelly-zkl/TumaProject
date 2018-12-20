@@ -239,6 +239,7 @@
   import imageList from '../collision/ImageList.vue';
 
   var fileDownload = require('js-file-download');
+  let md5 = require("crypto-js/md5");
 
   export default {
     data() {
@@ -282,12 +283,24 @@
         var param = Object.assign({}, this.query);
         param.page = 1;
         param.size = 100000;
+        let config;
+        if (sessionStorage.getItem("user")) {
+          let userId = JSON.parse(sessionStorage.getItem("user")).userId;
+          if (userId) {
+            if (!param) {
+              param = {}
+            }
+            let stringify = JSON.stringify(param);
+            let token = md5(stringify + userId + "key-hz-20180123").toString();
+            config = {headers: {token: token, tokenId: userId}, responseType: 'arraybuffer'};
+          }
+        }
         if ((this.activeType === 'IMSI' && this.activeItem === 'first') || (this.activeType === 'FACE' && this.imageItem === 'image')) {
-          this.axios.post('/collision/export/analyze', param, {responseType: 'arraybuffer'}).then((res) => {
+          this.axios.post('/collision/export/analyze', param, config).then((res) => {
             let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
             let fileName = decodeURIComponent(fileStr);
             fileDownload(res.data, fileName);
-          }).catch(function (res) {
+          }).catch((res) => {
           });
         } else if (this.activeType === 'IMSI' && this.activeItem === 'second') {
           this.$refs.regionalCount.exportData();
