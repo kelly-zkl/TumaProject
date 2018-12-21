@@ -1,6 +1,6 @@
 <template>
   <div class="login-bg">
-    <section class="content" style="margin: 0">
+    <section class="content" style="margin: 0;padding: 0">
       <el-col :span="24" align="center">
         <el-form label-width="0" label-position="left" :model="account" class="login-input">
           <!--<el-form-item align="left" style="position: absolute;top: 0;left: 15px">-->
@@ -211,6 +211,10 @@
     margin-left: -8px;
     background: url("../assets/img/bg_login.svg") no-repeat;
     background-size: cover;
+    -moz-background-size: cover;
+    -webkit-background-size: cover;
+    -o-background-size: cover;
+    background-color: #08163d;
   }
 
   .main-footer {
