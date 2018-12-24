@@ -180,7 +180,7 @@
               this.lushu = new BMapLib.LuShu(this.map, pois, {// 回放
                 defaultContent: "",
                 autoView: true,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
-                icon: new BMap.Icon(this.pathUrl ? this.pathUrl : 'http://lbsyun.baidu.com/jsdemo/img/Mario.png', this.pathUrl ? new BMap.Size(32, 32) : new BMap.Size(52, 26),
+                icon: new BMap.Icon(this.pathUrl ? this.pathUrl : '../static/baidumapv2/images/Mario.png', this.pathUrl ? new BMap.Size(32, 32) : new BMap.Size(52, 26),
                   {
                     anchor: new BMap.Size(27, 13),
                     imageSize: this.pathUrl ? new BMap.Size(32, 32) : new BMap.Size(32, 32),
