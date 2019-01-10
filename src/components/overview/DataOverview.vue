@@ -139,7 +139,10 @@
       return {
         activeItem: 'device',
         tableHeight: window.innerHeight - 100,
-        systemParam: {refreshTime: 10, limitTime: 30, similarThreshold: 60, localPoint: [116.331398, 39.897445]},
+        systemParam: {
+          refreshTime: 10, limitTime: 30, similarThreshold: 60,
+          localPoint: [116.331398, 39.897445], heatRanges: []
+        },
         imgList: [],
         mapData: [],//设备实况数据
         deviceChart: null,//设备实况的eCharts
@@ -808,7 +811,10 @@
       }
     },
     mounted() {
-      this.systemParam = JSON.parse(sessionStorage.getItem("system"));
+      var conPara = JSON.parse(sessionStorage.getItem("system"));
+      if (conPara) {
+        this.systemParam = conPara;
+      }
       this.hotPoint = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
       this.mapPoint = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
 

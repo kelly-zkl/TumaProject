@@ -161,8 +161,17 @@
       },
       //跳转新建碰撞条件
       gotoAdd() {
-        sessionStorage.setItem("query", JSON.stringify(this.query));
-        this.$router.push({path: '/addCollision'});
+        this.$post('/collision/query', {page: 1, size: 5, taskStatus: "EXECUTION"}).then((data) => {
+          this.count = data.data.count;
+          if (data.data.count < 5) {
+            sessionStorage.setItem("query", JSON.stringify(this.query));
+            this.$router.push({path: '/addCollision'});
+          } else {
+            this.$message.error('分析中的任务建议不超过5个。请待当前分析中的任务完成后，再创建新任务。');
+            return;
+          }
+        }).catch((err) => {
+        });
       },
       //跳转任务详情
       gotoDetail(id, collisionType) {

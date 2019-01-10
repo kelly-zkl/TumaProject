@@ -62,7 +62,7 @@
             <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已完成</span>
             <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
             <span style="color:#D76F31" v-show="scope.row.taskStatus == 'WAIT'">等待中</span>
-            <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">进行中</span>
+            <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">分析中</span>
           </template>
         </el-table-column>
         <el-table-column align="left" label="关联案件" prop="caseName" min-width="150"
@@ -101,7 +101,7 @@
         query: {page: 1, size: 10},
         tableHeight: window.innerHeight - 232,
         followTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '图像'}],//{value: 'MAC', label: 'MAC'}
-        taskTypes: [{value: 'EXECUTION', label: '进行中'}, {value: 'FINISH', label: '已完成'},
+        taskTypes: [{value: 'EXECUTION', label: '分析中'}, {value: 'FINISH', label: '已完成'},
           {value: 'WAIT', label: '等待中'}, {value: 'FAILE', label: '失败'}],
         sels: [],
         count: 0,
@@ -147,8 +147,17 @@
       },
       //新建伴随任务
       addFollowTask() {
-        sessionStorage.setItem("query", JSON.stringify(this.query));
-        this.$router.push({path: '/addFollow'})
+        this.$post('/follow/query', {page: 1, size: 5, taskStatus: "EXECUTION"}).then((data) => {
+          this.count = data.data.count;
+          if (data.data.count < 5) {
+            sessionStorage.setItem("query", JSON.stringify(this.query));
+            this.$router.push({path: '/addFollow'});
+          } else {
+            this.$message.error('分析中的任务建议不超过5个。请待当前分析中的任务完成后，再创建新任务。');
+            return;
+          }
+        }).catch((err) => {
+        });
       },
       //全选  ==>  删除/结案
       selsChange(sels) {
@@ -195,11 +204,11 @@
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'taskStatus') {
-          return row.taskStatus === "WAIT" ? '等待中' : row.taskStatus === "FINISH" ? '已完成' : row.taskStatus === "FAILE" ? '失败' : row.taskStatus === "EXECUTION" ? '进行中' : '--';
+          return row.taskStatus === "WAIT" ? '等待中' : row.taskStatus === "FINISH" ? '已完成' : row.taskStatus === "FAILE" ? '失败' : row.taskStatus === "EXECUTION" ? '分析中' : '--';
         } else if (column.property === 'followType') {
           return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '图像' : row.followType === "MAC" ? 'MAC' : '--';
         } else if (column.property === 'status') {
-          return row.status === 'UNHANDLED' ? '未处理' : row.status === 'EXECUTION' ? '进行中' : row.status === 'HANDLED' ? '已结案' : '--';
+          return row.status === 'UNHANDLED' ? '未处理' : row.status === 'EXECUTION' ? '分析中' : row.status === 'HANDLED' ? '已结案' : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {

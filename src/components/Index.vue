@@ -556,6 +556,7 @@
                 if (item.code == 'image_search_threshold') {
                   this.systemParam.similarThreshold = item.value;
                 }
+                this.$refs.mychild.systemParam = this.systemParam;
                 sessionStorage.setItem("system", JSON.stringify(this.systemParam));
               });
             }
