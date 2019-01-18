@@ -28,7 +28,7 @@
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="分析结果" name="first"></el-tab-pane>
             <el-tab-pane label="归属地统计" name="second"></el-tab-pane>
-            <el-tab-pane label="地区统计" name="third"></el-tab-pane>
+            <!--<el-tab-pane label="地区统计" name="third"></el-tab-pane>-->
             <el-tab-pane label="源IMSI记录" name="fourth"></el-tab-pane>
           </el-tabs>
         </el-col>

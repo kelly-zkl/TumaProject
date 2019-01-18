@@ -26,8 +26,8 @@
       </el-table>
       <div class="block" style="margin: 20px 0" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
-                       :page-sizes="[10, 15, 20, 30]" :page-size="query.size" background
-                       layout="sizes, prev, pager, next, jumper"></el-pagination>
+                       :page-size="10" background :total="all.length"
+                       layout="prev, pager, next"></el-pagination>
       </div>
     </section>
   </div>
@@ -44,8 +44,9 @@
         taskId: this.$route.query.taskId || '',
         collisionType: this.$route.query.collisionType || '',
         listLoading: false,
-        query: {page: 1, size: 10},
-        records: []
+        query: {page: 1, size: 9999},
+        records: [],
+        all: []
       }
     },
     methods: {
@@ -54,7 +55,7 @@
       },
       //清除查询条件
       clearData() {
-        this.query = {page: 1, size: 10};
+        this.query = {page: 1, size: 9999};
         this.getData();
       },
       //碰撞统计导出
@@ -89,7 +90,10 @@
 
         this.listLoading = true;
         this.$post('/collision/regional/count', this.query).then((data) => {
+          this.all = data.data;
+          this.query.page = 1;
           this.records = data.data;
+          this.records = this.records.slice(0, 10);
           this.listLoading = false;
         }).catch((err) => {
           this.records = [];
@@ -98,11 +102,15 @@
       },
       pageChange(index) {
         this.query.page = index;
-        this.getData();
+        this.records = this.all;
+        if ((this.records.length - (index * 10)) >= 0) {
+          this.records = this.records.slice((index * 10 - 10), (index * 10));
+        } else {
+          this.records = this.records.slice((index * 10 - 10), this.all.length);
+        }
       },
       handleSizeChange(val) {
         this.query.size = val;
-        this.getData();
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
