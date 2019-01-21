@@ -13,10 +13,11 @@
           <el-button size="medium" @click=changeStatus(3) :disabled="sels.length == 0">误报</el-button>
         </el-col>
       </el-row>
-      <div class="s-tip" v-show="showTip">
+      <div class="s-tip" v-show="showTip && getButtonVial('disposition:query')">
         <i class="el-icon-info" style="color: #1890FF;font-size: 15px;margin-right: 5px"></i>
         <span style="color: #343434">当前没有进行中的布控任务。
-          <el-button type="text" style="margin: 0;padding: 0" @click="$router.push('/addControl')">添加布控任务</el-button>
+          <el-button type="text" style="margin: 0;padding: 0" @click="$router.push('/addControl')"
+                     v-show="getButtonVial('disposition:add')">添加布控任务</el-button>
         </span>
         <el-button type="text" style="margin: 0;padding: 0;position: absolute;right: 10px"
                    icon="el-icon-close" @click="showTip=false;calcuHeight()"></el-button>
@@ -165,13 +166,15 @@
       },
       //是否有进行中的布控任务
       getTask() {
-        this.$post('disposition/query', {page: 1, size: 10, taskStatus: "EXECUTION"}).then((data) => {
-          this.showTip = data.data.list.length == 0;
-          this.calcuHeight();
-        }).catch((err) => {
-          this.showTip = false;
-          this.calcuHeight();
-        });
+        if (this.getButtonVial('disposition:query')) {
+          this.$post('disposition/query', {page: 1, size: 10, taskStatus: "EXECUTION"}).then((data) => {
+            this.showTip = data.data.list.length == 0;
+            this.calcuHeight();
+          }).catch((err) => {
+            this.showTip = false;
+            this.calcuHeight();
+          });
+        }
       },
       //全选  ==>  删除/结案
       selsChange(sels) {
