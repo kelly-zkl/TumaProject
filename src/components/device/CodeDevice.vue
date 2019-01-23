@@ -60,7 +60,7 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="lineStatus" label="在线状态" min-width="100"
                            max-width="120"></el-table-column>
-          <el-table-column align="left" label="操作" width="150" fixed="right">
+          <el-table-column align="left" label="操作" width="100" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click.stop="runningSetPlace=true;addPlace=scope.row"
                          v-show="getButtonVial('device:set:place')">设置场所

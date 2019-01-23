@@ -40,9 +40,9 @@
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="设备标识" prop="name" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="相机状态" prop="status" min-width="120"
-                         max-width="150" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="160" fixed="right">
+        <el-table-column align="left" label="相机状态" prop="status" min-width="80"
+                         max-width="100" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="操作" width="100" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="runningSetPlace=true;addPlace=scope.row"
                        v-show="getButtonVial('camera:set:place')">设置场所
