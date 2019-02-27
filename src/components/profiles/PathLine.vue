@@ -156,7 +156,7 @@
             var pois = [];
             this.records = [];
             if (item.locs && item.locs.length > 0) {
-              var point1, point2;
+              var point1 = null, point2 = null;
               for (var i = 0; i < item.locs.length; i++) {
                 let recData = item.locs[i];
                 if (i == 0 && !this.isCenter) {
@@ -164,9 +164,18 @@
                   var point = new BMap.Point(item.locs[i].lon, item.locs[i].lat);
                   this.map.centerAndZoom(point, 14);
                 }
-                pois.push(new BMap.Point(item.locs[i].lon, item.locs[i].lat));
                 recData.timeStr = formatDate(new Date(recData.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss');
                 this.records.push(recData);
+                point1 = item.locs[i];
+                if (point1 && point2) {
+                  if (point1.lat != point2.lat || point1.lon != point2.lon) {
+                    pois.push(new BMap.Point(item.locs[i].lon, item.locs[i].lat));
+                  }
+                  point2 = point1;
+                } else {
+                  pois.push(new BMap.Point(item.locs[i].lon, item.locs[i].lat));
+                }
+
                 // if (i < item.locs.length - 1 && item.locs.length > 1) {
                 //   point1 = new BMap.Point(item.locs[i].lon, item.locs[i].lat);
                 //   point2 = new BMap.Point(item.locs[i + 1].lon, item.locs[i + 1].lat);
@@ -180,7 +189,7 @@
               this.lushu = new BMapLib.LuShu(this.map, pois, {// 回放
                 defaultContent: "",
                 autoView: true,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
-                icon: new BMap.Icon(this.pathUrl ? this.pathUrl : '../static/baidumapv2/images/Mario.png', this.pathUrl ? new BMap.Size(32, 32) : new BMap.Size(52, 26),
+                icon: new BMap.Icon(this.pathUrl ? this.pathUrl : '../meerkat-h5/static/baidumapv2/images/Mario.png', this.pathUrl ? new BMap.Size(32, 32) : new BMap.Size(52, 26),
                   {
                     anchor: new BMap.Size(27, 13),
                     imageSize: this.pathUrl ? new BMap.Size(32, 32) : new BMap.Size(32, 32),

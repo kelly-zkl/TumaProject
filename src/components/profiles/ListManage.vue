@@ -637,6 +637,7 @@
           (this.list.length % 100 === 0 || this.list.length === this.couple)) {
           this.firstPage = this.list.length;
           this.query.pageTime = this.list[this.list.length - 1].createTime;
+          this.query.pageFaceId = this.list[this.list.length - 1].faceId;
           this.getData();
         }
         this.list10 = this.list;
