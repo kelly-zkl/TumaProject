@@ -22,11 +22,27 @@
         </el-col>
       </el-row>
       <div class="view-map" id="view-map"></div>
+      <el-row style="padding-top: 10px" v-show="getButtonVial('deviceMap:search')">>
+        <el-col :span="24" style="text-align: left" align="left">
+          <el-autocomplete class="inline-input" v-model="queryParam" :fetch-suggestions="querySearch" clearable
+                           placeholder="场所名称/设备ID" @select="handleSelect">
+            <el-select v-model="queryType" slot="prepend" placeholder="请选择" @change="handleChange">
+              <el-option label="场所" value="place"></el-option>
+              <el-option label="设备" value="device"></el-option>
+            </el-select>
+            <template slot-scope="{ item }">
+              <div class="name" style="margin-bottom: 0">{{ item.name }}</div>
+              <span class="addr">{{ item.detailAddress }}</span>
+            </template>
+          </el-autocomplete>
+        </el-col>
+      </el-row>
     </section>
   </div>
 </template>
 <script>
   import echarts from "echarts";
+  import {buttonValidator} from "../../assets/js/util";
 
   export default {
     data() {
@@ -38,10 +54,10 @@
         systemParam: {},
         myChart: null,
         drawingManager: null,
-        bMap: null,
-        point: null,
+        deviceMap: null,
+        mapPoint: null,
+        mapZoom: 12,
         ply: null,//多边形
-        zoom: 12,
         styleOptions: {
           strokeColor: "#FF6600",    //边线颜色。
           fillColor: "#FF6600",      //填充颜色。当参数为空时，圆形将没有填充效果。
@@ -53,7 +69,11 @@
         mapData: [],
         intervalid: null,
         markers: [],
-        markerClusterer: null
+        markerClusterer: null,
+        queryParam: '',
+        queryType: 'place',
+        results: [],
+        multLat: []
       }
     },
     //页面关闭时停止更新设备在线状态
@@ -61,6 +81,28 @@
       clearInterval(this.intervalid);
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
+      handleChange(val) {
+        this.queryParam = '';
+      },
+      querySearch(queryString, cb) {
+        this.$post("deviceMap/search", {type: this.queryType, content: this.queryParam}).then((data) => {
+          this.results = data.data;
+          cb(this.results);
+        }).catch((err) => {
+          this.results = [];
+        });
+      },
+      handleSelect(item) {
+        this.queryParam = item.name;
+        if (item.longitude && item.latitude) {//场所、设备有经纬度时才可以定位
+          this.mapZoom = 19;
+          this.mapPoint = new BMap.Point(item.longitude, item.latitude);
+          this.deviceMap.centerAndZoom(this.mapPoint, this.mapZoom);
+        }
+      },
       //定时刷新设备的在线状态
       statusTask() {
         if (!this.intervalid) {
@@ -80,6 +122,7 @@
       //设备地图
       getMapData() {
         this.mapData = [];
+        this.multLat = [];
         this.$post('/home/getAllDevice', {}).then((data) => {
           if (data.code === '000000') {
             this.deviceImsi = data.data.imsiDeviceDistribute;
@@ -91,11 +134,30 @@
                 if (item.lineStatus === "OFF") {
                   onLine = false;
                 }
+                var lat = [item.devicePos.longitude, item.devicePos.latitude, 1];
+                var num = this.setLatLonap(item.devicePos.longitude, item.devicePos.latitude);
+                if (num == 1) {
+                  lat = [item.devicePos.longitude + 0.00015, item.devicePos.latitude, 1];
+                } else if (num == 2) {
+                  lat = [item.devicePos.longitude, item.devicePos.latitude + 0.00015, 1];
+                } else if (num == 3) {
+                  lat = [item.devicePos.longitude - 0.00015, item.devicePos.latitude, 1];
+                } else if (num == 4) {
+                  lat = [item.devicePos.longitude, item.devicePos.latitude - 0.00015, 1];
+                } else if (num == 5) {
+                  lat = [item.devicePos.longitude + 0.00015, item.devicePos.latitude + 0.00015, 1];
+                } else if (num == 6) {
+                  lat = [item.devicePos.longitude + 0.00015, item.devicePos.latitude - 0.00015, 1];
+                } else if (num == 7) {
+                  lat = [item.devicePos.longitude - 0.00015, item.devicePos.latitude + 0.00015, 1];
+                } else if (num == 8) {
+                  lat = [item.devicePos.longitude - 0.00015, item.devicePos.latitude - 0.00015, 1];
+                }
                 let param = {
-                  name: item.city, value: [item.devicePos.longitude, item.devicePos.latitude, 1],
-                  deviceName: item.deviceName, deviceId: item.deviceId, type: '侦码设备', onLine: onLine,
-                  placeName: item.placeName
+                  name: item.city, value: lat, deviceName: item.deviceName, deviceId: item.deviceId,
+                  type: '侦码设备', onLine: onLine, placeName: item.placeName
                 };
+                this.multLat.push({value: [item.devicePos.longitude, item.devicePos.latitude]});
                 if (this.query.code.length === 2) {
                   this.mapData.push(param);
                 } else if (this.query.code.length === 1) {
@@ -106,35 +168,69 @@
               }
             });
             data.data.cameraDeviceDistribute.deviceList.forEach((item, idx) => {
-              let onLine = true;
-              if (item.status === 2) {
-                onLine = false;
-              }
-              let param = {
-                name: item.name, value: [item.longitude, item.latitude, 1], deviceName: item.name,
-                deviceId: item.cameraCode, onLine: onLine, type: '相机设备', placeName: item.placeName
-              };
-              if (this.query.camera.length === 2) {
-                this.mapData.push(param);
-              } else if (this.query.camera.length === 1) {
-                if (onLine === this.query.camera[0]) {
+              if (item.longitude && item.latitude) {
+                let onLine = true;
+                if (item.status === 2) {
+                  onLine = false;
+                }
+                var lat = [item.longitude, item.latitude, 1];
+                var num = this.setLatLonap(item.longitude, item.latitude);
+                if (num == 1) {
+                  lat = [item.longitude + 0.00015, item.latitude, 1];
+                } else if (num == 2) {
+                  lat = [item.longitude, item.latitude + 0.00015, 1];
+                } else if (num == 3) {
+                  lat = [item.longitude - 0.00015, item.latitude, 1];
+                } else if (num == 4) {
+                  lat = [item.longitude, item.latitude - 0.00015, 1];
+                } else if (num == 5) {
+                  lat = [item.longitude + 0.00015, item.latitude + 0.00015, 1];
+                } else if (num == 6) {
+                  lat = [item.longitude + 0.00015, item.latitude - 0.00015, 1];
+                } else if (num == 7) {
+                  lat = [item.longitude - 0.00015, item.latitude + 0.00015, 1];
+                } else if (num == 8) {
+                  lat = [item.longitude - 0.00015, item.latitude - 0.00015, 1];
+                }
+                let param = {
+                  name: item.name, value: lat, deviceName: item.name, deviceId: item.cameraCode,
+                  onLine: onLine, type: '相机设备', placeName: item.placeName
+                };
+                this.multLat.push({value: [item.longitude, item.latitude]});
+                if (this.query.camera.length === 2) {
                   this.mapData.push(param);
+                } else if (this.query.camera.length === 1) {
+                  if (onLine === this.query.camera[0]) {
+                    this.mapData.push(param);
+                  }
                 }
               }
             });
 
-            this.deviceMap();
+            this.deviceMapData();
           }
         }).catch((err) => {
           this.mapData = [];
-          this.deviceMap();
+          this.multLat = [];
+          this.deviceMapData();
         });
       },
-      deviceMap() {
+      setLatLonap(x, y) {
+        var a = 0;
+        if (this.multLat.length > 0) {
+          this.multLat.forEach((item) => {
+            if (item.value[0] == x && item.value[1] == y) {
+              a = a + 1;
+            }
+          });
+        }
+        return a;
+      },
+      deviceMapData() {
         var _this = this;
-        if (this.bMap) {
-          this.point = this.bMap.getCenter();
-          this.zoom = this.bMap.getZoom();
+        if (this.deviceMap) {
+          this.mapPoint = this.deviceMap.getCenter();
+          this.mapZoom = this.deviceMap.getZoom();
         }
         if (!this.myChart) {
           var app = {};
@@ -160,7 +256,7 @@
             grid: {left: 0, right: 0, bottom: 0, top: 0, containLabel: true},
             bmap: {
               center: this.systemParam.localPoint,
-              zoom: 14,
+              zoom: 12,
               roam: true
             },
             series: [
@@ -174,13 +270,14 @@
           };
           this.myChart.setOption(option);
           if (!app.inNode) {
-            this.bMap = this.myChart.getModel().getComponent('bmap').getBMap();
-            this.bMap.setMinZoom(5);
-            this.bMap.setMaxZoom(18);
+            this.deviceMap = this.myChart.getModel().getComponent('bmap').getBMap();
+            this.deviceMap.enableScrollWheelZoom(true);
+            this.deviceMap.setMinZoom(5);
+            this.deviceMap.setMaxZoom(20);
             var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
-            // this.bMap.addControl(mapType);
+            // this.deviceMap.addControl(mapType);
             //实例化鼠标绘制工具
-            this.drawingManager = new BMapLib.DrawingManager(_this.bMap, {
+            this.drawingManager = new BMapLib.DrawingManager(this.deviceMap, {
               isOpen: false, //是否开启绘制模式
               enableDrawingTool: true, //是否显示工具栏
               drawingToolOptions: {
@@ -194,9 +291,6 @@
             });
             //添加鼠标绘制工具监听事件，用于获取绘制结果
             this.drawingManager.addEventListener('overlaycomplete', this.overlaycomplete);
-            _this.bMap.addEventListener("zoomend", this.zoomEvent);
-            // _this.bMap.addEventListener("click", this.showInfo);
-            _this.bMap.addEventListener("dragend", this.zoomEvent);
 
             // 定义一个控件类,即function
             function DeleteControl() {
@@ -220,14 +314,14 @@
                 _this.removePoly();
               };
               // 添加DOM元素到地图中
-              _this.bMap.getContainer().appendChild(div);
+              _this.deviceMap.getContainer().appendChild(div);
               // 将DOM元素返回
               return div;
             };
             // 创建控件
             var myZoomCtrl = new DeleteControl();
             // 添加到地图当中
-            this.bMap.addControl(myZoomCtrl);
+            this.deviceMap.addControl(myZoomCtrl);
           }
         } else {
           this.myChart.setOption({
@@ -301,35 +395,28 @@
             ]
           });
         }
-        this.bMap.centerAndZoom(this.point, this.zoom);
-        //IP定位l
-        // if (!this.point) {
-        //   var point = new BMap.Point(116.331398, 39.897445);
-        //   this.bMap.centerAndZoom(point, this.zoom);
-        //
-        //   function myFun(result) {
-        //     var cityName = result.name;
-        //     _this.bMap.setCenter(cityName);
-        //     _this.bMap.setZoom(_this.zoom);
-        //     _this.point = _this.bMap.getCenter();
-        //   }
-        //
-        //   var myCity = new BMap.LocalCity();
-        //   myCity.get(myFun);
-        // } else {
-        //   this.bMap.centerAndZoom(this.point, this.zoom);
-        // }
+        this.deviceMap.centerAndZoom(this.mapPoint, this.mapZoom);
+
+        function map() {
+          _this.deviceMap.centerAndZoom(_this.deviceMap.getCenter(), _this.deviceMap.getZoom());
+          _this.mapPoint = _this.deviceMap.getCenter();
+          _this.mapZoom = _this.deviceMap.getZoom();
+        }
+
         //点聚合
         this.getMarkNumber();
+
+        this.deviceMap.addEventListener("zoomend", map);
+        this.deviceMap.addEventListener("dragend", map);
       },
       //点聚合功能
       getMarkNumber() {
         if (!this.markerClusterer) {
           // var _styles = [{url: this.imgPath, size: new BMap.Size(40, 40)}];, styles: _styles
-          this.markerClusterer = new BMapLib.MarkerClusterer(this.bMap, {
+          this.markerClusterer = new BMapLib.MarkerClusterer(this.deviceMap, {
             markers: this.markers,
             gridSize: 40,
-            maxZoom: 18
+            maxZoom: 17
           });
         }
         this.markerClusterer.clearMarkers();
@@ -341,13 +428,6 @@
         }
         //最简单的用法，生成一个marker数组，然后调用markerClusterer类即可。
         this.markerClusterer.addMarkers(this.markers);
-        // markers {Array} 要聚合的标记数组
-        // girdSize {Number} 聚合计算时网格的像素大小，默认60
-        // maxZoom {Number} 最大的聚合级别，大于该级别就不进行相应的聚合
-        // minClusterSize {Number} 最小的聚合数量，小于该数量的不能成为一个聚合，默认为2
-        // isAverangeCenter {Boolean} 聚合点的落脚位置是否是所有聚合在内点的平均值，默认为否，落脚在聚合内的第一个点
-        // styles {Array} 自定义聚合后的图标风格，请参考TextIconOverlay类
-        //鼠标绘制完成回调方法,获取各个点的经纬度
       },
       //生成多边形
       polygon(path) {
@@ -358,7 +438,7 @@
           pts.push(pt);
         }
         this.ply = new BMap.Polygon(pts, this.styleOptions);
-        this.bMap.addOverlay(this.ply);
+        this.deviceMap.addOverlay(this.ply);
       },
       //判断点是否在多边形内
       /**
@@ -375,12 +455,12 @@
       },
       //删除多边形
       removePoly() {
-        if (this.bMap) {
-          var allOverlay = this.bMap.getOverlays();
+        if (this.deviceMap) {
+          var allOverlay = this.deviceMap.getOverlays();
           for (var i = 0; i < allOverlay.length; i++) {
             if (allOverlay[i].toString().indexOf("Polygon") > 0 || allOverlay[i].toString().indexOf("Label") > 0
               || allOverlay[i].toString().indexOf("Circle") > 0) {//删除折线
-              this.bMap.removeOverlay(allOverlay[i]);
+              this.deviceMap.removeOverlay(allOverlay[i]);
             }
           }
         }
@@ -423,24 +503,13 @@
           color: "#fff", backgroundColor: "black", border: 'none', fontSize: "12px", borderRadius: '3px',
           opacity: 0.8, lineHeight: "20px", fontFamily: "微软雅黑", padding: '0 5px'
         });
-        this.bMap.addOverlay(label);
-      },
-      //地图拖拽/放大之后的中心点和放大倍数
-      zoomEvent() {
-        this.point = this.bMap.getCenter();
-        this.zoom = this.bMap.getZoom();
-        this.bMap.centerAndZoom(this.bMap.getCenter(), this.bMap.getZoom());
-      },
-      //画圆，半径为1公里
-      showInfo(e) {
-        var circle = new BMap.Circle(e.point, 1000, this.styleOptions);
-        this.bMap.addOverlay(circle);
+        this.deviceMap.addOverlay(label);
       }
     },
     mounted() {
       this.systemParam = JSON.parse(sessionStorage.getItem("system"));
-      this.point = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
-      this.deviceMap();
+      this.mapPoint = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
+      this.deviceMapData();
       this.getMapData();
       this.statusTask();
     }
@@ -462,5 +531,23 @@
     top: 0;
     right: 0;
     width: 100%;
+  }
+
+  .name {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 14px;
+    color: #343434;
+    height: 26px;
+    line-height: 26px;
+  }
+
+  .addr {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 12px;
+    color: #999;
+    height: 20px;
+    line-height: 20px;
   }
 </style>

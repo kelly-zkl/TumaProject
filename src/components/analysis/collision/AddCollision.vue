@@ -194,7 +194,7 @@
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
+            <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable>
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
@@ -244,7 +244,7 @@
             </el-cascader>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
+            <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable>
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
@@ -290,6 +290,7 @@
   import DeviceBmap from '../DeviceBmap';
   import json from '../../../assets/city.json';
   import {globalValidExcel, noSValidator, noValidator} from "../../../assets/js/api";
+  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -337,7 +338,7 @@
         },
         pickerBeginDate: {
           disabledDate: (time) => {
-            let beginDateVal = new Date().getTime();
+            let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {
               return beginDateVal < time.getTime();
             }

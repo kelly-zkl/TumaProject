@@ -20,9 +20,9 @@
               <el-form-item label="入库时间" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{userInfo.timeStr ? userInfo.timeStr : '--'}}</span>
               </el-form-item>
-              <el-form-item label="是否优质" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{userInfo.quality==1 ? '是' : '否'}}</span>
-              </el-form-item>
+              <!--<el-form-item label="是否优质" align="left" style="margin: 0">-->
+              <!--<span style="font-size: 15px;color:#000">{{userInfo.quality==1 ? '是' : '否'}}</span>-->
+              <!--</el-form-item>-->
               <el-form-item label="备注" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{userInfo.remark ? userInfo.remark : '--'}}</span>
               </el-form-item>

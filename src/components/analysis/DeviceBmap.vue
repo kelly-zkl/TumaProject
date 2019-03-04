@@ -29,6 +29,7 @@
         },
         mapData: [],
         deviceList: [],
+        multLat: [],
         deviceType: '',//设备类型-->相机：FACE 侦码：IMSI
         dataType: ''//数据类型-->条件1：data1  条件2：data2
       }
@@ -53,6 +54,7 @@
       //设备地图
       getMapData() {
         this.mapData = [];
+        this.multLat = [];
         this.$post('/home/getAllDevice', {}).then((data) => {
           if (data.code === '000000') {
             if (this.deviceType == 'IMSI' && data.data.imsiDeviceDistribute.deviceList.length > 0) {
@@ -62,24 +64,66 @@
                   if (item.lineStatus === "OFF") {
                     onLine = false;
                   }
+                  var lat = [item.devicePos.longitude, item.devicePos.latitude, 1];
+                  var num = this.setLatLonap(item.devicePos.longitude, item.devicePos.latitude);
+                  if (num == 1) {
+                    lat = [item.devicePos.longitude + 0.00015, item.devicePos.latitude, 1];
+                  } else if (num == 2) {
+                    lat = [item.devicePos.longitude, item.devicePos.latitude + 0.00015, 1];
+                  } else if (num == 3) {
+                    lat = [item.devicePos.longitude - 0.00015, item.devicePos.latitude, 1];
+                  } else if (num == 4) {
+                    lat = [item.devicePos.longitude, item.devicePos.latitude - 0.00015, 1];
+                  } else if (num == 5) {
+                    lat = [item.devicePos.longitude + 0.00015, item.devicePos.latitude + 0.00015, 1];
+                  } else if (num == 6) {
+                    lat = [item.devicePos.longitude + 0.00015, item.devicePos.latitude - 0.00015, 1];
+                  } else if (num == 7) {
+                    lat = [item.devicePos.longitude - 0.00015, item.devicePos.latitude + 0.00015, 1];
+                  } else if (num == 8) {
+                    lat = [item.devicePos.longitude - 0.00015, item.devicePos.latitude - 0.00015, 1];
+                  }
                   let param = {
-                    value: [item.devicePos.longitude, item.devicePos.latitude, 1], placeName: item.placeName,
-                    deviceName: item.deviceName, deviceId: item.deviceId, type: '侦码设备', onLine: onLine
+                    name: item.city, value: lat, deviceName: item.deviceName, deviceId: item.deviceId,
+                    type: '侦码设备', onLine: onLine, placeName: item.placeName
                   };
+                  this.multLat.push({value: [item.devicePos.longitude, item.devicePos.latitude]});
                   this.mapData.push(param);
                 }
               });
             } else if (this.deviceType == 'FACE' && data.data.cameraDeviceDistribute.deviceList.length > 0) {
               data.data.cameraDeviceDistribute.deviceList.forEach((item, idx) => {
-                let onLine = true;
-                if (item.status === 2) {
-                  onLine = false;
+                if (item.longitude && item.latitude) {
+                  let onLine = true;
+                  if (item.status === 2) {
+                    onLine = false;
+                  }
+                  var lat = [item.longitude, item.latitude, 1];
+                  var num = this.setLatLonap(item.longitude, item.latitude);
+                  if (num == 1) {
+                    lat = [item.longitude + 0.00015, item.latitude, 1];
+                  } else if (num == 2) {
+                    lat = [item.longitude, item.latitude + 0.00015, 1];
+                  } else if (num == 3) {
+                    lat = [item.longitude - 0.00015, item.latitude, 1];
+                  } else if (num == 4) {
+                    lat = [item.longitude, item.latitude - 0.00015, 1];
+                  } else if (num == 5) {
+                    lat = [item.longitude + 0.00015, item.latitude + 0.00015, 1];
+                  } else if (num == 6) {
+                    lat = [item.longitude + 0.00015, item.latitude - 0.00015, 1];
+                  } else if (num == 7) {
+                    lat = [item.longitude - 0.00015, item.latitude + 0.00015, 1];
+                  } else if (num == 8) {
+                    lat = [item.longitude - 0.00015, item.latitude - 0.00015, 1];
+                  }
+                  let param = {
+                    name: item.name, value: lat, deviceName: item.name, deviceId: item.cameraCode,
+                    onLine: onLine, type: '相机设备', placeName: item.placeName
+                  };
+                  this.multLat.push({value: [item.longitude, item.latitude]});
+                  this.mapData.push(param);
                 }
-                let param = {
-                  value: [item.longitude, item.latitude, 1], deviceName: item.name, onLine: onLine,
-                  deviceId: item.cameraCode, type: '相机设备', placeName: item.placeName
-                };
-                this.mapData.push(param);
               });
             }
             // console.log(this.mapData);
@@ -87,8 +131,20 @@
           }
         }).catch((err) => {
           this.mapData = [];
+          this.multLat = [];
           this.deviceMap();
         });
+      },
+      setLatLonap(x, y) {
+        var a = 0;
+        if (this.multLat.length > 0) {
+          this.multLat.forEach((item) => {
+            if (item.value[0] == x && item.value[1] == y) {
+              a = a + 1;
+            }
+          });
+        }
+        return a;
       },
       deviceMap() {
         var _this = this;
@@ -133,7 +189,7 @@
           if (!app.inNode) {
             this.bMap = this.myChart.getModel().getComponent('bmap').getBMap();
             this.bMap.setMinZoom(5);
-            this.bMap.setMaxZoom(18);
+            this.bMap.setMaxZoom(20);
             var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
             // this.bMap.addControl(mapType);
             //实例化鼠标绘制工具

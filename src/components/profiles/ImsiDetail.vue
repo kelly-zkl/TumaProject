@@ -96,7 +96,7 @@
             <el-form :inline="true" :model="query" align="left" style="text-align: left"
                      v-show="getButtonVial('common:imsi:listImsiRecordBySpecialImsi')">
               <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
-                <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
+                <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable>
                   <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                   </el-option>
                 </el-select>
@@ -175,7 +175,7 @@
         num: 10,
         pickerBeginDate: {
           disabledDate: (time) => {
-            let beginDateVal = new Date().getTime();
+            let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {
               return beginDateVal < time.getTime();
             }
@@ -300,8 +300,7 @@
         if (!this.isFirst && this.list.length > this.firstPage) {
           this.isFirst = true;
         }
-        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
-          (this.list.length % 100 === 0 || this.list.length === this.couple)) {
+        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst && (this.list.length % 100 === 0)) {
           this.firstPage = this.list.length;
           this.query.pageTime = this.list[this.list.length - 1].uptime;
           this.getData();

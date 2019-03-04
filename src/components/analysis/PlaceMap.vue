@@ -29,6 +29,7 @@
         },
         placeData: [],
         placeList: [],
+        multLat: [],
         serviceTypes: [{value: '0', label: '网吧'}, {value: '1', label: '旅店宾馆类（住宿服务场所）'},
           {value: '2', label: '图书馆阅览室'}, {value: '3', label: '电脑培训中心类'}, {value: '4', label: '娱乐场所类'},
           {value: '5', label: '交通枢纽'}, {value: '6', label: '公共交通工具'}, {value: '7', label: '餐饮服务场所'},
@@ -74,24 +75,57 @@
       //场所地图
       getPlaceData() {
         this.placeData = [];
+        this.multLat = [];
         this.$post("place/query", {page: 1, size: 999999}).then((data) => {
           if (data.code === '000000') {
             data.data.list.forEach((item, idx) => {
               let code = item.areaCode ? item.areaCode : item.cityCode ? item.cityCode : item.provinceCode;
               let placeStr = this.getPlaceType(item.placeType);
               let placeArea = this.getAreaLable(code);
+              var lat = [item.longitude, item.latitude, 1];
+              var num = this.setLatLonap(item.longitude, item.latitude);
+              if (num == 1) {
+                lat = [item.longitude + 0.00015, item.latitude, 1];
+              } else if (num == 2) {
+                lat = [item.longitude, item.latitude + 0.00015, 1];
+              } else if (num == 3) {
+                lat = [item.longitude - 0.00015, item.latitude, 1];
+              } else if (num == 4) {
+                lat = [item.longitude, item.latitude - 0.00015, 1];
+              } else if (num == 5) {
+                lat = [item.longitude + 0.00015, item.latitude + 0.00015, 1];
+              } else if (num == 6) {
+                lat = [item.longitude + 0.00015, item.latitude - 0.00015, 1];
+              } else if (num == 7) {
+                lat = [item.longitude - 0.00015, item.latitude + 0.00015, 1];
+              } else if (num == 8) {
+                lat = [item.longitude - 0.00015, item.latitude - 0.00015, 1];
+              }
               let param = {
-                placeName: item.placeName, value: [item.longitude, item.latitude, 1], placeCode: item.placeCode,
-                placeStr: placeStr, placeArea: placeArea, detailAddress: item.detailAddress, id: item.id
+                placeName: item.placeName, value: lat, placeCode: item.placeCode, placeStr: placeStr,
+                placeArea: placeArea, detailAddress: item.detailAddress, id: item.id
               };
+              this.multLat.push({value: [item.longitude, item.latitude]});
               this.placeData.push(param);
             });
             this.placeMap();
           }
         }).catch((err) => {
           this.placeData = [];
+          this.multLat = [];
           this.placeMap();
         });
+      },
+      setLatLonap(x, y) {
+        var a = 0;
+        if (this.multLat.length > 0) {
+          this.multLat.forEach((item) => {
+            if (item.value[0] == x && item.value[1] == y) {
+              a = a + 1;
+            }
+          });
+        }
+        return a;
       },
       placeMap() {
         var _this = this;
@@ -132,7 +166,7 @@
           if (!app.inNode) {
             this.bMap = this.myChart.getModel().getComponent('bmap').getBMap();
             this.bMap.setMinZoom(5);
-            this.bMap.setMaxZoom(18);
+            this.bMap.setMaxZoom(20);
             var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
             // this.bMap.addControl(mapType);
             //实例化鼠标绘制工具

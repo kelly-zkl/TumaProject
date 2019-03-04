@@ -8,6 +8,13 @@
             <el-tab-pane label="历史记录" name="second"></el-tab-pane>
           </el-tabs>
         </el-col>
+        <el-tooltip class="item" effect="dark" placement="bottom-end">
+          <div slot="content">支持导出指定某一个IMSI的30天以内的记录,<br/>请在搜索栏设置完毕后再导出</div>
+          <el-col :span="3" align="right" style="text-align: right" :offset="5"
+                  v-show="activeItem=='second'&&getButtonVial('archives:export:record')">
+            <el-button type="primary" size="medium" @click="confirmExport()" :disabled="!isExport">导出</el-button>
+          </el-col>
+        </el-tooltip>
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left;width: 1100px">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
@@ -23,7 +30,7 @@
                     :maxlength=20></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
-          <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
+          <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable>
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
           </el-select>
@@ -88,8 +95,11 @@
 </template>
 
 <script>
-  import {noValidator} from "../../assets/js/api";
+  import {numValid, noValidator} from "../../assets/js/api";
   import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+
+  var fileDownload = require('js-file-download');
+  let md5 = require("crypto-js/md5");
 
   export default {
     data() {
@@ -114,18 +124,49 @@
         time1: ['00:00:00', '23:59:59'],
         pickerBeginDate: {
           disabledDate: (time) => {
-            let beginDateVal = new Date().getTime();
+            let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {
               return beginDateVal < time.getTime();
             }
           }
-        }
+        },
+        isExport: true
       }
     },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      //导出数据
+      confirmExport() {
+        var param = Object.assign({}, this.query);
+        if (!param.imsi) {
+          this.$message.error('请输入IMSI');
+          return;
+        }
+        if (!numValid(param.imsi) || param.imsi.length != 15) {
+          this.$message.error('请输入15位正确的IMSI');
+          return;
+        }
+        delete this.query['pageTime'];
+        delete this.query['size'];
+        let config;
+        if (sessionStorage.getItem("user")) {
+          let userId = JSON.parse(sessionStorage.getItem("user")).userId;
+          if (userId) {
+            let stringify = JSON.stringify(param);
+            let token = md5(stringify + userId + "key-hz-20180123").toString();
+            config = {headers: {token: token, tokenId: userId}, responseType: 'arraybuffer'};
+          }
+        }
+        this.axios.post("archives/export/record", param, config).then((res) => {
+          let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
+          let fileName = decodeURIComponent(fileStr);
+          fileDownload(res.data, fileName);
+        }).catch((res) => {
+        });
+      },
+      //更多条件
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
@@ -138,6 +179,12 @@
         if (!val || val.length == 0) {
           this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        }
+        let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 30 * 1000);
+        if (bol) {
+          this.isExport = false;
+        } else {
+          this.isExport = true;
         }
         // if (val && val.length == 2) {
         //   let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 7 * 1000);
@@ -248,8 +295,7 @@
         if (!this.isFirst && this.list.length > this.firstPage) {
           this.isFirst = true;
         }
-        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
-          (this.list.length % 100 === 0 || this.list.length === this.couple)) {
+        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst && (this.list.length % 100 === 0)) {
           this.firstPage = this.list.length;
           this.query.pageTime = this.list[this.list.length - 1].uptime;
           this.getData();

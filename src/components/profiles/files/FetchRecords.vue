@@ -12,11 +12,14 @@
                       style="width: 180px" size="medium"></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-input placeholder="IMSI" v-model="queryImsi.imsi" :maxlength="300" size="medium"
-                      style="width: 160px"></el-input>
+            <el-select v-model="queryImsi.imsi" placeholder="IMSI" size="medium" filterable clearable>
+              <el-option v-for="item in imsis" :key="item.imsi" :label="item.imsi+'['+item.weightDes+']'"
+                         :value="item.imsi">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
-            <el-select v-model="queryImsi.placeId" placeholder="选择场所" size="medium" filterable clearable>
+            <el-select v-model="queryImsi.placeId" placeholder="场所" size="medium" filterable clearable>
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
@@ -25,7 +28,7 @@
             <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-button type="primary" size="medium" @click="getImsiData()">搜索</el-button>
+            <el-button type="primary" size="medium" @click="isSearch = true;getImsiData()">搜索</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button size="medium" @click="clearImsiData()">重置</el-button>
@@ -102,13 +105,13 @@
             <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
+            <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button size="medium" @click="clearData()">重置</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px" v-show="isMore">
-            <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
+            <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable>
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
@@ -189,6 +192,7 @@
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         places: [],
+        imsis: [],
         count: 0,
         listLoading: false,
         list: [],
@@ -203,7 +207,7 @@
         count1: 0,
         pickerBeginDate: {
           disabledDate: (time) => {
-            let beginDateVal = new Date().getTime();
+            let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {
               return beginDateVal < time.getTime();
             }
@@ -227,7 +231,7 @@
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         this.isSearch = false;
         if (val.name === 'imsi') {
-          this.queryImsi = {size: 100};
+          this.queryImsi = {size: 100, imsi: this.imsis.length > 0 ? this.imsis[0].imsi : ''};
           this.getImsiData();
         } else {
           this.query = {size: 100};
@@ -283,7 +287,7 @@
         this.list10 = [];
         this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 30 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
-        this.queryImsi = {size: 100};
+        this.queryImsi = {size: 100, imsi: this.imsis.length > 0 ? this.imsis[0].imsi : ''};
         this.isSearch = true;
         this.getImsiData();
       },
@@ -292,8 +296,7 @@
         if (!this.isFirst && this.list.length > this.firstPage) {
           this.isFirst = true;
         }
-        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
-          (this.list.length % 100 === 0 || this.list.length === this.couple)) {
+        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst && (this.list.length % 100 === 0)) {
           this.firstPage = this.list.length;
           this.queryImsi.pageTime = this.list[this.list.length - 1].uptime;
           this.getImsiData();
@@ -428,8 +431,7 @@
         if (!this.isFirst && this.list.length > this.firstPage) {
           this.isFirst = true;
         }
-        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst &&
-          (this.list.length % 100 === 0 || this.list.length === this.couple)) {
+        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst && (this.list.length % 100 === 0)) {
           this.firstPage = this.list.length;
           this.query.pageTime = this.list[this.list.length - 1].catchTime;
           this.getData();
@@ -463,6 +465,15 @@
       },
       //告警场所
       getPlaces() {
+        this.$post('archives/detail', {faceId: this.faceId, showFaceTraces: 1, showImsiDetail: 1}).then((data) => {
+          if ('000000' === data.code) {
+            if (data.data.imsiList && data.data.imsiList.length > 0) {
+              this.imsis = data.data.imsiList;
+              this.queryImsi = {size: 100, imsi: this.imsis.length > 0 ? this.imsis[0].imsi : ''};
+            }
+            this.getImsiData();
+          }
+        });
         this.$post("place/query", {page: 1, size: 999999}).then((data) => {
           this.places = data.data.list;
         }).catch((err) => {
@@ -472,7 +483,6 @@
     },
     mounted() {
       this.getPlaces();
-      this.getImsiData();
     }
   }
 </script>

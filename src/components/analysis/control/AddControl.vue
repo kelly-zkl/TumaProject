@@ -159,6 +159,7 @@
   import {numValid} from "../../../assets/js/api";
   import PlaceMap from '../PlaceMap';
   import json from '../../../assets/city.json';
+  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -200,7 +201,7 @@
         placeList1: [],
         pickerBeginDate: {
           disabledDate: (time) => {
-            let beginDateVal = new Date().getTime();
+            let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {
               return time.getTime() < (beginDateVal - 60 * 60 * 24 * 1000);
             }

@@ -52,7 +52,7 @@
                   <el-button @click.stop="clearData()" size="medium">重置</el-button>
                 </el-form-item>
                 <el-form-item style="margin-bottom: 10px" v-show="isMore">
-                  <el-select v-model="query.roleId" placeholder="全部岗位" size="medium" filterable clearable>
+                  <el-select v-model="query.roleId" placeholder="全部角色" size="medium" filterable clearable>
                     <el-option v-for="item in roles" :key="item.roleId" :label="item.roleName" :value="item.roleId">
                     </el-option>
                   </el-select>
@@ -133,8 +133,8 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="设置岗位" align="left" required>
-            <el-select v-model="role" placeholder="请选择岗位" filterable>
+          <el-form-item label="设置角色" align="left" required>
+            <el-select v-model="role" placeholder="请选择角色" filterable>
               <el-option v-for="item in roles" :key="item.roleId" :label="item.roleName" :value="item.roleId"
                          v-show="item.roleId.length != 1">
               </el-option>
@@ -186,8 +186,8 @@
             </el-select>
             <span v-else>{{admin.deptName}}</span>
           </el-form-item>
-          <el-form-item label="设置岗位" align="left" required>
-            <el-select v-model="role" placeholder="请选择岗位" v-if="admin.groupAdmin != true" filterable>
+          <el-form-item label="设置角色" align="left" required>
+            <el-select v-model="role" placeholder="请选择角色" v-if="admin.groupAdmin != true" filterable>
               <el-option v-for="item in roles" :key="item.roleId" :label="item.roleName" :value="item.roleId"
                          v-show="item.roleId.length != 1">
               </el-option>
@@ -573,7 +573,7 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             if (!this.role) {
-              this.$message.error('请选择岗位');
+              this.$message.error('请选择角色');
               return;
             }
             let url = '/manager/user/create';

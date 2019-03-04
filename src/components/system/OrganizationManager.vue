@@ -362,7 +362,7 @@
       },
       //删除组织
       deleteOrganization(id) {
-        this.$confirm('删除组织将会清空该组织相关的用户、岗位及其子组织的所有数据，请谨慎操作！', '提示', {
+        this.$confirm('删除组织将会清空该组织相关的用户、角色及其子组织的所有数据，请谨慎操作！', '提示', {
           type: 'warning'
         }).then(() => {
           this.$post('/manager/group/delete/' + id, {}, '删除成功').then((data) => {

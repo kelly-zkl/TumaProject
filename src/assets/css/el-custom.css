@@ -191,6 +191,17 @@
   border: 1px solid #6699FF;
 }
 
+.inline-input .el-input-group__prepend {
+  background-color: #fff;
+  color: #343434;
+  border: 1px solid #DBDEE5;
+  border-right: none;
+}
+
+.inline-input .el-select .el-input {
+  width: 80px;
+}
+
 /*全局搜索*/
 .all-search .el-input-group__append, .all-search .el-input-group__prepend {
   background-color: #2B3F6E;

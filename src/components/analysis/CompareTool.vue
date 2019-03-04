@@ -118,7 +118,7 @@
         axios.post("collision/facecompare", param).then((res) => {
           this.listLoading = false;
           if (res.status == 200) {
-            let data = JSON.parse(res.data);
+            let data = res.data;
             // console.log(data);
             if (data.similarity) {
               this.similarity = data.similarity.toFixed(3);

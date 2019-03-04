@@ -174,6 +174,7 @@
 </template>
 <script>
   import {globalValidImg, noSValidator, noValidator} from "../../assets/js/api";
+  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
 
   export default {
     data() {
@@ -208,7 +209,7 @@
         },
         pickerBeginDate: {
           disabledDate: (time) => {
-            let beginDateVal = new Date().getTime();
+            let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {
               return beginDateVal < time.getTime();
             }

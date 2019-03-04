@@ -35,7 +35,7 @@
             <el-button @click.stop="clearData()" size="medium">重置</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px" v-show="isMore">
-            <el-select v-model="query.placeId" placeholder="选择场所" size="medium" filterable clearable>
+            <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable>
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
@@ -85,7 +85,7 @@
               <el-input v-model="addPlace.deviceName" auto-complete="off" readonly></el-input>
             </el-form-item>
             <el-form-item label="选择场所" prop="placeId">
-              <el-select v-model="addPlace.placeId" placeholder="请选择" style="width: 100%" filterable>
+              <el-select v-model="addPlace.placeId" placeholder="请选择" style="width: 100%" filterable clearable>
                 <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                 </el-option>
               </el-select>

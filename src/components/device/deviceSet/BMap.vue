@@ -39,7 +39,7 @@
       }
     },
     created() {
-      this.map = new BMap.Map("container", {minZoom: 5, maxZoom: 18});
+      this.map = new BMap.Map("container", {minZoom: 5, maxZoom: 20});
       this.geocoder = new BMap.Geocoder();
       this.geolocation = new BMap.Geolocation();
       let param = JSON.parse(this.formattedAddress);
@@ -227,7 +227,7 @@
       let _this = this;
       this.systemParam = JSON.parse(sessionStorage.getItem("system"));
 
-      this.map = new BMap.Map("container", {minZoom: 5, maxZoom: 18});
+      this.map = new BMap.Map("container", {minZoom: 5, maxZoom: 20});
       this.map.enableScrollWheelZoom(true);
       this.geocoder = new BMap.Geocoder();
       var point = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);

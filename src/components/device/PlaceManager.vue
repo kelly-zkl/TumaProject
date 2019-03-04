@@ -9,7 +9,7 @@
               <el-input v-model="query.placeName" placeholder="场所编码/名称" size="medium" :maxlength=30></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.placeType" placeholder="场所类型" size="medium">
+              <el-select v-model="query.placeType" placeholder="场所类型" size="medium" filterable clearable>
                 <el-option v-for="item in serviceTypes" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>

@@ -145,7 +145,7 @@
             </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-select v-model="queryDevice.placeId" placeholder="选择场所" size="medium" filterable clearable>
+            <el-select v-model="queryDevice.placeId" placeholder="场所" size="medium" filterable clearable>
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
@@ -197,7 +197,7 @@
             </el-cascader>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-select v-model="queryDevice.placeId" placeholder="选择场所" size="medium" filterable clearable>
+            <el-select v-model="queryDevice.placeId" placeholder="场所" size="medium" filterable clearable>
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
@@ -312,7 +312,7 @@
         sels: [],
         pickerBeginDate: {
           disabledDate: (time) => {
-            let beginDateVal = new Date().getTime();
+            let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {
               return beginDateVal < time.getTime();
             }
