@@ -322,9 +322,6 @@
         this.getData();
       },
       gotoDetail(task) {
-        sessionStorage.setItem("activeItem", this.activeItem);
-        sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
-        sessionStorage.setItem("query", JSON.stringify(this.query));
         let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: task.id}});
         window.open(routeData.href, '_blank');
         // this.$router.push({path: '/caseDetail', query: {caseId: task.id}});
@@ -486,18 +483,6 @@
       }
     },
     mounted() {
-      let bol = JSON.parse(sessionStorage.getItem("query"));
-      let tab = sessionStorage.getItem("activeItem");
-      let time1 = JSON.parse(sessionStorage.getItem("qTime"));
-      if (tab) {
-        this.activeItem = tab;
-      }
-      if (bol) {
-        this.query = JSON.parse(sessionStorage.getItem("query"));
-      }
-      if (time1) {
-        this.qTime = time1;
-      }
       this.getCaseType();
       this.getData();
     }

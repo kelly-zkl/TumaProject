@@ -420,7 +420,6 @@
         this.$refs.upload.submit();
       },
       gotoDetail(row) {
-        sessionStorage.setItem("query", JSON.stringify(this.query));
         let routeData = this.$router.resolve({path: '/vipDetail', query: {faceId: row.faceId}});
         window.open(routeData.href, '_blank');
         // this.$router.push({path: '/vipDetail', query: {faceId: row.faceId}});
@@ -682,11 +681,6 @@
       }
     },
     mounted() {
-      let bol = JSON.parse(sessionStorage.getItem("query"));
-      if (bol) {
-        this.query = JSON.parse(sessionStorage.getItem("query"));
-        delete this.query['pageTime'];
-      }
       this.getBlackTypes();
       this.getData();
     }

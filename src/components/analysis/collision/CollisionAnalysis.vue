@@ -175,7 +175,6 @@
       },
       //跳转任务详情
       gotoDetail(id, collisionType) {
-        sessionStorage.setItem("query", JSON.stringify(this.query));
         let routeData = this.$router.resolve({
           path: '/taskDetail',
           query: {taskId: id, collisionType: collisionType[0]}

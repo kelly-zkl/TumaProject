@@ -208,9 +208,6 @@
       },
       //查看图像详情
       gotoDetail(row) {
-        sessionStorage.setItem("activeItem", this.activeItem);
-        sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
-        sessionStorage.setItem("query", JSON.stringify(this.query));
         let routeData = this.$router.resolve({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
         window.open(routeData.href, '_blank');
         // this.$router.push({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
@@ -371,19 +368,6 @@
       }
     },
     mounted() {
-      let bol = JSON.parse(sessionStorage.getItem("query"));
-      let tab = sessionStorage.getItem("activeItem");
-      let time1 = JSON.parse(sessionStorage.getItem("qTime"));
-      if (tab) {
-        this.activeItem = tab;
-      }
-      if (bol) {
-        this.query = JSON.parse(sessionStorage.getItem("query"));
-        delete this.query['pageTime'];
-      }
-      if (time1) {
-        this.qTime = time1;
-      }
       this.getPlaces();
       this.getData();
     }

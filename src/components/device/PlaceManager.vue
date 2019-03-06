@@ -227,8 +227,6 @@
         return buttonValidator(msg);
       },
       gotoDetail(row) {
-        sessionStorage.setItem("qTime", JSON.stringify(this.areaList));
-        sessionStorage.setItem("query", JSON.stringify(this.query));
         let routeData = this.$router.resolve({path: '/placeDetail', query: {id: row.id}});
         window.open(routeData.href, '_blank');
         // this.$router.push({path: '/placeDetail', query: {id: row.id}});
@@ -554,14 +552,6 @@
       }
     },
     mounted() {
-      let bol = JSON.parse(sessionStorage.getItem("query"));
-      let time1 = JSON.parse(sessionStorage.getItem("qTime"));
-      if (bol) {
-        this.query = JSON.parse(sessionStorage.getItem("query"));
-      }
-      if (time1) {
-        this.areaList = time1;
-      }
       this.getOrganizations();
       this.getData();
     },

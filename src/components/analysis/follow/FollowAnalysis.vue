@@ -164,7 +164,6 @@
         this.sels = sels;
       },
       gotoDetail(task) {
-        sessionStorage.setItem("query", JSON.stringify(this.query));
         let routeData = this.$router.resolve({
           path: '/followResult',
           query: {taskId: task.id, followType: task.followType}

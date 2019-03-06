@@ -231,8 +231,6 @@
         }
       },
       gotoDetail(row) {
-        sessionStorage.setItem("query", JSON.stringify(this.query));
-        // sessionStorage.setItem("page", this.page);
         let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.faceId}});
         window.open(routeData.href, '_blank');
         // this.$router.push({path: '/personnelFiles', query: {faceId: row.faceId}});
@@ -357,16 +355,6 @@
       }
     },
     mounted() {
-      let bol = JSON.parse(sessionStorage.getItem("query"));
-      // let page = sessionStorage.getItem("page");
-      if (bol) {
-        this.query = JSON.parse(sessionStorage.getItem("query"));
-        delete this.query['pageTime'];
-      }
-      // if (page) {//对一个数进行上舍入。
-      //   this.page = parseInt(page);
-      //   this.query.size = Math.ceil(page / 10) * 100;
-      // }
       this.getData();
     }
   }

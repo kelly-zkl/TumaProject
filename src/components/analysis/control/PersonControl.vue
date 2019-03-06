@@ -158,8 +158,6 @@
       },
       //跳转布控详情页
       gotoDetail(task) {
-        sessionStorage.setItem("activeItem", this.activeItem);
-        sessionStorage.setItem("query", JSON.stringify(this.query));
         let routeData = this.$router.resolve({path: '/controlDetail', query: {taskId: task.id}});
         window.open(routeData.href, '_blank');
         // this.$router.push({path: '/controlDetail', query: {taskId: task.id}});

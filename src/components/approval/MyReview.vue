@@ -155,9 +155,6 @@
       },
       //翻码详情页
       gotoDetail(row) {
-        sessionStorage.setItem("activeItem", this.activeItem);
-        sessionStorage.setItem("qTime", JSON.stringify(this.qTime));
-        sessionStorage.setItem("query", JSON.stringify(this.query));
         if (this.activeItem === 'UNREAD') {
           let routeData = this.$router.resolve({path: '/approvalDetail', query: {type: 3, recordId: row.recordId}});
           window.open(routeData.href, '_blank');
