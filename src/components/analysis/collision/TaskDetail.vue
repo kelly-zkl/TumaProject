@@ -188,6 +188,8 @@
         <div class="block gray-form">
           <el-form label-width="100px" :model="task" label-position="right">
             <el-form-item label="任务名称" align="left" style="margin: 0">{{task.taskName}}</el-form-item>
+            <el-form-item label="关联案件" align="left" style="margin: 0">{{task.caseName?task.caseName:'--'}}
+            </el-form-item>
             <el-form-item label="创建时间" align="left" style="margin: 0">{{task.timeStr}}</el-form-item>
             <el-form-item label="任务类型" align="left" style="margin: 0">
               {{task.conditionType == 0 ? '多条件碰撞' : task.conditionType == 1 ? '单条件碰撞' : '--'}}

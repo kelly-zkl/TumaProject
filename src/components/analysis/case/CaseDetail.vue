@@ -282,9 +282,7 @@
       },
       //全选  ==>  删除/结案
       selsCollision(sels) {
-        sels.forEach((item) => {
-          this.selsColl.push(item.id);
-        });
+        this.selsColl = sels;
       },
       //跳转任务详情
       gotoCoDetail(id, collisionType) {
@@ -297,8 +295,12 @@
       },
       //删除碰撞任务
       deleteCoTask() {
+        let arr = [];
+        this.selsColl.forEach((item) => {
+          arr.push(item.id);
+        });
         this.$confirm('确认要删除碰撞任务吗?', '提示', {type: 'info'}).then(() => {
-          this.$post('/collision/delete', this.selsColl, '删除成功').then((data) => {
+          this.$post('/collision/delete', arr, '删除成功').then((data) => {
             if ("000000" === data.code) {
               this.getCollisions();
               this.selsColl = [];
@@ -310,8 +312,12 @@
       },
       //取消关联碰撞任务
       cancelCollis() {
+        let arr = [];
+        this.selsColl.forEach((item) => {
+          arr.push(item.id);
+        });
         this.$confirm('确认要取消关联该碰撞任务吗?', '提示', {type: 'info'}).then(() => {
-          this.$post('/collision/cancelCase/' + this.caseId, this.selsColl, '取消关联成功').then((data) => {
+          this.$post('/collision/cancelCase/' + this.caseId, arr, '取消关联成功').then((data) => {
             if ("000000" === data.code) {
               this.getCollisions();
               this.selsColl = [];
@@ -323,17 +329,19 @@
       },
       //全选  ==>  删除/结案
       selsFollow(sels) {
-        sels.forEach((item) => {
-          this.selsFoll.push(item.id);
-        });
+        this.selsFoll = sels;
       },
       gotoFoDetail(task) {
         this.$router.push({path: '/followResult', query: {taskId: task.id, followType: task.followType}});
       },
       //删除伴随任务
       deleteFoTask() {
+        let arr = [];
+        this.selsFoll.forEach((item) => {
+          arr.push(item.id);
+        });
         this.$confirm('确认要删除该伴随任务吗?', '提示', {type: 'info'}).then(() => {
-          this.$post('/follow/delete', this.selsFoll, '删除成功').then((data) => {
+          this.$post('/follow/delete', arr, '删除成功').then((data) => {
             if ("000000" === data.code) {
               this.getFollows();
               this.selsFoll = [];
@@ -345,8 +353,12 @@
       },
       //取消关联伴随任务
       cancelFollow() {
+        let arr = [];
+        this.selsFoll.forEach((item) => {
+          arr.push(item.id);
+        });
         this.$confirm('确认要取消关联该伴随任务吗?', '提示', {type: 'info'}).then(() => {
-          this.$post('/follow/cancelCase/' + this.caseId, this.selsFoll, '取消关联成功').then((data) => {
+          this.$post('/follow/cancelCase/' + this.caseId, arr, '取消关联成功').then((data) => {
             if ("000000" === data.code) {
               this.getFollows();
               this.selsFoll = [];
