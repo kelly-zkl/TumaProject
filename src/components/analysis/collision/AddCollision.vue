@@ -288,9 +288,8 @@
 <script>
   import {isNull} from "../../../assets/js/api";
   import DeviceBmap from '../DeviceBmap';
-  import json from '../../../assets/city.json';
-  import {globalValidExcel, noSValidator, noValidator} from "../../../assets/js/api";
-  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
+  import {noSValidator} from "../../../assets/js/api";
+  import {formatDate} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -680,24 +679,24 @@
       //获得省市县
       getAreaLable(code) {
         let lable = '';
-        json.forEach((province) => {
-          if (province.c) {
-            province.c.forEach((city) => {
-              if (city.c) {//省级+市级+县级
-                city.c.forEach((country) => {
-                  if (code === country.o) {
-                    lable = province.n + city.n + country.n;
+        this.provinceList.forEach((province) => {
+          if (province.subAreas) {
+            province.subAreas.forEach((city) => {
+              if (city.subAreas) {//省级+市级+县级
+                city.subAreas.forEach((country) => {
+                  if (code === country.areaCode) {
+                    lable = province.areaName + city.areaName + country.areaName;
                   }
                 })
               } else {//省级+市级
-                if (code === city.o) {
-                  lable = province.n + city.n;
+                if (code === city.areaCode) {
+                  lable = province.areaName + city.areaName;
                 }
               }
             })
           } else {//只包含省级
-            if (code === province.o) {
-              lable = province.n;
+            if (code === province.areaCode) {
+              lable = province.areaName;
             }
           }
         });

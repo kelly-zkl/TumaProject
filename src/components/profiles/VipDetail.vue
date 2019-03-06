@@ -327,8 +327,8 @@
 </script>
 <style scoped>
   .avatar {
-    width: 150px;
-    height: 150px;
+    max-width: 150px;
+    max-height: 150px;
     border: 1px dashed #ccc;
     border-radius: 6px;
   }

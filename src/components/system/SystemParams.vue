@@ -86,7 +86,7 @@
 <script>
   import json from '../../assets/area.json';
   import {globalValidImg, doubleValid, numValid} from "../../assets/js/api";
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {buttonValidator} from "../../assets/js/util";
 
   export default {
     data() {

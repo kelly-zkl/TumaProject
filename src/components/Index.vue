@@ -499,11 +499,19 @@
       modifyPsw(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
+            if (this.psw.password1 !== this.psw.password2) {
+              this.$message.error('2次密码输入不一致，请重新输入');
+              return;
+            }
             this.$post('/manager/user/updatePwdByOldPwd', {
-              userId: this.userId,
-              oldPwd: md5(this.psw.password),
-              newPwd: md5(this.psw.password2)
-            }, '修改成功');
+              userId: this.userId, oldPwd: md5(this.psw.password), newPwd: md5(this.psw.password2)
+            }, '修改成功').then((data) => {
+              if (data.code === '000000') {
+                var bol = JSON.parse(localStorage.getItem("user"));
+                bol.psw = this.psw.password2;
+                localStorage.setItem("user", JSON.stringify(bol));
+              }
+            });
             this.runModifyPsw = false;
           }
         });

@@ -208,7 +208,6 @@
             //添加鼠标绘制工具监听事件，用于获取绘制结果
             this.drawingManager.addEventListener('overlaycomplete', this.overlaycomplete);
             _this.bMap.addEventListener("zoomend", this.zoomEvent);
-            // _this.bMap.addEventListener("click", this.showInfo);
             _this.bMap.addEventListener("dragend", this.zoomEvent);
 
             // 定义一个控件类,即function
@@ -403,11 +402,6 @@
         this.point = this.bMap.getCenter();
         this.zoom = this.bMap.getZoom();
         this.bMap.centerAndZoom(this.bMap.getCenter(), this.bMap.getZoom());
-      },
-      //画圆，半径为1公里
-      showInfo(e) {
-        var circle = new BMap.Circle(e.point, 1000, this.styleOptions);
-        this.bMap.addOverlay(circle);
       },
       //清除选中区域
       clearArea() {

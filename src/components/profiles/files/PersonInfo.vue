@@ -137,8 +137,7 @@
   </div>
 </template>
 <script>
-  import json from '../../../assets/city.json';
-  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
+  import {formatDate, buttonValidator} from "../../../assets/js/util";
   import {
     nameValidator, numValid, mobileValidator, userCardValid,
     telphoneValidator, isNull
@@ -285,24 +284,24 @@
       //获得省市县
       getAreaLable(code) {
         let lable = '';
-        json.forEach((province) => {
-          if (province.c) {
-            province.c.forEach((city) => {
-              if (city.c) {//省级+市级+县级
-                city.c.forEach((country) => {
-                  if (code === country.o) {
-                    lable = province.n + city.n + country.n;
+        this.provinceList.forEach((province) => {
+          if (province.subAreas) {
+            province.subAreas.forEach((city) => {
+              if (city.subAreas) {//省级+市级+县级
+                city.subAreas.forEach((country) => {
+                  if (code === country.areaCode) {
+                    lable = province.areaName + city.areaName + country.areaName;
                   }
                 })
               } else {//省级+市级
-                if (code === city.o) {
-                  lable = province.n + city.n;
+                if (code === city.areaCode) {
+                  lable = province.areaName + city.areaName;
                 }
               }
             })
           } else {//只包含省级
-            if (code === province.o) {
-              lable = province.n;
+            if (code === province.areaCode) {
+              lable = province.areaName;
             }
           }
         });
@@ -311,24 +310,24 @@
       //根据区域码找到对应的省市县编码
       getCode(code) {
         let arr = [];
-        json.forEach((province) => {
-          if (province.c) {
-            province.c.forEach((city) => {
-              if (city.c) {
-                city.c.forEach((country) => {
-                  if (code === country.o) {
-                    arr = [province.o, city.o, country.o];
+        this.provinceList.forEach((province) => {
+          if (province.subAreas) {
+            province.subAreas.forEach((city) => {
+              if (city.subAreas) {
+                city.subAreas.forEach((country) => {
+                  if (code === country.areaCode) {
+                    arr = [province.areaCode, city.areaCode, country.areaCode];
                   }
                 })
               } else {
-                if (code === city.o) {
-                  arr = [province.o, city.o];
+                if (code === city.areaCode) {
+                  arr = [province.areaCode, city.areaCode];
                 }
               }
             })
           } else {
-            if (code === province.o) {
-              arr = [province.o];
+            if (code === province.areaCode) {
+              arr = [province.areaCode];
             }
           }
         });

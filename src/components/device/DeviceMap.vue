@@ -22,21 +22,19 @@
         </el-col>
       </el-row>
       <div class="view-map" id="view-map"></div>
-      <el-row style="padding-top: 10px" v-show="getButtonVial('deviceMap:search')">>
-        <el-col :span="24" style="text-align: left" align="left">
-          <el-autocomplete class="inline-input" v-model="queryParam" :fetch-suggestions="querySearch" clearable
-                           placeholder="场所名称/设备ID" @select="handleSelect">
-            <el-select v-model="queryType" slot="prepend" placeholder="请选择" @change="handleChange">
-              <el-option label="场所" value="place"></el-option>
-              <el-option label="设备" value="device"></el-option>
-            </el-select>
-            <template slot-scope="{ item }">
-              <div class="name" style="margin-bottom: 0">{{ item.name }}</div>
-              <span class="addr">{{ item.detailAddress }}</span>
-            </template>
-          </el-autocomplete>
-        </el-col>
-      </el-row>
+      <div style="padding-top: 5px;text-align: left" v-show="getButtonVial('deviceMap:search')">
+        <el-autocomplete class="inline-input" v-model="queryParam" :fetch-suggestions="querySearch"
+                         placeholder="场所名称/设备ID" @select="handleSelect" clearable>
+          <el-select v-model="queryType" slot="prepend" placeholder="请选择" @change="handleChange">
+            <el-option label="场所" value="place"></el-option>
+            <el-option label="设备" value="device"></el-option>
+          </el-select>
+          <template slot-scope="{ item }">
+            <div class="name" style="margin-bottom: 0">{{ item.name }}</div>
+            <span class="addr">{{ item.detailAddress }}</span>
+          </template>
+        </el-autocomplete>
+      </div>
     </section>
   </div>
 </template>
@@ -100,7 +98,8 @@
         if (item.longitude && item.latitude) {//场所、设备有经纬度时才可以定位
           this.mapZoom = 19;
           this.mapPoint = new BMap.Point(item.longitude, item.latitude);
-          this.deviceMap.centerAndZoom(this.mapPoint, this.mapZoom);
+          this.deviceMap.setZoom(this.mapZoom);
+          this.deviceMap.panTo(this.mapPoint);
         }
       },
       //定时刷新设备的在线状态
@@ -277,7 +276,7 @@
             var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
             // this.deviceMap.addControl(mapType);
             //实例化鼠标绘制工具
-            this.drawingManager = new BMapLib.DrawingManager(this.deviceMap, {
+            this.drawingManager = new BMapLib.DrawingManager(_this.deviceMap, {
               isOpen: false, //是否开启绘制模式
               enableDrawingTool: true, //是否显示工具栏
               drawingToolOptions: {

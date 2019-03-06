@@ -167,9 +167,8 @@
 </template>
 <script>
   import md5 from 'js-md5';
-  import json from '../../assets/city.json';
   import {pswValidator, nameValidator, noValidator} from '../../assets/js/api';
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {isPC, buttonValidator} from "../../assets/js/util";
 
   export default {
     data() {
@@ -190,8 +189,8 @@
         isMore: false,
         addAdminVisible: false,
         tableHeight: window.innerHeight - 232,
-        provinceList: json,
-        props: {children: 'c', label: 'n'},
+        provinceList: JSON.parse(localStorage.getItem("areas")),
+        provinceData: JSON.parse(localStorage.getItem("areas")),
         organizations: [],
         addPoliceTitle: '创建派出所',
         addPoliceVisible: false,
@@ -426,25 +425,33 @@
       //获得省市县
       getAreaLable(code) {
         let lable = '';
-        json.forEach((province) => {
-          if (province.c) {
-            province.c.forEach((city) => {
-              if (city.c) {//省级+市级+县级
-                city.c.forEach((country) => {
-                  if (code === country.o) {
+        this.provinceData.forEach((province) => {
+          if (province.subAreas) {
+            if (code === province.areaCode) {
+              lable = province.areaName;
+              return lable;
+            }
+            province.subAreas.forEach((city) => {
+              if (city.subAreas) {//省级+市级+县级
+                if (code === city.areaCode) {
+                  lable = province.areaName + city.areaName;
+                  return lable;
+                }
+                city.subAreas.forEach((country) => {
+                  if (code === country.areaCode) {
                     // lable = province.n + city.n + country.n;
-                    lable = city.n + country.n;
+                    lable = city.areaName + country.areaName;
                   }
                 })
               } else {//省级+市级
-                if (code === city.o) {
-                  lable = province.n + city.n;
+                if (code === city.areaCode) {
+                  lable = province.areaName + city.areaName;
                 }
               }
             })
           } else {//只包含省级
-            if (code === province.o) {
-              lable = province.n;
+            if (code === province.areaCode) {
+              lable = province.areaName;
             }
           }
         });

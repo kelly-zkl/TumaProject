@@ -60,13 +60,13 @@
       <el-dialog title="设置场所" :visible.sync="runningSetPlace" :width="dialogWidth" center>
         <div class="block">
           <el-form ref="addPlace" :model="addPlace" :label-position="labelPosition" :label-width="labelWidth">
-            <el-form-item label="设备ID" prop="cameraCode" required>
+            <el-form-item label="设备ID" prop="cameraCode">
               <el-input v-model="addPlace.cameraCode" auto-complete="off" readonly></el-input>
             </el-form-item>
-            <el-form-item label="设备标识" prop="name" required>
+            <el-form-item label="设备标识" prop="name">
               <el-input v-model="addPlace.name" auto-complete="off" readonly></el-input>
             </el-form-item>
-            <el-form-item label="选择场所" prop="placeId" required>
+            <el-form-item label="选择场所" prop="placeId">
               <el-select v-model="addPlace.placeId" placeholder="请选择" style="width: 100%" filterable clearable>
                 <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                 </el-option>
@@ -83,9 +83,8 @@
   </div>
 </template>
 <script>
-  import json from '../../assets/city.json';
-  import {globalValidExcel, noSValidator, noValidator} from "../../assets/js/api";
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {noSValidator} from "../../assets/js/api";
+  import {isPC, buttonValidator} from "../../assets/js/util";
 
   export default {
     data() {
@@ -199,24 +198,24 @@
       //获得省市县
       getAreaLable(code) {
         let lable = '';
-        json.forEach((province) => {
-          if (province.c) {
-            province.c.forEach((city) => {
-              if (city.c) {//省级+市级+县级
-                city.c.forEach((country) => {
-                  if (code === country.o) {
-                    lable = province.n + city.n + country.n;
+        this.provinceList.forEach((province) => {
+          if (province.subAreas) {
+            province.subAreas.forEach((city) => {
+              if (city.subAreas) {//省级+市级+县级
+                city.subAreas.forEach((country) => {
+                  if (code === country.areaCode) {
+                    lable = province.areaName + city.areaName + country.areaName;
                   }
                 })
               } else {//省级+市级
-                if (code === city.o) {
-                  lable = province.n + city.n;
+                if (code === city.areaCode) {
+                  lable = province.areaName + city.areaName;
                 }
               }
             })
           } else {//只包含省级
-            if (code === province.o) {
-              lable = province.n;
+            if (code === province.areaCode) {
+              lable = province.areaName;
             }
           }
         });

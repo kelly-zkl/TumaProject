@@ -6,7 +6,6 @@
   </div>
 </template>
 <script>
-  import json from '../../assets/city.json';
   import echarts from "echarts";
 
   export default {
@@ -30,6 +29,7 @@
         placeData: [],
         placeList: [],
         multLat: [],
+        provinceList: JSON.parse(localStorage.getItem("areas")),
         serviceTypes: [{value: '0', label: '网吧'}, {value: '1', label: '旅店宾馆类（住宿服务场所）'},
           {value: '2', label: '图书馆阅览室'}, {value: '3', label: '电脑培训中心类'}, {value: '4', label: '娱乐场所类'},
           {value: '5', label: '交通枢纽'}, {value: '6', label: '公共交通工具'}, {value: '7', label: '餐饮服务场所'},
@@ -41,24 +41,24 @@
       //获得省市县
       getAreaLable(code) {
         let lable = '';
-        json.forEach((province) => {
-          if (province.c) {
-            province.c.forEach((city) => {
-              if (city.c) {//省级+市级+县级
-                city.c.forEach((country) => {
-                  if (code === country.o) {
-                    lable = province.n + city.n + country.n;
+        this.provinceList.forEach((province) => {
+          if (province.subAreas) {
+            province.subAreas.forEach((city) => {
+              if (city.subAreas) {//省级+市级+县级
+                city.subAreas.forEach((country) => {
+                  if (code === country.areaCode) {
+                    lable = province.areaName + city.areaName + country.areaName;
                   }
                 })
               } else {//省级+市级
-                if (code === city.o) {
-                  lable = province.n + city.n;
+                if (code === city.areaCode) {
+                  lable = province.areaName + city.areaName;
                 }
               }
             })
           } else {//只包含省级
-            if (code === province.o) {
-              lable = province.n;
+            if (code === province.areaCode) {
+              lable = province.areaName;
             }
           }
         });
