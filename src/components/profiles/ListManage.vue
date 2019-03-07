@@ -407,6 +407,7 @@
             this.importList = res.data.failDetails;
           }
           this.getData();
+          this.getBlackTypes();
         } else {
           this.$message.error(res.msg);
         }
@@ -519,7 +520,7 @@
         }
         return globalValidImg(file, this.$message);
       },
-      //批量导入设备的文件格式验证
+      //头像搜索验证
       handleSuccess(res, file) {
         if (res.code === '000000') {
           if (res.data) {
@@ -542,6 +543,7 @@
         this.$confirm('确认要删除该人员吗?', '提示', {type: 'info'}).then(() => {
           this.$post('person/delKeyPerson', {faceIds: arr}, '删除成功').then((data) => {
             if ("000000" === data.code) {
+              this.getBlackTypes();
               this.getData();
               this.sels = [];
             }
