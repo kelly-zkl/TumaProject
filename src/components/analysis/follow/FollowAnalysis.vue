@@ -63,6 +63,7 @@
             <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
             <span style="color:#D76F31" v-show="scope.row.taskStatus == 'WAIT'">等待中</span>
             <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">分析中</span>
+            <span style="color:#999" v-show="scope.row.taskStatus == 'STOP'">终止</span>
           </template>
         </el-table-column>
         <el-table-column align="left" label="关联案件" prop="caseName" min-width="150"
@@ -77,6 +78,9 @@
             </el-button>
             <el-button type="text" @click="reAnalysis(scope.row.id)"
                        v-show="getButtonVial('follow:reanalysis') && scope.row.taskStatus == 'FAILE'">重新分析
+            </el-button>
+            <el-button type="text" @click="stopAnalysis(scope.row.id)"
+                       v-show="getButtonVial('follow:reanalysis') && scope.row.taskStatus == 'EXECUTION'">终止分析
             </el-button>
           </template>
         </el-table-column>
@@ -102,7 +106,7 @@
         tableHeight: window.innerHeight - 232,
         followTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '图像'}],//{value: 'MAC', label: 'MAC'}
         taskTypes: [{value: 'EXECUTION', label: '分析中'}, {value: 'FINISH', label: '已完成'},
-          {value: 'WAIT', label: '等待中'}, {value: 'FAILE', label: '失败'}],
+          {value: 'WAIT', label: '等待中'}, {value: 'FAILE', label: '失败'}, {value: 'STOP', label: '终止'}],
         sels: [],
         count: 0,
         pickerBeginDate: {
@@ -118,6 +122,15 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      //终止分析
+      stopAnalysis(id) {
+        this.$post('/follow/reanalysis/' + id, {}, '操作成功').then((data) => {
+          if ("000000" === data.code) {
+            this.getData();
+          }
+        }).catch((err) => {
+        });
       },
       //重新分析
       reAnalysis(id) {

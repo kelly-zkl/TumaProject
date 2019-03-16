@@ -52,9 +52,9 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="任务名称" prop="taskName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="有效期" prop="startTime" min-width="250"
-                         max-width="450" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="布控状态" prop="taskStatus" min-width="125" max-width="250">
+        <el-table-column align="left" label="有效期" prop="startTime" min-width="200"
+                         max-width="300" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="布控状态" prop="taskStatus" min-width="120" max-width="180">
           <template slot-scope="scope">
             <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已完成</span>
             <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
@@ -62,8 +62,8 @@
             <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">进行中</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="关联案件" prop="caseName" width="150"
-                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="关联案件" prop="caseName" min-width="150"
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="230" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('disposition:get')">查看

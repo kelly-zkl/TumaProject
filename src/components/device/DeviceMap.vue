@@ -30,8 +30,8 @@
             <el-option label="设备" value="device"></el-option>
           </el-select>
           <template slot-scope="{ item }">
-            <div class="name" style="margin-bottom: 0">{{ item.name }}</div>
-            <span class="addr">{{ item.detailAddress }}</span>
+            <div class="name" style="margin-bottom: 0">{{item.name}}</div>
+            <div class="addr">{{item.detailAddress?item.detailAddress:'--'}}</div>
           </template>
         </el-autocomplete>
       </div>
@@ -271,10 +271,9 @@
           if (!app.inNode) {
             this.deviceMap = this.myChart.getModel().getComponent('bmap').getBMap();
             this.deviceMap.enableScrollWheelZoom(true);
+            this.deviceMap.enableDragging();
             this.deviceMap.setMinZoom(5);
-            this.deviceMap.setMaxZoom(20);
-            var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
-            // this.deviceMap.addControl(mapType);
+            this.deviceMap.setMaxZoom(19);
             //实例化鼠标绘制工具
             this.drawingManager = new BMapLib.DrawingManager(_this.deviceMap, {
               isOpen: false, //是否开启绘制模式
@@ -323,6 +322,7 @@
             this.deviceMap.addControl(myZoomCtrl);
           }
         } else {
+          this.deviceMap.setMinZoom(5);
           this.myChart.setOption({
             series: [
               {// 侦码设备不在线
@@ -537,8 +537,9 @@
     overflow: hidden;
     font-size: 14px;
     color: #343434;
-    height: 26px;
-    line-height: 26px;
+    height: 22px;
+    line-height: 22px;
+    padding-top: 7px;
   }
 
   .addr {
@@ -546,7 +547,8 @@
     overflow: hidden;
     font-size: 12px;
     color: #999;
-    height: 20px;
-    line-height: 20px;
+    height: 18px;
+    line-height: 18px;
+    padding-bottom: 7px;
   }
 </style>

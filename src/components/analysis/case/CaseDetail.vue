@@ -32,7 +32,10 @@
           </el-col>
           <el-col :span="7" align="left">
             <span style="font-size: 14px;color: #999;margin:auto 20px;">案件状态</span>
-            <span style="font-size: 15px">{{caseDetail.status === "EXECUTION" ? "进行中" : caseDetail.status === "HANDLED" ? "已结案" : "--"}}</span>
+            <span
+              v-bind:style="{fontSize:'15px',color:caseDetail.status=='EXECUTION'?'#6799FD':caseDetail.status =='HANDLED'?'#00C755':'#333'}">
+              {{caseDetail.status === "EXECUTION" ? "进行中" : caseDetail.status === "HANDLED" ? "已结案" : "--"}}
+            </span>
           </el-col>
         </el-row>
         <el-row>
@@ -71,18 +74,11 @@
                           :maxlength=20></el-input>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
-                <el-select v-model="queryCollision.ctype" placeholder="任务类型" style="width: 120px"
-                           size="medium" filterable clearable>
-                  <el-option v-for="item in collisionTypes" :key="item.value" :label="item.label" :value="item.value">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item style="margin-bottom: 10px">
-                <el-select v-model="queryCollision.taskStatus" placeholder="全部状态" style="width: 120px"
-                           size="medium" filterable clearable>
-                  <el-option v-for="item in taskStatus" :key="item.value" :label="item.label" :value="item.value">
-                  </el-option>
-                </el-select>
+                <el-date-picker v-model="date1" type="datetimerange" range-separator="至" size="medium"
+                                :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
+                                start-placeholder="开始日期" end-placeholder="结束日期"
+                                style="width:360px" :picker-options="pickerBeginDate">
+                </el-date-picker>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
                 <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
@@ -94,11 +90,18 @@
                 <el-button size="medium" @click="clearData()">重置</el-button>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px" v-show="isMore">
-                <el-date-picker v-model="date1" type="datetimerange" range-separator="至" size="medium"
-                                :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
-                                start-placeholder="开始日期" end-placeholder="结束日期"
-                                style="width:360px" :picker-options="pickerBeginDate">
-                </el-date-picker>
+                <el-select v-model="queryCollision.conditionType" placeholder="任务类型" style="width: 150px"
+                           size="medium" filterable clearable>
+                  <el-option v-for="item in conditionTypes" :key="item.value" :label="item.label" :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item style="margin-bottom: 10px" v-show="isMore">
+                <el-select v-model="queryCollision.taskStatus" placeholder="全部状态" style="width: 150px"
+                           size="medium" filterable clearable>
+                  <el-option v-for="item in taskStatus" :key="item.value" :label="item.label" :value="item.value">
+                  </el-option>
+                </el-select>
               </el-form-item>
             </el-form>
           </el-col>
@@ -117,12 +120,18 @@
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="任务名称" prop="taskName" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="任务类型" prop="collisionType" min-width="125"
+          <el-table-column align="left" label="任务类型" prop="conditionType" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="125" max-width="250">
+            <template slot-scope="scope">
+              <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已完成</span>
+              <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
+              <span style="color:#D76F31" v-show="scope.row.taskStatus == 'WAIT'">等待中</span>
+              <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">分析中</span>
+            </template>
+          </el-table-column>
           <el-table-column align="left" label="创建日期" prop="createTime" min-width="150"
                            max-width="300" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="125"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" min-width="125" max-width="250" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoCoDetail(scope.row.id,scope.row.collisionType)"
@@ -150,11 +159,11 @@
                           :maxlength=20></el-input>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
-                <el-select v-model="queryFollow.taskStatus" placeholder="任务状态" style="width: 120px"
-                           size="medium" filterable clearable>
-                  <el-option v-for="item in followTypes" :key="item.value" :label="item.label" :value="item.value">
-                  </el-option>
-                </el-select>
+                <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
+                                start-placeholder="创建时间" size="medium" end-placeholder="结束日期" clearable
+                                :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                                :picker-options="pickerBeginDate">
+                </el-date-picker>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
                 <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
@@ -166,11 +175,11 @@
                 <el-button size="medium" @click="clearData()">重置</el-button>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px" v-show="isMore">
-                <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
-                                start-placeholder="创建时间" size="medium" end-placeholder="结束日期" clearable
-                                :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
-                                :picker-options="pickerBeginDate">
-                </el-date-picker>
+                <el-select v-model="queryFollow.taskStatus" placeholder="任务状态" style="width: 150px"
+                           size="medium" filterable clearable>
+                  <el-option v-for="item in taskStatus" :key="item.value" :label="item.label" :value="item.value">
+                  </el-option>
+                </el-select>
               </el-form-item>
             </el-form>
           </el-col>
@@ -188,16 +197,20 @@
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="任务名称" prop="taskName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="任务类型" prop="followType" width="120"
-                           :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="分析对象" prop="followTarget" min-width="170"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="150" max-width="250">
+            <template slot-scope="scope">
+              <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已完成</span>
+              <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
+              <span style="color:#D76F31" v-show="scope.row.taskStatus == 'WAIT'">等待中</span>
+              <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">分析中</span>
+            </template>
+          </el-table-column>
           <el-table-column align="left" label="分析结果" prop="followCount" min-width="130"
                            max-width="200" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="关联案件" prop="caseName" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="创建日期" prop="createTime" min-width="150"
+                           max-width="300" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="160" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoFoDetail(scope.row)" v-show="getButtonVial('follow:get')">查看
@@ -234,15 +247,13 @@
         queryCollision: {page: 1, size: 10},
         listLoading1: false,
         count1: 0,
-        collisionTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '图像'}],//,{value: 'MAC', label: 'MAC'}
-        taskStatus: [{value: 'FINISH', label: '已完成'}, {value: 'FAILE', label: '任务失败'},
+        conditionTypes: [{value: 0, label: '多条件碰撞'}, {value: 1, label: '单条件碰撞'}],
+        taskStatus: [{value: 'FINISH', label: '已完成'}, {value: 'FAILE', label: '失败'},
           {value: 'WAIT', label: '等待中'}, {value: 'EXECUTION', label: '分析中'}],
         follows: [],
         queryFollow: {page: 1, size: 10},
         listLoading2: false,
         count2: 0,
-        followTypes: [{value: 'EXECUTION', label: '分析中'}, {value: 'FINISH', label: '已完成'},
-          {value: 'WAIT', label: '等待中'}, {value: 'FAILE', label: '失败'}],
         provinceList: JSON.parse(localStorage.getItem("areas")),
         selsFoll: [],
         selsColl: [],
@@ -448,12 +459,8 @@
           return row.collisionType[0] ? row.collisionType[0] === 'IMSI' ? 'IMSI' : row.collisionType[0] === 'FACE' ? '图像' : row.collisionType[0] === 'MAC' ? '' : 'MAC' : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-        } else if (column.property === 'taskStatus') {
-          return row.taskStatus === 'EXECUTION' ? "分析中" : row.taskStatus === 'FINISH' ? '已完成' : row.taskStatus === 'WAIT' ? '等待中' : row.taskStatus === 'FAILE' ? '任务失败' : '异常';
-        } else if (column.property === 'followType') {
-          return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '图像' : row.followType === "MAC" ? 'MAC' : '--';
-        } else if (column.property === 'status') {
-          return row.status === 'UNHANDLED' ? '未处理' : row.status === 'EXECUTION' ? '进行中' : row.status === 'HANDLED' ? '已结案' : '--';
+        } else if (column.property === 'conditionType') {
+          return row.conditionType == 0 ? '多条件碰撞' : row.conditionType == 1 ? '单条件碰撞' : '--';
         } else if (column.property === 'followCount') {
           return row.followCount === 0 ? 0 : row.followCount;
         } else {

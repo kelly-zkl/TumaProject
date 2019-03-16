@@ -9,15 +9,15 @@
               <el-input v-model="query.cameraCode" placeholder="相机编码" size="medium" :maxlength=30></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-cascader :options="provinceList" :props="props" @change="areaChange" change-on-select
-                           v-model="areaList" placeholder="全部地区" size="medium" filterable clearable>
-              </el-cascader>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
               <el-select v-model="query.placeId" placeholder="安装场所" size="medium" filterable clearable>
                 <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                 </el-option>
               </el-select>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-cascader :options="provinceList" :props="props" @change="areaChange" change-on-select
+                           v-model="areaList" placeholder="全部地区" size="medium" filterable clearable>
+              </el-cascader>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>

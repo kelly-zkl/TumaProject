@@ -5,7 +5,7 @@
         <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="今日告警" name="T"></el-tab-pane>
-            <el-tab-pane label="历史告警" name="H"></el-tab-pane>
+            <el-tab-pane label="所有告警" name="H"></el-tab-pane>
           </el-tabs>
         </el-col>
         <el-col :span="8" align="right" style="text-align: right" v-show="getButtonVial('warning:dealWithWarningById')">
@@ -37,28 +37,28 @@
             </el-button>
           </el-upload>
         </el-form-item>
-        <el-form-item label="年龄段" style="margin-bottom: 10px">
-          <el-input-number v-model="query.startAge" controls-position="right" :min="1"
-                           :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
-          <span>~</span>
-          <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
-                           :max="200" style="width: 100px" size="medium"></el-input-number>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'">
+          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
+                          start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
+                          :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                          :picker-options="pickerBeginDate">
+          </el-date-picker>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px" clearable>
-            <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 130px" clearable>
-            <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
+          <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
+                          style="width: 230px" value-format="HH:mm:ss" end-placeholder="结束时间"
+                          placeholder="选择时间范围" @change="handleTime" size="medium">
+          </el-time-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable style="width: 200px">
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
+          <el-select v-model="query.status" placeholder="布控任务" size="medium" style="width: 150px" clearable>
+            <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
@@ -73,17 +73,35 @@
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'&&isMore">
-          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
-                          start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
-                          :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
-                          :picker-options="pickerBeginDate">
-          </el-date-picker>
+          <el-select v-model="query.status" placeholder="布控任务" size="medium" style="width: 130px" clearable>
+            <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'&&isMore">
-          <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
-                          style="width: 230px" value-format="HH:mm:ss" end-placeholder="结束时间"
-                          placeholder="选择时间范围" @change="handleTime">
-          </el-time-picker>
+        <el-form-item style="margin-bottom: 10px" v-show="isMore">
+          <el-select v-model="query.status" placeholder="关联案件" size="medium" style="width: 150px" clearable>
+            <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="isMore">
+          <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 130px" clearable>
+            <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="年龄段" style="margin-bottom: 10px" v-show="isMore">
+          <el-input-number v-model="query.startAge" controls-position="right" :min="1"
+                           :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
+          <span>~</span>
+          <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
+                           :max="200" style="width: 100px" size="medium"></el-input-number>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="isMore">
+          <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px" clearable>
+            <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe
@@ -103,12 +121,12 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="告警场所" prop="placeName" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="告警场所" prop="placeName" min-width="140"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="设备标识" prop="deviceName" min-width="140"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警时间" prop="createTime" min-width="170"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警状态" prop="status" min-width="80" max-width="120"
                          :formatter="formatterAddress">
           <template slot-scope="scope">
@@ -118,7 +136,11 @@
           </template>
         </el-table-column>
         <el-table-column align="left" label="抓取时间" prop="catchTime" min-width="170"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="布控任务" prop="deviceName" min-width="140"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="关联案件" prop="deviceName" min-width="140"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="布控人员图像" prop="faceUrl" min-width="120"
                          max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
@@ -129,7 +151,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="操作" width="160" fixed="right">
+        <el-table-column align="left" label="操作" width="150" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)"
                        v-show="getButtonVial('warning:getFaceWarning')">查看告警
@@ -281,8 +303,8 @@
       },
       handleChange(val) {
         if (!val || val.length == 0) {
-          this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-            new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+          this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         }
         // if (val && val.length == 2) {
         //   let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 7 * 1000);
@@ -440,14 +462,9 @@
         this.query = {size: 100};
         this.isSearch = true;
         delete this.query['faceUrl'];
-        if (this.activeItem === 'H') {
-          this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-            new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
-        } else {
-          this.time1 = ['00:00:00', '23:59:59'];
-          this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
-        }
+        this.time1 = ['00:00:00', '23:59:59'];
+        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
 
         this.getData();
       },

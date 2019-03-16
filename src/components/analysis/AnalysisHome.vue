@@ -41,6 +41,7 @@
     },
     methods: {
       getWarningCount() {
+        this.$emit('handleSelectTab', null, 'warning');
       },
       //菜单栏左侧缩小/放大功能
       isCollNav() {

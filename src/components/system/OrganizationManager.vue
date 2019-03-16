@@ -5,18 +5,19 @@
         <el-col :span="18" align="left" v-show="getButtonVial('manager:group:query')" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left">
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="组织名称" v-model="query.groupName" :maxlength="20" size="medium"></el-input>
+              <el-input placeholder="组织名称" v-model="query.groupName" :maxlength="20"
+                        size="medium" style="width: 160px"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.type" placeholder="组织类型" size="medium" filterable style="width: 120px">
-                <el-option label="公安机关" :value="0"></el-option>
-                <el-option label="派出所" :value="1"></el-option>
+              <el-select v-model="query.relateAreas" multiple placeholder="管辖区域" collapse-tags filterable size="medium">
+                <el-option v-for="item in provinceList" :key="item.areaCode" :label="item.areaName"
+                           :value="item.areaCode">
+                </el-option>
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.relateAreas" multiple placeholder="管辖区域" collapse-tags filterable>
-                <el-option v-for="item in provinceList" :key="item.areaCode" :label="item.areaName"
-                           :value="item.areaCode">
+              <el-select v-model="query.pgroupId" placeholder="所属组织" size="medium" filterable style="width: 170px">
+                <el-option v-for="item in groups" :key="item.groupId" :label="item.groupName" :value="item.groupId">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -31,10 +32,9 @@
               <el-button @click.stop="clearData()" size="medium">重置</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-select v-model="query.pgroupId" placeholder="所属组织" size="medium" filterable>
-                <el-option v-for="item in groups" :key="item.groupId" :label="item.groupName"
-                           :value="item.groupId">
-                </el-option>
+              <el-select v-model="query.type" placeholder="组织类型" size="medium" filterable style="width: 160px">
+                <el-option label="公安机关" :value="0"></el-option>
+                <el-option label="派出所" :value="1"></el-option>
               </el-select>
             </el-form-item>
           </el-form>

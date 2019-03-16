@@ -18,22 +18,25 @@
                 </el-button>
               </el-upload>
             </el-form-item>
-            <el-form-item label="年龄段" style="margin-bottom: 10px">
-              <el-input-number v-model="query.startAge" controls-position="right" :min="1"
-                               :max="query.endAge-1" style="width: 90px" size="medium"></el-input-number>
-              <span>~</span>
-              <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
-                               :max="200" style="width: 90px" size="medium"></el-input-number>
+            <el-form-item style="margin-bottom: 10px">
+              <el-input placeholder="姓名" v-model="query.name" :maxlength="20" style="width: 180px"
+                        size="medium"></el-input>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-input placeholder="身份证号" v-model="query.idCard" :maxlength="18"
+                        style="width: 180px" size="medium"></el-input>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-select v-model="query.blackClass" placeholder="所属名单" size="medium"
+                         style="width: 180px" clearable filterable>
+                <el-option v-for="item in listTypes" :key="item.id" :label="item.name" :value="item.name"></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 80px" clearable>
                 <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="姓名" v-model="query.name" :maxlength="10"
-                        style="width: 180px" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
@@ -44,19 +47,16 @@
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()">重置</el-button>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-input placeholder="身份证号" v-model="query.idCard" :maxlength="18"
-                        style="width: 180px" size="medium"></el-input>
+            <el-form-item label="年龄段" style="margin-bottom: 10px" v-show="isMore">
+              <el-input-number v-model="query.startAge" controls-position="right" :min="1"
+                               :max="query.endAge-1" style="width: 90px" size="medium"></el-input-number>
+              <span>~</span>
+              <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
+                               :max="200" style="width: 90px" size="medium"></el-input-number>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px" v-show="isMore">
               <el-input placeholder="手机号" v-model="query.mobilePhone" :maxlength="11"
                         style="width: 150px" size="medium"></el-input>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-select v-model="query.blackClass" placeholder="所属名单" size="medium"
-                         style="width: 180px" clearable filterable>
-                <el-option v-for="item in listTypes" :key="item.id" :label="item.name" :value="item.name"></el-option>
-              </el-select>
             </el-form-item>
             <!--<el-form-item style="margin-bottom: 10px" v-show="isMore">-->
             <!--<el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleTimeChange"-->

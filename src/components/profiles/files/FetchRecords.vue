@@ -8,15 +8,18 @@
       <div v-show="activeItem=='imsi'">
         <el-form :inline="true" :model="queryImsi" align="left" style="margin-top: 10px;text-align: left;width: 1120px">
           <el-form-item style="margin-bottom: 10px">
-            <el-input placeholder="设备ID" v-model="queryImsi.deviceId" :maxlength="30"
-                      style="width: 180px" size="medium"></el-input>
-          </el-form-item>
-          <el-form-item style="margin-bottom: 10px">
             <el-select v-model="queryImsi.imsi" placeholder="IMSI" size="medium" filterable clearable>
               <el-option v-for="item in imsis" :key="item.imsi" :label="item.imsi+'['+item.weightDes+']'"
                          :value="item.imsi">
               </el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
+                            start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
+                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                            :picker-options="pickerBeginDate" style="width: 360px">
+            </el-date-picker>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
             <el-select v-model="queryImsi.placeId" placeholder="场所" size="medium" filterable clearable>
@@ -34,11 +37,8 @@
             <el-button size="medium" @click="clearImsiData()">重置</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px" v-show="isMore">
-            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
-                            start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
-                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
-                            :picker-options="pickerBeginDate" style="width: 360px">
-            </el-date-picker>
+            <el-input placeholder="设备ID" v-model="queryImsi.deviceId" :maxlength="30"
+                      style="width: 180px" size="medium"></el-input>
           </el-form-item>
         </el-form>
         <el-table :data="list10" class="center-block" v-loading="listLoading" stripe>
@@ -85,19 +85,15 @@
             </el-upload>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-input placeholder="输入设备ID" v-model="query.deviceId" :maxlength="30"
-                      style="width: 180px" size="medium"></el-input>
-          </el-form-item>
-          <el-form-item label="年龄段" style="margin-bottom: 10px">
-            <el-input-number v-model="query.startAge" controls-position="right" :min="1"
-                             :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
-            <span>~</span>
-            <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
-                             :max="200" style="width: 100px" size="medium"></el-input-number>
+            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
+                            start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
+                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                            :picker-options="pickerBeginDate" style="width: 360px">
+            </el-date-picker>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px">
-              <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
+            <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable>
+              <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -111,17 +107,21 @@
             <el-button size="medium" @click="clearData()">重置</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px" v-show="isMore">
-            <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable>
-              <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
-              </el-option>
-            </el-select>
+            <el-input placeholder="输入设备ID" v-model="query.deviceId" :maxlength="30"
+                      style="width: 180px" size="medium"></el-input>
+          </el-form-item>
+          <el-form-item label="年龄段" style="margin-bottom: 10px" v-show="isMore">
+            <el-input-number v-model="query.startAge" controls-position="right" :min="1"
+                             :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
+            <span>~</span>
+            <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
+                             :max="200" style="width: 100px" size="medium"></el-input-number>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px" v-show="isMore">
-            <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
-                            start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
-                            :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
-                            :picker-options="pickerBeginDate" style="width: 360px">
-            </el-date-picker>
+            <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px">
+              <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-form>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>

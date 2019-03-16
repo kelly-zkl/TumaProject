@@ -116,7 +116,7 @@ export const pswValidator = (psw) => {
 };
 //验证名字 汉字、英文
 export const nameValidator = (name) => {
-  const reg = /^[\u4e00-\u9fa5A-Za-z]+$/;
+  const reg = /^[\u4e00-\u9fa5A-Za-z·]+$/;
   return reg.test(name);
 };
 //验证编号  英文、数字、下划线和小数点

@@ -40,7 +40,7 @@
         </el-form>
       </el-col>
       <el-col :span="24" class="main-footer">
-        Copyright © 2018 深圳前海中电慧安科技有限公司
+        Copyright © 2019 深圳前海中电慧安科技有限公司
       </el-col>
     </section>
   </div>
@@ -61,6 +61,26 @@
       }
     },
     methods: {
+      myBrowser() {
+        var userAgent = navigator.userAgent;
+        //取得浏览器的userAgent字符串
+        if (userAgent.indexOf("Chrome") < 0) {
+          this.$confirm('抱歉！您当前使用非Chrome浏览器，建议安装Chrome浏览器', '提示', {
+            confirmButtonText: 'Chrome浏览器下载',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            var eleLink = document.createElement('a');
+            eleLink.download = "../meerkat-h5/static/baidumapv2/images/Mario.png";
+            eleLink.style.display = 'none';
+            eleLink.href = "../meerkat-h5/static/baidumapv2/images/Mario.png";
+            document.body.appendChild(eleLink);
+            eleLink.click();
+            document.body.removeChild(eleLink);
+          }).catch(() => {
+          });
+        }
+      },
       //切换登录系统
       changePlatform() {
         this.$router.push('/platforms');
@@ -183,6 +203,7 @@
       }
     },
     mounted() {
+      this.myBrowser();
       this.getSystemDetail();
       let bol = JSON.parse(localStorage.getItem("user"));
       if (bol && bol.save === true) {

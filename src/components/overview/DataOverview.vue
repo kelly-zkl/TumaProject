@@ -270,17 +270,17 @@
       getDataHeat() {
         var _this = this;
         if (!this.heatMap) {
-          this.heatMap = new BMap.Map("dataheat", {minZoom: 5, maxZoom: 20});// 创建地图实例
+          this.heatMap = new BMap.Map("dataheat", {minZoom: 5, maxZoom: 19});// 创建地图实例
 
-          this.heatMap.enableScrollWheelZoom(); // 允许滚轮缩放
-          var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
-          // this.heatMap.setMapStyle({style: 'midnight'});
-          // this.heatMap.addControl(mapType);//左上角，默认地图控件
+          this.heatMap.enableScrollWheelZoom(true); // 允许滚轮缩放
+          this.heatMap.enableDragging();
         } else {
           this.hotPoint = this.heatMap.getCenter();
           this.hotZoom = this.heatMap.getZoom();
         }
 
+        this.heatMap.setMinZoom(5);
+        this.heatMap.setMaxZoom(19);
         this.heatMap.centerAndZoom(this.hotPoint, this.hotZoom);
 
         function zoom() {
@@ -471,11 +471,10 @@
           if (!app.inNode) {
             this.deviceMap = this.deviceChart.getModel().getComponent('bmap').getBMap();
             this.deviceMap.enableScrollWheelZoom(true);
+            this.deviceMap.enableDragging();
             this.deviceMap.setMinZoom(5);
-            this.deviceMap.setMaxZoom(20);
-            var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT});
+            this.deviceMap.setMaxZoom(19);
             this.deviceMap.setMapStyle({style: 'midnight'});
-            // this.deviceMap.addControl(mapType);          //左上角，默认地图控件
           }
         } else {
           this.deviceChart.setOption({

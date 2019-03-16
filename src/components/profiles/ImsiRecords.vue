@@ -5,7 +5,7 @@
         <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleClick" type="border-card">
             <el-tab-pane label="今日记录" name="first"></el-tab-pane>
-            <el-tab-pane label="历史记录" name="second"></el-tab-pane>
+            <el-tab-pane label="所有记录" name="second"></el-tab-pane>
           </el-tabs>
         </el-col>
         <el-tooltip class="item" effect="dark" placement="bottom-end">
@@ -17,23 +17,31 @@
         </el-tooltip>
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left;width: 1100px">
-        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
-          <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
-                    style="width: 160px"></el-input>
-        </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="300" size="medium"
                     style="width: 160px"></el-input>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.regional" placeholder="IMSI归属地" size="medium" style="width: 160px"
-                    :maxlength=20></el-input>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem == 'second'">
+          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" start-placeholder="开始日期"
+                          end-placeholder="结束日期" value-format="timestamp" :picker-options="pickerBeginDate"
+                          size="medium" :default-time="['00:00:00', '23:59:59']" @change="handleChange">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='first'">
+          <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
+                          style="width: 230px" value-format="HH:mm:ss" end-placeholder="结束时间"
+                          placeholder="选择时间范围" @change="handleTime" size="medium">
+          </el-time-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
           <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable>
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)&&activeItem=='first'">
+          <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
+                    style="width: 160px"></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
@@ -45,17 +53,13 @@
         <el-form-item style="margin-bottom: 10px">
           <el-button @click="clearData()" size="medium">重置</el-button>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem == 'second'&&isMore">
-          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" start-placeholder="开始日期"
-                          end-placeholder="结束日期" value-format="timestamp" :picker-options="pickerBeginDate"
-                          size="medium" :default-time="['00:00:00', '23:59:59']" @change="handleChange">
-          </el-date-picker>
+        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)&&isMore&&activeItem == 'second'">
+          <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
+                    style="width: 160px"></el-input>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='first'&&isMore">
-          <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
-                          style="width: 230px" value-format="HH:mm:ss" end-placeholder="结束时间"
-                          placeholder="选择时间范围" @change="handleTime">
-          </el-time-picker>
+        <el-form-item style="margin-bottom: 10px" v-show="isMore">
+          <el-input v-model="query.regional" placeholder="IMSI归属地" size="medium" style="width: 160px"
+                    :maxlength=20></el-input>
         </el-form-item>
       </el-form>
       <el-table :data="list10" class="center-block" v-loading="listLoading" stripe :height="tableHeight">
@@ -177,8 +181,8 @@
       },
       handleChange(val) {
         if (!val || val.length == 0) {
-          this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-            new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+          this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         }
         let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 30 * 1000);
         if (bol) {
@@ -310,15 +314,9 @@
         this.list10 = [];
         this.isSearch = true;
         this.query = {size: 100};
-
-        if (this.activeItem === 'second') {
-          this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-            new Date((formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
-        } else {
-          this.time1 = ['00:00:00', '23:59:59'];
-          this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
-        }
+        this.time1 = ['00:00:00', '23:59:59'];
+        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
 
         this.getData();
       },

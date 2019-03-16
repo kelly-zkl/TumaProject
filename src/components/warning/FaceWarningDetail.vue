@@ -19,7 +19,7 @@
           </el-button>
         </el-col>
       </el-row>
-      <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px">
+      <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px;margin-bottom: 0">
         <el-form :model="faceDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8" align="center">
@@ -55,6 +55,39 @@
               </el-form-item>
               <el-form-item label="设备ID" align="left" style="margin: 0;text-align: left">
                 <span style="font-size: 15px;color:#000">{{faceDetail.deviceId ? faceDetail.deviceId : '--'}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+      <div class="add-appdiv dialog" style="padding:10px 0 0 0;margin-top: 13px">
+        <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">布控任务信息
+        </div>
+        <el-form :model="taskDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="120px">
+          <el-row style="margin: 0;padding: 0">
+            <el-col :span="8">
+              <el-form-item label="布控对象" align="left" style="margin: 0;text-align: left">
+                <img :src="taskDetail.faceUrl?taskDetail.faceUrl:imgPath" :onerror="img404"
+                     style="max-height: 110px;max-width: 110px;border-radius: 6px;border:1px #D0CACF solid;margin-top: 10px"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="任务名称" align="left" style="margin: 0;text-align: left">
+                <span style="font-size: 15px;color:#000">{{taskDetail.imsi ? taskDetail.imsi : '--'}}</span>
+              </el-form-item>
+              <el-form-item label="关联案件" align="left" style="margin: 0;text-align: left">
+                <span style="font-size: 15px;color:#000">{{taskDetail.imsi ? taskDetail.imsi : '--'}}</span>
+              </el-form-item>
+              <el-form-item label="布控编号" align="left" style="margin: 0;text-align: left">
+                <span style="font-size: 15px;color:#000">{{taskDetail.imsi ? taskDetail.imsi : '--'}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="布控类型" align="left" style="margin: 0;text-align: left">
+                <span style="font-size: 15px;color:#000">{{taskDetail.imsi ? taskDetail.imsi : '--'}}</span>
+              </el-form-item>
+              <el-form-item label="有效期限" align="left" style="margin: 0;text-align: left">
+                <span style="font-size: 15px;color:#000">{{taskDetail.imsi ? taskDetail.imsi : '--'}}</span>
               </el-form-item>
             </el-col>
           </el-row>
@@ -224,6 +257,7 @@
         faceId: this.$route.query.faceId || '',
         qTime: '',
         faceDetail: {},
+        taskDetail: {},
         faceList: [],
         imsiList: [],
         persons: [],

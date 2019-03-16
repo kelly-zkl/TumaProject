@@ -204,12 +204,12 @@
         });
       },
       setPlaceMap() {
-        var map = new BMap.Map("placeMap", {minZoom: 5, maxZoom: 20});
+        var map = new BMap.Map("placeMap", {minZoom: 5, maxZoom: 20, enableMapClick: false});
         map.disableScrollWheelZoom();
         map.disableDragging();
         map.disableDoubleClickZoom();
         var point = new BMap.Point(this.placeDetail.longitude, this.placeDetail.latitude);
-        map.centerAndZoom(point, 15);
+        map.centerAndZoom(point, 16);
         var marker = new BMap.Marker(point);
         map.addOverlay(marker);
         var content = '经度：' + this.placeDetail.longitude + '<br/>纬度：' + this.placeDetail.latitude;

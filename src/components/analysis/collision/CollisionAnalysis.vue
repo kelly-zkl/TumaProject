@@ -8,26 +8,11 @@
               <el-input v-model="query.taskName" placeholder="任务名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
             </el-form-item>
-            <!--<el-form-item style="margin-bottom: 10px">-->
-            <!--<el-select v-model="query.ctype" placeholder="任务类型" style="width: 100px"-->
-            <!--size="medium" filterable clearable>-->
-            <!--<el-option v-for="item in taskTypes" :key="item.value" :label="item.label" :value="item.value">-->
-            <!--</el-option>-->
-            <!--</el-select>-->
-            <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.conditionType" placeholder="任务类型" style="width: 120px"
-                         size="medium" filterable clearable>
-                <el-option v-for="item in conditionTypes" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.taskStatus" placeholder="全部状态" style="width: 120px"
-                         size="medium" filterable clearable>
-                <el-option v-for="item in taskStatus" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
+              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" size="medium"
+                              :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
+                              start-placeholder="开始日期" end-placeholder="结束日期" :picker-options="pickerBeginDate">
+              </el-date-picker>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
@@ -39,11 +24,18 @@
               <el-button size="medium" @click="clearData()">重置</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" size="medium"
-                              :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
-                              start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px"
-                              :picker-options="pickerBeginDate">
-              </el-date-picker>
+              <el-select v-model="query.conditionType" placeholder="任务类型" style="width: 150px"
+                         size="medium" filterable clearable>
+                <el-option v-for="item in conditionTypes" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-select v-model="query.taskStatus" placeholder="全部状态" style="width: 150px"
+                         size="medium" filterable clearable>
+                <el-option v-for="item in taskStatus" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-form>
         </el-col>
@@ -110,7 +102,6 @@
         listLoading: false,
         isMore: false,
         tableHeight: window.innerHeight - 232,
-        taskTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '图像'}],//,{value: 'MAC', label: 'MAC'}
         conditionTypes: [{value: 0, label: '多条件碰撞'}, {value: 1, label: '单条件碰撞'}],
         taskStatus: [{value: 'FINISH', label: '已完成'}, {value: 'FAILE', label: '失败'},
           {value: 'WAIT', label: '等待中'}, {value: 'EXECUTION', label: '分析中'}],

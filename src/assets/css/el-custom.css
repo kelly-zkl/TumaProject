@@ -279,7 +279,7 @@
   border: 1px #D0CACF solid;
   border-radius: 4px;
   padding: 30px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   background: #fff;
 }
 
@@ -561,7 +561,7 @@
   border-radius: 6px;
   background: #fff;
   padding: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;

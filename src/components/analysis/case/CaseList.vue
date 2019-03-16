@@ -40,16 +40,17 @@
                         :maxlength=20></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
+              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
+                              start-placeholder="案发开始日期" size="medium" end-placeholder="案发结束日期" clearable
+                              :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
+                              :picker-options="pickerBeginDate">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
               <el-select v-model="query.caseType" placeholder="案件类型" size="medium" filterable clearable>
                 <el-option v-for="item in caseTypes" :key="item.idx" :label="item.label" :value="item.label">
                 </el-option>
               </el-select>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-cascader :options="provinceList" :props="props" @change="areaChange" change-on-select
-                           v-model="areaList" style="width: 180px" placeholder="案发地点" size="medium"
-                           filterable clearable>
-              </el-cascader>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
@@ -61,11 +62,9 @@
               <el-button size="medium" @click="clearData()">重置</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
-                              start-placeholder="案发开始日期" size="medium" end-placeholder="案发结束日期" clearable
-                              :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
-                              :picker-options="pickerBeginDate">
-              </el-date-picker>
+              <el-cascader :options="provinceList" :props="props" @change="areaChange" change-on-select
+                           v-model="areaList" placeholder="案发地点" size="medium" filterable clearable>
+              </el-cascader>
             </el-form-item>
           </el-form>
         </el-col>
@@ -84,8 +83,8 @@
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" v-for="item in defaultProps" :key="item.value" :formatter="formatterAddress"
-                         :prop="item.value" :label="item.name" :min-width="item.min"
-                         :max-width="item.max"></el-table-column>
+                         :prop="item.value" :label="item.name" :min-width="item.min" :max-width="item.max">
+        </el-table-column>
         <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('case:get')">查看</el-button>
@@ -213,8 +212,7 @@
           {value: 'caseType', name: '案件类型', min: 100, max: 150},
           {value: 'caseTime', name: '案发时间', min: 300, max: 300},
           {value: 'caseAddress', name: '案发地点', min: 200, max: 250},
-          {value: 'creatTime', name: '创建时间', min: 170, max: 170},
-          {value: 'status', name: '案件状态', min: 100, max: 100}],
+          {value: 'creatTime', name: '创建时间', min: 170, max: 170}],
         rules: {
           caseNo: [
             {required: true, message: '请输入案件编号', trigger: 'blur', maxlength: 20},
@@ -307,8 +305,7 @@
             {value: 'caseType', name: '案件类型', min: 100, max: 150},
             {value: 'caseTime', name: '案发时间', min: 300, max: 300},
             {value: 'caseAddress', name: '案发地点', min: 200, max: 250},
-            {value: 'creatTime', name: '创建时间', min: 170, max: 170},
-            {value: 'status', name: '案件状态', min: 100, max: 100}];
+            {value: 'creatTime', name: '创建时间', min: 170, max: 170}];
         } else {
           this.defaultProps = [{value: 'caseNo', name: '案件编号', min: 150, max: 200},
             {value: 'caseName', name: '案件名称', min: 150, max: 200},
@@ -316,7 +313,6 @@
             {value: 'caseTime', name: '案发时间', min: 300, max: 300},
             {value: 'caseAddress', name: '案发地点', min: 200, max: 250},
             {value: 'creatTime', name: '创建时间', min: 170, max: 170},
-            {value: 'status', name: '案件状态', min: 100, max: 100},
             {value: 'updateTime', name: '结案时间', min: 170, max: 170}];
         }
         this.getData();
@@ -473,8 +469,6 @@
           let start = row.caseTime ? formatDate(new Date(row.caseTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
           let end = row.caseToTime ? formatDate(new Date(row.caseToTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
           return start + " ~ " + end;
-        } else if (column.property === 'status') {
-          return row.status === 'UNHANDLED' ? '未处理' : row.status === 'EXECUTION' ? '进行中' : row.status === 'HANDLED' ? '已结案' : '--';
         } else if (column.property === 'caseAddress') {
           return row.areaCode ? this.getAreaLable(row.areaCode) + row.caseAddress : '--';
         } else {
