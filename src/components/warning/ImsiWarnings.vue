@@ -25,7 +25,7 @@
       <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1100px"
                v-show="getButtonVial(exportKey)">
         <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 160px"
+          <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 180px"
                     :maxlength=30></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'">
@@ -42,7 +42,8 @@
           </el-time-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable>
+          <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable
+                     style="width: 160px">
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
           </el-select>
@@ -108,11 +109,11 @@
             <span style="color:#999" v-show="scope.row.status == 3">误报</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="布控任务" prop="deviceName" min-width="140"
+        <el-table-column align="left" label="布控任务" prop="taskName" min-width="140"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="关联案件" prop="deviceName" min-width="140"
+        <el-table-column align="left" label="关联案件" prop="caseName" min-width="140"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="150" fixed="right">
+        <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)"
                        v-show="getButtonVial('warning:getImsiWarning')">查看告警
@@ -275,7 +276,10 @@
         }
       },
       gotoDetail(row) {
-        let routeData = this.$router.resolve({path: '/imsiWarningDetail', query: {id: row.id, imsi: row.imsi}});
+        let routeData = this.$router.resolve({
+          path: '/imsiWarningDetail',
+          query: {id: row.id, imsi: row.imsi, taskId: row.dispositionTaskId}
+        });
         window.open(routeData.href, '_blank');
         // this.$router.push({path: '/imsiWarningDetail', query: {id: row.id, imsi: row.imsi}});
       },

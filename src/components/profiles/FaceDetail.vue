@@ -6,42 +6,42 @@
           <div style="font-size:14px;padding:10px 20px">图像抓拍记录</div>
         </el-col>
       </el-row>
-      <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px">
+      <div class="add-appdiv dialog gray-form" style="border-top: none;border-radius: 0 0 4px 4px">
         <el-form :model="faceDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8" align="center">
               <img :src="faceDetail.senceImageUrl?faceDetail.senceImageUrl:imgPath2" :onerror="img2404"
-                   style="max-width: 90%;border-radius: 8px;max-height: 250px"/>
+                   style="max-width: 90%;border-radius: 8px;max-height: 250px;cursor: pointer"
+                   onclick="javascript:window.open(this.src)"/>
             </el-col>
             <el-col :span="8" align="left">
               <img :src="faceDetail.imageUrl?faceDetail.imageUrl:imgPath" :onerror="img404"
                    style="max-height:160px;max-width:160px;border-radius: 6px"/>
               <el-form-item label="年龄段" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{faceDetail.age > 0 ? (faceDetail.age-3)+"~"+(faceDetail.age+3):'--'}}</span>
+                {{faceDetail.age > 0 ? (faceDetail.age-3)+"~"+(faceDetail.age+3):'--'}}
               </el-form-item>
               <el-form-item label="性别" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{faceDetail.sex == 0 ? '男' : faceDetail.sex == 1 ? '女' : '--'}}</span>
+                {{faceDetail.sex == 0 ? '男' : faceDetail.sex == 1 ? '女' : '--'}}
               </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label="抓取时间" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{faceDetail.timeStr ? faceDetail.timeStr : '--'}}</span>
+                {{faceDetail.timeStr ? faceDetail.timeStr : '--'}}
               </el-form-item>
               <el-form-item label="场所地区" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{faceDetail.area ? faceDetail.area : '--'}}</span>
+                {{faceDetail.area ? faceDetail.area : '--'}}
               </el-form-item>
               <el-form-item label="场所地点" align="left" style="margin: 0">
-                <span
-                  style="font-size: 15px;color:#000">{{faceDetail.detailAddress ? faceDetail.detailAddress : '--'}}</span>
+                {{faceDetail.detailAddress ? faceDetail.detailAddress : '--'}}
               </el-form-item>
               <el-form-item label="抓取场所" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{faceDetail.placeName ? faceDetail.placeName : '--'}}</span>
+                {{faceDetail.placeName ? faceDetail.placeName : '--'}}
               </el-form-item>
               <el-form-item label="设备标识" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{faceDetail.deviceName ? faceDetail.deviceName : '--'}}</span>
+                {{faceDetail.deviceName ? faceDetail.deviceName : '--'}}
               </el-form-item>
               <el-form-item label="设备ID" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{faceDetail.deviceId ? faceDetail.deviceId : '--'}}</span>
+                {{faceDetail.deviceId ? faceDetail.deviceId : '--'}}
               </el-form-item>
             </el-col>
           </el-row>

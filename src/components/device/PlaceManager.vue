@@ -43,18 +43,18 @@
         <el-table-column align="left" label="场所编码" prop="placeCode" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="场所名称" prop="placeName" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="场所类型" prop="placeType" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="所属组织" prop="groupName" min-width="150"
+        <el-table-column align="left" label="所属组织" prop="groupName" min-width="130"
+                         max-width="180" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="地区" prop="areaCode" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="地区" prop="areaCode" min-width="180"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="详细地址" prop="detailAddress" min-width="180"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="详细地址" prop="detailAddress" min-width="150"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="经纬度" prop="latitude" min-width="180"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="160" fixed="right">
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="操作" min-width="150" max-width="180" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('place:get')">查看
             </el-button>

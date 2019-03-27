@@ -64,7 +64,7 @@
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="account" label="组织管理员" min-width="130"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="150" fixed="right">
+        <el-table-column align="left" label="操作" min-width="120" max-width="150" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click.stop="modifyOrganization(scope.row)"
                        v-show="getButtonVial('manager:group:update') && scope.row.groupId.length > 3

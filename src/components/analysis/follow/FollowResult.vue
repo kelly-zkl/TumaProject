@@ -1,27 +1,58 @@
 <template>
   <div>
     <section class="content">
-      <div class="add-appdiv" style="margin-bottom: 15px">
-        <el-row>
-          <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
-            <p style="font-size: 14px;color: #999;margin: 0 20px">任务名称</p>
-            <p style="margin: 5px 20px 0 20px;font-size: 15px">{{task.taskName}}</p>
+      <div class="add-appdiv gray-form" style="margin-bottom: 15px;padding: 0">
+        <el-row style="border-bottom:1px #D0CACF solid;margin: 0">
+          <el-col :span="12" align="left" style="text-align: left">
+            <div style="font-size:15px;padding:10px 20px;text-align:left">伴随分析任务信息</div>
           </el-col>
-          <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
-            <p style="font-size: 14px;color: #999;margin: 0 20px">任务类型</p>
-            <p style="margin: 5px 20px 0 20px;font-size: 15px">
-              {{task.followType == 'IMSI' ? 'IMSI' : task.followType == 'FACE' ? '图像' : 'MAC'}}</p>
+          <el-col :span="12" align="right" style="text-align: right;padding-right: 30px">
+            <el-button type="text" @click="deleteTask()" v-show="getButtonVial('follow:delete')">删除</el-button>
           </el-col>
-          <el-col :span="6" align="left" style="border-right: 1px #e5e5e5 solid">
-            <p style="font-size: 14px;color: #999;margin: 0 20px">分析对象</p>
-            <p
-              style="margin: 5px 20px 0 20px;font-size: 15px;word-break:normal;white-space:pre-warp;word-wrap:break-word">
-              {{task.followTarget}}</p>
-          </el-col>
-          <el-col :span="6" align="right">
-            <el-button type="text" @click="runTaskDetail = true">查看任务</el-button>
-            <el-button type="text" @click="deleteTask()" v-show="getButtonVial('follow:delete')">删除任务</el-button>
-          </el-col>
+        </el-row>
+        <el-row style="padding: 15px 0">
+          <el-form :model="task" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
+            <el-col :span="6" align="left" style="text-align: left">
+              <el-form-item label="任务名称" align="left" style="margin: 0;text-align: left">
+                {{task.taskName}}
+              </el-form-item>
+              <el-form-item label="任务类型" align="left" style="margin: 0;text-align: left">
+                {{task.followType == 'IMSI' ? 'IMSI' : task.followType == 'FACE' ? '图像' : 'MAC'}}
+              </el-form-item>
+              <el-form-item label="分析状态" align="left" style="margin: 0;text-align: left">
+                <span
+                  v-bind:style="{fontSize:'15px',color:task.taskStatus=='EXECUTION'?'#00C755':task.taskStatus =='FINISH'?'#00C755':'#333'}">
+                  {{task.taskStatus === "EXECUTION" ? "进行中" : task.taskStatus === "FINISH" ? "已结束" : "--"}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6" align="left">
+              <el-form-item label="分析对象" align="left" style="margin: 0;text-align: left">
+                {{'['+followType+']'+task.followTarget}}
+              </el-form-item>
+              <el-form-item label="日期范围" align="left" style="margin: 0;text-align: left">
+                {{task.startStr+'- '+ task.endStr}}
+              </el-form-item>
+              <el-form-item label="时间间隔" align="left" style="margin: 0;text-align: left">
+                {{task.interval}}
+              </el-form-item>
+            </el-col>
+            <el-col :span="6" align="left">
+              <el-form-item label="设备ID" align="left" style="margin: 0;text-align: left">
+                {{task.device}}
+              </el-form-item>
+            </el-col>
+            <el-col :span="6" align="right">
+              <el-form-item label="创建时间" align="left" style="margin: 0;text-align: left">
+                {{task.timeStr}}
+              </el-form-item>
+              <el-form-item label="伴随次数" align="left" style="margin: 0;text-align: left">
+                {{task.followCount == 0 ? 0 : task.followCount}}
+              </el-form-item>
+              <el-form-item label="关联案件" align="left" style="margin: 0;text-align: left">
+                <el-button @click="gotoCaseDetail" type="text">{{task.caseName?task.caseName:'--'}}</el-button>
+              </el-form-item>
+            </el-col>
+          </el-form>
         </el-row>
       </div>
       <el-row style="margin-bottom: 15px">
@@ -285,30 +316,6 @@
         </div>
       </div>
     </section>
-    <!--任务详情-->
-    <el-dialog title="任务详情" :width="dialogWidth" :visible.sync="runTaskDetail">
-      <div class="block gray-form">
-        <el-form label-width="100px" :model="task" label-position="right">
-          <el-form-item label="任务名称" align="left" style="margin: 0">{{task.taskName}}</el-form-item>
-          <el-form-item label="关联案件" align="left" style="margin: 0">{{task.caseName?task.caseName:'--'}}</el-form-item>
-          <el-form-item label="设备ID" align="left" style="margin: 0">
-            <el-row>
-              <el-col :span="24">{{task.device}}</el-col>
-            </el-row>
-          </el-form-item>
-          <el-form-item label="创建时间" align="left" style="margin: 0">{{task.timeStr}}</el-form-item>
-          <el-form-item label="任务类型" align="left" style="margin: 0">
-            {{task.followType == 'IMSI' ? 'IMSI' : task.followType == 'FACE' ? '图像' : 'MAC'}}
-          </el-form-item>
-          <el-form-item label="分析对象" align="left" style="margin: 0">{{task.followTarget}}</el-form-item>
-          <el-form-item label="日期" align="left" style="margin: 0">{{task.startStr + " - " + task.endStr}}</el-form-item>
-          <el-form-item label="时间间隔" align="left" style="margin: 0">{{task.interval}}</el-form-item>
-          <el-form-item label="伴随次数" align="left" style="margin: 0">
-            {{task.followCount == 0 ? 0 : task.followCount}}
-          </el-form-item>
-        </el-form>
-      </div>
-    </el-dialog>
     <!--查看大图-->
     <el-dialog title="查看大图" :visible.sync="runBigPic" width="500px" center>
       <div class="block">
@@ -341,7 +348,6 @@
         imgPath: require('../../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
         dialogWidth: isPC() ? '35%' : '90%',
-        runTaskDetail: false,
         activeItem: 'result',
         qTime: "",
         results: [],
@@ -368,6 +374,11 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      //跳转案件详情页
+      gotoCaseDetail() {
+        let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: this.task.caseId}});
+        window.open(routeData.href, '_blank');
       },
       handleType(val) {
         if (this.activeItem === 'result') {//分析结果
@@ -415,12 +426,6 @@
       },
       //跳转IMSI记录
       gotoImsi(imsi) {
-        // this.$router.push({
-        //   path: '/followIMSIDetail', query: {
-        //     taskId: this.taskId, regional: imsi.regional,
-        //     followType: this.followType, imsi: imsi.imsi, isp: imsi.isp,
-        //   }
-        // });
         let routeData = this.$router.resolve({
           path: '/followIMSIDetail', query: {
             taskId: this.taskId, regional: imsi.regional,

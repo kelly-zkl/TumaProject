@@ -14,136 +14,129 @@
           </el-tabs>
         </el-col>
       </el-row>
-      <div class="content" v-show="activeItem == 'TASK'">
-        <div class="add-appdiv" style="margin-bottom: 15px">
-          <el-row>
-            <el-col :span="5" align="left" style="border-right: 1px #e5e5e5 solid">
-              <p style="font-size: 14px;color: #999;margin: 0 20px">布控编号</p>
-              <p style="font-size: 15px;margin: 5px 20px 0 20px">{{task.taskNo}}</p>
+      <div class="content gray-form" v-show="activeItem == 'TASK'">
+        <el-form :model="task" style="margin: 0;padding: 0" labelPosition="right" label-width="120px">
+          <div class="add-appdiv dialog" style="padding:10px 0 0 0;margin-bottom: 13px">
+            <el-row style="margin: 0;padding: 0;border-bottom:1px #D0CACF solid">
+              <el-col :span="12" align="left" style="text-align: left">
+                <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left">任务信息</div>
+              </el-col>
+              <el-col :span="12" align="right" style="text-align: right">
+                <router-link :to="{path:'/addControl',query:{id:task.id}}">
+                  <el-button type="text" @click="" v-show="getButtonVial('disposition:delete')"
+                             style="margin: 0 10px 0 0" size="mini">修改
+                  </el-button>
+                </router-link>
+                <el-button type="text" @click="deleteTask()" v-show="getButtonVial('disposition:delete')"
+                           style="margin: 0 10px 0 0" size="mini">删除
+                </el-button>
+                <el-button type="text" @click="finishTask()" v-show="getButtonVial('disposition:batchUpdateStatus')"
+                           style="margin: 0 20px 0 0" size="mini">结束
+                </el-button>
+              </el-col>
+            </el-row>
+            <el-row style="margin: 0;padding: 0">
+              <el-col :span="8">
+                <el-form-item label="关联案件" align="left" style="margin: 0;text-align: left">
+                  <el-button type="text" @click="gotoCaseDetail()">{{task.caseName?task.caseName:'--'}}</el-button>
+                </el-form-item>
+                <el-form-item label="任务名称" align="left" style="margin: 0;text-align: left">
+                  {{task.taskName?task.taskName:'--'}}
+                </el-form-item>
+                <el-form-item label="布控编号" align="left" style="margin: 0;text-align: left">
+                  {{task.taskNo?task.taskNo:'--'}}
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="有效期限" align="left" style="margin: 0;text-align: left">
+                  {{task.startStr + "~" + task.endStr}}
+                </el-form-item>
+                <el-form-item label="重复周期" align="left" style="margin: 0;text-align: left">
+                  {{task.cycleType == 'EVERYDAY' ? "每天" : task.week}}
+                </el-form-item>
+                <el-form-item label="每日时段" align="left" style="margin: 0;text-align: left">
+                  {{task.intervalType == 'ALLDAY' ? '全天' : task.startTimeInterval + "~" + task.endTimeInterval}}
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="布控状态" align="left" style="margin: 0;text-align: left">
+                  <span
+                    v-bind:style="{fontSize:'15px',color:task.taskStatus=='EXECUTION'?'#00C755':task.taskStatus =='FINISH'?'#00C755':'#333'}">
+                   {{task.taskStatus === "EXECUTION" ? "进行中" : task.taskStatus === "FINISH" ? "已结束" : "--"}}
+                 </span>
+                </el-form-item>
+                <el-form-item label="布控类型" align="left" style="margin: 0;text-align: left">
+                  {{task.dispositionType==0?'重点人员名单':task.dispositionType==1?'特征布控':'--'}}
+                </el-form-item>
+                <el-form-item label="创建时间" align="left" style="margin: 0;text-align: left">
+                  {{task.timeStr?task.timeStr:'--'}}
+                </el-form-item>
+                <el-form-item label="创建用户" align="left" style="margin: 0;text-align: left">
+                  {{task.createBy?task.createBy:'--'}}
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </div>
+          <el-row style="margin: 0;padding: 0" :gutter="10">
+            <el-col :span="15">
+              <div class="add-appdiv dialog"
+                   v-bind:style="{padding:'10px 0 0 0',marginBottom:'13px',height:tableHeight+'px'}">
+                <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">
+                  布控对象
+                </div>
+                <el-table :data="task.blackClassList" class="center-block" v-if="task.blackClassList">
+                  <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
+                  <el-table-column align="left" prop="name" label="重点人员名单">
+                    <template slot-scope="scope">
+                      <router-link :to="{path:'/listManage',query:{id:scope.row.id}}">
+                        <el-button type="text" @click="">{{scope.row.name}}</el-button>
+                      </router-link>
+                    </template>
+                  </el-table-column>
+                  <el-table-column align="left" prop="personNumbers" label="人员数量"
+                                   :formatter="formatterAddress"></el-table-column>
+                </el-table>
+                <div v-else>
+                  <el-form-item label="人脸" align="left" style="margin: 0" v-if="task.featureList.length>0">
+                    <div class="img-main" style="margin-top: 10px">
+                      <div class="img-item" v-for="item in task.featureList" :key="item.imageId">
+                        <img :src="item.imageUrl?item.imageUrl:imgPath" style="max-width: 100%;border-radius: 4px"
+                             :onerror="img404"/>
+                      </div>
+                    </div>
+                  </el-form-item>
+                  <el-form-item label="IMSI" align="left" style="margin: 0" v-if="task.imsiList.length>0">
+                    <el-row>
+                      <el-col :span="24">{{task.imsi}}</el-col>
+                    </el-row>
+                  </el-form-item>
+                </div>
+              </div>
             </el-col>
-            <el-col :span="5" align="left" style="border-right: 1px #e5e5e5 solid">
-              <p style="font-size: 14px;color: #999;margin: 0 20px">布控名称</p>
-              <p style="font-size: 15px;margin: 5px 20px 0 20px">{{task.taskName}}</p>
-            </el-col>
-            <el-col :span="5" align="left" style="border-right: 1px #e5e5e5 solid">
-              <p style="font-size: 14px;color: #999;margin: 0 20px">有效期</p>
-              <p style="font-size: 15px;margin: 5px 20px 0 20px">{{task.startStr + "~" + task.endStr}}</p>
-            </el-col>
-            <el-col :span="5" align="left" style="border-right: 1px #e5e5e5 solid">
-              <p style="font-size: 14px;color: #999;margin: 0 20px">布控状态</p>
-              <p style="font-size: 15px;margin: 5px 20px 0 20px">
-                {{task.taskStatus == 'EXECUTION' ? '进行中' : task.taskStatus == 'FINISH' ? '已结束' : '异常'}}
-              </p>
-            </el-col>
-            <el-col :span="4" align="right">
-              <el-button type="text" @click="runTaskDetail = true">查看任务</el-button>
-              <el-button type="text" @click="deleteTask()" v-show="getButtonVial('disposition:delete')">删除任务</el-button>
+            <el-col :span="9">
+              <div class="add-appdiv dialog"
+                   v-bind:style="{padding:'10px 0 0 0',marginBottom:'13px',height:tableHeight+'px'}">
+                <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">
+                  布控场所
+                </div>
+                <el-table :data="task.placeList" class="center-block">
+                  <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
+                  <el-table-column align="left" prop="permissionUrl" label="场所名称">
+                    <template slot-scope="scope">
+                      <router-link :to="{path:'/placeDetail',query:{id:scope.row.id}}">
+                        <el-button type="text" @click="">{{scope.row.placeName}}</el-button>
+                      </router-link>
+                    </template>
+                  </el-table-column>
+                  <el-table-column align="left" prop="detailAddress" label="详细地址"
+                                   :formatter="formatterAddress"></el-table-column>
+                </el-table>
+              </div>
             </el-col>
           </el-row>
-        </div>
-        <div class="add-appdiv dialog" style="padding:10px 0 0 0;margin-bottom: 13px">
-          <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">任务信息
-          </div>
-          <el-form :model="task" style="margin: 0;padding: 0" labelPosition="right" label-width="120px">
-            <el-row style="margin: 0;padding: 0">
-              <el-col :span="8">
-                <el-form-item label="布控对象" align="left" style="margin: 0;text-align: left">
-                  <img :src="task.faceUrl?task.faceUrl:imgPath" :onerror="img404"
-                       style="max-height: 110px;max-width: 110px;border-radius: 6px;border:1px #D0CACF solid;margin-top: 10px"/>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-form>
-        </div>
-        <div class="add-appdiv dialog" style="padding:10px 0 0 0;margin-bottom: 13px">
-          <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">布控对象
-          </div>
-          <el-form :model="task" style="margin: 0;padding: 0" labelPosition="right" label-width="120px">
-            <el-row style="margin: 0;padding: 0">
-              <el-col :span="8">
-                <el-form-item label="布控对象" align="left" style="margin: 0;text-align: left">
-                  <img :src="task.faceUrl?task.faceUrl:imgPath" :onerror="img404"
-                       style="max-height: 110px;max-width: 110px;border-radius: 6px;border:1px #D0CACF solid;margin-top: 10px"/>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-form>
-        </div>
-        <div class="add-appdiv dialog" style="padding:10px 0 0 0;margin-bottom: 13px">
-          <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">布控场所
-          </div>
-          <el-form :model="task" style="margin: 0;padding: 0" labelPosition="right" label-width="120px">
-            <el-row style="margin: 0;padding: 0">
-              <el-col :span="8">
-                <el-form-item label="布控对象" align="left" style="margin: 0;text-align: left">
-                  <img :src="task.faceUrl?task.faceUrl:imgPath" :onerror="img404"
-                       style="max-height: 110px;max-width: 110px;border-radius: 6px;border:1px #D0CACF solid;margin-top: 10px"/>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-form>
-        </div>
-        <div class="add-appdiv dialog" style="padding:10px 0 0 0;margin-bottom: 13px">
-          <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">记录
-          </div>
-          <el-form :model="task" style="margin: 0;padding: 0" labelPosition="right" label-width="120px">
-            <el-row style="margin: 0;padding: 0">
-              <el-col :span="8">
-                <el-form-item label="布控对象" align="left" style="margin: 0;text-align: left">
-                  <img :src="task.faceUrl?task.faceUrl:imgPath" :onerror="img404"
-                       style="max-height: 110px;max-width: 110px;border-radius: 6px;border:1px #D0CACF solid;margin-top: 10px"/>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-form>
-        </div>
-      </div>
-    </section>
-    <!--布控详情-->
-    <el-dialog title="布控详情" width="750px" :visible.sync="runTaskDetail">
-      <div class="block gray-form">
-        <el-form label-width="100px" :model="task" label-position="right">
-          <el-form-item label="布控编号" align="left" style="margin: 0">{{task.taskNo}}</el-form-item>
-          <el-form-item label="布控名称" align="left" style="margin: 0">{{task.taskName}}</el-form-item>
-          <el-form-item label="布控人员" align="left" style="margin: 0" v-if="task.featureList || task.imsiList">
-            <div class="img-main" v-if="task.featureList">
-              <div class="img-item" v-for="item in task.featureList" :key="item.imageId">
-                <img :src="item.imageUrl?item.imageUrl:imgPath" style="max-width: 100%;border-radius: 4px"
-                     :onerror="img404"/>
-              </div>
-            </div>
-            <el-row v-if="task.imsiList">
-              <el-col :span="24">{{task.imsi}}</el-col>
-            </el-row>
-          </el-form-item>
-          <el-form-item label="布控名单" align="left" style="margin: 0" v-if="task.list">
-            <el-row v-if="task.list">
-              <el-col :span="24">{{task.list}}</el-col>
-            </el-row>
-          </el-form-item>
-          <el-form-item label="布控场所" align="left" style="margin: 0">
-            <el-row v-if="task.placeName">
-              <el-col :span="24">{{task.place}}</el-col>
-            </el-row>
-          </el-form-item>
-          <el-form-item label="关联案件" align="left" style="margin: 0">{{task.caseName}}</el-form-item>
-          <el-form-item label="创建时间" align="left" style="margin: 0">{{task.timeStr}}</el-form-item>
-          <el-form-item label="布控状态" align="left" style="margin: 0">
-            {{task.taskStatus == 'EXECUTION' ? '进行中' : task.taskStatus == 'FINISH' ? '已结束' : '异常'}}
-          </el-form-item>
-          <el-form-item label="结束时间" align="left" style="margin: 0" v-show="task.taskStatus == 'FINISH'">
-            {{task.updateStr}}
-          </el-form-item>
-          <el-form-item label="有效期" align="left" style="margin: 0">{{task.startStr + "~" + task.endStr}}</el-form-item>
-          <el-form-item label="重复周期" align="left" style="margin: 0">
-            {{task.cycleType == 'EVERYDAY' ? "每天" : task.week}}
-          </el-form-item>
-          <el-form-item label="每日时段" align="left" style="margin: 0">
-            {{task.intervalType == 'ALLDAY' ? '全天' : task.startTimeInterval + "~" + task.endTimeInterval}}
-          </el-form-item>
         </el-form>
       </div>
-    </el-dialog>
+    </section>
   </div>
 </template>
 <script>
@@ -157,8 +150,8 @@
     },
     data() {
       return {
-        task: {},
-        runTaskDetail: false,
+        tableHeight: window.innerHeight - 410,
+        task: {featureList: [], imsiList: []},
         taskId: this.$route.query.taskId || '',
         activeItem: "TASK",
         imgPath: require('../../../assets/img/icon_people.png'),
@@ -168,6 +161,10 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      gotoCaseDetail() {
+        let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: this.task.caseId}});
+        window.open(routeData.href, '_blank');
       },
       handleType(val) {
         if (this.activeItem == 'TASK') {
@@ -193,11 +190,10 @@
             this.task.week = this.getWeekStr(this.task.weekCycleDay);
           }
           if (this.task.blackClassList.length > 0) {
-            var list = '';
-            this.task.blackClassList.forEach((item) => {
-              list += item.name + ',';
-            });
-            this.task.list = list.substring(0, list.length - 1);
+            delete this.task['featureList'];
+            delete this.task['imsiList'];
+          } else {
+            delete this.task['blackClassList'];
           }
         }).catch((err) => {
         });
@@ -247,6 +243,27 @@
         }).catch(() => {
         });
       },
+      //结束布控
+      finishTask() {
+        this.$confirm('确认结束布控?', '提示', {type: 'info'}).then(() => {
+          this.$post('disposition/batchUpdateStatus', [this.taskId], '操作成功').then((data) => {
+            if ("000000" === data.code) {
+              if ("000000" === data.code)
+                this.handleType();
+            }
+          }).catch((err) => {
+          });
+        }).catch(() => {
+        });
+      },
+      //格式化内容   有数据就展示，没有数据就显示--
+      formatterAddress(row, column) {
+        if (column.property === 'personNumbers') {
+          return row.personNumbers >= 0 ? row.personNumbers : '--';
+        } else {
+          return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
+        }
+      }
     },
     mounted() {
       this.handleType();

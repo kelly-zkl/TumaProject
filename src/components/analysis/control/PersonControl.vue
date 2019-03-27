@@ -49,12 +49,14 @@
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="布控编号" prop="taskNo" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="任务名称" prop="taskName" min-width="150"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="布控类型" prop="dispositionType" min-width="120"
+                         max-width="160" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="有效期" prop="startTime" min-width="180"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="有效期" prop="startTime" min-width="200"
-                         max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="布控状态" prop="taskStatus" min-width="120" max-width="180">
+        <el-table-column align="left" label="布控状态" prop="taskStatus" min-width="100" max-width="150">
           <template slot-scope="scope">
             <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已完成</span>
             <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
@@ -62,14 +64,16 @@
             <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">进行中</span>
           </template>
         </el-table-column>
+        <el-table-column align="left" label="告警次数" prop="warningCounts" min-width="100"
+                         max-width="150" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="关联案件" prop="caseName" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="230" fixed="right">
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="操作" min-width="150" max-width="200" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('disposition:get')">查看
             </el-button>
             <el-button type="text" @click="sels = [];sels.push(scope.row);finishTask()"
-                       v-show="activeItem== 'EXECUTION' && getButtonVial('disposition:batchUpdateStatus')">结束布控
+                       v-show="activeItem== 'EXECUTION' && getButtonVial('disposition:batchUpdateStatus')">结束
             </el-button>
             <el-button type="text" @click="sels = [];sels.push(scope.row);deleteTask()"
                        v-show="getButtonVial('disposition:delete')">删除
@@ -86,7 +90,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
+  import {formatDate, buttonValidator} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -196,6 +200,8 @@
       formatterAddress(row, column) {
         if (column.property === 'taskStatus') {
           return row.taskStatus === "WAIT" ? '等待中' : row.taskStatus === "FINISH" ? '已完成' : row.taskStatus === "FAILE" ? '失败' : row.taskStatus === "EXECUTION" ? '进行中' : '--';
+        } else if (column.property === 'dispositionType') {
+          return row.dispositionType == 0 ? '重点人员名单' : row.dispositionType == 1 ? '特征布控' : '--';
         } else if (column.property === 'followType') {
           return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '图像' : row.followType === "MAC" ? 'MAC' : '--';
         } else if (column.property === 'startTime') {

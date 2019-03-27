@@ -22,12 +22,12 @@
       <el-table :data="logs" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="账号" prop="account" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="用户名" prop="userName" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="相关功能" prop="operateDesc" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作URL" prop="operateUrl" min-width="150"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="操作URL" prop="operateUrl" min-width="180"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="访问IP" prop="ipAddress" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>

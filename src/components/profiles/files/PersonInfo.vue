@@ -2,18 +2,41 @@
   <div>
     <section class="content">
       <el-row style="background: #F2F2F2;font-size:14px;padding: 10px 0;width: 100%;text-align: center">
-        <el-col :span="18" style="text-align: center" align="center">
+        <el-col :span="6" style="text-align: center" align="center" :offset="6">
           <div style="font-size:14px;text-align: center">基本信息</div>
         </el-col>
         <el-col :span="6" style="text-align: right;padding-right: 20px" align="right"
                 v-show="getButtonVial('archives:updateDetails')">
           <el-button type="text" style="margin: 0;padding: 0" @click="clickModify()">修改基本信息</el-button>
         </el-col>
+        <el-col :span="6" style="text-align: center" align="center">
+          <div style="font-size:14px;text-align: center">最后出现</div>
+        </el-col>
       </el-row>
       <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px">
         <el-form :model="userInfo" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
           <el-row style="margin: 0;padding: 0">
-            <el-col :span="8">
+            <el-col :span="6" align="center" style="text-align: center">
+              <img :src="userInfo.faceUrl?userInfo.faceUrl:imgPath" :onerror="img404"
+                   style="max-height: 150px;max-width: 150px;border-radius: 6px"/>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="姓名" align="left" style="margin: 0">
+                <span style="font-size: 15px;color:#000">{{userInfo.name ? userInfo.name : '--'}}</span>
+              </el-form-item>
+              <el-form-item label="性别" align="left" style="margin: 0">
+                <span style="font-size: 15px;color:#000">{{userInfo.sex==0 ? '男' : userInfo.sex==1 ?'女':'--'}}</span>
+              </el-form-item>
+              <el-form-item label="年龄段" align="left" style="margin: 0">
+                <span style="font-size: 15px;color:#000">
+                  {{userInfo.startAge>=0?userInfo.startAge==userInfo.endAge?(userInfo.startAge - 3)+ '~'+(userInfo.startAge + 3):userInfo.startAge+'~'+userInfo.endAge:'--'}}
+                </span>
+              </el-form-item>
+              <!--<el-form-item label="身份证" align="left" style="margin: 0">-->
+              <!--<span style="font-size: 15px;color:#000">{{userInfo.idCard ? userInfo.idCard : '&#45;&#45;'}}</span>-->
+              <!--</el-form-item>-->
+            </el-col>
+            <el-col :span="6">
               <el-form-item label="ID" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{userInfo.faceId ? userInfo.faceId : '--'}}</span>
               </el-form-item>
@@ -27,23 +50,7 @@
                 <span style="font-size: 15px;color:#000">{{userInfo.remark ? userInfo.remark : '--'}}</span>
               </el-form-item>
             </el-col>
-            <el-col :span="8">
-              <el-form-item label="姓名" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{userInfo.name ? userInfo.name : '--'}}</span>
-              </el-form-item>
-              <el-form-item label="性别" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{userInfo.sex==0 ? '男' : userInfo.sex==1 ?'女':'--'}}</span>
-              </el-form-item>
-              <el-form-item label="年龄段" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">
-                  {{userInfo.startAge>=0?userInfo.startAge==userInfo.endAge?(userInfo.startAge - 3)+ '~'+(userInfo.startAge + 3):userInfo.startAge+'~'+userInfo.endAge:'--'}}
-                </span>
-              </el-form-item>
-              <el-form-item label="身份证" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{userInfo.idCard ? userInfo.idCard : '--'}}</span>
-              </el-form-item>
-            </el-col>
-            <el-col :span="8">
+            <el-col :span="6">
               <el-form-item label="手机号" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{userInfo.mobilePhone ? userInfo.mobilePhone : '--'}}</span>
               </el-form-item>
@@ -53,43 +60,65 @@
               <el-form-item label="所属辖区" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{userInfo.area ? userInfo.area : '--'}}</span>
               </el-form-item>
-              <!--<el-form-item label="所属名单" align="left" style="margin: 0">-->
-              <!--<span style="font-size: 15px;color:#000">{{userInfo.blackClass ? userInfo.blackClass : '&#45;&#45;'}}</span>-->
-              <!--</el-form-item>-->
             </el-col>
           </el-row>
         </el-form>
       </div>
-      <el-row style="background: #F2F2F2" v-if="persons.length>0 || imsiList.length>0">
-        <el-col :span="12">
-          <div style="font-size:14px;padding:10px 20px">最近抓拍</div>
-        </el-col>
-        <el-col :span="12">
-          <div style="font-size:14px;padding:10px 20px">已关联的侦码信息</div>
+      <el-row>
+        <el-col :span="24" align="left" class="tab-card no">
+          <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
+            <el-tab-pane label="关联特征" name="first" style="padding-top: 10px"></el-tab-pane>
+            <el-tab-pane label="IMSI记录" name="second" style="padding-top: 10px">
+              <FetchIMSIRecords ref="imsi"></FetchIMSIRecords>
+            </el-tab-pane>
+            <el-tab-pane label="图像记录" name="three" style="padding-top: 10px">
+              <FetchImgRecords ref="img"></FetchImgRecords>
+            </el-tab-pane>
+          </el-tabs>
         </el-col>
       </el-row>
-      <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px;padding:0;margin-bottom: 20px"
-           v-if="persons.length>0 || imsiList.length>0">
-        <el-row>
-          <el-col :span="12" style="border-right: 1px solid #D0CACF;padding: 10px 20px">
-            <div class="person-main" v-if="persons.length>0">
-              <div class="person-item" v-for="item in persons" :key="item.id">
-                <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404">
-                <div style="font-size:14px;height: 20px;line-height: 20px">{{item.timeStr}}</div>
-              </div>
-            </div>
-            <div v-else style="width:100%;color: #909399;font-size: 14px;text-align: center">暂无数据</div>
+      <div v-show="activeItem=='first'">
+        <el-row style="background: #F2F2F2" v-if="persons.length>0 || imsiList.length>0">
+          <el-col :span="12">
+            <div style="font-size:14px;padding:10px 20px">当前关联的IMSI信息</div>
           </el-col>
-          <el-col :span="12" style="padding: 10px 20px">
-            <div style="text-align: left" v-for="item in imsiList" :key="item.imsi" v-if="imsiList.length>0">
+          <el-col :span="12">
+            <div style="font-size:14px;padding:10px 20px">已关联的侦码信息</div>
+          </el-col>
+        </el-row>
+        <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px;padding:0;margin-bottom: 20px"
+             v-if="persons.length>0 || imsiList.length>0">
+          <el-row>
+            <el-col :span="12" style="border-right: 1px solid #D0CACF;padding: 10px 20px">
+              <el-table :data="imsiList" class="center-block">
+                <el-table-column align="left" prop="imsi" label="IMSI" min-width="120" max-width="150"
+                                 :formatter="formatterAddress"></el-table-column>
+                <el-table-column align="left" prop="ispDes" label="运营商" min-width="60" max-width="100"
+                                 :formatter="formatterAddress"></el-table-column>
+                <el-table-column align="left" prop="regional" label="IMSI归属地" min-width="100"
+                                 max-width="150" :formatter="formatterAddress"></el-table-column>
+                <el-table-column align="left" prop="fnIn" label="关联次数" min-width="80" max-width="100"
+                                 :formatter="formatterAddress"></el-table-column>
+                <el-table-column align="left" prop="weightDes" label="置信度" min-width="60"
+                                 max-width="100" :formatter="formatterAddress"></el-table-column>
+                <el-table-column align="left" label="操作" min-width="60" max-width="100">
+                  <template slot-scope="scope">
+                    <el-button type="text" @click="gotoPathLine(scope)">轨迹</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-col>
+            <el-col :span="12" style="padding: 10px 20px">
+              <div style="text-align: left" v-for="item in imsiList" :key="item.imsi" v-if="imsiList.length>0">
               <span @click="gotoDetail(item)" style="height: 32px;line-height: 32px;color: #343434;font-size: 14px">
                 {{item.imsi}} {{'关联次数['+(item.fnIn>=0?item.fnIn:'--')+']'}}
                 {{'置信度['+(item.weight>=0?(item.weight/10).toFixed(1):'--')+'%]'}}
               </span>
-            </div>
-            <div v-else style="width:100%;color: #909399;font-size: 14px;text-align: center">暂无数据</div>
-          </el-col>
-        </el-row>
+              </div>
+              <div v-else style="width:100%;color: #909399;font-size: 14px;text-align: center">暂无数据</div>
+            </el-col>
+          </el-row>
+        </div>
       </div>
     </section>
     <!--修改基本信息-->
@@ -137,6 +166,8 @@
   </div>
 </template>
 <script>
+  import FetchImgRecords from './FetchImgRecords.vue';
+  import FetchIMSIRecords from './FetchIMSIRecords.vue';
   import {formatDate, buttonValidator} from "../../../assets/js/util";
   import {
     nameValidator, numValid, mobileValidator, userCardValid,
@@ -144,8 +175,13 @@
   } from "../../../assets/js/api";
 
   export default {
+    components: {
+      FetchIMSIRecords,
+      FetchImgRecords
+    },
     data() {
       return {
+        activeItem: 'first',
         runModifyPerson: false,
         person: {},
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
@@ -164,11 +200,15 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
-      //查看IMSI详情
-      gotoDetail(row) {
-        // this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi}});
-        // let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: row.imsi}});
-        // window.open(routeData.href, '_blank');
+      handleType(val) {
+        if (this.activeItem == 'first') {
+          this.getUserData();
+        } else if (this.activeItem == 'second') {
+          this.$refs.imsi.getPlaces();
+        } else {
+          this.$refs.img.getPlaces();
+          this.$refs.img.clearData();
+        }
       },
       clickModify() {
         let data = this.userInfo;
@@ -281,6 +321,13 @@
           this.$message.error(err);
         });
       },
+      gotoPathLine(scope) {
+        var qTime = [new Date((formatDate(new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        localStorage.setItem("pathTime", JSON.stringify(qTime));
+        let routeData = this.$router.resolve({path: '/pathLine', query: {imsi: 1, face: 0, idx: scope.$index}});
+        window.open(routeData.href, '_blank');
+      },
       //获得省市县
       getAreaLable(code) {
         let lable = '';
@@ -332,10 +379,18 @@
           }
         });
         return arr;
+      },
+      //格式化内容   有数据就展示，没有数据就显示--
+      formatterAddress(row, column) {
+        if (column.property === 'fnIn') {
+          return row.fnIn === 0 ? 0 : row.fnIn;
+        } else {
+          return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
+        }
       }
     },
     mounted() {
-      this.getUserData();
+      this.handleType();
     }
   }
 </script>

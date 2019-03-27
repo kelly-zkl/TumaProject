@@ -357,6 +357,7 @@
 
       this.imsi = this.$route.query.imsi || 0;
       this.face = this.$route.query.face || 0;
+      var idx = this.$route.query.idx || 0;
 
       this.cTime = JSON.parse(localStorage.getItem("pathTime"));
       let pathImsi = JSON.parse(localStorage.getItem("pathImsi"));
@@ -366,7 +367,7 @@
         this.query.imsis = pathImsi;
         this.imsis = pathImsi;
         if (pathImsi.length > 0) {
-          this.choose.imsi = pathImsi[0];
+          this.choose.imsi = pathImsi[idx];
         }
       }
       if (pathFace && this.face == 1) {

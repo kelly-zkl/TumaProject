@@ -19,75 +19,77 @@
           </el-button>
         </el-col>
       </el-row>
-      <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px;margin-bottom: 0">
+      <div class="add-appdiv dialog gray-form" style="border-top: none;border-radius: 0 0 4px 4px;margin-bottom: 0">
         <el-form :model="faceDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8" align="center">
               <img :src="faceDetail.sceneUrl?faceDetail.sceneUrl:imgPath2" :onerror="img2404"
-                   style="max-width: 90%;border-radius: 8px;max-height: 250px"/>
+                   style="max-width: 90%;border-radius: 8px;max-height: 250px;cursor: pointer"
+                   onclick="javascript:window.open(this.src)"/>
             </el-col>
             <el-col :span="8" align="left" style="text-align: left">
               <img :src="faceDetail.faceUrl?faceDetail.faceUrl:imgPath" :onerror="img404"
                    style="max-height: 160px;max-width: 160px;border-radius: 6px"/>
               <el-form-item label="年龄段" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{faceDetail.age > 0 ? (faceDetail.age-3)+"~"+(faceDetail.age+3):'--'}}</span>
+                {{faceDetail.age > 0 ? (faceDetail.age-3)+"~"+(faceDetail.age+3):'--'}}
               </el-form-item>
               <el-form-item label="性别" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{faceDetail.sex == 0 ? '男' : faceDetail.sex == 1 ? '女' : '--'}}</span>
+                {{faceDetail.sex == 0 ? '男' : faceDetail.sex == 1 ? '女' : '--'}}
               </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label="告警时间" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{faceDetail.timeStr ? faceDetail.timeStr : '--'}}</span>
+                {{faceDetail.timeStr ? faceDetail.timeStr : '--'}}
               </el-form-item>
               <el-form-item label="场所地区" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{faceDetail.area ? faceDetail.area : '--'}}</span>
+                {{faceDetail.area ? faceDetail.area : '--'}}
               </el-form-item>
               <el-form-item label="场所地点" align="left" style="margin: 0;text-align: left">
-                <span
-                  style="font-size: 15px;color:#000">{{faceDetail.detailAddress ? faceDetail.detailAddress : '--'}}</span>
+                {{faceDetail.detailAddress ? faceDetail.detailAddress : '--'}}
               </el-form-item>
               <el-form-item label="告警场所" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{faceDetail.placeName ? faceDetail.placeName : '--'}}</span>
+                {{faceDetail.placeName ? faceDetail.placeName : '--'}}
               </el-form-item>
               <el-form-item label="设备标识" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{faceDetail.deviceName ? faceDetail.deviceName : '--'}}</span>
+                {{faceDetail.deviceName ? faceDetail.deviceName : '--'}}
               </el-form-item>
               <el-form-item label="设备ID" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{faceDetail.deviceId ? faceDetail.deviceId : '--'}}</span>
+                {{faceDetail.deviceId ? faceDetail.deviceId : '--'}}
               </el-form-item>
             </el-col>
           </el-row>
         </el-form>
       </div>
-      <div class="add-appdiv dialog" style="padding:10px 0 0 0;margin-top: 13px">
+      <div class="add-appdiv dialog gray-form" style="padding:10px 0 0 0;margin-top: 13px">
         <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">布控任务信息
         </div>
         <el-form :model="taskDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="120px">
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8">
               <el-form-item label="布控对象" align="left" style="margin: 0;text-align: left">
-                <img :src="taskDetail.faceUrl?taskDetail.faceUrl:imgPath" :onerror="img404"
+                <img :src="faceDetail.dispositionImageUrl?faceDetail.dispositionImageUrl:imgPath" :onerror="img404"
                      style="max-height: 110px;max-width: 110px;border-radius: 6px;border:1px #D0CACF solid;margin-top: 10px"/>
               </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label="任务名称" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{taskDetail.imsi ? taskDetail.imsi : '--'}}</span>
+                <el-button type="text" @click="gotoControl()">{{taskDetail.taskName ? taskDetail.taskName : '--'}}
+                </el-button>
               </el-form-item>
               <el-form-item label="关联案件" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{taskDetail.imsi ? taskDetail.imsi : '--'}}</span>
+                <el-button type="text" @click="gotoCase()">{{taskDetail.caseName ? taskDetail.caseName : '--'}}
+                </el-button>
               </el-form-item>
               <el-form-item label="布控编号" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{taskDetail.imsi ? taskDetail.imsi : '--'}}</span>
+                {{taskDetail.taskNo ? taskDetail.taskNo : '--'}}
               </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label="布控类型" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{taskDetail.imsi ? taskDetail.imsi : '--'}}</span>
+                {{taskDetail.dispositionType==0?'重点人员名单':taskDetail.dispositionType==1?'特征布控':'--'}}
               </el-form-item>
               <el-form-item label="有效期限" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{taskDetail.imsi ? taskDetail.imsi : '--'}}</span>
+                {{taskDetail.startStr + "~" + taskDetail.endStr}}
               </el-form-item>
             </el-col>
           </el-row>
@@ -255,6 +257,7 @@
         provinceList: JSON.parse(localStorage.getItem("areas")),
         id: this.$route.query.id || '',
         faceId: this.$route.query.faceId || '',
+        taskId: this.$route.query.taskId || '',
         qTime: '',
         faceDetail: {},
         taskDetail: {},
@@ -286,6 +289,16 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      //跳转布控详情页
+      gotoControl() {
+        let routeData = this.$router.resolve({path: '/controlDetail', query: {taskId: this.taskDetail.id}});
+        window.open(routeData.href, '_blank');
+      },
+      //跳转案件详情页
+      gotoCase() {
+        let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: this.taskDetail.caseId}});
+        window.open(routeData.href, '_blank');
       },
       //查看IMSI详情
       gotoIMSI(row) {
@@ -482,6 +495,14 @@
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
       },
+      //布控信息
+      getTaskDetail() {
+        this.$post('disposition/get/' + this.taskId, {}).then((data) => {
+          this.taskDetail = data.data;
+          this.taskDetail.startStr = formatDate(new Date(this.taskDetail.startTime * 1000), 'yyyy-MM-dd');
+          this.taskDetail.endStr = formatDate(new Date(this.taskDetail.endTime * 1000), 'yyyy-MM-dd');
+        })
+      },
       //告警场所
       getPlaces() {
         this.$post("place/query", {page: 1, size: 999999}).then((data) => {
@@ -527,6 +548,7 @@
     },
     mounted() {
       this.getPlaces();
+      this.getTaskDetail();
       this.getFaceDetail();
     }
   }

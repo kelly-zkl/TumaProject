@@ -51,7 +51,7 @@
           </el-time-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable style="width: 200px">
+          <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable style="width: 160px">
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
           </el-select>
@@ -137,9 +137,9 @@
         </el-table-column>
         <el-table-column align="left" label="抓取时间" prop="catchTime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="布控任务" prop="deviceName" min-width="140"
+        <el-table-column align="left" label="布控任务" prop="taskName" min-width="140"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="关联案件" prop="deviceName" min-width="140"
+        <el-table-column align="left" label="关联案件" prop="caseName" min-width="140"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="布控人员图像" prop="faceUrl" min-width="120"
                          max-width="200" :formatter="formatterAddress">
@@ -151,7 +151,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="操作" width="150" fixed="right">
+        <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)"
                        v-show="getButtonVial('warning:getFaceWarning')">查看告警
@@ -356,7 +356,10 @@
         }
       },
       gotoDetail(row) {
-        let routeData = this.$router.resolve({path: '/faceWarningDetail', query: {id: row.id, faceId: row.faceId}});
+        let routeData = this.$router.resolve({
+          path: '/faceWarningDetail',
+          query: {id: row.id, faceId: row.faceId, taskId: row.dispositionTaskId}
+        });
         window.open(routeData.href, '_blank');
         // this.$router.push({path: '/faceWarningDetail', query: {id: row.id, faceId: row.faceId}});
       },

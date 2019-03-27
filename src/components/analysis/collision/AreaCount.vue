@@ -1,26 +1,35 @@
 <template>
   <div>
     <section class="content">
-      <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:regional:count')"
-               style="text-align: left">
-        <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.deviceId" placeholder="设备ID" style="width: 160px" size="medium"
-                    :maxlength=30></el-input>
-        </el-form-item>
-        <el-form-item label="数量" style="margin-bottom: 10px">
-          <el-input-number v-model="query.count1" controls-position="right" :min="1"
-                           :max="query.count2-1" style="width: 100px" size="medium"></el-input-number>
-          <span>~</span>
-          <el-input-number v-model="query.count2" controls-position="right" :min="query.count1+1"
-                           :max="99999" style="width: 100px" size="medium"></el-input-number>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-button size="medium" @click="clearData()">重置</el-button>
-        </el-form-item>
-      </el-form>
+      <el-row>
+        <el-col :span="18" align="left" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:regional:count')"
+                   style="text-align: left">
+            <el-form-item style="margin-bottom: 10px">
+              <el-input v-model="query.deviceId" placeholder="设备ID" style="width: 160px" size="medium"
+                        :maxlength=30></el-input>
+            </el-form-item>
+            <el-form-item label="数量" style="margin-bottom: 10px">
+              <el-input-number v-model="query.count1" controls-position="right" :min="1"
+                               :max="query.count2-1" style="width: 100px" size="medium"></el-input-number>
+              <span>~</span>
+              <el-input-number v-model="query.count2" controls-position="right" :min="query.count1+1"
+                               :max="99999" style="width: 100px" size="medium"></el-input-number>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-button size="medium" @click="clearData()">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-col>
+        <el-col :span="6" align="right" style="text-align: right">
+          <el-button type="primary" size="medium" @click="exportData()"
+                     v-show="getButtonVial('collision:export:regional')">导出数据
+          </el-button>
+        </el-col>
+      </el-row>
       <el-table :data="records" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"

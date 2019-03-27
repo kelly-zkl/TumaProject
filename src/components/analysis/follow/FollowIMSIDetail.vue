@@ -48,23 +48,23 @@
         <el-table :data="records" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="源IMSI" prop="originalImsi" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="源时间" prop="originalUpTime" width="170"
-                           :formatter="formatterAddress"></el-table-column>
+                           max-width="200" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="源时间" prop="originalUpTime" min-width="170"
+                           max-width="200" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="伴随IMSI" prop="imsi" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="200" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="伴随时间" prop="upTime" min-width="170"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="运营商" prop="isp" min-width="125"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="网络类型" prop="netType" min-width="125"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="200" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="运营商" prop="isp" min-width="80"
+                           max-width="120" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="网络类型" prop="netType" min-width="80"
+                           max-width="120" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="125"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="200" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="200" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="抓取地点" prop="deviceName" min-width="125"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="200" :formatter="formatterAddress"></el-table-column>
         </el-table>
         <div class="block" style="margin: 20px 0" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"

@@ -43,23 +43,23 @@
         </el-form>
         <el-table :data="deviceList" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="250"
+          <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="deviceTypeVal" label="类型" min-width="120" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="deviceFormVal" label="形态" min-width="120" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="安装地区" prop="areaCode" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="detailAddress" label="详细地址" min-width="180" max-width="300"
+                           max-width="200" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="detailAddress" label="详细地址" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="placeName" label="安装场所" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150" max-width="250"
+          <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="lineStatus" label="在线状态" min-width="100"
                            max-width="120"></el-table-column>
-          <el-table-column align="left" label="操作" width="100" fixed="right">
+          <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click.stop="runningSetPlace=true;addPlace=scope.row"
                          v-show="getButtonVial('device:set:place')">设置场所

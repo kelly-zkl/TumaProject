@@ -4,30 +4,23 @@
       <el-row>
         <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleClick" type="border-card">
-            <el-tab-pane label="今日记录" name="first"></el-tab-pane>
-            <el-tab-pane label="所有记录" name="second"></el-tab-pane>
+            <el-tab-pane label="今日记录" name="T"></el-tab-pane>
+            <el-tab-pane label="所有记录" name="H"></el-tab-pane>
           </el-tabs>
         </el-col>
-        <el-tooltip class="item" effect="dark" placement="bottom-end">
-          <div slot="content">支持导出指定某一个IMSI的30天以内的记录,<br/>请在搜索栏设置完毕后再导出</div>
-          <el-col :span="3" align="right" style="text-align: right" :offset="5"
-                  v-show="activeItem=='second'&&getButtonVial('archives:export:record')">
-            <el-button type="primary" size="medium" @click="confirmExport()" :disabled="!isExport">导出</el-button>
-          </el-col>
-        </el-tooltip>
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left;width: 1100px">
         <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="300" size="medium"
-                    style="width: 180px"></el-input>
+          <el-input placeholder="车牌号" v-model="query.imsi" :maxlength="7" size="medium"
+                    style="width: 160px"></el-input>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem == 'second'">
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem == 'H'">
           <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" start-placeholder="开始日期"
                           end-placeholder="结束日期" value-format="timestamp" :picker-options="pickerBeginDate"
                           size="medium" :default-time="['00:00:00', '23:59:59']" @change="handleChange">
           </el-date-picker>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='first'">
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
           <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
                           style="width: 230px" value-format="HH:mm:ss" end-placeholder="结束时间"
                           placeholder="选择时间范围" @change="handleTime" size="medium">
@@ -40,7 +33,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)&&activeItem=='first'">
+        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)&&activeItem=='T'">
           <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
                     style="width: 160px"></el-input>
         </el-form-item>
@@ -58,30 +51,31 @@
           <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
                     style="width: 160px"></el-input>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="isMore">
-          <el-input v-model="query.regional" placeholder="IMSI归属地" size="medium" style="width: 160px"
-                    :maxlength=20></el-input>
-        </el-form-item>
       </el-form>
       <el-table :data="list10" class="center-block" v-loading="listLoading" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="200"
+        <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="130" max-width="180">
+          <template slot-scope="scope">
+            <div style="height: 90px;line-height:90px">
+              <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath2"
+                   @click="bigUrl=scope.row.sceneUrl;runBigPic=true" :onerror="img2404"
+                   style="height:70px;border-radius: 6px;vertical-align:middle"/>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column align="left" prop="deviceName" label="车牌号码" min-width="120" max-width="180"
                          :formatter="formatterAddress"></el-table-column>
-        <!--<el-table-column align="left" prop="telephone" label="手机号" min-width="150" max-width="200"-->
-        <!--:formatter="formatterAddress"></el-table-column>-->
-        <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150" max-width="200"
+        <el-table-column align="left" prop="deviceId" label="牌号种类" min-width="100" max-width="150"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="200"
+        <el-table-column align="left" prop="isp" label="牌号颜色" max-width="150" min-width="100"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="placeName" label="抓取场所" min-width="150" max-width="200"
+        <el-table-column align="left" prop="placeName" label="抓取场所" min-width="130" max-width="180"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="uptime" label="抓取时间" min-width="170" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="isp" label="运营商" max-width="150" min-width="100"
+        <el-table-column align="left" prop="deviceName" label="设备标识" max-width="180" min-width="130"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="netType" label="网络类型" max-width="150" min-width="100"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="IMSI归属地" max-width="200" min-width="150" prop="regional"
+        <el-table-column align="left" label="设备ID" max-width="180" min-width="130" prop="deviceId"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
           <template slot-scope="scope">
@@ -96,21 +90,33 @@
                        :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
     </section>
+    <!--查看大图-->
+    <el-dialog title="查看大图" :visible.sync="runBigPic" width="500px" center>
+      <div class="block">
+        <el-row>
+          <el-col :span="24" style="text-align: center" align="center">
+            <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:6px;vertical-align:middle"/>
+          </el-col>
+        </el-row>
+        <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">
+          <el-button type="primary" @click="runBigPic=false" size="medium">关闭</el-button>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
   import {numValid, noValidator} from "../../assets/js/api";
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
-
-  var fileDownload = require('js-file-download');
-  let md5 = require("crypto-js/md5");
+  import {formatDate, buttonValidator} from "../../assets/js/util";
 
   export default {
     data() {
       return {
+        runBigPic: false,
         isMore: false,
-        activeItem: 'first',
+        bigUrl: '',
+        activeItem: 'T',
         tableHeight: window.innerHeight - 285,
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
@@ -123,7 +129,11 @@
         isSearch: false,
         firstPage: 0,
         page: 1,
-        exportKey: 'archives:get:listImsiToday',
+        exportKey: 'archives:get:listFaceToday',
+        imgPath: require('../../assets/img/icon_people.png'),
+        imgPath2: require('../../assets/img/icon_img.svg'),
+        img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
+        img2404: "this.onerror='';this.src='" + require('../../assets/img/icon_img.svg') + "'",
         listLoading: false,
         query: {size: 100},
         time1: ['00:00:00', '23:59:59'],
@@ -134,42 +144,12 @@
               return beginDateVal < time.getTime();
             }
           }
-        },
-        isExport: true
+        }
       }
     },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
-      },
-      //导出数据
-      confirmExport() {
-        var param = Object.assign({}, this.query);
-        if (!param.imsi) {
-          this.$message.error('请输入IMSI');
-          return;
-        }
-        if (!numValid(param.imsi) || param.imsi.length != 15) {
-          this.$message.error('请输入15位正确的IMSI');
-          return;
-        }
-        delete this.query['pageTime'];
-        delete this.query['size'];
-        let config;
-        if (sessionStorage.getItem("user")) {
-          let userId = JSON.parse(sessionStorage.getItem("user")).userId;
-          if (userId) {
-            let stringify = JSON.stringify(param);
-            let token = md5(stringify + userId + "key-hz-20180123").toString();
-            config = {headers: {token: token, tokenId: userId}, responseType: 'arraybuffer'};
-          }
-        }
-        this.axios.post("archives/export/record", param, config).then((res) => {
-          let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
-          let fileName = decodeURIComponent(fileStr);
-          fileDownload(res.data, fileName);
-        }).catch((res) => {
-        });
       },
       //更多条件
       showMore() {
@@ -185,19 +165,6 @@
           this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         }
-        let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 30 * 1000);
-        if (bol) {
-          this.isExport = false;
-        } else {
-          this.isExport = true;
-        }
-        // if (val && val.length == 2) {
-        //   let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 7 * 1000);
-        //   if (bol) {
-        //     this.$message.error('日期范围不能超过7天');
-        //     return;
-        //   }
-        // }
         this.getData();
       },
       handleTime(val) {
@@ -211,17 +178,16 @@
       handleClick(tab, event) {
         this.isMore = false;
         this.clearData();
-        if (this.activeItem === 'second') {
-          this.exportKey = 'archives:get:listImsiHistory';
+        if (this.activeItem === 'H') {
+          this.exportKey = 'archives:get:listFaceHistory';
         } else {
-          this.exportKey = 'archives:get:listImsiToday';
+          this.exportKey = 'archives:get:listFaceToday';
         }
       },
       //查看IMSI详情
       gotoDetail(row) {
-        let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: row.imsi, id: row.id}});
+        let routeData = this.$router.resolve({path: '/carDetail', query: {id: row.id, imageId: row.imageId}});
         window.open(routeData.href, '_blank');
-        // this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi, id: row.id}});
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
@@ -235,9 +201,9 @@
       },
       //历史数据
       getData() {
-        let url = 'archives/get/listImsiToday';
-        if (this.activeItem === 'second') {
-          url = 'archives/get/listImsiHistory';
+        let url = 'archives/get/listFaceToday';
+        if (this.activeItem === 'H') {
+          url = 'archives/get/listFaceHistory';
         }
 
         if (this.query.deviceId) {
@@ -299,7 +265,7 @@
         }
         if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst && (this.list.length % 100 === 0)) {
           this.firstPage = this.list.length;
-          this.query.pageTime = this.list[this.list.length - 1].uptime;
+          this.query.pageTime = this.list[this.list.length - 1].catchTime;
           this.getData();
         }
         this.list10 = this.list;

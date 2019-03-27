@@ -19,14 +19,14 @@ import VipHome from '@/components/profiles/VipHome'
 import ImsiRecords from '@/components/profiles/ImsiRecords'
 import CatchRecords from '@/components/profiles/CatchRecords'
 import ImportPersons from '@/components/profiles/ImportPersons'
-import NormalPersons from '@/components/profiles/NormalPersons'
 import ListManage from '@/components/profiles/ListManage'
 import VipDetail from '@/components/profiles/VipDetail'
 import PersonnelFiles from '@/components/profiles/PersonnelFiles'
 import ImsiDetail from '@/components/profiles/ImsiDetail'
 import FaceDetail from '@/components/profiles/FaceDetail'
-import ListData from '@/components/profiles/ListData'
 import PathLine from '@/components/profiles/PathLine'
+import CarRecords from '@/components/profiles/CarRecords'
+import CarDetail from '@/components/profiles/CarDetail'
 
 import AnalysisHome from '@/components/analysis/AnalysisHome'
 import CaseList from '@/components/analysis/case/CaseList'
@@ -43,6 +43,9 @@ import FollowIMSIDetail from '@/components/analysis/follow/FollowIMSIDetail'
 import FollowImageDetail from '@/components/analysis/follow/FollowImageDetail'
 import PersonControl from '@/components/analysis/control/PersonControl'
 import AddControl from '@/components/analysis/control/AddControl'
+import AddCarTask from '@/components/analysis/cartask/AddCarTask'
+import CarTaskList from '@/components/analysis/cartask/CarTaskList'
+import CarTaskDetail from '@/components/analysis/cartask/CarTaskDetail'
 import ControlDetail from '@/components/analysis/control/ControlDetail'
 import CompareTool from '@/components/analysis/CompareTool'
 
@@ -111,8 +114,7 @@ export default new Router({
             {path: '/importPersons', component: ImportPersons, name: '人员档案'},
             {path: '/imsiRecords', component: ImsiRecords, name: 'IMSI记录'},
             {path: '/catchRecords', component: CatchRecords, name: '图像记录'},
-            {path: '/normalPersons', component: NormalPersons, name: '普通人员'},
-            {path: '/listData', component: ListData, name: '名单入库'}
+            {path: '/carRecords', component: CarRecords, name: '车牌记录'}
           ]
         },
         {
@@ -124,6 +126,7 @@ export default new Router({
             {path: '/collisionAnalysis', component: CollisionAnalysis, name: '碰撞分析'},
             {path: '/followAnalysis', component: FollowAnalysis, name: '伴随分析'},
             {path: '/personControl', component: PersonControl, name: '人员布控'},
+            {path: '/carTaskList', component: CarTaskList, name: '车码碰撞'},
             {path: '/compareTool', component: CompareTool, name: '对比工具'}
           ]
         },
@@ -272,6 +275,21 @@ export default new Router({
       ]
     },
     {
+      path: '/importPersons',
+      name: '档案',
+      component: Index,
+      children: [
+        {
+          path: '/carRecords',
+          component: FileHome,
+          name: '车牌记录',
+          children: [
+            {path: '/carDetail', component: CarDetail, name: '车牌详情'}
+          ]
+        }
+      ]
+    },
+    {
       path: '/caseList',
       name: '侦查',
       component: Index,
@@ -332,8 +350,24 @@ export default new Router({
           component: AnalysisHome,
           name: '人员布控',
           children: [
-            {path: '/addControl', component: AddControl, name: '新建布控任务'},
+            {path: '/addControl', component: AddControl, name: '新建/修改布控任务'},
             {path: '/controlDetail', component: ControlDetail, name: '布控告警详情'}
+          ]
+        }
+      ]
+    },
+    {
+      path: '/caseList',
+      name: '侦查',
+      component: Index,
+      children: [
+        {
+          path: '/carTaskList',
+          component: AnalysisHome,
+          name: '车码碰撞',
+          children: [
+            {path: '/addCarTask', component: AddCarTask, name: '新建车码碰撞任务'},
+            {path: '/carTaskDetail', component: CarTaskDetail, name: '车码碰撞分析结果'}
           ]
         }
       ]

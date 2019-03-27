@@ -34,14 +34,18 @@
       <el-table :data="roles" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
         <el-table-column align="left" prop="roleName" label="角色名称" min-width="150"
-                         max-width="300" :formatter="formatterAddress"></el-table-column>
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="remark" label="备注" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="roleType" label="类型" min-width="150"
-                         max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="state" label="状态" min-width="150"
-                         max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="200" fixed="right">
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" prop="state" label="状态" min-width="150" max-width="250">
+          <template slot-scope="scope">
+            <span style="color:#00C755" v-show="scope.row.state == 0">正常</span>
+            <span style="color:#999" v-show="scope.row.state == 1">禁用</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="操作" min-width="150" max-width="250" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="roleInfo(scope.row)" v-show="getButtonVial('manager:role:detail:*')">查看
             </el-button>

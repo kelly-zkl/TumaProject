@@ -69,9 +69,9 @@
       <el-table ref="table" :data="list10" v-loading="listLoading" class="center-block" stripe
                 :height="tableHeight" :max-height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="人员编号" prop="faceId" min-width="180"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="130"
+        <el-table-column align="left" label="人员编号" prop="faceId" min-width="160"
+                         max-width="220" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="110"
                          max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
@@ -86,7 +86,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="关联IMSI[置信度]" prop="imsiList" min-width="220" max-width="250">
+        <el-table-column align="left" label="关联IMSI[置信度]" prop="imsiList" min-width="180" max-width="240">
           <template slot-scope="scope">
             <div v-for="item in scope.row.imsiList">
               <span
@@ -95,19 +95,29 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="年龄段" prop="startAge" min-width="80" max-width="120"
+        <el-table-column align="left" label="年龄段" prop="startAge" min-width="60" max-width="150"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="120"
+        <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="150"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="姓名" prop="name" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="手机号" prop="mobilePhone" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="身份证号" prop="idCard" min-width="170"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="最近抓取时间" prop="name" min-width="170"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="最近抓取场所" prop="mobilePhone" min-width="150"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="疑似重点人员" prop="idCard" min-width="110"
+                         max-width="200" :formatter="formatterAddress">
+          <template slot-scope="scope">
+            <div style="height: 90px;line-height:90px">
+              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
+                   @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
+                   style="max-width: 90px;max-height:90px;border-radius:6px;vertical-align:middle"/>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="人脸相似度" prop="idCard" min-width="100"
+                         max-width="150" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="碰撞时间" prop="uptime" min-width="170"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="150" fixed="right">
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('archives:detail')">查看人员档案
             </el-button>

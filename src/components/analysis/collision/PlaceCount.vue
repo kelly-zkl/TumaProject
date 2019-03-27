@@ -5,6 +5,10 @@
         <el-col :span="18" align="left" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:regional:count')"
                    style="text-align: left">
+            <el-form-item style="margin-bottom: 10px">
+              <el-input v-model="query.deviceId" placeholder="设备ID" style="width: 160px" size="medium"
+                        :maxlength=30></el-input>
+            </el-form-item>
             <el-form-item label="数量" style="margin-bottom: 10px">
               <el-input-number v-model="query.count1" controls-position="right" :min="1"
                                :max="query.count2-1" style="width: 100px" size="medium"></el-input-number>
@@ -13,7 +17,7 @@
                                :max="99999" style="width: 100px" size="medium"></el-input-number>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
+              <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()">重置</el-button>
@@ -28,15 +32,17 @@
       </el-row>
       <el-table :data="records" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="125"
+        <el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="地区" prop="regional" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="IMSI数量" prop="count1" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
       </el-table>
       <div class="block" style="margin: 20px 0" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
-                       :page-size="10" background :total="all.length"
-                       layout="prev, pager, next"></el-pagination>
+                       :page-sizes="[10, 15, 20, 30]" :page-size="query.size" background
+                       layout="sizes, prev, pager, next, jumper"></el-pagination>
       </div>
     </section>
   </div>
@@ -53,9 +59,8 @@
         taskId: this.$route.query.taskId || '',
         collisionType: this.$route.query.collisionType || '',
         listLoading: false,
-        query: {page: 1, size: 9999},
-        records: [],
-        all: []
+        query: {page: 1, size: 10},
+        records: []
       }
     },
     methods: {
@@ -64,7 +69,7 @@
       },
       //清除查询条件
       clearData() {
-        this.query = {page: 1, size: 9999};
+        this.query = {page: 1, size: 10};
         this.getData();
       },
       //碰撞统计导出
@@ -91,18 +96,15 @@
         }).catch((res) => {
         });
       },
-      //获取归属地统计记录
+      //获取地区统计记录
       getData() {
         this.query.collisionType = this.collisionType;
         this.query.collisionTaskId = this.taskId;
-        this.query.groupType = "regional";//分组统计类型regional 归属地,device 地区
+        this.query.groupType = "device";//分组统计类型regional 归属地,device 地区
 
         this.listLoading = true;
         this.$post('/collision/regional/count', this.query).then((data) => {
-          this.all = data.data;
-          this.query.page = 1;
           this.records = data.data;
-          this.records = this.records.slice(0, 10);
           this.listLoading = false;
         }).catch((err) => {
           this.records = [];
@@ -111,20 +113,20 @@
       },
       pageChange(index) {
         this.query.page = index;
-        this.records = this.all;
-        if ((this.records.length - (index * 10)) >= 0) {
-          this.records = this.records.slice((index * 10 - 10), (index * 10));
-        } else {
-          this.records = this.records.slice((index * 10 - 10), this.all.length);
-        }
+        this.getData();
       },
       handleSizeChange(val) {
         this.query.size = val;
+        this.getData();
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'isp') {
           return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '--';
+        } else if (column.property === 'netType') {//网络类型 --> 根据运营商判断
+          return this.getNetType(row.isp);
+        } else if (column.property === 'uptime') {
+          return row.uptime ? formatDate(new Date(row.uptime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

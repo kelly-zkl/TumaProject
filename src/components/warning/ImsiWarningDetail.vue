@@ -19,76 +19,75 @@
           </el-button>
         </el-col>
       </el-row>
-      <div class="add-appdiv dialog"
+      <div class="add-appdiv dialog gray-form"
            style="border-top: none;padding: 10px 30px;border-radius: 0 0 4px 4px;margin-bottom: 0">
         <el-form :model="imsiDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="120px">
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8">
               <el-form-item label="IMSI信息" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.imsi ? imsiDetail.imsi : '--'}}</span>
+                {{imsiDetail.imsi ? imsiDetail.imsi : '--'}}
               </el-form-item>
               <el-form-item label="运营商" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">
-                  {{imsiDetail.isp == 0 ? '移动' : imsiDetail.isp == 1 ? '联通' : imsiDetail.isp == 2 ? '电信' : '--'}}
-                </span>
+                {{imsiDetail.isp == 0 ? '移动' : imsiDetail.isp == 1 ? '联通' : imsiDetail.isp == 2 ? '电信' : '--'}}
               </el-form-item>
               <el-form-item label="IMSI归属地" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.regional ? imsiDetail.regional : '--'}}</span>
+                {{imsiDetail.regional ? imsiDetail.regional : '--'}}
               </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label="告警时间" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.timeStr ? imsiDetail.timeStr : '--'}}</span>
+                {{imsiDetail.timeStr ? imsiDetail.timeStr : '--'}}
               </el-form-item>
               <el-form-item label="场所地区" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.area ? imsiDetail.area : '--'}}</span>
+                {{imsiDetail.area ? imsiDetail.area : '--'}}
               </el-form-item>
               <el-form-item label="场所地点" align="left" style="margin: 0;text-align: left">
-                <span
-                  style="font-size: 15px;color:#000">{{imsiDetail.detailAddress ? imsiDetail.detailAddress : '--'}}</span>
+                {{imsiDetail.detailAddress ? imsiDetail.detailAddress : '--'}}
               </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label="告警场所" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.placeName ? imsiDetail.placeName : '--'}}</span>
+                {{imsiDetail.placeName ? imsiDetail.placeName : '--'}}
               </el-form-item>
               <el-form-item label="设备标识" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.deviceName ? imsiDetail.deviceName : '--'}}</span>
+                {{imsiDetail.deviceName ? imsiDetail.deviceName : '--'}}
               </el-form-item>
               <el-form-item label="设备ID" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.deviceId ? imsiDetail.deviceId : '--'}}</span>
+                {{imsiDetail.deviceId ? imsiDetail.deviceId : '--'}}
               </el-form-item>
             </el-col>
           </el-row>
         </el-form>
       </div>
-      <div class="add-appdiv dialog" style="padding: 10px 0;margin-top: 13px">
+      <div class="add-appdiv dialog gray-form" style="padding: 10px 0;margin-top: 13px">
         <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">布控任务信息
         </div>
         <el-form :model="taskDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="120px">
           <el-row style="margin: 0;padding: 0 30px">
             <el-col :span="8">
               <el-form-item label="布控对象" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{taskDetail.imsi ? taskDetail.imsi : '--'}}</span>
+                {{imsiDetail.imsi ? imsiDetail.imsi : '--'}}
               </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label="任务名称" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{taskDetail.imsi ? taskDetail.imsi : '--'}}</span>
+                <el-button type="text" @click="gotoControl()">{{taskDetail.taskName ? taskDetail.taskName : '--'}}
+                </el-button>
               </el-form-item>
               <el-form-item label="关联案件" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{taskDetail.imsi ? taskDetail.imsi : '--'}}</span>
+                <el-button type="text" @click="gotoCase()">{{taskDetail.caseName ? taskDetail.caseName : '--'}}
+                </el-button>
               </el-form-item>
               <el-form-item label="布控编号" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{taskDetail.imsi ? taskDetail.imsi : '--'}}</span>
+                {{taskDetail.taskNo ? taskDetail.taskNo : '--'}}
               </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label="布控类型" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{taskDetail.imsi ? taskDetail.imsi : '--'}}</span>
+                {{taskDetail.dispositionType==0?'重点人员名单':taskDetail.dispositionType==1?'特征布控':'--'}}
               </el-form-item>
               <el-form-item label="有效期限" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{taskDetail.imsi ? taskDetail.imsi : '--'}}</span>
+                {{taskDetail.startStr + "~" + taskDetail.endStr}}
               </el-form-item>
             </el-col>
           </el-row>
@@ -212,6 +211,7 @@
         provinceList: JSON.parse(localStorage.getItem("areas")),
         id: this.$route.query.id || '',
         imsi: this.$route.query.imsi || '',
+        taskId: this.$route.query.taskId || '',
         qTime: '',
         dealDetail: {},
         imsiDetail: {},
@@ -256,6 +256,16 @@
       loadMore() {
         this.num += 10;
         this.getPersons();
+      },
+      //跳转布控详情页
+      gotoControl() {
+        let routeData = this.$router.resolve({path: '/controlDetail', query: {taskId: this.taskDetail.id}});
+        window.open(routeData.href, '_blank');
+      },
+      //跳转案件详情页
+      gotoCase() {
+        let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: this.taskDetail.caseId}});
+        window.open(routeData.href, '_blank');
       },
       //进入人员档案
       gotoPerson(row) {
@@ -415,6 +425,14 @@
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
       },
+      //布控信息
+      getTaskDetail() {
+        this.$post('disposition/get/' + this.taskId, {}).then((data) => {
+          this.taskDetail = data.data;
+          this.taskDetail.startStr = formatDate(new Date(this.taskDetail.startTime * 1000), 'yyyy-MM-dd');
+          this.taskDetail.endStr = formatDate(new Date(this.taskDetail.endTime * 1000), 'yyyy-MM-dd');
+        })
+      },
       //告警场所
       getPlaces() {
         this.$post("place/query", {page: 1, size: 999999}).then((data) => {
@@ -460,6 +478,7 @@
     },
     mounted() {
       this.getPlaces();
+      this.getTaskDetail();
       this.getImsiDetail();
       this.getPersons();
     }

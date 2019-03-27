@@ -18,25 +18,25 @@
         <h5 class="add-label">设置布控</h5>
         <div class="add-appdiv">
           <el-form-item label="布控类型" align="left" style="text-align: left">
-            <el-radio-group v-model="taskType" size="medium">
-              <el-radio-button label="list">名单布控</el-radio-button>
-              <el-radio-button label="feature">特征布控</el-radio-button>
+            <el-radio-group v-model="controlTask.dispositionType" size="medium">
+              <el-radio-button label="0">重点人员名单</el-radio-button>
+              <el-radio-button label="1">特征布控</el-radio-button>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="名单布控" align="left" style="margin:0 0 20px 0" prop="blackClassList"
-                        v-show="taskType=='list'">
+          <el-form-item label="添加名单" align="left" style="margin:0 0 20px 0" prop="blackClassList"
+                        v-show="controlTask.dispositionType==0">
             <el-select v-model="controlTask.blackClassList" placeholder="重点人员名单" size="medium"
                        filterable multiple clearable collapse-tags>
               <el-option v-for="item in listTypes" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="头像特征" align="left" v-show="taskType=='feature'">
+          <el-form-item label="头像特征" align="left" v-show="controlTask.dispositionType==1">
             <el-upload :action="uploadUrl" list-type="picture-card" :before-remove="beforeRemove"
                        :on-change="handleChange" :limit="20">
               <div class="el-upload__text" style="color: #777">上传头像</div>
             </el-upload>
           </el-form-item>
-          <el-form-item label="IMSI特征" align="left" v-show="taskType=='feature'">
+          <el-form-item label="IMSI特征" align="left" v-show="controlTask.dispositionType==1">
             <el-tag :key="tag" v-for="tag in controlTask.imsiList" closable hit
                     :disable-transitions="false" @close="handleClose(tag)">{{tag}}
             </el-tag>
@@ -91,7 +91,7 @@
         </div>
       </el-form>
       <div class="block" style="margin:20px 0">
-        <el-button type="primary" @click="createControlTask()">确认创建布控</el-button>
+        <el-button type="primary" @click="createControlTask()">确认</el-button>
       </div>
       <!--在地图上选择场所-->
       <div class="device">
@@ -165,15 +165,15 @@
       return {
         mapVisible: false,
         dialogPlace: false,
-        taskType: 'list',
         controlTask: {
           cycleType: 'EVERYDAY', intervalType: 'ALLDAY', week: [], imsiList: [],
-          featureList: [], blackClassList: []
+          featureList: [], blackClassList: [], dispositionType: 0
         },
         cases: [],
         places: [],
         placeList: [],
         inputVisible: false,
+        taskId: this.$route.query.id || '',
         inputValue: '',
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         weeks: [{label: '周一', value: 0}, {label: '周二', value: 1}, {label: '周三', value: 2}, {label: '周四', value: 3},
@@ -212,6 +212,27 @@
       showMap() {
         this.mapVisible = true;
         // this.$refs.map.clearArea();
+      },
+      getTaskDetail() {
+        this.$post('disposition/get/' + this.taskId, {}).then((data) => {
+          this.controlTask = data.data;
+          var arr = [];
+          this.controlTask.blackClassList.forEach((item) => {
+            arr.push(item.id);
+          });
+          this.controlTask.blackClassList = arr;
+          var places = [];
+          this.controlTask.placeList.forEach((item) => {
+            arr.push(item.id);
+          });
+          this.controlTask.placeList = places;
+          delete this.controlTask['placeName'];
+          if (this.controlTask.intervalType === 'CUSTOM') {//自定义时段
+            this.controlTask.timerange = [this.controlTask.startTimeInterval, this.controlTask.endTimeInterval];
+          }
+          this.controlTask.startDate = [this.controlTask.startTime * 1000, this.controlTask.endTime * 1000];
+        }).catch((err) => {
+        });
       },
       //地图选择场所
       setPlaceList() {
@@ -298,18 +319,17 @@
               this.controlTask.startTimeInterval = this.controlTask.timerange[0];
               this.controlTask.endTimeInterval = this.controlTask.timerange[1];
             }
-            if (this.taskType == 'list') {//名单布控
+            if (this.controlTask.dispositionType == 0) {//名单布控
               this.controlTask.featureList = [];
               this.controlTask.imsiList = [];
             } else {//特征布控
               this.controlTask.blackClassList = [];
             }
-            if (this.controlTask.featureList.length === 0 && this.controlTask.imsiList.length === 0
-              && this.controlTask.blackClassList.length === 0) {
+            if (this.controlTask.featureList.length == 0 && this.controlTask.imsiList.length == 0 && this.controlTask.blackClassList.length == 0) {
               this.$message.error('请设置布控特征');
               return;
             }
-            if (this.taskType == 'list') {//名单布控
+            if (this.controlTask.dispositionType == 0) {//名单布控
               var arr = [];
               this.controlTask.blackClassList.forEach((item) => {
                 this.listTypes.forEach((list) => {
@@ -320,18 +340,35 @@
               });
               this.controlTask.blackClassList = arr;
             }
-
+            var places = [];
+            this.controlTask.placeList.forEach((item) => {
+              this.placeList1.forEach((list) => {
+                if (item == list.id) {
+                  arr.push({id: list.id, placeName: list.placeName, detailAddress: list.detailAddress});
+                }
+              });
+            });
+            this.controlTask.placeList = places;
             this.controlTask.caseName = this.getCaseName();
             this.controlTask.taskStatus = 'EXECUTION';
             delete this.controlTask['startDate'];
             delete this.controlTask['timerange'];
             delete this.controlTask['week'];
             console.log(this.controlTask);
-            this.$post("disposition/add", this.controlTask, "创建成功").then((data) => {
-              if ("000000" === data.code)
-                this.$router.go(-1);
-            }).catch((err) => {
-            });
+            if (this.taskId.length > 0) {
+              this.$post("disposition/add", this.controlTask, "修改成功").then((data) => {
+                if ("000000" === data.code)
+                  this.$router.go(-1);
+              }).catch((err) => {
+              });
+            } else {
+              this.controlTask.createBy = JSON.parse(sessionStorage.getItem("user")).realName;
+              this.$post("disposition/add", this.controlTask, "创建成功").then((data) => {
+                if ("000000" === data.code)
+                  this.$router.go(-1);
+              }).catch((err) => {
+              });
+            }
           }
         })
       },
@@ -493,6 +530,10 @@
       }
     },
     mounted() {
+      this.taskId = this.$route.query.id || '';
+      if (this.taskId.length > 0) {
+        this.getTaskDetail();
+      }
       this.getCases();
       this.getBlackTypes();
       this.getPlaces();

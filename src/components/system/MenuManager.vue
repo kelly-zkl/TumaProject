@@ -35,24 +35,28 @@
       <el-table :data="menus" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
         <el-table-column align="left" prop="name" label="菜单名称" min-width="150"
-                         max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="type" label="类型" width="110"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" prop="type" label="类型" min-width="80" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="pname" label="父级菜单" min-width="150"
-                         max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="icon" label="菜单图标" width="110">
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" prop="icon" label="菜单图标" min-width="80" max-width="120">
           <template slot-scope="scope">
             <i :class="scope.row.icon" v-if="scope.row.icon"></i>
             <span v-else>--</span>
           </template>
         </el-table-column>
         <el-table-column align="left" prop="permissionUrl" label="菜单URL" min-width="150"
-                         max-width="300" :formatter="formatterAddress"></el-table-column>
+                         max-width="180" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="permissionValue" label="授权标识" min-width="150"
-                         max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="status" label="状态" width="110"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="180" fixed="right">
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" prop="status" label="状态" min-width="80" max-width="120">
+          <template slot-scope="scope">
+            <span style="color:#00C755" v-show="scope.row.status == 0">正常</span>
+            <span style="color:#999" v-show="scope.row.status == 1">禁用</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="操作" min-width="150" max-width="180" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click.stop="modifyMenu(scope.row)"
                        v-show="getButtonVial('manager:permission:update')">修改

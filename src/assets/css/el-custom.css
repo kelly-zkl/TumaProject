@@ -345,7 +345,7 @@
 /**form的label变灰色*/
 .gray-form .el-form-item__label {
   color: #999;
-  padding: 0 30px 0 0;
+  padding: 0 20px 0 0;
 }
 
 .gray-form .el-form-item__content {

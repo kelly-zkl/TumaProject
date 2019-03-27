@@ -92,19 +92,35 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="姓名" prop="name" min-width="120"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="年龄" prop="age" min-width="100" max-width="120"
+        <el-table-column align="left" label="姓名" prop="name" min-width="100"
+                         max-width="180" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="年龄" prop="age" min-width="60" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="性别" prop="sex" min-width="100" max-width="120"
+        <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="身份证号" prop="idCard" min-width="170"
                          max-width="220" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="手机号" prop="mobilePhone" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="所属名单" prop="blackClass" min-width="150"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="150" fixed="right">
+                         max-width="200" :formatter="formatterAddress">
+          <!--<template slot-scope="scope">-->
+          <!--<div v-for="item in scope.row.imsiList">-->
+          <!--<span>{{item.imsi}}</span>-->
+          <!--</div>-->
+          <!--</template>-->
+        </el-table-column>
+        <el-table-column align="left" label="疑似IMSI[置信度]" prop="imsiList" min-width="220" max-width="250">
+          <template slot-scope="scope">
+            <div v-for="item in scope.row.imsiList" v-show="scope.row.imsiList.length>0">
+              <span
+                v-bind:style="query.imsi&&query.imsi.length>0&&item.imsi.indexOf(query.imsi)>-1?'color:#ff0000':'color:#000'">{{item.imsi}}<span
+                style="font-weight: bold">[{{(item.weight/10).toFixed(1)}}%]</span></span>
+            </div>
+            <span v-show="scope.row.imsiList.length==0">{{'--'}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="操作" min-width="150" max-width="200" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('person:delKeyPerson')">查看
             </el-button>
@@ -299,13 +315,10 @@
         failNum: 0,
         sels: [],
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
-        listTypes: [{value: '0', label: '重点人员'}, {value: '2', label: '普通人员'}],
+        listTypes: [],
         rules: {
           faceUrl: [{required: true, message: '请选择头像', trigger: 'blur'}],
-          // age: [{required: true, message: '请输入年龄', trigger: 'blur'}],
-          // sex: [{required: true, message: '请选择性别', trigger: 'blur'}],
           name: [{required: true, message: '请输入姓名', trigger: 'blur'}],
-          // phone: [{required: true, message: '请输入手机号', trigger: 'blur'}],
           idCard: [{required: true, message: '请输入身份证号', trigger: 'blur'}],
           // pType: [{required: true, message: '请选择所属名单', trigger: 'blur'}]
         },
@@ -677,6 +690,15 @@
         this.$post('archives/listBlackPersonType', {page: 1, size: 9999}).then((data) => {
           if ("000000" === data.code) {
             this.listTypes = data.data.list;
+            var blacId = this.$route.query.id || '';
+            if (!!blacId) {
+              data.data.list.forEach((item) => {
+                if (item.id == blacId) {
+                  this.query.blackClass = item.name;
+                }
+              });
+            }
+            this.getData();
           }
         }).catch((err) => {
         });
@@ -684,7 +706,6 @@
     },
     mounted() {
       this.getBlackTypes();
-      this.getData();
     }
   }
 </script>

@@ -39,8 +39,8 @@
           </el-form>
         </el-col>
         <el-col :span="5" align="right" style="text-align: right">
-          <el-button type="primary" size="medium" @click="addFollowTask()"
-                     v-show="getButtonVial('follow:add')">新建伴随任务
+          <el-button type="primary" size="medium" @click="addCarTask()"
+                     v-show="getButtonVial('follow:add')">新建车码碰撞
           </el-button>
           <el-button size="medium" @click="deleteTask()" :disabled="sels.length == 0"
                      v-show="getButtonVial('follow:delete')">删除
@@ -51,13 +51,13 @@
                 @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="任务名称" prop="taskName" min-width="150"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="任务类型" prop="followType" min-width="100"
-                         max-width="150" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="分析对象" prop="followTarget" min-width="150"
+        <el-table-column align="left" label="任务编号" prop="taskName" min-width="130"
                          max-width="180" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="120" max-width="150">
+        <el-table-column align="left" label="任务名称" prop="taskName" min-width="130"
+                         max-width="180" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="分析对象" prop="followTarget" min-width="130"
+                         max-width="180" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="100" max-width="130">
           <template slot-scope="scope">
             <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已完成</span>
             <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
@@ -66,8 +66,10 @@
             <span style="color:#999" v-show="scope.row.taskStatus == 'STOP'">终止</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="关联案件" prop="caseName" min-width="150"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="关联案件" prop="caseName" min-width="130"
+                         max-width="180" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="分析结果" prop="caseName" min-width="100"
+                         max-width="120" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="创建日期" prop="createTime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="150" max-width="180" fixed="right">
@@ -159,12 +161,12 @@
         });
       },
       //新建伴随任务
-      addFollowTask() {
+      addCarTask() {
         this.$post('/follow/query', {page: 1, size: 5, taskStatus: "EXECUTION"}).then((data) => {
           this.count = data.data.count;
           if (data.data.count < 5) {
             sessionStorage.setItem("query", JSON.stringify(this.query));
-            this.$router.push({path: '/addFollow'});
+            this.$router.push({path: '/addCarTask'});
           } else {
             this.$message.error('分析中的任务建议不超过5个。请待当前分析中的任务完成后，再创建新任务。');
             return;
@@ -178,7 +180,7 @@
       },
       gotoDetail(task) {
         let routeData = this.$router.resolve({
-          path: '/followResult',
+          path: '/carTaskDetail',
           query: {taskId: task.id, followType: task.followType}
         });
         window.open(routeData.href, '_blank');

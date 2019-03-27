@@ -1,59 +1,68 @@
 <template>
   <div>
     <section class="content">
-      <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryRecord')"
-               style="text-align: left;width: 1000px;">
-        <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 160px"
-                    :maxlength=50></el-input>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.deviceId" placeholder="设备ID" style="width: 160px" size="medium"
-                    :maxlength=30></el-input>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" size="medium"
-                          :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
-                          start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px"
-                          :picker-options="pickerBeginDate">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-button size="medium" @click="clearData()">重置</el-button>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="isMore">
-          <el-select v-model="query.isp" placeholder="选择运营商" style="width: 120px" size="medium" clearable>
-            <el-option v-for="item in operators" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="isMore">
-          <el-input v-model="query.regional" placeholder="IMSI归属地" style="width: 160px" size="medium"
-                    :maxlength=20></el-input>
-        </el-form-item>
-      </el-form>
+      <el-row>
+        <el-col :span="18" align="left" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('collision:queryRecord')"
+                   style="text-align: left;width: 1000px;">
+            <el-form-item style="margin-bottom: 10px">
+              <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 160px"
+                        :maxlength=50></el-input>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-input v-model="query.deviceId" placeholder="设备ID" style="width: 160px" size="medium"
+                        :maxlength=30></el-input>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" size="medium"
+                              :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
+                              start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px"
+                              :picker-options="pickerBeginDate">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-button size="medium" @click="clearData()">重置</el-button>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-select v-model="query.isp" placeholder="选择运营商" style="width: 120px" size="medium" clearable>
+                <el-option v-for="item in operators" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-input v-model="query.regional" placeholder="IMSI归属地" style="width: 160px" size="medium"
+                        :maxlength=20></el-input>
+            </el-form-item>
+          </el-form>
+        </el-col>
+        <el-col :span="6" align="right" style="text-align: right">
+          <el-button type="primary" size="medium" @click="exportData()"
+                     v-show="getButtonVial('collision:export:record')">导出数据
+          </el-button>
+        </el-col>
+      </el-row>
       <el-table :data="records" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="IMSI" prop="imsi" min-width="150"
-                         max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="运营商" prop="isp" min-width="125"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="网络类型" prop="netType" min-width="125"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="125"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="抓取时间" prop="uptime" min-width="125"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备标识" prop="deviceName" min-width="125"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="运营商" prop="isp" min-width="80"
+                         max-width="120" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="网络类型" prop="netType" min-width="80"
+                         max-width="120" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="150"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="抓取时间" prop="uptime" min-width="170"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="130" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoImsi(scope.row.imsi)"
@@ -71,7 +80,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
+  import {formatDate, buttonValidator} from "../../../assets/js/util";
 
   var fileDownload = require('js-file-download');
   let md5 = require("crypto-js/md5");
@@ -104,12 +113,6 @@
       },
       //跳转IMSI记录
       gotoImsi(imsi) {
-        // this.$router.push({
-        //   path: '/collisionImsiRecords', query: {
-        //     taskId: this.taskId,
-        //     collisionType: this.collisionType, imsi: imsi
-        //   }
-        // });
         let routeData = this.$router.resolve({
           path: '/collisionImsiRecords', query: {
             taskId: this.taskId,
@@ -147,6 +150,14 @@
           fileDownload(res.data, fileName);
         }).catch((res) => {
         });
+        if (param.type == '0') {//分析结果
+          this.axios.post('/collision/export/analyze', param, config).then((res) => {
+            let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
+            let fileName = decodeURIComponent(fileStr);
+            fileDownload(res.data, fileName);
+          }).catch((res) => {
+          });
+        }
       },
       //获取imsi记录
       getData() {

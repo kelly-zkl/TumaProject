@@ -6,42 +6,56 @@
           <div style="font-size:14px;padding:10px 20px">基本信息</div>
         </el-col>
         <el-col :span="4" :offset="12" align="center" style="text-align: center">
+          <el-button type="text" size="medium" @click="">查看修改记录</el-button>
           <el-button type="text" size="medium" @click="deletePerson()" v-show="getButtonVial('person:delKeyPerson')">
             删除
           </el-button>
-          <el-button type="text" size="medium" @click="runningModifyPerson=true">修改</el-button>
+          <el-button type="text" size="medium" @click="confirmModify()">修改</el-button>
         </el-col>
       </el-row>
       <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px">
-        <el-form :model="person" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
+        <el-form :model="person" style="margin: 0;padding: 0" labelPosition="right" label-width="100px" :rules="rules"
+                 ref="person">
           <el-row style="margin: 0;padding: 0">
-            <el-col :span="8" align="left" style="text-align: left">
-              <img :src="person.faceUrl?person.faceUrl:imgPath" :onerror="img404"
-                   style="max-height: 160px;max-width: 160px;border-radius: 6px"/>
+            <el-col :span="6" align="left" style="text-align: left">
+              <el-form-item prop="faceUrl" style="margin: 0">
+                <el-upload :action="uploadUrl" :show-file-list="false"
+                           :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+                  <img :src="person.faceUrl?person.faceUrl:imgPath" class="avatar" :onerror="img404">
+                </el-upload>
+              </el-form-item>
+              <div style="color:#999;margin-left: 100px;margin-bottom: 20px">
+                请选择有人脸且五官较清晰的图片。<br/>
+                支持jpeg/jpg/png格式的图片，且不超过2M
+              </div>
             </el-col>
-            <el-col :span="8" align="left" style="text-align: left">
-              <el-form-item label="姓名" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{person.name?person.name:'--'}}</span>
+            <el-col :span="8" align="left" style="text-align: left" :offset="1">
+              <el-form-item label="姓名" prop="name">
+                <el-input placeholder="姓名" v-model="person.name" :maxlength="20"></el-input>
               </el-form-item>
-              <el-form-item label="年龄" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{person.age>0?person.age: '--'}}</span>
+              <el-form-item label="身份证号" prop="idCard">
+                <el-input placeholder="身份证号" v-model="person.idCard" :maxlength="18"></el-input>
               </el-form-item>
-              <el-form-item label="性别" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{person.sex == 0 ? '男' : person.sex == 1 ? '女' : '--'}}</span>
+              <el-form-item label="性别">
+                <el-radio-group v-model="person.sex" size="medium">
+                  <el-radio-button v-for="item in sexs" :key="item.value" :label="item.value">{{item.label}}
+                  </el-radio-button>
+                </el-radio-group>
               </el-form-item>
-              <el-form-item label="手机号" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{person.mobilePhone? person.mobilePhone: '--'}}</span>
+              <el-form-item label="年龄">
+                <el-input-number v-model="person.age" controls-position="right" :min="1" :max="150"></el-input-number>
               </el-form-item>
             </el-col>
-            <el-col :span="8">
-              <el-form-item label="身份证" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{person.idCard ? person.idCard : '--'}}</span>
-              </el-form-item>
-              <el-form-item label="所属名单" align="left" style="margin: 0;text-align: left">
+            <el-col :span="8" align="left" style="text-align: left" :offset="1">
+              <el-form-item label="所属名单" prop="blackClass" align="left" style="text-align: left">
                 <span style="font-size: 15px;color:#000">{{person.blackClass ? person.blackClass : '--'}}</span>
               </el-form-item>
-              <el-form-item label="备注" align="left" style="margin: 0;text-align: left">
-                <span style="font-size: 15px;color:#000">{{person.remark ? person.remark : '--'}}</span>
+              <el-form-item label="手机号">
+                <el-input placeholder="手机号" v-model="person.mobilePhone" :maxlength="11"></el-input>
+              </el-form-item>
+              <el-form-item label="备注">
+                <el-input placeholder="备注" v-model="person.remark" :maxlength="200" type="textarea"
+                          :autosize="{minRows:3,maxRows:5}"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -107,46 +121,6 @@
           </el-table-column>
         </el-table>
       </div>
-      <!--编辑人员信息-->
-      <el-dialog title="修改人员信息" :visible.sync="runningModifyPerson" width="600px" center class="dialog">
-        <el-form :model="modifyPerson" align="left" label-width="120px" label-position="right" :rules="rules"
-                 ref="modifyPerson">
-          <el-form-item label="对应头像" prop="faceUrl" style="margin: 0">
-            <el-upload :action="uploadUrl" :show-file-list="false"
-                       :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-              <img :src="modifyPerson.faceUrl?modifyPerson.faceUrl:imgPath" class="avatar" :onerror="img404">
-            </el-upload>
-          </el-form-item>
-          <div style="color:#999;margin-left: 120px;margin-bottom: 20px">
-            请选择有人脸且五官较清晰的图片。<br/>
-            支持jpeg/jpg/png格式的图片，且不超过2M
-          </div>
-          <el-form-item label="姓名" prop="name">
-            <el-input placeholder="输入姓名" v-model="modifyPerson.name" :maxlength="20"></el-input>
-          </el-form-item>
-          <el-form-item label="身份证号" prop="idCard">
-            <el-input placeholder="输入身份证号" v-model="modifyPerson.idCard" :maxlength="18"></el-input>
-          </el-form-item>
-          <el-form-item label="年龄">
-            <el-input-number v-model="modifyPerson.age" controls-position="right" :min="1"
-                             :max="150"></el-input-number>
-          </el-form-item>
-          <el-form-item label="性别">
-            <el-select v-model="modifyPerson.sex" placeholder="选择性别">
-              <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="手机号">
-            <el-input placeholder="输入手机号" v-model="modifyPerson.mobilePhone" :maxlength="11"></el-input>
-          </el-form-item>
-          <el-form-item label="备注">
-            <el-input placeholder="备注" v-model="modifyPerson.remark" :maxlength="200" type="textarea"></el-input>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer" align="center">
-          <el-button type="primary" @click="confirmModify()">确认修改</el-button>
-        </div>
-      </el-dialog>
     </section>
   </div>
 </template>
@@ -163,22 +137,17 @@
         faceId: this.$route.query.faceId || '',
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         person: {},
-        modifyPerson: {},
         listLoading: false,
         faceList: [],
         imsiList: [],
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
-        runningModifyPerson: false,
         persons: [],
         timeStamp: new Date().getTime(),
         rules: {
           faceUrl: [{required: true, message: '请选择头像', trigger: 'blur'}],
-          // age: [{required: true, message: '请输入年龄', trigger: 'blur'}],
-          // sex: [{required: true, message: '请选择性别', trigger: 'blur'}],
           name: [{required: true, message: '请输入姓名', trigger: 'blur'}],
-          // phone: [{required: true, message: '请输入手机号', trigger: 'blur'}],
           idCard: [{required: true, message: '请输入身份证号', trigger: 'blur'}],
-          pType: [{required: true, message: '请选择所属名单', trigger: 'blur'}]
+          blackClass: [{required: true, message: '请选择所属名单', trigger: 'blur'}]
         }
       }
     },
@@ -198,7 +167,7 @@
       handleAvatarSuccess(res, file) {
         if (res.code === '000000') {
           if (res.data) {
-            this.modifyPerson.faceUrl = res.data.fileUrl;
+            this.person.faceUrl = res.data.fileUrl;
           }
         } else {
           this.$message.error(res.msg);
@@ -211,37 +180,35 @@
       },
       //修改人员信息
       confirmModify() {
-        if (this.modifyPerson.name) {
-          if (!nameValidator(this.modifyPerson.name)) {
-            this.$message.error('请输入由汉字、英文组成的姓名');
-            return;
+        this.$refs['person'].validate((valid) => {
+          if (valid) {
+            if (!nameValidator(this.person.name)) {
+              this.$message.error('请输入由汉字、英文组成的姓名');
+              return;
+            }
+            if (!userCardValid(this.person.idCard)) {
+              this.$message.error('请输入正确的身份证号');
+              return;
+            }
+            if (this.person.age) {
+              if (!numValid(this.person.age)) {
+                this.$message.error('请输入正确的年龄');
+                return;
+              } else if (this.person.age < 1 && this.person.age > 150) {
+                this.$message.error('请输入正确的年龄');
+                return;
+              }
+            }
+            if (this.person.mobilePhone) {
+              if (!mobileValidator(this.person.mobilePhone)) {
+                this.$message.error('请输入正确的手机号码');
+                return;
+              }
+            }
+            this.$post("archives/updateDetails", this.person, '修改成功').then(() => {
+              this.getPersonDetail();
+            });
           }
-        }
-        if (this.modifyPerson.age) {
-          if (!numValid(this.modifyPerson.age)) {
-            this.$message.error('请输入正确的年龄');
-            return;
-          } else if (this.modifyPerson.age < 1 && this.modifyPerson.age > 150) {
-            this.$message.error('请输入正确的年龄');
-            return;
-          }
-        }
-        if (this.modifyPerson.idCard) {
-          if (!userCardValid(this.modifyPerson.idCard)) {
-            this.$message.error('请输入正确的身份证号');
-            return;
-          }
-        }
-        if (this.modifyPerson.mobilePhone) {
-          if (!mobileValidator(this.modifyPerson.mobilePhone)) {
-            this.$message.error('请输入正确的手机号码');
-            return;
-          }
-        }
-        this.runningModifyPerson = false;
-        this.$post("archives/updateDetails", this.modifyPerson, '修改成功').then(() => {
-          this.getPersonDetail();
-          this.runningModifyPerson = false;
         });
       },
       //根据imsi查找指定的对应人员
@@ -281,14 +248,11 @@
       getPersonDetail() {
         this.$post('archives/detail', {faceId: this.faceId}).then((data) => {
           let row = data.data;
-          this.person = data.data;
+          this.person = row;
           var age = !isNull(row.age) ? row.age : 0;
-          this.modifyPerson = {
-            faceUrl: row.faceUrl, name: row.name, idCard: row.idCard, faceId: row.faceId, age: age,
-            sex: row.sex, mobilePhone: row.mobilePhone, remark: row.remark
-          };
+          this.person.age = age;
           if (isNull(row.age)) {
-            delete this.modifyPerson['age'];
+            delete this.person['age'];
           }
           this.getPersons();
         }).catch((err) => {
@@ -327,8 +291,8 @@
 </script>
 <style scoped>
   .avatar {
-    max-width: 150px;
-    max-height: 150px;
+    max-width: 180px;
+    max-height: 180px;
     border: 1px dashed #ccc;
     border-radius: 6px;
   }

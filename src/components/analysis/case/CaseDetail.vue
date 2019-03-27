@@ -1,58 +1,56 @@
 <template>
   <div>
     <section class="content">
-      <div class="add-appdiv">
-        <el-row style="margin-bottom: 10px">
-          <el-col :span="7" align="left">
-            <span style="font-size: 14px;color: #999;margin-right: 20px">案件名称</span>
-            <span style="font-size: 15px">{{caseDetail.caseName}}</span>
+      <div class="add-appdiv gray-form" style="margin-bottom: 15px;padding: 0">
+        <el-row style="border-bottom:1px #D0CACF solid;margin: 0">
+          <el-col :span="12" align="left" style="text-align: left">
+            <div style="font-size:15px;padding:10px 20px;text-align:left">基本信息</div>
           </el-col>
-          <el-col :span="7" align="left">
-            <span style="font-size: 14px;color: #999;margin:auto 20px">案发地点</span>
-            <span style="font-size: 15px">{{caseDetail.address}}</span>
-          </el-col>
-          <el-col :span="7" align="left">
-            <span style="font-size: 14px;color: #999;margin:auto 20px">创建时间</span>
-            <span style="font-size: 15px">{{caseDetail.timeStr}}</span>
-          </el-col>
-          <el-col :span="3">
-            <el-button type="text" @click="deleteCase()" size="medium"
-                       v-show="getButtonVial('case:delete')">删除案件
+          <el-col :span="12" align="right" style="text-align: right;padding-right: 30px">
+            <el-button type="text" @click="" style="margin-right: 20px">修改</el-button>
+            <el-button type="text" @click="deleteCase()" size="medium" v-show="getButtonVial('case:delete')">删除
             </el-button>
           </el-col>
         </el-row>
-        <el-row style="margin-bottom: 10px">
-          <el-col :span="7" align="left">
-            <span style="font-size: 14px;color: #999;margin-right: 20px">案件编号</span>
-            <span style="font-size: 15px">{{caseDetail.caseNo}}</span>
-          </el-col>
-          <el-col :span="7" align="left">
-            <span style="font-size: 14px;color: #999;margin:auto 20px">案发时间</span>
-            <span style="font-size: 15px">{{caseDetail.startStr + " - " + caseDetail.endStr}}</span>
-          </el-col>
-          <el-col :span="7" align="left">
-            <span style="font-size: 14px;color: #999;margin:auto 20px;">案件状态</span>
-            <span
-              v-bind:style="{fontSize:'15px',color:caseDetail.status=='EXECUTION'?'#6799FD':caseDetail.status =='HANDLED'?'#00C755':'#333'}">
-              {{caseDetail.status === "EXECUTION" ? "进行中" : caseDetail.status === "HANDLED" ? "已结案" : "--"}}
-            </span>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="7" align="left">
-            <span style="font-size: 14px;color: #999;margin-right: 20px">案件类型</span>
-            <span style="font-size: 15px">{{caseDetail.caseType}}</span>
-          </el-col>
-          <el-col :span="7" align="left">
-            <span style="font-size: 14px;color: #999;margin:auto 20px">备注</span>
-            <span style="font-size: 15px">{{caseDetail.remark}}</span>
-          </el-col>
-          <el-col :span="7" align="left">
-            <span style="font-size: 14px;color: #999;margin:auto 20px">
-              {{caseDetail.status === "EXECUTION" ? "更新时间" : caseDetail.status === "HANDLED" ? "结案时间" : "--"}}
-            </span>
-            <span style="font-size: 15px">{{caseDetail.fishStr}}</span>
-          </el-col>
+        <el-row style="padding: 15px 0">
+          <el-form :model="caseDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
+            <el-col :span="8" align="left" style="text-align: left">
+              <el-form-item label="案件编号" align="left" style="margin: 0;text-align: left">
+                {{caseDetail.caseNo?caseDetail.caseNo:'--'}}
+              </el-form-item>
+              <el-form-item label="案件名称" align="left" style="margin: 0;text-align: left">
+                {{caseDetail.caseName?caseDetail.caseName:'--'}}
+              </el-form-item>
+              <el-form-item label="案件类型" align="left" style="margin: 0;text-align: left">
+                {{caseDetail.caseType?caseDetail.caseType:'--'}}
+              </el-form-item>
+            </el-col>
+            <el-col :span="8" align="left" style="text-align: left">
+              <el-form-item label="案发地点" align="left" style="margin: 0;text-align: left">
+                {{caseDetail.address?caseDetail.address:'--'}}
+              </el-form-item>
+              <el-form-item label="案发时间" align="left" style="margin: 0;text-align: left">
+                {{caseDetail.startStr + " - " + caseDetail.endStr}}
+              </el-form-item>
+              <el-form-item label="备注" align="left" style="margin: 0;text-align: left">
+                {{caseDetail.remark?caseDetail.remark:'--'}}
+              </el-form-item>
+            </el-col>
+            <el-col :span="8" align="left" style="text-align: left">
+              <el-form-item label="案件状态" align="left" style="margin: 0;text-align: left">
+                <span
+                  v-bind:style="{fontSize:'15px',color:caseDetail.status=='EXECUTION'?'#6799FD':caseDetail.status =='HANDLED'?'#00C755':'#333'}">
+                  {{caseDetail.status === "EXECUTION" ? "进行中" : caseDetail.status === "HANDLED" ? "已结案" : "--"}}</span>
+              </el-form-item>
+              <el-form-item label="创建时间" align="left" style="margin: 0;text-align: left">
+                {{caseDetail.timeStr?caseDetail.timeStr:'--'}}
+              </el-form-item>
+              <el-form-item :label="caseDetail.status=='EXECUTION'?'更新时间':caseDetail.status=='HANDLED'?'结案时间':'--'"
+                            align="left" style="margin: 0;text-align: left">
+                {{caseDetail.fishStr?caseDetail.fishStr:'--'}}
+              </el-form-item>
+            </el-col>
+          </el-form>
         </el-row>
       </div>
       <h5 style="border-left: 3px #6699FF solid;text-align: left;font-size: 16px;padding-left: 10px;color:#343434">

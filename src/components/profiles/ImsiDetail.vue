@@ -6,46 +6,43 @@
           <div style="font-size:14px;padding:10px 20px">IMSI记录信息</div>
         </el-col>
       </el-row>
-      <div class="add-appdiv dialog" style="border-top: none;padding: 10px 30px;border-radius: 0 0 4px 4px">
+      <div class="add-appdiv dialog gray-form" style="border-top: none;padding: 10px 30px;border-radius: 0 0 4px 4px">
         <el-form :model="imsiDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="120px">
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8">
               <el-form-item label="IMSI信息" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.imsi ? imsiDetail.imsi : '--'}}</span>
+                {{imsiDetail.imsi ? imsiDetail.imsi : '--'}}
               </el-form-item>
               <el-form-item label="运营商" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">
                   {{imsiDetail.isp == 0 ? '移动' : imsiDetail.isp == 1 ? '联通' : imsiDetail.isp == 2 ? '电信' : '--'}}
-                </span>
               </el-form-item>
               <el-form-item label="IMSI归属地" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.regional ? imsiDetail.regional : '--'}}</span>
+                {{imsiDetail.regional ? imsiDetail.regional : '--'}}
               </el-form-item>
               <el-form-item label="网络类型" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.netType ? imsiDetail.netType : '--'}}</span>
+                {{imsiDetail.netType ? imsiDetail.netType : '--'}}
               </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label="抓取时间" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.timeStr ? imsiDetail.timeStr : '--'}}</span>
+                {{imsiDetail.timeStr ? imsiDetail.timeStr : '--'}}
               </el-form-item>
               <el-form-item label="场所地区" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.area ? imsiDetail.area : '--'}}</span>
+                {{imsiDetail.area ? imsiDetail.area : '--'}}
               </el-form-item>
               <el-form-item label="场所地点" align="left" style="margin: 0">
-                <span
-                  style="font-size: 15px;color:#000">{{imsiDetail.detailAddress ? imsiDetail.detailAddress : '--'}}</span>
+                {{imsiDetail.detailAddress ? imsiDetail.detailAddress : '--'}}
               </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label="抓取场所" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.placeName ? imsiDetail.placeName : '--'}}</span>
+                {{imsiDetail.placeName ? imsiDetail.placeName : '--'}}
               </el-form-item>
               <el-form-item label="设备标识" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.deviceName ? imsiDetail.deviceName : '--'}}</span>
+                {{imsiDetail.deviceName ? imsiDetail.deviceName : '--'}}
               </el-form-item>
               <el-form-item label="设备ID" align="left" style="margin: 0">
-                <span style="font-size: 15px;color:#000">{{imsiDetail.deviceId ? imsiDetail.deviceId : '--'}}</span>
+                {{imsiDetail.deviceId ? imsiDetail.deviceId : '--'}}
               </el-form-item>
             </el-col>
           </el-row>

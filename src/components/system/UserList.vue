@@ -68,22 +68,26 @@
           <el-table :data="users" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
             <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
             <el-table-column align="left" prop="account" label="账号" min-width="150"
-                             max-width="300" :formatter="formatterAddress"></el-table-column>
+                             max-width="200" :formatter="formatterAddress"></el-table-column>
             <el-table-column align="left" prop="realName" label="用户名" min-width="150"
-                             max-width="300" :formatter="formatterAddress"></el-table-column>
+                             max-width="200" :formatter="formatterAddress"></el-table-column>
             <el-table-column align="left" prop="deptName" label="所属部门" min-width="150"
-                             max-width="300" :formatter="formatterAddress"></el-table-column>
+                             max-width="200" :formatter="formatterAddress"></el-table-column>
             <el-table-column align="left" prop="groupName" label="所属组织" min-width="150"
-                             max-width="300" :formatter="formatterAddress"></el-table-column>
+                             max-width="200" :formatter="formatterAddress"></el-table-column>
             <el-table-column align="left" prop="roleNameList" label="角色" min-width="120"
                              max-width="200" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" prop="groupAdmin" label="用户类型" width="130"
-                             :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" prop="createTime" label="创建时间" width="170"
-                             :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" prop="locked" label="状态" width="80"
-                             :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="操作" width="120" fixed="right">
+            <el-table-column align="left" prop="groupAdmin" label="用户类型" min-width="100"
+                             max-width="120" :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="createTime" label="创建时间" min-width="170"
+                             max-width="200" :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="locked" label="状态" min-width="80" max-width="100">
+              <template slot-scope="scope">
+                <span style="color:#00C755" v-show="scope.row.locked == 0">正常</span>
+                <span style="color:#999" v-show="scope.row.locked == 1">禁用</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="left" label="操作" min-width="100" max-width="130" fixed="right">
               <template slot-scope="scope">
                 <el-button type="text" style="margin-right: 10px" @click.stop="updateInfo(scope.row)"
                            v-show="getButtonVial('manager:user:update')">修改
