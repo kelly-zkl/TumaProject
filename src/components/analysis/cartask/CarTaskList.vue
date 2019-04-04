@@ -2,22 +2,15 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="19" align="left" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('follow:query')"
+        <el-col :span="20" align="left" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('car:task:query')"
                    style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
-              <el-input v-model="query.taskName" placeholder="任务名称" size="medium" style="width: 160px"
+              <el-input v-model="query.keyWord" placeholder="任务名称/编号" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
             </el-form-item>
-            <!--<el-form-item style="margin-bottom: 10px">-->
-            <!--<el-select v-model="query.followType" placeholder="全部类型" style="width: 120px"-->
-            <!--size="medium" filterable clearable>-->
-            <!--<el-option v-for="item in followTypes" :key="item.value" :label="item.label" :value="item.value">-->
-            <!--</el-option>-->
-            <!--</el-select>-->
-            <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.taskStatus" placeholder="任务状态" style="width: 120px"
+              <el-select v-model="query.status" placeholder="任务状态" style="width: 120px"
                          size="medium" filterable clearable>
                 <el-option v-for="item in taskTypes" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
@@ -31,19 +24,30 @@
               </el-date-picker>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
+              <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()">重置</el-button>
             </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-input placeholder="案件名称" v-model="query.caseName" :maxlength="30" size="medium"
+                        style="width: 160px"></el-input>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-input placeholder="车牌号码" v-model="query.carLicense" :maxlength="8" size="medium"
+                        style="width: 160px"></el-input>
+            </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="5" align="right" style="text-align: right">
-          <el-button type="primary" size="medium" @click="addCarTask()"
-                     v-show="getButtonVial('follow:add')">新建车码碰撞
+        <el-col :span="4" align="right" style="text-align: right">
+          <el-button type="primary" size="medium" @click="addCarTask()" style="padding-left: 10px;padding-right: 10px"
+                     v-show="getButtonVial('car:task:create')">新建车码碰撞
           </el-button>
           <el-button size="medium" @click="deleteTask()" :disabled="sels.length == 0"
-                     v-show="getButtonVial('follow:delete')">删除
+                     v-show="getButtonVial('car:task:del')">删除
           </el-button>
         </el-col>
       </el-row>
@@ -51,38 +55,39 @@
                 @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="任务编号" prop="taskName" min-width="130"
+        <el-table-column align="left" label="任务编号" prop="taskNo" min-width="130"
                          max-width="180" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="任务名称" prop="taskName" min-width="130"
                          max-width="180" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="分析对象" prop="followTarget" min-width="130"
+        <el-table-column align="left" label="分析车牌" prop="carLicense" min-width="130"
                          max-width="180" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="100" max-width="130">
+        <el-table-column align="left" label="任务状态" prop="status" min-width="100" max-width="130">
           <template slot-scope="scope">
-            <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已完成</span>
-            <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
-            <span style="color:#D76F31" v-show="scope.row.taskStatus == 'WAIT'">等待中</span>
-            <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">分析中</span>
-            <span style="color:#999" v-show="scope.row.taskStatus == 'STOP'">终止</span>
+            <span style="color:#00C755" v-show="scope.row.status == 'finish'">已完成</span>
+            <span style="color:#dd6161" v-show="scope.row.status == 'failed'">失败</span>
+            <span style="color:#D76F31" v-show="scope.row.status == 'waiting'">等待中</span>
+            <span style="color:#6799FD" v-show="scope.row.status == 'running'">分析中</span>
+            <span style="color:#999" v-show="scope.row.status == 'killed'">终止</span>
           </template>
         </el-table-column>
         <el-table-column align="left" label="关联案件" prop="caseName" min-width="130"
                          max-width="180" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="分析结果" prop="caseName" min-width="100"
+        <el-table-column align="left" label="分析结果" prop="resultNumber" min-width="100"
                          max-width="120" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="创建日期" prop="createTime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="150" max-width="180" fixed="right">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('follow:get')">查看</el-button>
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('car:task:detail')">查看
+            </el-button>
             <el-button type="text" @click="sels = [];sels.push(scope.row);deleteTask()"
-                       v-show="getButtonVial('follow:delete')">删除
+                       v-show="getButtonVial('car:task:del')">删除
             </el-button>
-            <el-button type="text" @click="reAnalysis(scope.row.id)"
-                       v-show="getButtonVial('follow:reanalysis') && scope.row.taskStatus == 'FAILE'">重新分析
+            <el-button type="text" @click="reAnalysis(scope.row.taskNo)"
+                       v-show="getButtonVial('car:task:restart') && (scope.row.taskStatus == 'failed')">重新分析
             </el-button>
-            <el-button type="text" @click="stopAnalysis(scope.row.id)"
-                       v-show="getButtonVial('follow:reanalysis') && scope.row.taskStatus == 'EXECUTION'">终止分析
+            <el-button type="text" @click="stopAnalysis(scope.row.taskNo)"
+                       v-show="getButtonVial('car:task:kill') && scope.row.taskStatus == 'running'">终止分析
             </el-button>
           </template>
         </el-table-column>
@@ -96,19 +101,19 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
+  import {formatDate, buttonValidator} from "../../../assets/js/util";
 
   export default {
     data() {
       return {
+        isMore: false,
         listLoading: false,
         tasks: [],
         qTime: "",
         query: {page: 1, size: 10},
         tableHeight: window.innerHeight - 232,
-        followTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '图像'}],//{value: 'MAC', label: 'MAC'}
-        taskTypes: [{value: 'EXECUTION', label: '分析中'}, {value: 'FINISH', label: '已完成'},
-          {value: 'WAIT', label: '等待中'}, {value: 'FAILE', label: '失败'}, {value: 'STOP', label: '终止'}],
+        taskTypes: [{value: 'running', label: '分析中'}, {value: 'finish', label: '已完成'},
+          {value: 'waiting', label: '等待中'}, {value: 'failed', label: '失败'}, {value: 'killed', label: '终止'}],
         sels: [],
         count: 0,
         pickerBeginDate: {
@@ -125,9 +130,18 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      //更多条件
+      showMore() {
+        this.isMore = !this.isMore;
+        if (this.isMore) {
+          this.tableHeight = window.innerHeight - 282
+        } else {
+          this.tableHeight = window.innerHeight - 232
+        }
+      },
       //终止分析
-      stopAnalysis(id) {
-        this.$post('/follow/reanalysis/' + id, {}, '操作成功').then((data) => {
+      stopAnalysis(taskNo) {
+        this.$post('/car/task/kill', {taskNo: taskNo}, '操作成功').then((data) => {
           if ("000000" === data.code) {
             this.getData();
           }
@@ -135,8 +149,8 @@
         });
       },
       //重新分析
-      reAnalysis(id) {
-        this.$post('/follow/reanalysis/' + id, {}, '操作成功').then((data) => {
+      reAnalysis(taskNo) {
+        this.$post('/car/task/restart', {taskNo: taskNo}, '操作成功').then((data) => {
           if ("000000" === data.code) {
             this.getData();
           }
@@ -147,10 +161,10 @@
       deleteTask() {
         let arr = [];
         this.sels.forEach((item) => {
-          arr.push(item.id);
+          arr.push(item.taskNo);
         });
         this.$confirm('确认要删除该任务吗?', '提示', {type: 'info'}).then(() => {
-          this.$post('/follow/delete', arr, '删除成功').then((data) => {
+          this.$post('/car/task/del', {taskNoList: arr}, '删除成功').then((data) => {
             if ("000000" === data.code) {
               this.getData();
               this.sels = [];
@@ -162,29 +176,16 @@
       },
       //新建伴随任务
       addCarTask() {
-        this.$post('/follow/query', {page: 1, size: 5, taskStatus: "EXECUTION"}).then((data) => {
-          this.count = data.data.count;
-          if (data.data.count < 5) {
-            sessionStorage.setItem("query", JSON.stringify(this.query));
-            this.$router.push({path: '/addCarTask'});
-          } else {
-            this.$message.error('分析中的任务建议不超过5个。请待当前分析中的任务完成后，再创建新任务。');
-            return;
-          }
-        }).catch((err) => {
-        });
+        sessionStorage.setItem("query", JSON.stringify(this.query));
+        this.$router.push({path: '/addCarTask'});
       },
       //全选  ==>  删除/结案
       selsChange(sels) {
         this.sels = sels;
       },
       gotoDetail(task) {
-        let routeData = this.$router.resolve({
-          path: '/carTaskDetail',
-          query: {taskId: task.id, followType: task.followType}
-        });
+        let routeData = this.$router.resolve({path: '/carTaskDetail', query: {no: task.taskNo}});
         window.open(routeData.href, '_blank');
-        // this.$router.push({path: '/followResult', query: {taskId: task.id, followType: task.followType}});
       },
       //清除查询条件
       clearData() {
@@ -202,27 +203,26 @@
       },
       getData() {
         if (!!this.qTime) {
-          this.query.startTime = Math.round(this.qTime[0] / 1000);
-          this.query.endTime = Math.round(this.qTime[1] / 1000);
+          this.query.createStartTime = Math.round(this.qTime[0] / 1000);
+          this.query.createEndTime = Math.round(this.qTime[1] / 1000);
         }
         this.listLoading = true;
-        this.$post('/follow/query', this.query).then((data) => {
+        this.$post('/car/task/query', this.query).then((data) => {
           this.tasks = data.data.list;
           this.count = data.data.count;
           this.listLoading = false;
         }).catch((err) => {
+          this.count = 0;
           this.tasks = [];
           this.listLoading = false;
         });
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'taskStatus') {
-          return row.taskStatus === "WAIT" ? '等待中' : row.taskStatus === "FINISH" ? '已完成' : row.taskStatus === "FAILE" ? '失败' : row.taskStatus === "EXECUTION" ? '分析中' : '--';
-        } else if (column.property === 'followType') {
-          return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '图像' : row.followType === "MAC" ? 'MAC' : '--';
-        } else if (column.property === 'status') {
-          return row.status === 'UNHANDLED' ? '未处理' : row.status === 'EXECUTION' ? '分析中' : row.status === 'HANDLED' ? '已结案' : '--';
+        if (column.property === 'status') {
+          return row.taskStatus === "waiting" ? '等待中' : row.taskStatus === "finish" ? '已完成' : row.taskStatus === "failed" ? '失败' : row.taskStatus === "running" ? '分析中' : row.taskStatus === "killed" ? '终止' : '--';
+        } else if (column.property === 'resultNumber') {
+          return row.resultNumber == undefined ? '--' : row.resultNumber;
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {

@@ -7,6 +7,7 @@
             <div style="font-size:15px;padding:10px 20px;text-align:left">伴随分析任务信息</div>
           </el-col>
           <el-col :span="12" align="right" style="text-align: right;padding-right: 30px">
+            <!--<el-button type="text" @click="" style="margin-right: 20px">修改</el-button>-->
             <el-button type="text" @click="deleteTask()" v-show="getButtonVial('follow:delete')">删除</el-button>
           </el-col>
         </el-row>
@@ -111,7 +112,8 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="130" fixed="right">
             <template slot-scope="scope">
-              <el-button type="text" @click="gotoImsi(scope.row)" v-show="getButtonVial('follow:queryRecord')">查看IMSI
+              <el-button type="text" @click="gotoImsi(scope.row)"
+                         v-show="getButtonVial('archives:getImsiRecordByImsi')">查看IMSI
               </el-button>
             </template>
           </el-table-column>
@@ -176,7 +178,8 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" min-width="125" max-width="250" fixed="right">
             <template slot-scope="scope">
-              <el-button type="text" @click="gotoImsi(scope.row)" v-show="getButtonVial('follow:queryRecord')">查看IMSI
+              <el-button type="text" @click="gotoImsi(scope.row)"
+                         v-show="getButtonVial('archives:getImsiRecordByImsi')">查看IMSI
               </el-button>
             </template>
           </el-table-column>
@@ -426,12 +429,7 @@
       },
       //跳转IMSI记录
       gotoImsi(imsi) {
-        let routeData = this.$router.resolve({
-          path: '/followIMSIDetail', query: {
-            taskId: this.taskId, regional: imsi.regional,
-            followType: this.followType, imsi: imsi.imsi, isp: imsi.isp,
-          }
-        });
+        let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: imsi.imsi}});
         window.open(routeData.href, '_blank');
       },
       //删除伴随任务
@@ -488,6 +486,7 @@
           this.listLoading1 = false;
         }).catch((err) => {
           this.results = [];
+          this.count1 = 0;
           this.listLoading1 = false;
         });
       },
@@ -510,6 +509,7 @@
           this.listLoading2 = false;
         }).catch((err) => {
           this.records = [];
+          this.count2 = 0;
           this.listLoading2 = false;
         });
       },
@@ -526,7 +526,7 @@
         } else if (column.property === 'originalUpTime') {
           return row.originalUpTime ? formatDate(new Date(row.originalUpTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'confidenceLevel') {
-          return (row.confidenceLevel * 100).toFixed(2) + '%';
+          return (row.confidenceLevel * 100).toFixed(1) + '%';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

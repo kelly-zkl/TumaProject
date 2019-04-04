@@ -57,8 +57,12 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="lineStatus" label="在线状态" min-width="100"
-                           max-width="120"></el-table-column>
+          <el-table-column align="left" prop="lineStatus" label="在线状态" min-width="100" max-width="120">
+            <template slot-scope="scope">
+              <span style="color:#00C755" v-show="scope.row.lineStatus == '在线'">在线</span>
+              <span style="color:#999" v-show="scope.row.lineStatus != '在线'">{{scope.row.lineStatus}}</span>
+            </template>
+          </el-table-column>
           <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click.stop="runningSetPlace=true;addPlace=scope.row"
@@ -102,7 +106,7 @@
 <script>
   import axios from "axios";
   import {noSValidator} from "../../assets/js/api";
-  import {isPC, buttonValidator} from "../../assets/js/util";
+  import {isPC, buttonValidator, getAreaLable} from "../../assets/js/util";
 
   export default {
     data() {
@@ -269,36 +273,10 @@
         this.areaList = [];
         this.getData();
       },
-      //获得省市县
-      getAreaLable(code) {
-        let lable = '';
-        this.provinceList.forEach((province) => {
-          if (province.subAreas) {
-            province.subAreas.forEach((city) => {
-              if (city.subAreas) {//省级+市级+县级
-                city.subAreas.forEach((country) => {
-                  if (code === country.areaCode) {
-                    lable = province.areaName + city.areaName + country.areaName;
-                  }
-                })
-              } else {//省级+市级
-                if (code === city.areaCode) {
-                  lable = province.areaName + city.areaName;
-                }
-              }
-            })
-          } else {//只包含省级
-            if (code === province.areaCode) {
-              lable = province.areaName;
-            }
-          }
-        });
-        return lable;
-      },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'areaCode') {
-          return row.areaCode ? this.getAreaLable(row.areaCode) : '--';
+          return row.areaCode ? getAreaLable(row.areaCode) : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

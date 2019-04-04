@@ -10,10 +10,6 @@
                         :maxlength=50></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-input v-model="query.deviceId" placeholder="设备ID" style="width: 160px" size="medium"
-                        :maxlength=30></el-input>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
               <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" size="medium"
                               :default-time="['00:00:00', '23:59:59']" clearable value-format="timestamp"
                               start-placeholder="开始日期" end-placeholder="结束日期" style="width:360px"
@@ -21,19 +17,24 @@
               </el-date-picker>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
+              <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable
+                         style="width: 160px">
+                <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
               <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
+              <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()">重置</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-select v-model="query.isp" placeholder="选择运营商" style="width: 120px" size="medium" clearable>
-                <el-option v-for="item in operators" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
+              <el-input v-model="query.deviceId" placeholder="设备ID" style="width: 160px" size="medium"
+                        :maxlength=30></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px" v-show="isMore">
               <el-input v-model="query.regional" placeholder="IMSI归属地" style="width: 160px" size="medium"
@@ -42,39 +43,38 @@
           </el-form>
         </el-col>
         <el-col :span="6" align="right" style="text-align: right">
-          <el-button type="primary" size="medium" @click="exportData()"
-                     v-show="getButtonVial('collision:export:record')">导出数据
+          <el-button type="primary" size="medium" @click="exportData()" :disabled="count==0"
+                     v-show="getButtonVial('collision:export:dataSourceRecord')">导出数据
           </el-button>
         </el-col>
       </el-row>
-      <el-table :data="records" v-loading="listLoading" class="center-block" stripe>
+      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="IMSI" prop="imsi" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="运营商" prop="isp" min-width="80"
+        <el-table-column align="left" label="运营商" prop="isp" min-width="100"
                          max-width="120" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="网络类型" prop="netType" min-width="80"
+        <el-table-column align="left" label="网络类型" prop="netType" min-width="100"
                          max-width="120" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="150"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="抓取场所" prop="placeName" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="抓取时间" prop="uptime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="130" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoImsi(scope.row.imsi)"
-                       v-show="getButtonVial('collision:queryRecord')">查看详情
+                       v-show="getButtonVial('archives:getImsiRecordByImsi')">查看详情
             </el-button>
           </template>
         </el-table-column>
       </el-table>
       <div class="block" style="margin: 20px 0" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
-                       :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
-                       layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
+                       :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
     </section>
   </div>
@@ -86,17 +86,23 @@
   let md5 = require("crypto-js/md5");
 
   export default {
+    props: ['sourceId'],
     data() {
       return {
         isMore: false,
-        taskId: this.$route.query.taskId || '',
-        collisionType: this.$route.query.collisionType || '',
+        taskId: this.sourceId,
         listLoading: false,
         qTime: '',
-        records: [],
-        query: {page: 1, size: 10},
+        list: [],
+        list10: [],
+        isShow: false,
+        isFirst: true,
+        isSearch: false,
+        firstPage: 0,
+        places: [],
+        page: 1,
+        query: {size: 100},
         count: 0,
-        operators: [{value: 0, label: '移动'}, {value: 1, label: '联通'}, {value: 2, label: '电信'}],
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
@@ -107,30 +113,29 @@
         }
       }
     },
+    watch: {
+      sourceId: function () {
+        this.taskId = this.sourceId;
+        this.getData();
+      }
+    },
+    created() {
+      this.taskId = this.sourceId;
+      this.getPlaces();
+      this.getData();
+    },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
       //跳转IMSI记录
       gotoImsi(imsi) {
-        let routeData = this.$router.resolve({
-          path: '/collisionImsiRecords', query: {
-            taskId: this.taskId,
-            collisionType: this.collisionType, imsi: imsi
-          }
-        });
+        let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: imsi}});
         window.open(routeData.href, '_blank');
-      },
-      //清除查询条件
-      clearData() {
-        this.query = {page: 1, size: 10};
-        this.qTime = '';
-        this.getData();
       },
       //碰撞记录导出
       exportData() {
         var param = Object.assign({}, this.query);
-        param.page = 1;
         param.size = 100000;
         let config;
         if (sessionStorage.getItem("user")) {
@@ -144,20 +149,12 @@
             config = {headers: {token: token, tokenId: userId}, responseType: 'arraybuffer'};
           }
         }
-        this.axios.post('/collision/export/record', param, config).then((res) => {
+        this.axios.post('/collision/export/dataSourceRecord', param, config).then((res) => {
           let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
           let fileName = decodeURIComponent(fileStr);
           fileDownload(res.data, fileName);
         }).catch((res) => {
         });
-        if (param.type == '0') {//分析结果
-          this.axios.post('/collision/export/analyze', param, config).then((res) => {
-            let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
-            let fileName = decodeURIComponent(fileStr);
-            fileDownload(res.data, fileName);
-          }).catch((res) => {
-          });
-        }
       },
       //获取imsi记录
       getData() {
@@ -169,25 +166,71 @@
           delete this.query['endTime'];
         }
 
-        this.query.collisionType = this.collisionType;
-        this.query.collisionTaskId = this.taskId;
+        this.query.dataSourceId = this.taskId;
 
+        if (this.isSearch) {
+          this.list = [];
+          this.list10 = [];
+          delete this.query['pageTime'];
+          this.isSearch = false;
+        }
         this.listLoading = true;
         this.$post('/collision/queryRecord', this.query).then((data) => {
-          this.records = data.data.list;
-          this.count = data.data.count;
+          if (this.query.pageTime && !this.isSearch) {
+            this.list = this.list.concat(data.data);
+          } else {
+            this.list = data.data;
+            this.page = 1;
+            this.firstPage = 0
+          }
+          this.list10 = this.list;
+          if (this.list.length - this.page * 10 >= 0) {
+            this.list10 = this.list10.slice((this.page * 10 - 10), (this.page * 10));
+          } else {
+            this.list10 = this.list10.slice((this.page * 10 - 10), this.list.length);
+          }
+          this.count = this.list.length;
+          if (this.list.length - this.firstPage === 100) {
+            this.isFirst = false;
+          } else {
+            this.isFirst = true;
+          }
           this.listLoading = false;
         }).catch((err) => {
-          this.records = [];
+          this.list = [];
+          this.list10 = [];
+          this.count = 0;
           this.listLoading = false;
+          this.$message.error(err);
         });
       },
       pageChange(index) {
-        this.query.page = index;
-        this.getData();
+        this.page = index;
+        if (!this.isFirst && this.list.length > this.firstPage) {
+          this.isFirst = true;
+        }
+        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst && (this.list.length % 100 === 0)) {
+          this.firstPage = this.list.length;
+          this.query.pageTime = this.list[this.list.length - 1].uptime;
+          this.getData();
+        }
+        this.list10 = this.list;
+        if ((this.list.length - (index * 10)) >= 0) {
+          this.list10 = this.list10.slice((index * 10 - 10), (index * 10));
+        } else {
+          this.list10 = this.list10.slice((index * 10 - 10), this.list.length);
+        }
       },
       handleSizeChange(val) {
-        this.query.size = val;
+      },
+      clearData() {
+        this.list10 = [];
+        this.isSearch = true;
+        this.query = {size: 100};
+        this.time1 = ['00:00:00', '23:59:59'];
+        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+
         this.getData();
       },
       //格式化内容   有数据就展示，没有数据就显示--
@@ -218,12 +261,18 @@
             break;
         }
         return moduleId;
+      },
+      //场所列表
+      getPlaces() {
+        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+          this.places = data.data.list;
+        }).catch((err) => {
+          this.places = [];
+        });
       }
     },
     mounted() {
-      this.taskId = this.$route.query.taskId || '';
-      this.collisionType = this.$route.query.collisionType || '';
-
+      this.getPlaces();
       this.getData();
     }
   }

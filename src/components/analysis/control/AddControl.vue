@@ -158,7 +158,7 @@
 <script>
   import {numValid} from "../../../assets/js/api";
   import PlaceMap from '../PlaceMap';
-  import {formatDate} from "../../../assets/js/util";
+  import {formatDate, getAreaLable} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -213,8 +213,18 @@
         this.mapVisible = true;
         // this.$refs.map.clearArea();
       },
+      getWeeks(week) {
+        let arr = [];
+        for (let i = 0; i <= 6; i++) {
+          if (week.charAt(i) == 1) {
+            arr.push(i);
+          }
+        }
+        return arr;
+      },
       getTaskDetail() {
         this.$post('disposition/get/' + this.taskId, {}).then((data) => {
+          data.data.week = this.getWeeks(data.data.weekCycleDay);
           this.controlTask = data.data;
           var arr = [];
           this.controlTask.blackClassList.forEach((item) => {
@@ -223,10 +233,11 @@
           this.controlTask.blackClassList = arr;
           var places = [];
           this.controlTask.placeList.forEach((item) => {
-            arr.push(item.id);
+            places.push(item.id);
           });
           this.controlTask.placeList = places;
           delete this.controlTask['placeName'];
+          delete this.controlTask['weekCycleDay'];
           if (this.controlTask.intervalType === 'CUSTOM') {//自定义时段
             this.controlTask.timerange = [this.controlTask.startTimeInterval, this.controlTask.endTimeInterval];
           }
@@ -342,9 +353,9 @@
             }
             var places = [];
             this.controlTask.placeList.forEach((item) => {
-              this.placeList1.forEach((list) => {
+              this.places.forEach((list) => {
                 if (item == list.id) {
-                  arr.push({id: list.id, placeName: list.placeName, detailAddress: list.detailAddress});
+                  places.push({id: list.id, placeName: list.placeName, detailAddress: list.detailAddress});
                 }
               });
             });
@@ -354,7 +365,6 @@
             delete this.controlTask['startDate'];
             delete this.controlTask['timerange'];
             delete this.controlTask['week'];
-            console.log(this.controlTask);
             if (this.taskId.length > 0) {
               this.$post("disposition/add", this.controlTask, "修改成功").then((data) => {
                 if ("000000" === data.code)
@@ -379,15 +389,7 @@
           str[item] = 1;
         }
         let week = str.join("");
-        console.log(week);
         return week;
-//        let arr = [];
-//        for (let i = 0; i <= 6; i++) {
-//          if (week.charAt(i) == 1) {
-//            arr.push(i);
-//          }
-//        }
-//        console.log(arr);
       },
       //获取案件名称
       getCaseName() {
@@ -423,7 +425,6 @@
       //设备当前页全选
       selsChange(sels) {
         this.sels = sels;
-        console.log(sels);
       },
       confirmChoose() {
         let arr = [];
@@ -472,7 +473,7 @@
             }
           }
         } else if (column.property === 'areaCode') {
-          return row.areaCode ? this.getAreaLable(row.areaCode) : '--';
+          return row.areaCode ? getAreaLable(row.areaCode) : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
@@ -501,32 +502,6 @@
           this.query.cityCode = value[1];
           this.query.areaCode = value[2];
         }
-      },
-      //获得省市县
-      getAreaLable(code) {
-        let lable = '';
-        this.provinceList.forEach((province) => {
-          if (province.subAreas) {
-            province.subAreas.forEach((city) => {
-              if (city.subAreas) {//省级+市级+县级
-                city.subAreas.forEach((country) => {
-                  if (code === country.areaCode) {
-                    lable = province.areaName + city.areaName + country.areaName;
-                  }
-                })
-              } else {//省级+市级
-                if (code === city.areaCode) {
-                  lable = province.areaName + city.areaName;
-                }
-              }
-            })
-          } else {//只包含省级
-            if (code === province.areaCode) {
-              lable = province.areaName;
-            }
-          }
-        });
-        return lable;
       }
     },
     mounted() {

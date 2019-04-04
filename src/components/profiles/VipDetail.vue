@@ -6,14 +6,15 @@
           <div style="font-size:14px;padding:10px 20px">基本信息</div>
         </el-col>
         <el-col :span="4" :offset="12" align="center" style="text-align: center">
-          <el-button type="text" size="medium" @click="">查看修改记录</el-button>
+          <!--<el-button type="text" size="medium" @click="">查看修改记录</el-button>-->
           <el-button type="text" size="medium" @click="deletePerson()" v-show="getButtonVial('person:delKeyPerson')">
             删除
           </el-button>
           <el-button type="text" size="medium" @click="confirmModify()">修改</el-button>
         </el-col>
       </el-row>
-      <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px">
+      <div class="add-appdiv dialog"
+           style="border-top: none;border-radius: 0 0 4px 4px;margin-bottom:0;padding: 20px 30px 0 0">
         <el-form :model="person" style="margin: 0;padding: 0" labelPosition="right" label-width="100px" :rules="rules"
                  ref="person">
           <el-row style="margin: 0;padding: 0">
@@ -62,65 +63,37 @@
         </el-form>
       </div>
       <el-row>
-        <el-col :span="16" align="left" class="tab-card no" style="text-align: left">
+        <el-col :span="16" align="left" class="tab-card no" style="text-align: left;margin: 10px 0">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
             <el-tab-pane label="疑似人员" name="person"></el-tab-pane>
-            <el-tab-pane label="疑似IMSI" name="imsi"></el-tab-pane>
+            <!--<el-tab-pane label="疑似IMSI" name="imsi"></el-tab-pane>-->
           </el-tabs>
         </el-col>
       </el-row>
-      <div v-show="activeItem=='person'" style="padding: 10px 0">
-        <el-row v-loading="listLoading">
-          <el-col :span="24">
-            <div class="face-main">
-              <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
-                <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
-                <el-form :model="item" align="left" label-width="80px" label-position="right"
-                         style="text-align: left">
-                  <el-form-item label="档案ID" style="margin:0">
-                    <!--<span-->
-                    <!--style="font-size: 14px;color:#000;margin-right: 20px">{{item.faceId?item.faceId:'&#45;&#45;'}}</span>-->
-                    <el-button type="text" @click="gotoPerson(item)" v-if="item.faceId">
-                      {{item.faceId?item.faceId:'--'}}
-                    </el-button>
-                  </el-form-item>
-                  <el-form-item label="关联IMSI" style="margin:0">
-                    <span
-                      style="font-size: 14px;color:#000">{{item.imsiList.length>0?item.imsiList[0].imsi:'--'}}</span>
-                  </el-form-item>
-                  <el-form-item style="margin:0">
-                    <span style="font-size: 14px;color:#000;margin-right: 20px">
-                      {{'置信度['+(item.imsiList.length>0&&item.imsiList[0].weight>=0?item.imsiList[0].weight/10:'--')+'%]'}} {{'关联次数['+(item.imsiList.length>0&&item.imsiList[0].fnIn>=0?item.imsiList[0].fnIn:'--')+']'}}</span>
-                  </el-form-item>
-                </el-form>
-              </div>
-              <span v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px">暂无数据</span>
+      <el-row v-loading="listLoading">
+        <el-col :span="24">
+          <div class="face-main">
+            <div class="face-item gray-form" v-for="item in persons" :key="item.id" v-show="persons.length >0">
+              <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
+              <el-form :model="item" align="left" label-width="110px" label-position="right"
+                       style="text-align: left" size="mini">
+                <el-form-item label="人脸相似度" style="margin:0">
+                  <span>{{item.similarThreshold?item.similarThreshold.toFixed(1)+'%':'--'}}</span>
+                  <el-button type="text" @click="gotoPerson(item)" v-if="item.personId"
+                             style="margin-left: 20px">档案详情
+                  </el-button>
+                </el-form-item>
+                <el-form-item label="IMSI[置信度]" style="margin:0">
+                  <div v-for="imsi in item.imsiWeightList" style="height: 20px;line-height: 20px;margin:0">
+                    <span style="font-size: 14px;margin:0">{{imsi.imsi+'['+(imsi.weight/10).toFixed(1)+'%]'}}</span>
+                  </div>
+                </el-form-item>
+              </el-form>
             </div>
-          </el-col>
-        </el-row>
-      </div>
-      <div v-show="activeItem=='imsi'" style="margin-top: 10px;margin-bottom: 20px">
-        <el-table :data="imsiList" class="center-block" v-loading="listLoading" stripe>
-          <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="200"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="ispDes" label="运营商" max-width="150" min-width="100"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="IMSI归属地" max-width="200" min-width="150" prop="regional"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="fnIn" label="关联次数" min-width="150" max-width="200"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="weight" label="置信度" min-width="150" max-width="200"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="操作" width="160" fixed="right">
-            <template slot-scope="scope">
-              <el-button type="text" @click="gotoIMSI(scope.row)"
-                         v-show="getButtonVial('archives:getImsiRecordByImsi')">查看IMSI
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
+            <span v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px">暂无数据</span>
+          </div>
+        </el-col>
+      </el-row>
     </section>
   </div>
 </template>
@@ -135,11 +108,10 @@
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         faceId: this.$route.query.faceId || '',
+        resourceId: this.$route.query.resourceId || '',
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         person: {},
         listLoading: false,
-        faceList: [],
-        imsiList: [],
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         persons: [],
         timeStamp: new Date().getTime(),
@@ -154,12 +126,6 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
-      },
-      //查看IMSI详情
-      gotoIMSI(row) {
-        // this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi}});
-        let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: row.imsi}});
-        window.open(routeData.href, '_blank');
       },
       handleType(val, eve) {
         this.getPersons();
@@ -214,13 +180,15 @@
       //根据imsi查找指定的对应人员
       getPersons() {
         this.listLoading = true;
-        this.$post('common/listPersonByUrl', {type: "keyPerson", url: this.person.faceUrl + '?t=' + this.timeStamp},
+        this.$post('person/listSimilarityPerson', {
+            size: 10000, faceUrl: this.person.faceUrl,
+            resourceId: this.resourceId
+          },
           undefined, undefined, "login").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
             if (data.data) {
-              this.persons = data.data.personBOList ? data.data.personBOList : [];
-              this.imsiList = data.data.imsiWeightBOList ? data.data.imsiWeightBOList : [];
+              this.persons = data.data ? data.data : [];
             }
           } else if ("100000" === data.code) {//执行中
             setTimeout(() => {
@@ -228,7 +196,6 @@
             }, 1000);
           } else {
             this.persons = [];
-            this.imsiList = [];
             this.listLoading = false;
             this.$message.error(data.msg);
           }
@@ -238,9 +205,8 @@
       },
       //进入人员档案
       gotoPerson(row) {
-        if (row.faceId) {
-          // this.$router.push({path: '/personnelFiles', query: {faceId: row.faceId}});
-          let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.faceId}});
+        if (row.personId) {
+          let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.personId}});
           window.open(routeData.href, '_blank');
         }
       },

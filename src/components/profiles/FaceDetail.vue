@@ -59,29 +59,76 @@
       <div v-show="activeItem=='person'" style="padding: 10px 0">
         <el-row v-loading="listLoading">
           <el-col :span="24">
-            <div class="face-main">
-              <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
-                <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
-                <el-form :model="item" align="left" label-width="80px" label-position="right"
-                         style="text-align: left">
-                  <el-form-item label="档案ID" style="margin:0">
-                    <!--<span-->
-                    <!--style="font-size: 14px;color:#000;margin-right: 20px">{{item.faceId?item.faceId:'&#45;&#45;'}}</span>-->
-                    <el-button type="text" @click="gotoPerson(item)" v-if="item.faceId">
-                      {{item.faceId?item.faceId:'--'}}
+            <div v-for="(item) in persons" :key="item.id" class="face2-item" v-show="persons.length>0">
+              <el-row>
+                <el-row style="background:#D9F7FF;padding: 10px 15px;border-radius: 6px 6px 0 0">
+                  <el-col :span="12" align="center" style="text-align: left">
+                    <span>疑似档案</span>
+                    <el-button type="text" style="padding: 0;margin-left: 20px"
+                               @click="gotoPerson(item)" v-if="item.faceId">查看档案
                     </el-button>
-                  </el-form-item>
-                  <el-form-item label="关联IMSI" style="margin:0">
-                    <span
-                      style="font-size: 14px;color:#000">{{item.imsiList.length>0?item.imsiList[0].imsi:'--'}}</span>
-                  </el-form-item>
-                  <el-form-item style="margin:0">
-                    <span style="font-size: 14px;color:#000;margin-right: 20px">
-                      {{'置信度['+(item.imsiList.length>0&&item.imsiList[0].weight>=0?item.imsiList[0].weight/10:'--')+'%]'}} {{'关联次数['+(item.imsiList.length>0&&item.imsiList[0].fnIn>=0?item.imsiList[0].fnIn:'--')+']'}}</span>
-                  </el-form-item>
-                </el-form>
-              </div>
-              <span v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px">暂无数据</span>
+                  </el-col>
+                  <el-col :span="12" align="center" style="text-align: left;padding-left: 15px">
+                    <span>疑似重点人员</span>
+                    <el-button type="text" style="padding: 0;margin-left: 20px" v-if="item.blackClassPerson"
+                               @click="gotoVipPerson(item)">查看重点人员
+                    </el-button>
+                  </el-col>
+                </el-row>
+                <el-col :span="12" style="border-right: 1px solid #D7D7D7">
+                  <el-row>
+                    <el-col :lg="4" :xl="3" align="left" style="text-align: left">
+                      <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
+                    </el-col>
+                    <el-form :model="item" align="left" label-width="120px" label-position="right" size="small">
+                      <el-col :lg="20" :xl="21" align="left" style="text-align: left">
+                        <el-form-item label="IMSI" style="margin:0;" align="left">
+                          {{item.imsiList?item.imsiList[0].imsi:'--'}}
+                        </el-form-item>
+                        <el-form-item label="置信度" style="margin:0" align="left">
+                          {{item.imsiList?(item.imsiList[0].weight/10)+'%':'--'}}
+                        </el-form-item>
+                        <el-form-item label="关联次数" style="margin:0" align="left">
+                          {{item.imsiList?item.imsiList[0].fnIn:'--'}}
+                        </el-form-item>
+                        <el-form-item label="相似度" style="margin:0" align="left">
+                          {{item.similarThreshold.toFixed(1)+'%'}}
+                        </el-form-item>
+                      </el-col>
+                    </el-form>
+                  </el-row>
+                </el-col>
+                <el-col :span="12">
+                  <el-row v-if="item.blackClassPerson">
+                    <el-col :lg="4" :xl="3" align="left" style="text-align: left">
+                      <img :src="item.blackClassPerson.faceUrl?item.blackClassPerson.faceUrl:imgPath"
+                           :onerror="img404"/>
+                    </el-col>
+                    <el-form :model="item" align="left" label-width="120px" label-position="right">
+                      <el-col :lg="10" :xl="10" align="left" style="text-align: left">
+                        <el-form-item label="姓名" style="margin:0;" align="left">
+                          {{item.blackClassPerson.name?item.blackClassPerson.name:'--'}}
+                        </el-form-item>
+                        <el-form-item label="身份证" style="margin:0" align="left">
+                          {{item.blackClassPerson.idCard?item.blackClassPerson.idCard:'--'}}
+                        </el-form-item>
+                        <el-form-item label="相似度" style="margin:0" align="left">
+                          {{item.blackClassPerson.similarThreshold.toFixed(1)+'%'}}
+                        </el-form-item>
+                      </el-col>
+                      <el-col :lg="10" :xl="11" align="right" style="text-align: right">
+                        <el-form-item label="所属名单" style="margin:0" align="left">
+                          {{item.blackClassPerson.blackClass?item.blackClassPerson.blackClass:'--'}}
+                        </el-form-item>
+                      </el-col>
+                    </el-form>
+                  </el-row>
+                  <div v-else style="width:100%;color:#909399;font-size:14px;text-align:center;margin-top:20px">暂无数据
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
+            <div v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px;text-align: center">暂无数据
             </div>
           </el-col>
         </el-row>
@@ -188,7 +235,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, buttonValidator} from "../../assets/js/util";
+  import {formatDate, buttonValidator, getAreaLable} from "../../assets/js/util";
 
   export default {
     data() {
@@ -200,7 +247,6 @@
         imgPath2: require('../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         img2404: "this.onerror='';this.src='" + require('../../assets/img/icon_img.svg') + "'",
-        provinceList: JSON.parse(localStorage.getItem("areas")),
         id: this.$route.query.id || '',
         tableHeight: window.innerHeight - 460,
         imageId: this.$route.query.imageId || '',
@@ -249,6 +295,16 @@
           this.isSearch = false;
         }
       },
+      //进入重点人员档案
+      gotoVipPerson(row) {
+        if (row.blackClassPerson.faceId && row.blackClassPerson.resourceId) {
+          let routeData = this.$router.resolve({
+            path: '/vipDetail',
+            query: {faceId: row.blackClassPerson.faceId, resourceId: row.blackClassPerson.resourceId}
+          });
+          window.open(routeData.href, '_blank');
+        }
+      },
       //进入人员档案
       gotoPerson(row) {
         if (row.faceId) {
@@ -263,7 +319,7 @@
           this.faceDetail = data.data;
           this.faceDetail.timeStr = formatDate(new Date(this.faceDetail.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss');
           let code = (this.faceDetail.areaCode ? this.faceDetail.areaCode : this.faceDetail.cityCode ? this.faceDetail.cityCode : this.faceDetail.provinceCode ? this.faceDetail.provinceCode : 0);
-          this.faceDetail.area = this.getAreaLable(code);
+          this.faceDetail.area = getAreaLable(code);
           this.getPersons();
         }).catch((err) => {
           this.$message.error(err);
@@ -272,9 +328,9 @@
       //根据人脸查找指定的对应人员
       getPersons() {
         this.listLoading = true;
-        this.$post('common/listPersonByUrl', {
-            type: "face", url: this.faceDetail.imageUrl + '?t=' + this.timeStamp
-          },
+        this.persons = [];
+        this.imsiList = [];
+        this.$post('common/listPersonByUrl', {type: "face", url: this.faceDetail.imageUrl + '?t=' + this.timeStamp},
           undefined, undefined, "login").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
@@ -407,32 +463,6 @@
         }).catch((err) => {
           this.places = [];
         });
-      },
-      //获得省市县
-      getAreaLable(code) {
-        let lable = '';
-        this.provinceList.forEach((province) => {
-          if (province.subAreas) {
-            province.subAreas.forEach((city) => {
-              if (city.subAreas) {//省级+市级+县级
-                city.subAreas.forEach((country) => {
-                  if (code === country.areaCode) {
-                    lable = province.areaName + city.areaName + country.areaName;
-                  }
-                })
-              } else {//省级+市级
-                if (code === city.areaCode) {
-                  lable = province.areaName + city.areaName;
-                }
-              }
-            })
-          } else {//只包含省级
-            if (code === province.areaCode) {
-              lable = province.areaName;
-            }
-          }
-        });
-        return lable;
       }
     },
     mounted() {

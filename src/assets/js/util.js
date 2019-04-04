@@ -20,7 +20,7 @@ export const setPropIfUndefine = (obj, prop, value) => {
   if (obj[prop] === undefined) {
     obj[prop] = value;
   }
-}
+};
 
 export const setPropFromJSON = (json, name, value) => {
   let target;
@@ -35,7 +35,7 @@ export const setPropFromJSON = (json, name, value) => {
   target[name] = value;
   let stringify = JSON.stringify(target);
   return stringify;
-}
+};
 
 // Bean: {
 //   /**
@@ -88,18 +88,17 @@ export const formatDate = (date, fmt) => {
     }
   }
   return fmt;
-}
+};
 
 export const padLeftZero = (str) => {
   return ('00' + str).substr(str.length);
-}
+};
 // 验证按钮权限
-
+const btnArr = JSON.parse(sessionStorage.getItem("button"));
 export const buttonValidator = (button) => {
   let bol = true;
-  let arr = JSON.parse(sessionStorage.getItem("button"));
-  if (arr) {
-    for (let item of arr) {
+  if (btnArr) {
+    for (let item of btnArr) {
       if (button === item.permissionValue && item.status === 0) {
         bol = true;
         break;
@@ -111,7 +110,34 @@ export const buttonValidator = (button) => {
     bol = false;
   }
   return bol;
-}
+};
+//获得省市县
+const provinceList = JSON.parse(localStorage.getItem("areas"));
+export const getAreaLable = (code) => {
+  let lable = '--';
+  provinceList.forEach((province) => {
+    if (province.subAreas) {
+      province.subAreas.forEach((city) => {
+        if (city.subAreas) {//省级+市级+县级
+          city.subAreas.forEach((country) => {
+            if (code === country.areaCode) {
+              lable = province.areaName + city.areaName + country.areaName;
+            }
+          })
+        } else {//省级+市级
+          if (code === city.areaCode) {
+            lable = province.areaName + city.areaName;
+          }
+        }
+      })
+    } else {//只包含省级
+      if (code === province.areaCode) {
+        lable = province.areaName;
+      }
+    }
+  });
+  return lable;
+};
 /**
  * 判断是否是pc设备
  */
@@ -122,7 +148,7 @@ export const isPC = () => {
     flag = true;
   }
   return flag;
-}
+};
 //数据加解密
 
 //加密
@@ -153,7 +179,7 @@ export const encryData = (text) => {
 
   console.log(str2)
   return str2;
-}
+};
 //解密
 export const decryData = (text) => {
   let key = CryptoJS.enc.Utf8.parse("8NONwyJtHesysWpM");
@@ -170,4 +196,4 @@ export const decryData = (text) => {
 
   let decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
   return decryptedStr;
-}
+};

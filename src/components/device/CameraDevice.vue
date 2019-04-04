@@ -9,6 +9,12 @@
               <el-input v-model="query.cameraCode" placeholder="相机编码" size="medium" :maxlength=30></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
+              <el-select v-model="query.cameraType" placeholder="相机分类" size="medium" clearable style="width: 110px">
+                <el-option v-for="item in cameraTypes" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
               <el-select v-model="query.placeId" placeholder="安装场所" size="medium" filterable clearable>
                 <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                 </el-option>
@@ -18,6 +24,12 @@
               <el-cascader :options="provinceList" :props="props" @change="areaChange" change-on-select
                            v-model="areaList" placeholder="全部地区" size="medium" filterable clearable>
               </el-cascader>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-select v-model="query.status" placeholder="状态" size="medium" clearable style="width: 100px">
+                <el-option v-for="item in cameraStatus" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
@@ -32,6 +44,8 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="相机编码" prop="cameraCode" min-width="120"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="相机分类" prop="cameraType" min-width="100"
+                         max-width="150" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="安装地区" prop="areaCode" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="详细地址" prop="detailAddress" min-width="150"
@@ -40,8 +54,13 @@
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="设备标识" prop="name" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="相机状态" prop="status" min-width="80"
-                         max-width="100" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="相机状态" prop="status" min-width="80" max-width="100">
+          <template slot-scope="scope">
+            <span style="color:#00C755" v-show="scope.row.status == 0">在线</span>
+            <span style="color:#dd6161" v-show="scope.row.status == 1">故障</span>
+            <span style="color:#999" v-show="scope.row.status == 2">离线</span>
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="runningSetPlace=true;addPlace=scope.row"
@@ -84,7 +103,7 @@
 </template>
 <script>
   import {noSValidator} from "../../assets/js/api";
-  import {isPC, buttonValidator} from "../../assets/js/util";
+  import {isPC, buttonValidator, getAreaLable} from "../../assets/js/util";
 
   export default {
     data() {
@@ -98,6 +117,8 @@
         addPlace: {},
         query: {page: 1, size: 10},
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
+        cameraTypes: [{value: 0, label: '人脸相机'}, {value: 1, label: '车牌相机'}],
+        cameraStatus: [{value: 0, label: '在线'}, {value: 1, label: '故障'}, {value: 2, label: '离线'}],
         provinceList: JSON.parse(localStorage.getItem("areas")),
         areaList: [],
         count: 0,
@@ -195,38 +216,12 @@
           }
         }
       },
-      //获得省市县
-      getAreaLable(code) {
-        let lable = '';
-        this.provinceList.forEach((province) => {
-          if (province.subAreas) {
-            province.subAreas.forEach((city) => {
-              if (city.subAreas) {//省级+市级+县级
-                city.subAreas.forEach((country) => {
-                  if (code === country.areaCode) {
-                    lable = province.areaName + city.areaName + country.areaName;
-                  }
-                })
-              } else {//省级+市级
-                if (code === city.areaCode) {
-                  lable = province.areaName + city.areaName;
-                }
-              }
-            })
-          } else {//只包含省级
-            if (code === province.areaCode) {
-              lable = province.areaName;
-            }
-          }
-        });
-        return lable;
-      },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'status') {
-          return row.status === 0 ? '正常' : row.status === 1 ? '故障' : row.status === 2 ? '已下线' : '--';
+        if (column.property === 'cameraType') {
+          return row.cameraType == 1 ? '车牌相机' : '人脸相机';
         } else if (column.property === 'areaCode') {
-          return row.areaCode ? this.getAreaLable(row.areaCode) : '--';
+          return row.areaCode ? getAreaLable(row.areaCode) : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

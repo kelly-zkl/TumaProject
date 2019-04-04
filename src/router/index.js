@@ -34,8 +34,6 @@ import CaseDetail from '@/components/analysis/case/CaseDetail'
 import CollisionAnalysis from '@/components/analysis/collision/CollisionAnalysis'
 import AddCollision from '@/components/analysis/collision/AddCollision'
 import TaskDetail from '@/components/analysis/collision/TaskDetail'
-import CollisionImageRecords from '@/components/analysis/collision/CollisionImageRecords'
-import CollisionImsiRecords from '@/components/analysis/collision/CollisionImsiRecords'
 import FollowAnalysis from '@/components/analysis/follow/FollowAnalysis'
 import AddFollow from '@/components/analysis/follow/AddFollow'
 import FollowResult from '@/components/analysis/follow/FollowResult'
@@ -315,9 +313,7 @@ export default new Router({
           name: '碰撞分析',
           children: [
             {path: '/addCollision', component: AddCollision, name: '新建碰撞任务'},
-            {path: '/taskDetail', component: TaskDetail, name: '任务详情'},
-            {path: '/collisionImsiRecords', component: CollisionImsiRecords, name: 'IMSI详情'},
-            {path: '/collisionImageRecords', component: CollisionImageRecords, name: '图像详情'}
+            {path: '/taskDetail', component: TaskDetail, name: '任务详情'}
           ]
         }
       ]

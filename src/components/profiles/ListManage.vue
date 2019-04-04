@@ -112,12 +112,12 @@
         </el-table-column>
         <el-table-column align="left" label="疑似IMSI[置信度]" prop="imsiList" min-width="220" max-width="250">
           <template slot-scope="scope">
-            <div v-for="item in scope.row.imsiList" v-show="scope.row.imsiList.length>0">
+            <div v-for="item in scope.row.imsiWeightList" v-show="scope.row.imsiWeightList.length>0">
               <span
                 v-bind:style="query.imsi&&query.imsi.length>0&&item.imsi.indexOf(query.imsi)>-1?'color:#ff0000':'color:#000'">{{item.imsi}}<span
                 style="font-weight: bold">[{{(item.weight/10).toFixed(1)}}%]</span></span>
             </div>
-            <span v-show="scope.row.imsiList.length==0">{{'--'}}</span>
+            <span v-show="!scope.row.imsiWeightList">{{'--'}}</span>
           </template>
         </el-table-column>
         <el-table-column align="left" label="操作" min-width="150" max-width="200" fixed="right">
@@ -434,7 +434,10 @@
         this.$refs.upload.submit();
       },
       gotoDetail(row) {
-        let routeData = this.$router.resolve({path: '/vipDetail', query: {faceId: row.faceId}});
+        let routeData = this.$router.resolve({
+          path: '/vipDetail',
+          query: {faceId: row.faceId, resourceId: row.resourceId}
+        });
         window.open(routeData.href, '_blank');
         // this.$router.push({path: '/vipDetail', query: {faceId: row.faceId}});
       },
@@ -607,7 +610,7 @@
           this.isSearch = false;
         }
         this.listLoading = true;
-        this.$post('person/query', this.query, undefined, undefined, "login").then((data) => {
+        this.$post('person/queryWithCommonPerson', this.query, undefined, undefined, "login").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
             if (this.query.pageTime && !this.isSearch) {

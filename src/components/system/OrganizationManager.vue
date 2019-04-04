@@ -168,7 +168,7 @@
 <script>
   import md5 from 'js-md5';
   import {pswValidator, nameValidator, noValidator} from '../../assets/js/api';
-  import {isPC, buttonValidator} from "../../assets/js/util";
+  import {isPC, buttonValidator, getAreaLable} from "../../assets/js/util";
 
   export default {
     data() {
@@ -190,7 +190,6 @@
         addAdminVisible: false,
         tableHeight: window.innerHeight - 232,
         provinceList: JSON.parse(localStorage.getItem("areas")),
-        provinceData: JSON.parse(localStorage.getItem("areas")),
         organizations: [],
         addPoliceTitle: '创建派出所',
         addPoliceVisible: false,
@@ -413,7 +412,7 @@
           let arr = [];
           if (row.areaCodes) {
             row.areaCodes.forEach((item) => {
-              arr.push(this.getAreaLable(item));
+              arr.push(getAreaLable(item));
             });
           }
           let str = arr.length > 0 ? arr.join('、') : '--';
@@ -421,41 +420,6 @@
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
-      },
-      //获得省市县
-      getAreaLable(code) {
-        let lable = '';
-        this.provinceData.forEach((province) => {
-          if (province.subAreas) {
-            if (code === province.areaCode) {
-              lable = province.areaName;
-              return lable;
-            }
-            province.subAreas.forEach((city) => {
-              if (city.subAreas) {//省级+市级+县级
-                if (code === city.areaCode) {
-                  lable = province.areaName + city.areaName;
-                  return lable;
-                }
-                city.subAreas.forEach((country) => {
-                  if (code === country.areaCode) {
-                    // lable = province.n + city.n + country.n;
-                    lable = city.areaName + country.areaName;
-                  }
-                })
-              } else {//省级+市级
-                if (code === city.areaCode) {
-                  lable = province.areaName + city.areaName;
-                }
-              }
-            })
-          } else {//只包含省级
-            if (code === province.areaCode) {
-              lable = province.areaName;
-            }
-          }
-        });
-        return lable;
       },
       //获取当前用户的管辖区域
       getAreas() {

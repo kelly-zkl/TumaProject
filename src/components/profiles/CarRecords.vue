@@ -11,7 +11,7 @@
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left;width: 1100px">
         <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="车牌号" v-model="query.imsi" :maxlength="7" size="medium"
+          <el-input placeholder="车牌号" v-model="query.carLicense" :maxlength="7" size="medium"
                     style="width: 160px"></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem == 'H'">
@@ -33,11 +33,11 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)&&activeItem=='T'">
-          <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
+          <el-input placeholder="设备ID" v-model="query.cameraId" :maxlength="30" size="medium"
                     style="width: 160px"></el-input>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'">
           <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
@@ -47,7 +47,7 @@
         <el-form-item style="margin-bottom: 10px">
           <el-button @click="clearData()" size="medium">重置</el-button>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)&&isMore&&activeItem == 'second'">
+        <el-form-item style="margin-bottom: 10px" v-show="isMore&&activeItem == 'H'">
           <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
                     style="width: 160px"></el-input>
         </el-form-item>
@@ -63,24 +63,23 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="left" prop="deviceName" label="车牌号码" min-width="120" max-width="180"
+        <el-table-column align="left" prop="carLicense" label="车牌号码" min-width="120" max-width="180"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="deviceId" label="牌号种类" min-width="100" max-width="150"
+        <el-table-column align="left" prop="carLicenseKind" label="牌号种类" min-width="100" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="isp" label="牌号颜色" max-width="150" min-width="100"
+        <el-table-column align="left" prop="carLicenseColor" label="牌号颜色" max-width="100" min-width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="placeName" label="抓取场所" min-width="130" max-width="180"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="uptime" label="抓取时间" min-width="170" max-width="200"
+        <el-table-column align="left" prop="catchTime" label="抓取时间" min-width="170" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="deviceName" label="设备标识" max-width="180" min-width="130"
+        <el-table-column align="left" prop="cameraName" label="设备标识" max-width="180" min-width="130"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备ID" max-width="180" min-width="130" prop="deviceId"
+        <el-table-column align="left" label="设备ID" max-width="180" min-width="130" prop="cameraId"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoDetail(scope.row)"
-                       v-show="getButtonVial('archives:getImsiRecordByImsi')">查看详情
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('car:record:detail')">查看详情
             </el-button>
           </template>
         </el-table-column>
@@ -129,7 +128,6 @@
         isSearch: false,
         firstPage: 0,
         page: 1,
-        exportKey: 'archives:get:listFaceToday',
         imgPath: require('../../assets/img/icon_people.png'),
         imgPath2: require('../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
@@ -178,21 +176,17 @@
       handleClick(tab, event) {
         this.isMore = false;
         this.clearData();
-        if (this.activeItem === 'H') {
-          this.exportKey = 'archives:get:listFaceHistory';
-        } else {
-          this.exportKey = 'archives:get:listFaceToday';
-        }
+
       },
       //查看IMSI详情
       gotoDetail(row) {
-        let routeData = this.$router.resolve({path: '/carDetail', query: {id: row.id, imageId: row.imageId}});
+        let routeData = this.$router.resolve({path: '/carDetail', query: {id: row.id}});
         window.open(routeData.href, '_blank');
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'uptime') {
-          return row.uptime ? formatDate(new Date(row.uptime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
+        if (column.property === 'catchTime') {
+          return row.catchTime ? formatDate(new Date(row.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'isp') {
           return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '--';
         } else {
@@ -201,11 +195,6 @@
       },
       //历史数据
       getData() {
-        let url = 'archives/get/listFaceToday';
-        if (this.activeItem === 'H') {
-          url = 'archives/get/listFaceHistory';
-        }
-
         if (this.query.deviceId) {
           if (noValidator(this.query.deviceId)) {
             this.$message.error('请输入正确的设备设备ID');
@@ -226,12 +215,12 @@
         if (this.isSearch) {
           this.list = [];
           this.list10 = [];
-          delete this.query['pageTime'];
+          delete this.query['pageId'];
           this.isSearch = false;
         }
         this.listLoading = true;
-        this.$post(url, this.query).then((data) => {
-          if (this.query.pageTime && !this.isSearch) {
+        this.$post('car/record/query', this.query).then((data) => {
+          if (this.query.pageId && !this.isSearch) {
             this.list = this.list.concat(data.data);
           } else {
             this.list = data.data;
@@ -265,7 +254,7 @@
         }
         if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst && (this.list.length % 100 === 0)) {
           this.firstPage = this.list.length;
-          this.query.pageTime = this.list[this.list.length - 1].catchTime;
+          this.query.pageId = this.list[this.list.length - 1].id;
           this.getData();
         }
         this.list10 = this.list;

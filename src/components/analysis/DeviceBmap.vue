@@ -95,7 +95,7 @@
               data.data.cameraDeviceDistribute.deviceList.forEach((item, idx) => {
                 if (item.longitude && item.latitude) {
                   let onLine = true;
-                  if (item.status === 2) {
+                  if (item.status !== 0) {
                     onLine = false;
                   }
                   var lat = [item.longitude, item.latitude, 1];
@@ -119,7 +119,7 @@
                   }
                   let param = {
                     name: item.name, value: lat, deviceName: item.name, deviceId: item.cameraCode,
-                    onLine: onLine, type: '相机设备', placeName: item.placeName
+                    onLine: onLine, type: item.cameraType == 1 ? '车牌相机' : '人脸相机', placeName: item.placeName
                   };
                   this.multLat.push({value: [item.longitude, item.latitude]});
                   this.mapData.push(param);
@@ -263,7 +263,7 @@
                 // symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAaVBMVEUAAAD2PzD2PzD8VznwJif8VjnwJijwJyj+XTv5SzXzMSzuHyX2PjD9VznwJSf+Xjz5TTX+XzztHST////xJif9VTj5SDP1OC79zcv7eWf4amH8oZr/9fP5gHn+3tr5YFD9wr37tLH1TkfWZWL7AAAAE3RSTlMAMCBgYPDw0MDAwMCAUFDQ0ICAt+xDQQAAAPZJREFUOMu902mPgyAQgOEB8T56CDO1Xt3+/x+5dQKuKGa/9WljgvMqxkT4I26ZYdlNwFF0MRuXaDeWmdnJ5HZex+Ygrje3N0HRer05Udv947MglhzkvMDdEJczuX2AufMtU074Ma44D61vQucKIBC7dg9XAio/mLrBBl0/DSNWkPvBz5OD94tXD8wBg1v0rQ3w/4CInoeAXED0jaAIBp0LCqiCAb3H1/B5K1SBCAZsHokEQKqPgXZSAFBa9w/fqIl/Wiv4KPSpAhYyOZsnEljDK3IHcn/dgKV0kIJVE9glabxPr9zPSwk+lW7HqYIjcS/txXcBq1+0B0HMkpEZYwAAAABJRU5ErkJggg==',
                 symbolSize: [24, 24],
                 data: this.mapData.filter(function (item) {
-                  return !item.onLine && item.type == '相机设备';
+                  return !item.onLine && (item.type == '人脸相机' || item.type == '车牌相机');
                 })
               },
               {
@@ -274,7 +274,7 @@
                 // symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAe1BMVEUAAAAxukU1xlUvrjM0xlUvrjM1yVozwE0wtDsuqi4yukQ1xlUvrjI0xVQvrzQ2yVo0wE4xszsvqi42ylwuqS3///8zw1AwsTY1yVkurDAxtT4yu0XN7tBn0Hub3qRlym/z+/VTyGba895+0YXA6sWz5bpy0H9Aw1hLvlXy6H8mAAAAFXRSTlMAIGBg8PDAwMDAgFBQMDDQ0NDQgIDEW0VAAAAA/0lEQVQ4y6XT526DMBSG4Y+9yeTg2oEy0qT3f4UlZhRjo1bK4/yxzkuwEOBXdvGZ5F8y6OwDWznYUFk+2/Ct9TxxmcZNVn8/7ElbzF6uJyJGBsl0f1fu2OY3LHc8R/DamQXyAERtpXrS7HWMI7VNoepIyEV0BDKiqtiiRYZYDbqqmYKq7poHxQjU4KuVwfMudzcKIITQbyHqYgyE+Ffw+V7AOdcDPgec/x2ExuAxByFiY8C/+3szPBUeIzcGUttzngMnUzA7AXDKsr6p+nLmYBCWu8LxlfP25p4FKd0LUkycDyMHi9TTx16qfHrRdh5ZUDnn9fjsQJdfo+nia47FDw4MSkvLJ8uSAAAAAElFTkSuQmCC',
                 symbolSize: [24, 24],
                 data: this.mapData.filter(function (item) {
-                  return item.onLine && item.type == '相机设备';
+                  return item.onLine && (item.type == '人脸相机' || item.type == '车牌相机');
                 }),
                 showEffectOn: 'render',
                 rippleEffect: {

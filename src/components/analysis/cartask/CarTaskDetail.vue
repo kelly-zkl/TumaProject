@@ -7,31 +7,38 @@
             <div style="font-size:15px;padding:10px 20px;text-align:left">车码碰撞任务信息</div>
           </el-col>
           <el-col :span="12" align="right" style="text-align: right;padding-right: 30px">
-            <el-button type="text" @click="" style="margin-right: 20px">修改</el-button>
-            <el-button type="text" @click="deleteTask()" v-show="getButtonVial('follow:delete')">删除</el-button>
+            <router-link :to="{path:'/addCarTask',query:{no:task.taskNo}}">
+              <el-button type="text" @click="" style="margin-right: 20px"
+                         v-show="getButtonVial('car:task:create')">修改
+              </el-button>
+            </router-link>
+            <el-button type="text" @click="deleteTask()" v-show="getButtonVial('car:task:del')">删除</el-button>
           </el-col>
         </el-row>
         <el-row style="padding: 15px 0">
           <el-form :model="task" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
             <el-col :span="6" align="left" style="text-align: left">
               <el-form-item label="任务编号" align="left" style="margin: 0;text-align: left">
-                {{task.taskName}}
+                {{task.taskNo}}
               </el-form-item>
               <el-form-item label="任务名称" align="left" style="margin: 0;text-align: left">
                 {{task.taskName}}
               </el-form-item>
               <el-form-item label="分析状态" align="left" style="margin: 0;text-align: left">
                 <span
-                  v-bind:style="{fontSize:'15px',color:task.taskStatus=='EXECUTION'?'#00C755':task.taskStatus =='FINISH'?'#00C755':'#333'}">
-                  {{task.taskStatus === "EXECUTION" ? "进行中" : task.taskStatus === "FINISH" ? "已结束" : "--"}}</span>
+                  v-bind:style="{fontSize:'15px',color:task.status=='running'?'#6799FD':task.status =='finish'?'#00C755':task.status=='waiting'?'#D76F31':task.status =='killed'?'#999':task.status === 'failed' ? '#dd6161' :'#333'}">
+                  {{task.status==="running" ? "进行中": task.status === "finish" ? "已结束" :task.status==="waiting" ? "等待中": task.status === "killed" ? "终止" :task.status === "failed" ? "结束" : "--"}}</span>
               </el-form-item>
             </el-col>
             <el-col :span="6" align="left">
               <el-form-item label="分析车牌" align="left" style="margin: 0;text-align: left">
-                {{task.followTarget}}
+                {{task.carLicense}}
               </el-form-item>
               <el-form-item label="日期范围" align="left" style="margin: 0;text-align: left">
-                {{task.startStr+'- '+ task.endStr}}
+                {{task.startStr+' 至 '+ task.endStr}}
+              </el-form-item>
+              <el-form-item label="时间范围" align="left" style="margin: 0;text-align: left">
+                {{task.repeatStartTime+' 至 '+ task.repeatEndTime}}
               </el-form-item>
               <el-form-item label="时间间隔" align="left" style="margin: 0;text-align: left">
                 {{task.interval}}
@@ -39,7 +46,7 @@
             </el-col>
             <el-col :span="6" align="left">
               <el-form-item label="分析场所" align="left" style="margin: 0;text-align: left">
-                {{task.taskName}}
+                {{task.place}}
               </el-form-item>
             </el-col>
             <el-col :span="6" align="right">
@@ -47,7 +54,7 @@
                 {{task.timeStr}}
               </el-form-item>
               <el-form-item label="创建用户" align="left" style="margin: 0;text-align: left">
-                {{task.taskName}}
+                {{task.creatorName?task.creatorName:'--'}}
               </el-form-item>
               <el-form-item label="关联案件" align="left" style="margin: 0;text-align: left">
                 <el-button @click="gotoCaseDetail" type="text">{{task.caseName?task.caseName:'--'}}</el-button>
@@ -59,7 +66,7 @@
       <h5 class="add-label" style="margin: 0">分析结果</h5>
       <el-row style="margin-top: 10px">
         <el-col :span="18">
-          <el-form :inline="true" :model="queryResult" align="left" v-show="getButtonVial('follow:queryResult')"
+          <el-form :inline="true" :model="queryResult" align="left" v-show="getButtonVial('car:task:result:query')"
                    style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="queryResult.imsi" placeholder="IMSI" size="medium" style="width: 160px"
@@ -85,7 +92,7 @@
         </el-col>
         <el-col :span="6" align="right" style="text-align: right">
           <el-button type="primary" size="medium" @click="exportData()"
-                     v-show="getButtonVial('follow:export:analyze')">导出数据
+                     v-show="getButtonVial('car:task:result:export')">导出数据
           </el-button>
         </el-col>
       </el-row>
@@ -99,15 +106,16 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="伴随出现场所数量" prop="followCount" min-width="125"
-                         max-width="250"></el-table-column>
+        <el-table-column align="left" label="伴随出现场所数量" prop="placeCount" min-width="125"
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="伴随抓取次数" prop="followCount" min-width="125"
-                         max-width="250"></el-table-column>
-        <el-table-column align="left" label="置信度" prop="confidenceLevel" min-width="125"
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="置信度" prop="degree" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="130" fixed="right">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoImsi(scope.row)" v-show="getButtonVial('follow:queryRecord')">查看IMSI
+            <el-button type="text" @click="gotoImsi(scope.row)"
+                       v-show="getButtonVial('archives:getImsiRecordByImsi')">查看IMSI
             </el-button>
           </template>
         </el-table-column>
@@ -131,13 +139,11 @@
     data() {
       return {
         task: {},
-        taskId: this.$route.query.taskId || '',
-        followType: this.$route.query.followType || '',
+        taskNo: this.$route.query.no || '',
         dialogWidth: isPC() ? '35%' : '90%',
         activeItem: 'result',
         qTime: "",
         results: [],
-        exportKey: 'follow:export:analyze',
         queryResult: {page: 1, size: 10},
         listLoading: false,
         count: 0,
@@ -172,7 +178,7 @@
         param = Object.assign({}, this.queryResult);
         param.page = 1;
         param.size = 100000;
-        this.axios.post("/follow/export/analyze", param, config).then((res) => {
+        this.axios.post("/car/task/result/export", param, config).then((res) => {
           let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
           let fileName = decodeURIComponent(fileStr);
           fileDownload(res.data, fileName);
@@ -187,7 +193,7 @@
       //删除伴随任务
       deleteTask() {
         this.$confirm('确认要删除该任务吗?', '提示', {type: 'info'}).then(() => {
-          this.$post('/follow/delete', [this.taskId], '删除成功').then((data) => {
+          this.$post('/car/task/del', {taskNoList: [this.taskNo]}, '删除成功').then((data) => {
             if ("000000" === data.code) {
               if ("000000" === data.code)
                 this.$router.go(-1);
@@ -212,29 +218,28 @@
       },
       //分析结果
       getResult() {
-        this.queryResult.followTaskId = this.taskId;
-        this.queryResult.followType = this.followType;
-
+        this.queryResult.ctaskId = this.taskNo;
         this.listLoading = true;
-        this.$post('/follow/queryResult', this.queryResult).then((data) => {
+        this.$post('/car/task/result/query', this.queryResult).then((data) => {
           this.results = data.data.list;
           this.count = data.data.count;
           this.listLoading = false;
         }).catch((err) => {
+          this.count = 0;
           this.results = [];
           this.listLoading = false;
         });
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'isp') {
+        if (column.property === 'degree') {
+          return (row.degree * 100).toFixed(1) + '%';
+        } else if (column.property === 'isp') {
           return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '--';
         } else if (column.property === 'netType') {//网络类型 --> 根据运营商判断
           return this.getNetType(row.isp);
-        } else if (column.property === 'upTime') {
-          return row.upTime ? formatDate(new Date(row.upTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-        } else if (column.property === 'confidenceLevel') {
-          return (row.confidenceLevel * 100).toFixed(2) + '%';
+        } else if (column.property === 'followCount' || 'placeCount') {
+          return row[column.property] == undefined ? '--' : row[column.property];
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
@@ -258,22 +263,25 @@
       },
       //获取伴随详情
       getTaskDetail() {
-        this.$post('/follow/get/' + this.taskId, {}).then((data) => {
+        this.$post('/car/task/detail', {taskNo: this.taskNo}).then((data) => {
           this.task = data.data;
-          this.task.device = '--';
-          if (this.task.deviceId && this.task.deviceId.length > 0) {
-            this.task.device = this.task.deviceId.join("，");
+          this.task.place = '--';
+          if (!!this.task.placeList) {
+            var places = [];
+            this.task.placeList.forEach((item) => {
+              places.push(item.placeName);
+            });
+            this.task.place = places.join("，");
           }
           this.task.timeStr = formatDate(new Date(this.task.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-          this.task.startStr = formatDate(new Date(this.task.startDate * 1000), 'yyyy-MM-dd hh:mm:ss');
-          this.task.endStr = formatDate(new Date(this.task.endDate * 1000), 'yyyy-MM-dd hh:mm:ss');
+          this.task.startStr = formatDate(new Date(this.task.startDate * 1000), 'yyyy-MM-dd');
+          this.task.endStr = formatDate(new Date(this.task.endDate * 1000), 'yyyy-MM-dd');
         }).catch((err) => {
         });
       }
     },
     mounted() {
-      this.taskId = this.$route.query.taskId || '';
-      this.followType = this.$route.query.followType || '';
+      this.taskNo = this.$route.query.no || '';
 
       this.getTaskDetail();
       this.getResult();

@@ -10,6 +10,7 @@
   </div>
 </template>
 <script>
+  import {getAreaLable} from "../../../assets/js/util";
 
   export default {
     props: ['formattedAddress'],
@@ -32,7 +33,7 @@
       formattedAddress: function () {
         let param = JSON.parse(this.formattedAddress);
         this.selectedOptions2 = param.codes;
-        this.detailAddress = this.getAreaLable(this.selectedOptions2[this.selectedOptions2.length - 1]) + param.address;
+        this.detailAddress = getAreaLable(this.selectedOptions2[this.selectedOptions2.length - 1]) + param.address;
         this.point = param.point;
         this.setCenter();
       }
@@ -43,7 +44,7 @@
       this.geolocation = new BMap.Geolocation();
       let param = JSON.parse(this.formattedAddress);
       this.selectedOptions2 = param.codes;
-      this.detailAddress = this.getAreaLable(this.selectedOptions2[this.selectedOptions2.length - 1]) + param.address;
+      this.detailAddress = getAreaLable(this.selectedOptions2[this.selectedOptions2.length - 1]) + param.address;
       this.point = param.point;
       this.setCenter();
     },
@@ -52,37 +53,11 @@
       placeChange(value) {
         this.selectedOptions2 = value;
         if (this.selectedOptions2.length > 0) {
-          this.detailAddress = this.getAreaLable(this.selectedOptions2[this.selectedOptions2.length - 1]);
+          this.detailAddress = getAreaLable(this.selectedOptions2[this.selectedOptions2.length - 1]);
           this.position.detailAddress = this.detailAddress;
           this.position.code = this.selectedOptions2[this.selectedOptions2.length - 1];
           this.setCenter();
         }
-      },
-      //获得省市县
-      getAreaLable(code) {
-        let lable = '';
-        this.provinceList.forEach((province) => {
-          if (province.subAreas) {
-            province.subAreas.forEach((city) => {
-              if (city.subAreas) {//省级+市级+县级
-                city.subAreas.forEach((country) => {
-                  if (code === country.areaCode) {
-                    lable = province.areaName + city.areaName + country.areaName;
-                  }
-                })
-              } else {//省级+市级
-                if (code === city.areaCode) {
-                  lable = province.areaName + city.areaName;
-                }
-              }
-            })
-          } else {//只包含省级
-            if (code === province.areaCode) {
-              lable = province.areaName;
-            }
-          }
-        });
-        return lable;
       },
       //获得城市名称
       getCityName(code) {

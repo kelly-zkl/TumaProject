@@ -150,7 +150,7 @@
   </div>
 </template>
 <script>
-  import {buttonValidator} from "../../assets/js/util";
+  import {buttonValidator, getAreaLable} from "../../assets/js/util";
   import MapView from './deviceSet/BMap';
   import {numValid} from "../../assets/js/api";
 
@@ -478,7 +478,7 @@
             }
           }
         } else if (column.property === 'areaCode') {
-          return row.areaCode ? this.getAreaLable(row.areaCode) : '--';
+          return row.areaCode ? getAreaLable(row.areaCode) : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
@@ -508,32 +508,6 @@
           }
         });
         return arr;
-      },
-      //获得省市县
-      getAreaLable(code) {
-        let lable = '';
-        this.provinceList.forEach((province) => {
-          if (province.subAreas) {
-            province.subAreas.forEach((city) => {
-              if (city.subAreas) {//省级+市级+县级
-                city.subAreas.forEach((country) => {
-                  if (code === country.areaCode) {
-                    lable = province.areaName + city.areaName + country.areaName;
-                  }
-                })
-              } else {//省级+市级
-                if (code === city.areaCode) {
-                  lable = province.areaName + city.areaName;
-                }
-              }
-            })
-          } else {//只包含省级
-            if (code === province.areaCode) {
-              lable = province.areaName;
-            }
-          }
-        });
-        return lable;
       },
       //获取组织列表
       getOrganizations() {

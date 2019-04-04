@@ -7,7 +7,7 @@
             <div style="font-size:15px;padding:10px 20px;text-align:left">基本信息</div>
           </el-col>
           <el-col :span="12" align="right" style="text-align: right;padding-right: 30px">
-            <el-button type="text" @click="" style="margin-right: 20px">修改</el-button>
+            <!--<el-button type="text" @click="" style="margin-right: 20px">修改</el-button>-->
             <el-button type="text" @click="deleteCase()" size="medium" v-show="getButtonVial('case:delete')">删除
             </el-button>
           </el-col>
@@ -58,7 +58,7 @@
       <el-row style="margin-bottom: 15px">
         <el-col :span="24" align="left" class="tab-card no" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
-            <el-tab-pane label="碰撞任务" name="collision"></el-tab-pane>
+            <el-tab-pane label="交并任务" name="collision"></el-tab-pane>
             <el-tab-pane label="伴随任务" name="follow"></el-tab-pane>
           </el-tabs>
         </el-col>
@@ -79,27 +79,10 @@
                 </el-date-picker>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
-                <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
-              </el-form-item>
-              <el-form-item style="margin-bottom: 10px">
                 <el-button type="primary" size="medium" @click="queryCollision.page=1;getCollisions()">搜索</el-button>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
                 <el-button size="medium" @click="clearData()">重置</el-button>
-              </el-form-item>
-              <el-form-item style="margin-bottom: 10px" v-show="isMore">
-                <el-select v-model="queryCollision.conditionType" placeholder="任务类型" style="width: 150px"
-                           size="medium" filterable clearable>
-                  <el-option v-for="item in conditionTypes" :key="item.value" :label="item.label" :value="item.value">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item style="margin-bottom: 10px" v-show="isMore">
-                <el-select v-model="queryCollision.taskStatus" placeholder="全部状态" style="width: 150px"
-                           size="medium" filterable clearable>
-                  <el-option v-for="item in taskStatus" :key="item.value" :label="item.label" :value="item.value">
-                  </el-option>
-                </el-select>
               </el-form-item>
             </el-form>
           </el-col>
@@ -116,24 +99,19 @@
                   @selection-change="selsCollision">
           <el-table-column type="selection" width="45" align="left"></el-table-column>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="任务名称" prop="taskName" min-width="125"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="任务类型" prop="conditionType" min-width="125"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="125" max-width="250">
-            <template slot-scope="scope">
-              <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已完成</span>
-              <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
-              <span style="color:#D76F31" v-show="scope.row.taskStatus == 'WAIT'">等待中</span>
-              <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">分析中</span>
-            </template>
-          </el-table-column>
-          <el-table-column align="left" label="创建日期" prop="createTime" min-width="150"
-                           max-width="300" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="任务编号" prop="taskNo" min-width="150"
+                           max-width="200" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="任务名称" prop="taskName" min-width="150"
+                           max-width="200" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="创建用户" prop="createBy" min-width="120"
+                           max-width="200" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="创建日期" prop="createTime" min-width="170"
+                           max-width="200" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="关联案件" prop="caseName" min-width="100"
+                           max-width="200" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" min-width="125" max-width="250" fixed="right">
             <template slot-scope="scope">
-              <el-button type="text" @click="gotoCoDetail(scope.row.id,scope.row.collisionType)"
-                         v-show="getButtonVial('collision:get')">查看
+              <el-button type="text" @click="gotoCoDetail(scope.row.id)" v-show="getButtonVial('collision:get')">查看
               </el-button>
               <el-button type="text" @click="selsColl = [];selsColl.push(scope.row.id);deleteCoTask()"
                          v-show="getButtonVial('collision:delete')">删除
@@ -230,7 +208,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, buttonValidator} from "../../../assets/js/util";
+  import {formatDate, buttonValidator, getAreaLable} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -252,7 +230,6 @@
         queryFollow: {page: 1, size: 10},
         listLoading2: false,
         count2: 0,
-        provinceList: JSON.parse(localStorage.getItem("areas")),
         selsFoll: [],
         selsColl: [],
         pickerBeginDate: {
@@ -294,12 +271,8 @@
         this.selsColl = sels;
       },
       //跳转任务详情
-      gotoCoDetail(id, collisionType) {
-        // this.$router.push({path: '/taskDetail', query: {taskId: id, collisionType: collisionType[0]}});
-        let routeData = this.$router.resolve({
-          path: '/taskDetail',
-          query: {taskId: id, collisionType: collisionType[0]}
-        });
+      gotoCoDetail(id) {
+        let routeData = this.$router.resolve({path: '/taskDetail', query: {taskId: id}});
         window.open(routeData.href, '_blank');
       },
       //删除碰撞任务
@@ -425,6 +398,7 @@
           this.listLoading1 = false;
         }).catch((err) => {
           this.collisions = [];
+          this.count1 = 0;
           this.listLoading1 = false;
         });
       },
@@ -448,6 +422,7 @@
           this.listLoading2 = false;
         }).catch((err) => {
           this.follows = [];
+          this.count2 = 0;
           this.listLoading2 = false;
         });
       },
@@ -465,37 +440,11 @@
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
       },
-      //获得省市县
-      getAreaLable(code) {
-        let lable = '';
-        this.provinceList.forEach((province) => {
-          if (province.subAreas) {
-            province.subAreas.forEach((city) => {
-              if (city.subAreas) {//省级+市级+县级
-                city.subAreas.forEach((country) => {
-                  if (code === country.areaCode) {
-                    lable = province.areaName + city.areaName + country.areaName;
-                  }
-                })
-              } else {//省级+市级
-                if (code === city.areaCode) {
-                  lable = province.areaName + city.areaName;
-                }
-              }
-            })
-          } else {//只包含省级
-            if (code === province.areaCode) {
-              lable = province.areaName;
-            }
-          }
-        });
-        return lable;
-      },
       //获取案件详情
       getCaseDetail() {
         this.$post('/case/get/' + this.caseId, {}).then((data) => {
           this.caseDetail = data.data;
-          this.caseDetail.address = this.getAreaLable(data.data.areaCode) + data.data.caseAddress;
+          this.caseDetail.address = getAreaLable(data.data.areaCode) + data.data.caseAddress;
           this.caseDetail.timeStr = formatDate(new Date(this.caseDetail.creatTime * 1000), 'yyyy-MM-dd hh:mm:ss');
           this.caseDetail.fishStr = this.caseDetail.updateTime !== 0 ? formatDate(new Date(this.caseDetail.updateTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
           this.caseDetail.startStr = formatDate(new Date(this.caseDetail.caseTime * 1000), 'yyyy-MM-dd hh:mm:ss');

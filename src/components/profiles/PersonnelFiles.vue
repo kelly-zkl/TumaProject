@@ -1,24 +1,25 @@
 <template>
   <div>
     <section class="content">
-      <el-row style="background: #F2F2F2;font-size:14px;padding: 10px 0;width: 100%;text-align: center">
-        <el-col :span="6" style="text-align: center" align="center" :offset="5">
-          <div style="font-size:14px;text-align: center">基本信息</div>
+      <el-row style="background: #F2F2F2;font-size:14px;padding:10px;width: 100%;text-align: center">
+        <el-col :span="11" style="text-align: left" align="left">
+          <div style="font-size:14px;text-align: left;padding-left: 10px">档案详情</div>
         </el-col>
         <el-col :span="6" style="text-align: right;padding-right: 20px" align="right"
                 v-show="getButtonVial('archives:updateDetails')">
-          <el-button type="text" style="margin: 0;padding: 0" @click="clickModify()">修改基本信息</el-button>
+          <el-button type="text" style="margin: 0;padding: 0" @click="clickModify()">修改</el-button>
         </el-col>
-        <el-col :span="7" style="text-align: center" align="center">
-          <div style="font-size:14px;text-align: center">最后出现</div>
+        <el-col :span="7" style="text-align: left" align="left">
+          <div style="font-size:14px;text-align: left;padding-left: 20px">最后出现</div>
         </el-col>
       </el-row>
-      <div class="add-appdiv dialog gray-form" style="border-top: none;border-radius: 0 0 4px 4px">
+      <div class="add-appdiv gray-form"
+           style="border-top: none;border-radius: 0 0 4px 4px;padding: 15px;margin-bottom: 15px">
         <el-row style="margin: 0;padding: 0">
           <el-form :model="userInfo" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
             <el-col :span="5" align="center" style="text-align: center">
               <img :src="userInfo.faceUrl?userInfo.faceUrl:imgPath" :onerror="img404"
-                   style="max-height: 150px;max-width: 150px;border-radius: 6px"/>
+                   style="max-height: 130px;max-width: 130px;border-radius: 6px"/>
             </el-col>
             <el-col :span="6" align="left" style="text-align: left">
               <el-form-item label="姓名" align="left" style="margin: 0">
@@ -51,13 +52,13 @@
             </el-col>
             <el-col :span="7" align="right" style="border-left: 1px solid #D0CACF;text-align: right;padding-left: 20px">
               <el-form-item label="抓取时间" align="left" style="margin: 0">
-                {{userInfo.mobilePhone ? userInfo.mobilePhone : '--'}}
+                {{userInfo.lastTimeStr ? userInfo.lastTimeStr : '--'}}
               </el-form-item>
               <el-form-item label="抓取场所" align="left" style="margin: 0">
-                {{userInfo.placeName ? userInfo.placeName : '--'}}
+                {{userInfo.lastPlaceName ? userInfo.lastPlaceName : '--'}}
               </el-form-item>
               <el-form-item label="抓取地址" align="left" style="margin: 0">
-                {{userInfo.area ? userInfo.area : '--'}}
+                {{userInfo.lastArea ? userInfo.lastArea : '--'}}
               </el-form-item>
             </el-col>
           </el-form>
@@ -77,7 +78,7 @@
         </el-col>
       </el-row>
       <div v-show="activeItem=='first'">
-        <el-row style="background: #F2F2F2" v-if="persons.length>0 || imsiList.length>0">
+        <el-row style="background: #F2F2F2">
           <el-col :span="12">
             <div style="font-size:14px;padding:10px 20px">当前关联的IMSI信息</div>
           </el-col>
@@ -85,12 +86,10 @@
             <div style="font-size:14px;padding:10px 20px">疑似重点人员</div>
           </el-col>
         </el-row>
-        <div class="add-appdiv dialog" style="border-top: none;border-radius: 0 0 4px 4px;padding:0;margin-bottom: 20px"
-             v-if="persons.length>0 || imsiList.length>0">
+        <div class="add-appdiv" style="border-top: none;border-radius: 0 0 4px 4px;padding:0;margin-bottom:0">
           <el-row>
-            <el-col :span="12"
-                    v-bind:style="{borderRight:imsiList.length==5&&persons.length<4?'1px solid #D0CACF':'none',padding:'10px 20px'}">
-              <el-table :data="imsiList" class="center-block">
+            <el-col :span="12" style="border-right:1px solid #D7D7D7">
+              <el-table :data="imsiList" class="center-block" :height="tableHeight">
                 <el-table-column align="left" prop="imsi" label="IMSI" min-width="120" max-width="150"
                                  :formatter="formatterAddress"></el-table-column>
                 <el-table-column align="left" prop="ispDes" label="运营商" min-width="60" max-width="100"
@@ -108,35 +107,34 @@
                 </el-table-column>
               </el-table>
             </el-col>
-            <el-col :span="12" @click="" style="cursor: pointer"
-                    v-bind:style="{borderLeft:persons.length>3?'1px solid #D0CACF':'none',padding:'10px 20px'}">
-              <div style="text-align: left" v-if="persons.length>0">
-                <el-row v-for="(item) in persons" :key="item.imsi" v-show="persons.length >0">
+            <el-col :span="12" v-bind:style="{padding:'0 10px',height:tableHeight+'px',overflowY: 'auto'}">
+              <div class="person-item gray-form" v-if="persons.length>0">
+                <el-row v-for="(item) in persons" :key="item.imsi" v-show="persons.length >0" class="bo-line"
+                        @click.native="gotoVipPerson(item)" style="cursor: pointer">
                   <el-form :model="item" align="left" label-width="120px" label-position="right">
-                    <el-col :span="4" align="left" style="text-align: left">
-                      <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"
-                           style="max-width:100px;max-height:100px;border-radius: 5px"/>
+                    <el-col :span="3" align="left" style="text-align: left">
+                      <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
                     </el-col>
-                    <el-col :span="10" align="left" style="text-align: left">
-                      <el-form-item label="姓名" style="margin:0" align="left">
+                    <el-col :span="11" align="left" style="text-align: left">
+                      <el-form-item label="姓名" style="margin:0;" align="left">
                         {{item.name?item.name:'--'}}
                       </el-form-item>
                       <el-form-item label="身份证" style="margin:0" align="left">
-                        {{item.name?item.name:'--'}}
+                        {{item.idCard?item.idCard:'--'}}
                       </el-form-item>
                       <el-form-item label="相似度" style="margin:0" align="left">
-                        {{item.name?item.name:'--'}}
+                        {{item.similarThreshold.toFixed(1)+'%'}}
                       </el-form-item>
                     </el-col>
                     <el-col :span="10" align="right" style="text-align: right">
                       <el-form-item label="所属名单" style="margin:0" align="left">
-                        {{item.name?item.name:'--'}}
+                        <span>{{item.blackClass?item.blackClass:'--'}}</span>
                       </el-form-item>
                     </el-col>
                   </el-form>
                 </el-row>
               </div>
-              <div v-else style="width:100%;color: #909399;font-size: 14px;text-align: center">暂无数据</div>
+              <div v-else style="width:100%;color:#909399;font-size:14px;text-align:center;margin-top:15px">暂无数据</div>
             </el-col>
           </el-row>
         </div>
@@ -189,19 +187,17 @@
 <script>
   import FetchImgRecords from './files/FetchImgRecords.vue';
   import FetchIMSIRecords from './files/FetchIMSIRecords.vue';
-  import {formatDate, buttonValidator} from "../../assets/js/util";
+  import {formatDate, buttonValidator, getAreaLable} from "../../assets/js/util";
   import {
     nameValidator, numValid, mobileValidator, userCardValid,
     telphoneValidator, isNull
   } from "../../assets/js/api";
 
   export default {
-    components: {
-      FetchIMSIRecords,
-      FetchImgRecords
-    },
+    components: {FetchIMSIRecords, FetchImgRecords},
     data() {
       return {
+        tableHeight: window.innerHeight - 425,
         activeItem: 'first',
         runModifyPerson: false,
         person: {},
@@ -221,9 +217,20 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      //进入重点人员档案
+      gotoVipPerson(row) {
+        if (row.faceId && row.resourceId) {
+          let routeData = this.$router.resolve({
+            path: '/vipDetail',
+            query: {faceId: row.faceId, resourceId: row.resourceId}
+          });
+          window.open(routeData.href, '_blank');
+        }
+      },
       handleType(val) {
         if (this.activeItem == 'first') {
           this.getUserData();
+          this.getPersons();
         } else if (this.activeItem == 'second') {
           this.$refs.imsi.getPlaces();
         } else {
@@ -318,12 +325,6 @@
           if ('000000' === data.code) {
             this.userInfo = data.data;
             let imsis = [], faces = [data.data.faceId];
-            if (data.data.faceTraces && data.data.faceTraces.length > 0) {
-              this.persons = data.data.faceTraces;
-              this.persons.forEach((item) => {
-                item.timeStr = formatDate(new Date(item.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-              })
-            }
 
             if (data.data.imsiList && data.data.imsiList.length > 0) {
               this.imsiList = data.data.imsiList;
@@ -332,11 +333,34 @@
               });
             }
             this.userInfo.timeStr = formatDate(new Date(data.data.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-            this.userInfo.area = data.data.areaCode ? this.getAreaLable(data.data.areaCode) : '--';
+            this.userInfo.area = data.data.areaCode ? getAreaLable(data.data.areaCode) : '--';
+            this.userInfo.lastTimeStr = formatDate(new Date(data.data.lastAppearTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+            this.userInfo.lastPlaceName = data.data.lastAppearPlace.placeName;
+            var detail = data.data.lastAppearPlace.areaCode ? getAreaLable(data.data.lastAppearPlace.areaCode) : '--';
+            this.userInfo.lastArea = data.data.lastAppearPlace.detailAddress ? detail + data.data.lastAppearPlace.detailAddress : detail;
 
             localStorage.setItem("pathUrl", JSON.stringify(this.userInfo.faceUrl));
             localStorage.setItem("pathImsi", JSON.stringify(imsis));
             localStorage.setItem("pathFace", JSON.stringify(faces));
+          }
+        }).catch((err) => {
+          this.$message.error(err);
+        });
+      },
+      getPersons() {
+        this.$post('person/listDoubtfulKeyPerson', {faceId: this.faceId},
+          undefined, undefined, "login").then((data) => {
+          if ("000000" === data.code) {
+            if (data.data) {
+              this.persons = data.data ? data.data : [];
+            }
+          } else if ("100000" === data.code) {//执行中
+            setTimeout(() => {
+              this.getPersons();
+            }, 1000);
+          } else {
+            this.persons = [];
+            this.$message.error(data.msg);
           }
         }).catch((err) => {
           this.$message.error(err);
@@ -348,32 +372,6 @@
         localStorage.setItem("pathTime", JSON.stringify(qTime));
         let routeData = this.$router.resolve({path: '/pathLine', query: {imsi: 1, face: 0, idx: scope.$index}});
         window.open(routeData.href, '_blank');
-      },
-      //获得省市县
-      getAreaLable(code) {
-        let lable = '';
-        this.provinceList.forEach((province) => {
-          if (province.subAreas) {
-            province.subAreas.forEach((city) => {
-              if (city.subAreas) {//省级+市级+县级
-                city.subAreas.forEach((country) => {
-                  if (code === country.areaCode) {
-                    lable = province.areaName + city.areaName + country.areaName;
-                  }
-                })
-              } else {//省级+市级
-                if (code === city.areaCode) {
-                  lable = province.areaName + city.areaName;
-                }
-              }
-            })
-          } else {//只包含省级
-            if (code === province.areaCode) {
-              lable = province.areaName;
-            }
-          }
-        });
-        return lable;
       },
       //根据区域码找到对应的省市县编码
       getCode(code) {
@@ -405,6 +403,8 @@
       formatterAddress(row, column) {
         if (column.property === 'fnIn') {
           return row.fnIn === 0 ? 0 : row.fnIn;
+        } else if (column.property === 'isp') {
+          return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
@@ -416,45 +416,27 @@
   }
 </script>
 <style scoped>
-  .person-main {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
   .person-item {
-    width: -moz-calc((100% - 46px) / 3);
-    width: -webkit-calc((100% - 46px) / 3);
-    width: calc((100% - 46px) / 3);
-    height: 162px;
-    margin: 5px 0;
-    text-align: center;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
   }
 
   .person-item img {
-    max-width: 130px;
-    max-height: 130px;
-    border-radius: 6px;
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 5px;
     text-align: left;
+    margin-top: 12px;
   }
 
-  .person-item:nth-child(3n+1) {
-    margin-right: 20px;
+  .bo-line {
+    border-bottom: 1px solid #ebeef5
   }
 
-  .person-item:nth-child(3n+2) {
-    margin-right: 20px;
-  }
-
-  .person-item:nth-child(3n+3) {
-    margin-right: 0;
+  .bo-line:last-child {
+    border-bottom: none;
   }
 </style>

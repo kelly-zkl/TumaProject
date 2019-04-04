@@ -99,22 +99,10 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="150"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="最近抓取时间" prop="name" min-width="170"
+        <el-table-column align="left" label="最近抓取时间" prop="lastAppearTime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="最近抓取场所" prop="mobilePhone" min-width="150"
+        <el-table-column align="left" label="最近抓取场所" prop="lastPlaceName" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="疑似重点人员" prop="idCard" min-width="110"
-                         max-width="200" :formatter="formatterAddress">
-          <template slot-scope="scope">
-            <div style="height: 90px;line-height:90px">
-              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
-                   @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
-                   style="max-width: 90px;max-height:90px;border-radius:6px;vertical-align:middle"/>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column align="left" label="人脸相似度" prop="idCard" min-width="100"
-                         max-width="150" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="碰撞时间" prop="uptime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
@@ -359,6 +347,8 @@
           return row.startAge >= 0 ? row.startAge == row.endAge ? (row.startAge - 3) + '~' + (row.startAge + 3) : row.startAge + '~' + row.endAge : '--';
         } else if (column.property === 'uptime') {
           return row.uptime ? formatDate(new Date(row.uptime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
+        } else if (column.property === 'lastAppearTime') {
+          return row.lastAppearTime ? formatDate(new Date(row.lastAppearTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

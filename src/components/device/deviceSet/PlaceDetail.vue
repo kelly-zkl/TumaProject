@@ -75,8 +75,13 @@
                            max-width="200" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备标识" prop="name" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="相机状态" prop="status" min-width="120"
-                           max-width="150" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="相机状态" prop="status" min-width="120" max-width="150">
+            <template slot-scope="scope">
+              <span style="color:#00C755" v-show="scope.row.status == 0">在线</span>
+              <span style="color:#dd6161" v-show="scope.row.status == 1">故障</span>
+              <span style="color:#999" v-show="scope.row.status == 2">离线</span>
+            </template>
+          </el-table-column>
         </el-table>
         <div class="block" style="margin:20px 0" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
@@ -131,8 +136,12 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="lineStatus" label="在线状态" min-width="100"
-                           max-width="120"></el-table-column>
+          <el-table-column align="left" prop="lineStatus" label="在线状态" min-width="100" max-width="120">
+            <template slot-scope="scope">
+              <span style="color:#00C755" v-show="scope.row.lineStatus == '在线'">在线</span>
+              <span style="color:#999" v-show="scope.row.lineStatus != '在线'">{{scope.row.lineStatus}}</span>
+            </template>
+          </el-table-column>
         </el-table>
         <div class="block" style="margin:20px 0" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
@@ -146,7 +155,7 @@
 <script>
   import axios from "axios";
   import {noSValidator} from "../../../assets/js/api";
-  import {buttonValidator} from "../../../assets/js/util";
+  import {buttonValidator, getAreaLable} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -195,7 +204,7 @@
         this.$post('place/get/' + this.placeId, {}).then((data) => {
           if ('000000' === data.code) {
             this.placeDetail = data.data;
-            this.placeDetail.area = data.data.areaCode ? this.getAreaLable(data.data.areaCode) : '--';
+            this.placeDetail.area = data.data.areaCode ? getAreaLable(data.data.areaCode) : '--';
             this.placeDetail.placeTypeName = this.getPlaceType(data.data.placeType);
             this.setPlaceMap();
           }
@@ -377,7 +386,7 @@
         } else if (column.property === 'placeType') {
           return this.getPlaceType(row.placeType);
         } else if (column.property === 'areaCode') {
-          return row.areaCode ? this.getAreaLable(row.areaCode) : '--';
+          return row.areaCode ? getAreaLable(row.areaCode) : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
@@ -388,32 +397,6 @@
             return item.label;
           }
         }
-      },
-      //获得省市县
-      getAreaLable(code) {
-        let lable = '';
-        this.provinceList.forEach((province) => {
-          if (province.subAreas) {
-            province.subAreas.forEach((city) => {
-              if (city.subAreas) {//省级+市级+县级
-                city.subAreas.forEach((country) => {
-                  if (code === country.areaCode) {
-                    lable = province.areaName + city.areaName + country.areaName;
-                  }
-                })
-              } else {//省级+市级
-                if (code === city.areaCode) {
-                  lable = province.areaName + city.areaName;
-                }
-              }
-            })
-          } else {//只包含省级
-            if (code === province.areaCode) {
-              lable = province.areaName;
-            }
-          }
-        });
-        return lable;
       }
     },
     mounted() {

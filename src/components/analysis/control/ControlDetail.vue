@@ -23,7 +23,7 @@
               </el-col>
               <el-col :span="12" align="right" style="text-align: right">
                 <router-link :to="{path:'/addControl',query:{id:task.id}}">
-                  <el-button type="text" @click="" v-show="getButtonVial('disposition:delete')"
+                  <el-button type="text" v-show="getButtonVial('disposition:add')"
                              style="margin: 0 10px 0 0" size="mini">修改
                   </el-button>
                 </router-link>
@@ -88,9 +88,7 @@
                   <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
                   <el-table-column align="left" prop="name" label="重点人员名单">
                     <template slot-scope="scope">
-                      <router-link :to="{path:'/listManage',query:{id:scope.row.id}}">
-                        <el-button type="text" @click="">{{scope.row.name}}</el-button>
-                      </router-link>
+                      <el-button type="text" @click="gotoVipManager(scope.row.id)">{{scope.row.name}}</el-button>
                     </template>
                   </el-table-column>
                   <el-table-column align="left" prop="personNumbers" label="人员数量"
@@ -123,9 +121,7 @@
                   <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
                   <el-table-column align="left" prop="permissionUrl" label="场所名称">
                     <template slot-scope="scope">
-                      <router-link :to="{path:'/placeDetail',query:{id:scope.row.id}}">
-                        <el-button type="text" @click="">{{scope.row.placeName}}</el-button>
-                      </router-link>
+                      <el-button type="text" @click="gotoPlaceDetail(scope.row.id)">{{scope.row.placeName}}</el-button>
                     </template>
                   </el-table-column>
                   <el-table-column align="left" prop="detailAddress" label="详细地址"
@@ -162,6 +158,17 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      //跳转重点人员
+      gotoVipManager(id) {
+        let routeData = this.$router.resolve({path: '/listManage', query: {id: id}});
+        window.open(routeData.href, '_blank');
+      },
+      //跳转场所详情
+      gotoPlaceDetail(id) {
+        let routeData = this.$router.resolve({path: '/placeDetail', query: {id: id}});
+        window.open(routeData.href, '_blank');
+      },
+      //跳转按键详情
       gotoCaseDetail() {
         let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: this.task.caseId}});
         window.open(routeData.href, '_blank');

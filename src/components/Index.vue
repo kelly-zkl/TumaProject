@@ -29,7 +29,7 @@
           <div align="right"
                style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 60px;flex: 0 0 auto;align-items: center">
             <div class="all-search" style="margin-right: 15px">
-              <el-popover ref="imsi" placement="bottom-end" width="200" trigger="click" v-model="imsiShow">
+              <el-popover ref="imsi" placement="bottom-end" width="200" trigger="click">
                 <el-row style="background-color: #efefef">
                   <el-col :span="12" style="text-align: left;padding-left: 10px">
                     <span style="height: 40px;line-height: 40px;color:#888">搜索记录</span>
@@ -40,10 +40,10 @@
                 </el-row>
                 <el-row v-for="(item,idx) in searchImsis" :key="idx+''" v-show="searchImsis.length>0">
                   <div @click.stop="imsi=item;searchImsi()" style="cursor: pointer">
-                    <el-col :span="12" style="text-align: left;padding-left: 10px">
+                    <el-col :span="18" style="text-align: left;padding-left: 10px" align="left">
                       <span style="height: 40px;line-height: 40px;color:#333">{{item}}</span>
                     </el-col>
-                    <el-col :span="12" style="text-align: right;padding-right: 10px">
+                    <el-col :span="6" style="text-align: right;padding-right: 10px" align="right">
                       <el-button type="text">IMSI</el-button>
                     </el-col>
                   </div>
@@ -53,8 +53,7 @@
                   无记录
                 </div>
               </el-popover>
-              <el-popover ref="image" placement="bottom-start" width="235" trigger="click"
-                          :offset="10" v-model="imgShow">
+              <el-popover ref="image" placement="bottom-start" width="235" trigger="click">
                 <div style="padding:10px">
                   <el-upload :action="uploadUrl" :show-file-list="false" :on-success="handleAvatarSuccess"
                              :before-upload="beforeAvatarUpload">
@@ -65,13 +64,10 @@
                   <el-button type="primary" size="medium" @click="searchImage()" style="width: 100%">搜索</el-button>
                 </div>
               </el-popover>
-              <el-input placeholder="请输入IMSI" :maxlength="15" style="width: 235px" v-popover:imsi clearable
-                        @click.native="imsiShow=true;imgShow=false" v-model="imsi" @keyup.13.native="searchImsi()"
-                        v-show="getButtonVial('home:allSearch')">
-                <el-button slot="prepend" icon="el-icon-picture" v-popover:image
-                           @click.stop="imsiShow=false;imgShow=true"></el-button>
-                <el-button slot="append" icon="el-icon-search"
-                           @click.stop="imsiShow=false;imgShow=false;searchImsi()"></el-button>
+              <el-button icon="el-icon-picture" v-popover:image></el-button>
+              <el-input placeholder="请输入IMSI" :maxlength="15" style="width: 190px" v-popover:imsi clearable
+                        v-model="imsi" @keyup.13.native="searchImsi()" v-show="getButtonVial('home:allSearch')">
+                <el-button slot="append" icon="el-icon-search" @click.stop="searchImsi()"></el-button>
               </el-input>
             </div>
             <!--<div class="item" style="text-align: center" @click="runMsg = true">-->
@@ -150,10 +146,12 @@
               </span>
             </el-form-item>
             <el-form-item label="告警场所" style="margin:0" align="left">
-              <span style="font-size: 15px;color:#000">{{imsiWarning.placeName?imsiWarning.placeName:'--'}}</span>
+              <span style="font-size:15px;color:#000;white-space:nowrap;text-overflow: ellipsis">
+                {{imsiWarning.placeName?imsiWarning.placeName:'--'}}</span>
             </el-form-item>
             <el-form-item label="设备标识" style="margin:0" align="left">
-              <span style="font-size: 15px;color:#000">{{imsiWarning.deviceName?imsiWarning.deviceName:'--'}}</span>
+              <span style="font-size:15px;color:#000;white-space:nowrap;text-overflow: ellipsis">
+                {{imsiWarning.deviceName?imsiWarning.deviceName:'--'}}</span>
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer" align="center">
@@ -183,10 +181,12 @@
                 <span style="font-size: 15px;color:#000">{{faceWarning.timeStr ? faceWarning.timeStr : '--'}}</span>
               </el-form-item>
               <el-form-item label="告警场所" style="margin:0" align="left">
-                <span style="font-size: 15px;color:#000">{{faceWarning.placeName?faceWarning.placeName:'--'}}</span>
+                <span style="font-size:15px;color:#000;white-space:nowrap;text-overflow: ellipsis">
+                  {{faceWarning.placeName?faceWarning.placeName:'--'}}</span>
               </el-form-item>
               <el-form-item label="设备标识" style="margin:0" align="left">
-                <span style="font-size: 15px;color:#000">{{faceWarning.deviceName?faceWarning.deviceName:'--'}}</span>
+                <span style="font-size:15px;color:#000;white-space:nowrap;text-overflow: ellipsis">
+                  {{faceWarning.deviceName?faceWarning.deviceName:'--'}}</span>
               </el-form-item>
             </el-form>
           </div>
@@ -252,8 +252,6 @@
         indx: 1,
         imsiCount: 0,
         faceCount: 0,
-        imsiShow: false,
-        imgShow: false,
         runSearch: false,
         imageUrl: '',
         imsi: '',
@@ -306,7 +304,6 @@
           return;
         }
         this.searchParam = JSON.stringify({type: 'img', value: this.imageUrl, time: new Date().getTime()});
-        this.imgShow = false;
         this.runSearch = true;
       },
       //以码搜图

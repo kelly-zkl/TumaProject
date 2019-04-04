@@ -203,7 +203,7 @@
       }
     },
     mounted() {
-      this.myBrowser();
+      // this.myBrowser();
       this.getSystemDetail();
       let bol = JSON.parse(localStorage.getItem("user"));
       if (bol && bol.save === true) {

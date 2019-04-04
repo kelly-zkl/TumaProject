@@ -168,7 +168,7 @@
 </template>
 <script>
   import {noSValidator, noValidator} from "../../../assets/js/api";
-  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
+  import {formatDate, isPC, buttonValidator, getAreaLable} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -433,32 +433,6 @@
           this.listLoading = false;
         });
       },
-      //获得省市县
-      getAreaLable(code) {
-        let lable = '';
-        this.provinceList.forEach((province) => {
-          if (province.subAreas) {
-            province.subAreas.forEach((city) => {
-              if (city.subAreas) {//省级+市级+县级
-                city.subAreas.forEach((country) => {
-                  if (code === country.areaCode) {
-                    lable = province.areaName + city.areaName + country.areaName;
-                  }
-                })
-              } else {//省级+市级
-                if (code === city.areaCode) {
-                  lable = province.areaName + city.areaName;
-                }
-              }
-            })
-          } else {//只包含省级
-            if (code === province.areaCode) {
-              lable = province.areaName;
-            }
-          }
-        });
-        return lable;
-      },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'updateTime') {
@@ -470,7 +444,7 @@
           let end = row.caseToTime ? formatDate(new Date(row.caseToTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
           return start + " ~ " + end;
         } else if (column.property === 'caseAddress') {
-          return row.areaCode ? this.getAreaLable(row.areaCode) + row.caseAddress : '--';
+          return row.areaCode ? getAreaLable(row.areaCode) + row.caseAddress : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

@@ -20,9 +20,9 @@
           <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">
             碰撞条件
           </div>
-          <el-form-item label="分析车牌" align="left" prop="followTarget" style="margin-top: 20px">
-            <el-input v-model="carTask.followTarget" placeholder="输入车牌"
-                      style="width: 400px" :maxlength=7></el-input>
+          <el-form-item label="分析车牌" align="left" prop="carLicense" style="margin-top: 20px">
+            <el-input v-model="carTask.carLicense" placeholder="输入车牌"
+                      style="width: 400px" :maxlength=8></el-input>
           </el-form-item>
           <el-form-item label="分析场所" align="left">
             <el-select v-model="carTask.placeList" placeholder="分析场所" filterable multiple clearable
@@ -128,7 +128,7 @@
 </template>
 <script>
   import PlaceMap from '../PlaceMap';
-  import {formatDate} from "../../../assets/js/util";
+  import {formatDate, getAreaLable} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -149,7 +149,7 @@
         qTime: '',
         time2: ['00:00:00', '23:59:59'],
         count: 0,
-        taskId: this.$route.query.id || '',
+        taskNo: this.$route.query.no || '',
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
         provinceList: JSON.parse(localStorage.getItem("areas")),
         areaList: [],
@@ -166,7 +166,7 @@
           caseId: [
             {required: true, message: '请选择案件', trigger: 'blur'}
           ],
-          followTarget: [
+          carLicense: [
             {required: true, message: '请输入车牌', trigger: 'blur'}
           ],
           interval: [
@@ -189,10 +189,17 @@
     },
     methods: {
       getTaskDetail() {
-        this.$post('disposition/get/' + this.taskId, {}).then((data) => {
+        this.$post('car/task/detail', {taskNo: this.taskNo}).then((data) => {
           this.carTask = data.data;
-          this.qTime = [this.carTask.startDate, this.carTask.endDate];
-          this.time2 = [this.carTask.startTime, this.carTask.endTime];
+          if (!!this.carTask.placeList) {
+            var places = [];
+            this.carTask.placeList.forEach((item) => {
+              places.push(item.placeId);
+            });
+          }
+          this.carTask.placeList = places;
+          this.qTime = [this.carTask.startDate * 1000, this.carTask.endDate * 1000];
+          this.time2 = [this.carTask.repeatStartTime, this.carTask.repeatEndTime];
         }).catch((err) => {
         });
       },
@@ -232,8 +239,8 @@
             }
             this.carTask.startDate = Math.round(this.qTime[0] / 1000);
             this.carTask.endDate = Math.round(this.qTime[1] / 1000);
-            this.carTask.startTime = this.time2[0];
-            this.carTask.endTime = this.time2[1];
+            this.carTask.repeatStartTime = this.time2[0];
+            this.carTask.repeatEndTime = this.time2[1];
             let bol = ((this.carTask.endDate - this.carTask.startDate) > 60 * 60 * 24 * 7);
             if (bol) {
               this.$message.error('日期范围不能超过7天');
@@ -241,15 +248,30 @@
             }
 
             this.carTask.caseName = this.getCaseName();
-            if (this.taskId.length > 0) {
-              this.$post("follow/add", this.carTask, "修改成功").then((data) => {
+
+            if (!!this.carTask.placeList) {
+              var places = [];
+              this.carTask.placeList.forEach((item) => {
+                this.places.forEach((list) => {
+                  if (item == list.id) {
+                    places.push({placeId: list.id, placeName: list.placeName});
+                  }
+                });
+              });
+              this.carTask.placeList = places;
+            }
+
+            if (this.taskNo.length > 0) {
+              this.$post("car/task/create", this.carTask, "修改成功").then((data) => {
                 if ("000000" === data.code)
                   this.$router.go(-1);
               }).catch((err) => {
               });
             } else {
-              this.controlTask.createBy = JSON.parse(sessionStorage.getItem("user")).realName;
-              this.$post("follow/add", this.carTask, "创建成功").then((data) => {
+              this.carTask.groupId = JSON.parse(sessionStorage.getItem("user")).groupId;
+              this.carTask.creatorId = JSON.parse(sessionStorage.getItem("user")).userId;
+              this.carTask.creatorName = JSON.parse(sessionStorage.getItem("user")).realName;
+              this.$post("car/task/create", this.carTask, "创建成功").then((data) => {
                 if ("000000" === data.code)
                   this.$router.go(-1);
               }).catch((err) => {
@@ -332,7 +354,7 @@
             }
           }
         } else if (column.property === 'areaCode') {
-          return row.areaCode ? this.getAreaLable(row.areaCode) : '--';
+          return row.areaCode ? getAreaLable(row.areaCode) : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
@@ -353,32 +375,6 @@
           this.queryDevice.areaCode = value[2];
         }
       },
-      //获得省市县
-      getAreaLable(code) {
-        let lable = '';
-        this.provinceList.forEach((province) => {
-          if (province.subAreas) {
-            province.subAreas.forEach((city) => {
-              if (city.subAreas) {//省级+市级+县级
-                city.subAreas.forEach((country) => {
-                  if (code === country.areaCode) {
-                    lable = province.areaName + city.areaName + country.areaName;
-                  }
-                })
-              } else {//省级+市级
-                if (code === city.areaCode) {
-                  lable = province.areaName + city.areaName;
-                }
-              }
-            })
-          } else {//只包含省级
-            if (code === province.areaCode) {
-              lable = province.areaName;
-            }
-          }
-        });
-        return lable;
-      },
       getPlaces() {
         this.$post("place/query", {page: 1, size: 999999}).then((data) => {
           this.places = data.data.list;
@@ -388,10 +384,10 @@
       }
     },
     mounted() {
-      this.taskId = this.$route.query.id || '';
+      this.taskNo = this.$route.query.no || '';
       this.getPlaces();
       this.getCases();
-      if (this.taskId.length > 0) {
+      if (this.taskNo.length > 0) {
         this.getTaskDetail();
       }
     },

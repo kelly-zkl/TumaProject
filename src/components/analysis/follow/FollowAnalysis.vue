@@ -125,7 +125,7 @@
       },
       //终止分析
       stopAnalysis(id) {
-        this.$post('/follow/reanalysis/' + id, {}, '操作成功').then((data) => {
+        this.$post('/follow/stopTaskOnYarn/' + id, {}, '操作成功').then((data) => {
           if ("000000" === data.code) {
             this.getData();
           }

@@ -73,33 +73,76 @@
         </div>
       </div>
       <div class="content" v-show="activeItem == 'person'">
-        <el-row v-loading="listLoading" style="margin: 0;padding: 0">
-          <el-col :span="24" style="margin: 0;padding: 0">
-            <div class="face-main">
-              <div class="face-item" v-for="item in persons" :key="item.id" v-show="persons.length >0">
-                <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
-                <el-form :model="item" align="left" label-width="80px" label-position="right"
-                         style="text-align: left">
-                  <el-form-item label="档案ID" style="margin:0" align="left">
-                    <span
-                      style="font-size: 15px;color:#000;margin-right: 20px">{{item.personId?item.personId:'--'}}</span>
-                    <el-button type="text" @click="gotoPerson(item)" v-if="item.personId">查看人员</el-button>
-                  </el-form-item>
-                  <el-form-item label="关联次数" style="margin:0" align="left">
-                    <span style="font-size: 15px;color:#000">{{item.fnIn<0?'--':item.fnIn}}</span>
-                  </el-form-item>
-                  <el-form-item label="置信度" style="margin:0" align="left">
-                    <span style="font-size: 15px;color:#000">{{item.weight?item.weight/10+'%':'--'}}</span>
-                  </el-form-item>
-                </el-form>
-              </div>
-              <span v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px">暂无数据</span>
-              <el-row style="width: 100%" v-if="persons.length>=num">
-                <el-col :span="24" style="text-align: center" align="center">
-                  <el-button type="text" @click="loadMore()">加载更多</el-button>
+        <el-row v-loading="listLoading">
+          <el-col :span="24">
+            <div v-for="(item) in persons" :key="item.id" class="face2-item" v-show="persons.length>0">
+              <el-row>
+                <el-row style="background:#D9F7FF;padding: 10px 15px;border-radius: 6px 6px 0 0">
+                  <el-col :span="12" align="left" style="text-align: left">
+                    <span>疑似档案</span>
+                    <el-button type="text" style="padding: 0;margin-left: 20px"
+                               @click="gotoPerson(item)" v-if="item.personId">查看档案
+                    </el-button>
+                  </el-col>
+                  <el-col :span="12" align="left" style="text-align: left;padding-left: 15px">
+                    <span>疑似重点人员</span>
+                    <el-button type="text" style="padding: 0;margin-left: 20px" v-if="item.blackClassPerson"
+                               @click="gotoVipPerson(item)">查看重点人员
+                    </el-button>
+                  </el-col>
+                </el-row>
+                <el-col :span="12" style="border-right: 1px solid #D7D7D7">
+                  <el-row>
+                    <el-col :lg="5" :xl="3" align="left" style="text-align: left">
+                      <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
+                    </el-col>
+                    <el-form :model="item" align="left" label-width="140px" label-position="right">
+                      <el-col :lg="19" :xl="21" align="left" style="text-align: left">
+                        <el-form-item label="IMSI伴随次数" style="margin:0;" align="left">{{item.fnIn}}</el-form-item>
+                        <el-form-item label="IMSI置信度" style="margin:0" align="left">
+                          {{item.weight?(item.weight/10).toFixed(1)+'%':'--'}}
+                        </el-form-item>
+                      </el-col>
+                    </el-form>
+                  </el-row>
+                </el-col>
+                <el-col :span="12">
+                  <el-row v-if="item.blackClassPerson">
+                    <el-form :model="item" align="left" label-width="100px" label-position="right">
+                      <el-col :lg="5" :xl="3" align="left" style="text-align: left">
+                        <img :src="item.blackClassPerson.faceUrl?item.blackClassPerson.faceUrl:imgPath"
+                             :onerror="img404"/>
+                      </el-col>
+                      <el-col :lg="10" :xl="10" align="left" style="text-align: left">
+                        <el-form-item label="姓名" style="margin:0;" align="left">
+                          {{item.blackClassPerson.name?item.blackClassPerson.name:'--'}}
+                        </el-form-item>
+                        <el-form-item label="身份证" style="margin:0" align="left">
+                          {{item.blackClassPerson.idCard?item.blackClassPerson.idCard:'--'}}
+                        </el-form-item>
+                        <el-form-item label="相似度" style="margin:0" align="left">
+                          {{item.blackClassPerson.similarThreshold.toFixed(1)+'%'}}
+                        </el-form-item>
+                      </el-col>
+                      <el-col :lg="9" :xl="11" align="right" style="text-align: right">
+                        <el-form-item label="所属名单" style="margin:0" align="left">
+                          {{item.blackClassPerson.blackClass?item.blackClassPerson.blackClass:'--'}}
+                        </el-form-item>
+                      </el-col>
+                    </el-form>
+                  </el-row>
+                  <div v-else style="width:100%;color:#909399;font-size:14px;text-align:center;margin-top:20px">暂无数据
+                  </div>
                 </el-col>
               </el-row>
             </div>
+            <div v-show="persons.length==0" style="width:100%;color: #909399;font-size: 14px;text-align: center">暂无数据
+            </div>
+            <el-row style="width: 100%" v-if="persons.length>=num">
+              <el-col :span="24" style="text-align: center" align="center">
+                <el-button type="text" @click="loadMore()">加载更多</el-button>
+              </el-col>
+            </el-row>
           </el-col>
         </el-row>
       </div>
@@ -127,7 +170,7 @@
         listLoading: false,
         count: 0,
         persons: [],
-        num: 10,
+        num: 5,
         listLoading1: false,
         queryPerson: {imsi: this.imsi, size: 10000, page: 1}
       }
@@ -145,8 +188,18 @@
       },
       //关联人员加载更多
       loadMore() {
-        this.num += 10;
+        this.num += 5;
         this.getPersons();
+      },
+      //进入重点人员档案
+      gotoVipPerson(row) {
+        if (row.blackClassPerson.faceId && row.blackClassPerson.resourceId) {
+          let routeData = this.$router.resolve({
+            path: '/vipDetail',
+            query: {faceId: row.blackClassPerson.faceId, resourceId: row.blackClassPerson.resourceId}
+          });
+          window.open(routeData.href, '_blank');
+        }
       },
       //进入人员档案
       gotoPerson(row) {
@@ -159,12 +212,14 @@
       //根据imsi查人脸
       getPersons() {
         this.listLoading = true;
+        this.persons = [];
         this.$post('common/imsi/listFace', {imsi: this.imsi, num: this.num}).then((data) => {
           this.listLoading = false;
           if (data.data && data.data.length > 0) {
             this.persons = data.data;
           }
         }).catch((err) => {
+          this.persons = [];
           this.listLoading = false;
           this.$message.error(err);
         });

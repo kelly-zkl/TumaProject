@@ -9,16 +9,16 @@
           </el-tabs>
         </el-col>
         <el-tooltip class="item" effect="dark" placement="bottom-end">
-          <div slot="content">支持导出指定某一个IMSI的30天以内的记录,<br/>请在搜索栏设置完毕后再导出</div>
+          <div slot="content">支持导出IMSI的记录,<br/>请在搜索栏设置完毕后再导出</div>
           <el-col :span="3" align="right" style="text-align: right" :offset="5"
                   v-show="activeItem=='second'&&getButtonVial('archives:export:record')">
-            <el-button type="primary" size="medium" @click="confirmExport()" :disabled="!isExport">导出</el-button>
+            <el-button type="primary" size="medium" @click="confirmExport()">导出</el-button>
           </el-col>
         </el-tooltip>
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left;width: 1100px">
         <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="300" size="medium"
+          <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="15" size="medium"
                     style="width: 180px"></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem == 'second'">
@@ -86,7 +86,7 @@
         <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)"
-                       v-show="getButtonVial('archives:getImsiRecordByImsi')">查看详情
+                       v-show="getButtonVial('archives:getImsiRecordById')">查看详情
             </el-button>
           </template>
         </el-table-column>
@@ -145,13 +145,14 @@
       //导出数据
       confirmExport() {
         var param = Object.assign({}, this.query);
-        if (!param.imsi) {
-          this.$message.error('请输入IMSI');
-          return;
+        if (!!param.imsi) {
+          if (!numValid(param.imsi) || param.imsi.length != 15) {
+            this.$message.error('请输入15位正确的IMSI');
+            return;
+          }
         }
-        if (!numValid(param.imsi) || param.imsi.length != 15) {
-          this.$message.error('请输入15位正确的IMSI');
-          return;
+        if ((!this.qTime && !param.imsi) || (param.endTime - param.startTime > 60 * 60 * 24 * 7)) {
+          this.isExport = false;
         }
         delete this.query['pageTime'];
         delete this.query['size'];
@@ -164,12 +165,24 @@
             config = {headers: {token: token, tokenId: userId}, responseType: 'arraybuffer'};
           }
         }
-        this.axios.post("archives/export/record", param, config).then((res) => {
-          let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
-          let fileName = decodeURIComponent(fileStr);
-          fileDownload(res.data, fileName);
-        }).catch((res) => {
-        });
+        if (this.isExport) {
+          this.axios.post("archives/export/record", param, config).then((res) => {
+            let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
+            let fileName = decodeURIComponent(fileStr);
+            fileDownload(res.data, fileName);
+          }).catch((res) => {
+          });
+        } else {
+          this.$confirm('当前数据量过大，导出需要较长时间，是否确认立即导出？', '提示', {type: 'info'}).then(() => {
+            this.axios.post("archives/export/record", param, config).then((res) => {
+              let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
+              let fileName = decodeURIComponent(fileStr);
+              fileDownload(res.data, fileName);
+            }).catch((res) => {
+            });
+          }).catch((res) => {
+          });
+        }
       },
       //更多条件
       showMore() {
@@ -185,19 +198,6 @@
           this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         }
-        let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 30 * 1000);
-        if (bol) {
-          this.isExport = false;
-        } else {
-          this.isExport = true;
-        }
-        // if (val && val.length == 2) {
-        //   let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 7 * 1000);
-        //   if (bol) {
-        //     this.$message.error('日期范围不能超过7天');
-        //     return;
-        //   }
-        // }
         this.getData();
       },
       handleTime(val) {
