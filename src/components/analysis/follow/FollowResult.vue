@@ -7,47 +7,49 @@
             <div style="font-size:15px;padding:10px 20px;text-align:left">伴随分析任务信息</div>
           </el-col>
           <el-col :span="12" align="right" style="text-align: right;padding-right: 30px">
-            <!--<el-button type="text" @click="" style="margin-right: 20px">修改</el-button>-->
+            <router-link :to="{path:'/addFollow',query:{id:task.id}}">
+              <el-button type="text" style="margin-right: 20px" v-show="getButtonVial('follow:update')">修改</el-button>
+            </router-link>
             <el-button type="text" @click="deleteTask()" v-show="getButtonVial('follow:delete')">删除</el-button>
           </el-col>
         </el-row>
         <el-row style="padding: 15px 0">
           <el-form :model="task" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
             <el-col :span="6" align="left" style="text-align: left">
+              <el-form-item label="任务编号" align="left" style="margin: 0;text-align: left">
+                {{task.taskNo?task.taskNo : '--'}}
+              </el-form-item>
               <el-form-item label="任务名称" align="left" style="margin: 0;text-align: left">
-                {{task.taskName}}
+                {{task.taskName?task.taskName:'--'}}
               </el-form-item>
-              <el-form-item label="任务类型" align="left" style="margin: 0;text-align: left">
-                {{task.followType == 'IMSI' ? 'IMSI' : task.followType == 'FACE' ? '图像' : 'MAC'}}
-              </el-form-item>
-              <el-form-item label="分析状态" align="left" style="margin: 0;text-align: left">
+              <el-form-item label="任务状态" align="left" style="margin: 0;text-align: left">
                 <span
-                  v-bind:style="{fontSize:'15px',color:task.taskStatus=='EXECUTION'?'#00C755':task.taskStatus =='FINISH'?'#00C755':'#333'}">
-                  {{task.taskStatus === "EXECUTION" ? "进行中" : task.taskStatus === "FINISH" ? "已结束" : "--"}}</span>
+                  v-bind:style="{fontSize:'15px',color:task.taskStatus=='EXECUTION'?'#00C755':task.taskStatus =='FINISH'?'#00C755':task.taskStatus=='FAILE'?'#dd6161':task.taskStatus =='WAIT'?'#D76F31':task.taskStatus =='STOP'?'#999':'#333'}">
+                  {{task.taskStatus === "EXECUTION" ? "进行中" : task.taskStatus === "FINISH" ? "已完成" :task.taskStatus=='FAILE'?'失败':task.taskStatus =='WAIT'?'等待中':task.taskStatus =='STOP'?'终止': "--"}}</span>
               </el-form-item>
             </el-col>
             <el-col :span="6" align="left">
               <el-form-item label="分析对象" align="left" style="margin: 0;text-align: left">
-                {{'['+followType+']'+task.followTarget}}
+                {{'['+followType+']'+task.followTarget?task.followTarget:'--'}}
               </el-form-item>
               <el-form-item label="日期范围" align="left" style="margin: 0;text-align: left">
-                {{task.startStr+'- '+ task.endStr}}
+                {{(task.startStr?task.startStr:'--')+' 至 '+ (task.endStr?task.endStr:'--')}}
               </el-form-item>
               <el-form-item label="时间间隔" align="left" style="margin: 0;text-align: left">
-                {{task.interval}}
+                {{task.interval==0?0:task.interval}}
               </el-form-item>
             </el-col>
             <el-col :span="6" align="left">
               <el-form-item label="设备ID" align="left" style="margin: 0;text-align: left">
-                {{task.device}}
+                {{task.device?task.device:'--'}}
               </el-form-item>
             </el-col>
             <el-col :span="6" align="right">
               <el-form-item label="创建时间" align="left" style="margin: 0;text-align: left">
-                {{task.timeStr}}
+                {{task.timeStr?task.timeStr:'--'}}
               </el-form-item>
-              <el-form-item label="伴随次数" align="left" style="margin: 0;text-align: left">
-                {{task.followCount == 0 ? 0 : task.followCount}}
+              <el-form-item label="创建用户" align="left" style="margin: 0;text-align: left">
+                {{task.createBy?task.createBy: '--'}}
               </el-form-item>
               <el-form-item label="关联案件" align="left" style="margin: 0;text-align: left">
                 <el-button @click="gotoCaseDetail" type="text">{{task.caseName?task.caseName:'--'}}</el-button>
@@ -140,7 +142,7 @@
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
-                            start-placeholder="抓取时间" size="medium" end-placeholder="结束日期" clearable
+                            start-placeholder="采集时间" size="medium" end-placeholder="结束日期" clearable
                             :default-time="['00:00:00', '23:59:59']" value-format="timestamp"
                             :picker-options="pickerBeginDate">
             </el-date-picker>
@@ -174,7 +176,7 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="抓取地点" prop="deviceName" min-width="125"
+          <el-table-column align="left" label="采集地点" prop="deviceName" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" min-width="125" max-width="250" fixed="right">
             <template slot-scope="scope">
@@ -220,7 +222,7 @@
         </el-form>
         <el-table :data="results" v-loading="listLoading1" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="人员图像" prop="imsi" min-width="150"
+          <el-table-column align="left" label="人脸图像" prop="imsi" min-width="150"
                            max-width="300" :formatter="formatterAddress">
             <template slot-scope="scope">
               <div style="height: 90px;line-height:90px">
@@ -284,7 +286,7 @@
         </el-form>
         <el-table :data="records" v-loading="listLoading2" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="人员图像" prop="imsi" min-width="150"
+          <el-table-column align="left" label="人脸图像" prop="imsi" min-width="150"
                            max-width="300" :formatter="formatterAddress">
             <template slot-scope="scope">
               <div style="height: 90px;line-height:90px">
@@ -298,9 +300,9 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="性别" prop="sex" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="抓取时间" prop="upTime" min-width="170"
+          <el-table-column align="left" label="采集时间" prop="upTime" min-width="170"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="抓取场所" prop="deviceName" min-width="125"
+          <el-table-column align="left" label="采集场所" prop="deviceName" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -380,8 +382,10 @@
       },
       //跳转案件详情页
       gotoCaseDetail() {
-        let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: this.task.caseId}});
-        window.open(routeData.href, '_blank');
+        if (this.task.caseId) {
+          let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: this.task.caseId}});
+          window.open(routeData.href, '_blank');
+        }
       },
       handleType(val) {
         if (this.activeItem === 'result') {//分析结果
@@ -557,8 +561,8 @@
             this.task.device = this.task.deviceId.join("，");
           }
           this.task.timeStr = formatDate(new Date(this.task.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-          this.task.startStr = formatDate(new Date(this.task.startDate * 1000), 'yyyy-MM-dd hh:mm:ss');
-          this.task.endStr = formatDate(new Date(this.task.endDate * 1000), 'yyyy-MM-dd hh:mm:ss');
+          this.task.startStr = formatDate(new Date(this.task.startDate * 1000), 'yyyy-MM-dd');
+          this.task.endStr = formatDate(new Date(this.task.endDate * 1000), 'yyyy-MM-dd');
         }).catch((err) => {
         });
       }

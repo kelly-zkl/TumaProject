@@ -30,7 +30,7 @@
                 {{caseDetail.address?caseDetail.address:'--'}}
               </el-form-item>
               <el-form-item label="案发时间" align="left" style="margin: 0;text-align: left">
-                {{caseDetail.startStr + " - " + caseDetail.endStr}}
+                {{(caseDetail.startStr?caseDetail.startStr:'--') + " 至 " + (caseDetail.endStr?caseDetail.endStr:'--')}}
               </el-form-item>
               <el-form-item label="备注" align="left" style="margin: 0;text-align: left">
                 {{caseDetail.remark?caseDetail.remark:'--'}}
@@ -223,7 +223,6 @@
         queryCollision: {page: 1, size: 10},
         listLoading1: false,
         count1: 0,
-        conditionTypes: [{value: 0, label: '多条件碰撞'}, {value: 1, label: '单条件碰撞'}],
         taskStatus: [{value: 'FINISH', label: '已完成'}, {value: 'FAILE', label: '失败'},
           {value: 'WAIT', label: '等待中'}, {value: 'EXECUTION', label: '分析中'}],
         follows: [],
@@ -248,7 +247,7 @@
       },
       handleType(val) {
         this.isMore = false;
-        if (this.activeItem === "collision") {//碰撞任务
+        if (this.activeItem === "collision") {//交并任务
           this.getCollisions();
         } else {//伴随任务
           this.getFollows();
@@ -275,13 +274,13 @@
         let routeData = this.$router.resolve({path: '/taskDetail', query: {taskId: id}});
         window.open(routeData.href, '_blank');
       },
-      //删除碰撞任务
+      //删除交并任务
       deleteCoTask() {
         let arr = [];
         this.selsColl.forEach((item) => {
           arr.push(item.id);
         });
-        this.$confirm('确认要删除碰撞任务吗?', '提示', {type: 'info'}).then(() => {
+        this.$confirm('确认要删除交并任务吗?', '提示', {type: 'info'}).then(() => {
           this.$post('/collision/delete', arr, '删除成功').then((data) => {
             if ("000000" === data.code) {
               this.getCollisions();
@@ -292,13 +291,13 @@
         }).catch(() => {
         });
       },
-      //取消关联碰撞任务
+      //取消关联交并任务
       cancelCollis() {
         let arr = [];
         this.selsColl.forEach((item) => {
           arr.push(item.id);
         });
-        this.$confirm('确认要取消关联该碰撞任务吗?', '提示', {type: 'info'}).then(() => {
+        this.$confirm('确认要取消关联该交并任务吗?', '提示', {type: 'info'}).then(() => {
           this.$post('/collision/cancelCase/' + this.caseId, arr, '取消关联成功').then((data) => {
             if ("000000" === data.code) {
               this.getCollisions();
@@ -380,7 +379,7 @@
           this.getFollows();
         }
       },
-      //碰撞任务
+      //交并任务
       getCollisions() {
         if (!!this.date1) {
           this.queryCollision.startTime = this.date1[0] / 1000;
@@ -429,11 +428,9 @@
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'collisionType') {
-          return row.collisionType[0] ? row.collisionType[0] === 'IMSI' ? 'IMSI' : row.collisionType[0] === 'FACE' ? '图像' : row.collisionType[0] === 'MAC' ? '' : 'MAC' : '--';
+          return row.collisionType[0] ? row.collisionType[0] === 'IMSI' ? 'IMSI' : row.collisionType[0] === 'FACE' ? '人脸' : row.collisionType[0] === 'MAC' ? '' : 'MAC' : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-        } else if (column.property === 'conditionType') {
-          return row.conditionType == 0 ? '多条件碰撞' : row.conditionType == 1 ? '单条件碰撞' : '--';
         } else if (column.property === 'followCount') {
           return row.followCount === 0 ? 0 : row.followCount;
         } else {

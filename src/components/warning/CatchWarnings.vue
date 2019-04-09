@@ -56,9 +56,15 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
+          <el-select v-model="query.dispositionTaskId" placeholder="布控任务" size="medium" style="width: 150px" clearable>
+            <el-option v-for="item in controlList" :key="item.id" :label="item.taskName" :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
-          <el-select v-model="query.status" placeholder="布控任务" size="medium" style="width: 150px" clearable>
-            <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
+          <el-select v-model="query.caseId" placeholder="关联案件" size="medium" style="width: 150px" clearable>
+            <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
@@ -73,14 +79,8 @@
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'&&isMore">
-          <el-select v-model="query.status" placeholder="布控任务" size="medium" style="width: 130px" clearable>
-            <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="isMore">
-          <el-select v-model="query.status" placeholder="关联案件" size="medium" style="width: 150px" clearable>
-            <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
+          <el-select v-model="query.caseId" placeholder="关联案件" size="medium" style="width: 150px" clearable>
+            <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
@@ -108,7 +108,7 @@
                 @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150">
+        <el-table-column align="left" label="现场人脸图像" prop="sceneUrl" min-width="150">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
               <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath2"
@@ -135,13 +135,13 @@
             <span style="color:#999" v-show="scope.row.status == 3">误报</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="抓取时间" prop="catchTime" min-width="170"
+        <el-table-column align="left" label="采集时间" prop="catchTime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="布控任务" prop="taskName" min-width="140"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="关联案件" prop="caseName" min-width="140"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="布控人员图像" prop="faceUrl" min-width="120"
+        <el-table-column align="left" label="布控人脸图像" prop="faceUrl" min-width="120"
                          max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
@@ -211,6 +211,8 @@
         listLoading: false,
         exportKey: 'warning:get:listFaceToday',
         places: [],
+        cases: [],
+        controlList: [],
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         imgUrl: '',
         showTip: false,
@@ -363,7 +365,7 @@
         window.open(routeData.href, '_blank');
         // this.$router.push({path: '/faceWarningDetail', query: {id: row.id, faceId: row.faceId}});
       },
-      //获取图像告警列表
+      //获取人脸告警列表
       getData() {
         let url = 'warning/get/listFaceToday';
         if (this.activeItem === 'H') {
@@ -496,10 +498,28 @@
         }).catch((err) => {
           this.places = [];
         });
+      },
+      //布控任务
+      getControl() {
+        this.$post('disposition/query', {size: 999999, page: 1}).then((data) => {
+          this.controlList = data.data.list;
+        }).catch((err) => {
+          this.controlList = [];
+        });
+      },
+      //关联案件
+      getCases() {
+        this.$post('case/query', {page: 1, size: 999999}).then((data) => {
+          this.cases = data.data.list;
+        }).catch((err) => {
+          this.cases = [];
+        });
       }
     },
     mounted() {
       this.getTask();
+      this.getControl();
+      this.getCases();
       this.getPlaces();
       this.getData();
     }

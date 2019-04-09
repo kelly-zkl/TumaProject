@@ -10,7 +10,7 @@
           <!--<el-form-item label="任务类型" align="left">-->
           <!--<el-radio-group v-model="collisionType" @change="changeType">-->
           <!--<el-radio label="IMSI">IMSI</el-radio>-->
-          <!--<el-radio label="FACE">图像</el-radio>-->
+          <!--<el-radio label="FACE">人脸</el-radio>-->
           <!--<el-radio label="MAC">MAC</el-radio>-->
           <!--</el-radio-group>-->
           <!--</el-form-item>-->

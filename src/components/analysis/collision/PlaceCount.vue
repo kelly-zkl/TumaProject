@@ -10,7 +10,7 @@
                         :maxlength=15></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.placeId" placeholder="抓取场所" size="medium" filterable clearable>
+              <el-select v-model="query.placeId" placeholder="采集场所" size="medium" filterable clearable>
                 <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                 </el-option>
               </el-select>
@@ -33,9 +33,9 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="IMSI" prop="imsi" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="抓取场所" prop="placeName" min-width="125"
+        <el-table-column align="left" label="采集场所" prop="placeName" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="抓取次数" prop="count" min-width="125"
+        <el-table-column align="left" label="采集次数" prop="count" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="130" fixed="right">
           <template slot-scope="scope">
@@ -101,7 +101,7 @@
         this.getPlaces();
         this.getData();
       },
-      //碰撞统计导出
+      //交并统计导出
       exportData() {
         var param = Object.assign({}, this.query);
         param.page = 1;
@@ -129,7 +129,7 @@
       getData() {
         this.query.targetType = this.targetType;
         this.query.targetId = this.taskId;
-        this.query.contentType = "place ";//归属地regional、抓取辖区areaCode、抓取场所place
+        this.query.contentType = "place";//归属地regional、采集辖区areaCode、采集场所place
 
         this.listLoading = true;
         this.$post('/collision/imsiRecord/statistics', this.query).then((data) => {

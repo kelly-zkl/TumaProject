@@ -58,11 +58,13 @@
                          max-width="120" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="抓取场所" prop="placeName" min-width="150"
+        <el-table-column align="left" label="采集场所" prop="placeName" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="抓取时间" prop="uptime" min-width="170"
+        <el-table-column align="left" label="采集时间" prop="uptime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="130" fixed="right">
           <template slot-scope="scope">
@@ -133,7 +135,7 @@
         let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: imsi}});
         window.open(routeData.href, '_blank');
       },
-      //碰撞记录导出
+      //交并记录导出
       exportData() {
         var param = Object.assign({}, this.query);
         param.size = 100000;

@@ -82,7 +82,7 @@
                 @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="130"
+        <el-table-column align="left" label="人脸图像" prop="faceUrl" min-width="130"
                          max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
@@ -419,11 +419,22 @@
           if (res.data.failDetails && res.data.failDetails.length > 0) {
             this.importList = res.data.failDetails;
           }
-          this.getData();
-          this.getBlackTypes();
+          this.importPush();
         } else {
           this.$message.error(res.msg);
         }
+      },
+      importPush() {
+        this.$post('person/flushToListCrond', {}, undefined, undefined, "login").then((data) => {
+          if ("000000" === data.code) {
+            this.getData();
+            this.getBlackTypes();
+          } else if ("100000" === data.code) {//执行中
+            setTimeout(() => {
+              this.importPush();
+            }, 5000);
+          }
+        });
       },
       //确认导入设备
       importDevice() {

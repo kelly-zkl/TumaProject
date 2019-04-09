@@ -10,7 +10,7 @@
           <!--<el-form-item label="任务类型" align="left" prop="followType">-->
           <!--<el-radio-group v-model="followTask.followType">-->
           <!--<el-radio label="IMSI">IMSI</el-radio>-->
-          <!--<el-radio label="FACE">图像</el-radio>-->
+          <!--<el-radio label="FACE">人脸</el-radio>-->
           <!--<el-radio label="MAC">MAC</el-radio>-->
           <!--</el-radio-group>-->
           <!--</el-form-item>-->
@@ -58,7 +58,7 @@
           </el-form-item>
           <el-form-item label="伴随时间间隔" align="left" prop="interval" style="margin: 0">
             <el-tooltip class="item" effect="dark" placement="bottom">
-              <div slot="content">伴随时间间隔是指，在抓取IMSI的时间点,<br/>前后n秒内抓取的其它IMSI，都可视为伴随IMSI</div>
+              <div slot="content">伴随时间间隔是指，在采集IMSI的时间点,<br/>前后n秒内采集的其它IMSI，都可视为伴随IMSI</div>
               <el-input v-model.number="followTask.interval" placeholder="请输入时间间隔" type="number"
                         style="width: 400px" :maxlength=5>
                 <template slot="append">秒</template>
@@ -264,6 +264,7 @@
         listLoading: false,
         mapVisible: false,
         query: {page: 1, size: 10},
+        taskId: this.$route.query.id || '',
         followTask: {followType: "IMSI", interval: 120},
         imgPath: require('../../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
@@ -320,6 +321,14 @@
       }
     },
     methods: {
+      //获取伴随详情
+      getTaskDetail() {
+        this.$post('/follow/get/' + this.taskId, {}).then((data) => {
+          this.qTime = [data.data.startDate * 1000, data.data.endDate * 1000];
+          this.followTask = data.data;
+        }).catch((err) => {
+        });
+      },
       handleChange(val) {
         if (val && val.length == 2) {
           let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 7 * 1000);
@@ -394,11 +403,20 @@
             }
 
             this.followTask.caseName = this.getCaseName();
-            this.$post("follow/add", this.followTask, "创建成功").then((data) => {
-              if ("000000" === data.code)
-                this.$router.go(-1);
-            }).catch((err) => {
-            });
+            if (this.taskId.length > 0) {
+              this.$post("/follow/update", this.followTask, "修改成功").then((data) => {
+                if ("000000" === data.code)
+                  this.$router.go(-1);
+              }).catch((err) => {
+              });
+            } else {
+              this.followTask.createBy = JSON.parse(sessionStorage.getItem("user")).realName;
+              this.$post("follow/add", this.followTask, "创建成功").then((data) => {
+                if ("000000" === data.code)
+                  this.$router.go(-1);
+              }).catch((err) => {
+              });
+            }
           }
         })
       },
@@ -593,6 +611,10 @@
       }
     },
     mounted() {
+      this.taskId = this.$route.query.id || '';
+      if (this.taskId.length > 0) {
+        this.getTaskDetail();
+      }
       this.getPlaces();
       this.getCases();
       this.getDevice();

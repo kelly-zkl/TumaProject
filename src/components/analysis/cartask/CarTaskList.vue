@@ -55,11 +55,9 @@
                 @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="任务编号" prop="taskNo" min-width="130"
-                         max-width="180" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="任务名称" prop="taskName" min-width="130"
                          max-width="180" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="分析车牌" prop="carLicense" min-width="130"
+        <el-table-column align="left" label="分析对象" prop="followTarget" min-width="130"
                          max-width="180" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="任务状态" prop="status" min-width="100" max-width="130">
           <template slot-scope="scope">
@@ -73,10 +71,10 @@
         <el-table-column align="left" label="关联案件" prop="caseName" min-width="130"
                          max-width="180" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="分析结果" prop="resultNumber" min-width="100"
-                         max-width="120" :formatter="formatterAddress"></el-table-column>
+                         max-width="130" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="创建日期" prop="createTime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" min-width="150" max-width="180" fixed="right">
+        <el-table-column align="left" label="操作" min-width="180" max-width="200" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('car:task:detail')">查看
             </el-button>

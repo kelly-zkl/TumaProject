@@ -44,9 +44,9 @@
                          max-width="120" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="regional" label="IMSI归属地" min-width="150" max-width="250"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="uptime" label="抓取时间" min-width="170" max-width="250"
+        <el-table-column align="left" prop="uptime" label="采集时间" min-width="170" max-width="250"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="placeName" label="抓取场所" min-width="150" max-width="250"
+        <el-table-column align="left" prop="placeName" label="采集场所" min-width="150" max-width="250"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150" max-width="250"
                          :formatter="formatterAddress"></el-table-column>
@@ -181,7 +181,7 @@
       },
       handleImsiSizeChange(val) {
       },
-      //查看图像详情
+      //查看人脸详情
       gotoImsiDetail(row) {
         // this.$router.push({path: '/imsiDetail', query: {imsi: row.imsi}});
         let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: row.imsi}});

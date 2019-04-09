@@ -89,7 +89,7 @@
                 {{taskDetail.dispositionType==0?'重点人员名单':taskDetail.dispositionType==1?'特征布控':'--'}}
               </el-form-item>
               <el-form-item label="有效期限" align="left" style="margin: 0;text-align: left">
-                {{taskDetail.startStr + "~" + taskDetail.endStr}}
+                {{(taskDetail.startStr?taskDetail.startStr:'--')+" 至 "+(taskDetail.endStr?taskDetail.endStr:'--')}}
               </el-form-item>
             </el-col>
           </el-row>
@@ -219,7 +219,7 @@
         </el-row>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="人员图像" prop="fileUrl" min-width="125" max-width="250">
+          <el-table-column align="left" label="人脸图像" prop="fileUrl" min-width="125" max-width="250">
             <template slot-scope="scope">
               <div style="height: 90px;line-height:90px">
                 <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" :onerror="img404"
@@ -231,9 +231,9 @@
                            max-width="150" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="性别" prop="sex" min-width="100"
                            max-width="150" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="抓取时间" prop="createTime" min-width="170"
+          <el-table-column align="left" label="采集时间" prop="createTime" min-width="170"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="抓取场所" prop="placeName" min-width="150"
+          <el-table-column align="left" label="采集场所" prop="placeName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -340,13 +340,17 @@
       },
       //跳转布控详情页
       gotoControl() {
-        let routeData = this.$router.resolve({path: '/controlDetail', query: {taskId: this.taskDetail.id}});
-        window.open(routeData.href, '_blank');
+        if (this.taskDetail.id) {
+          let routeData = this.$router.resolve({path: '/controlDetail', query: {taskId: this.taskDetail.id}});
+          window.open(routeData.href, '_blank');
+        }
       },
       //跳转案件详情页
       gotoCase() {
-        let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: this.taskDetail.caseId}});
-        window.open(routeData.href, '_blank');
+        if (this.taskDetail.caseId) {
+          let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: this.taskDetail.caseId}});
+          window.open(routeData.href, '_blank');
+        }
       },
       //查看IMSI详情
       gotoIMSI(row) {
@@ -408,7 +412,7 @@
         }).catch(() => {
         });
       },
-      //获取图像告警详情
+      //获取人脸告警详情
       getFaceDetail() {
         this.$post('warning/getFaceWarning/' + this.id, {}).then((data) => {
           this.faceDetail = data.data;

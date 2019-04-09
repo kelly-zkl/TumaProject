@@ -70,7 +70,7 @@
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
         <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="150">
+        <el-table-column align="left" label="现场人脸图像" prop="sceneUrl" min-width="150">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
               <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath2"
@@ -97,9 +97,9 @@
             <span style="color:#999" v-show="scope.row.status == 3">误报</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="抓取时间" prop="catchTime" min-width="170"
+        <el-table-column align="left" label="采集时间" prop="catchTime" min-width="170"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="布控人员图像" prop="faceUrl" min-width="150"
+        <el-table-column align="left" label="布控人脸图像" prop="faceUrl" min-width="150"
                          max-width="250" :formatter="formatterAddress">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
@@ -226,7 +226,7 @@
         });
       },
       /**
-       * 图像告警
+       * 人脸告警
        */
       //批量导入设备的文件格式验证
       beforeAvatarUpload(file) {
@@ -355,7 +355,10 @@
        * 告警详情
        */
       gotoDetail(task) {
-        let routeData = this.$router.resolve({path: '/faceWarningDetail', query: {id: task.id, faceId: task.faceId}});
+        let routeData = this.$router.resolve({
+          path: '/faceWarningDetail',
+          query: {id: task.id, faceId: task.faceId, taskId: task.dispositionTaskId}
+        });
         window.open(routeData.href, '_blank');
       },
       //格式化内容   有数据就展示，没有数据就显示--

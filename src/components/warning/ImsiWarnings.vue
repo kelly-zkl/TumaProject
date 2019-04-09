@@ -49,8 +49,8 @@
           </el-select>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
-          <el-select v-model="query.status" placeholder="布控任务" size="medium" style="width: 130px" clearable>
-            <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
+          <el-select v-model="query.dispositionTaskId" placeholder="布控任务" size="medium" style="width: 150px" clearable>
+            <el-option v-for="item in controlList" :key="item.id" :label="item.taskName" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
@@ -65,14 +65,14 @@
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'&&isMore">
-          <el-select v-model="query.status" placeholder="布控任务" size="medium" style="width: 130px" clearable>
-            <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
+          <el-select v-model="query.dispositionTaskId" placeholder="布控任务" size="medium" style="width: 150px" clearable>
+            <el-option v-for="item in controlList" :key="item.id" :label="item.taskName" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="isMore">
-          <el-select v-model="query.status" placeholder="关联案件" size="medium" style="width: 150px" clearable>
-            <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
+          <el-select v-model="query.caseId" placeholder="关联案件" size="medium" style="width: 150px" clearable>
+            <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
@@ -152,6 +152,8 @@
         firstPage: 0,
         page: 1,
         places: [],
+        cases: [],
+        controlList: [],
         showTip: false,
         sels: [],
         time1: ['00:00:00', '23:59:59'],
@@ -376,10 +378,28 @@
         }).catch((err) => {
           this.places = [];
         });
+      },
+      //布控任务
+      getControl() {
+        this.$post('disposition/query', {size: 999999, page: 1}).then((data) => {
+          this.controlList = data.data.list;
+        }).catch((err) => {
+          this.controlList = [];
+        });
+      },
+      //关联案件
+      getCases() {
+        this.$post('case/query', {page: 1, size: 999999}).then((data) => {
+          this.cases = data.data.list;
+        }).catch((err) => {
+          this.cases = [];
+        });
       }
     },
     mounted() {
       this.getTask();
+      this.getControl();
+      this.getCases();
       this.getPlaces();
       this.getData();
     }

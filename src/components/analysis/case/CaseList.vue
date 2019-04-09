@@ -442,7 +442,7 @@
         } else if (column.property === 'caseTime') {
           let start = row.caseTime ? formatDate(new Date(row.caseTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
           let end = row.caseToTime ? formatDate(new Date(row.caseToTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-          return start + " ~ " + end;
+          return start + " 至 " + end;
         } else if (column.property === 'caseAddress') {
           return row.areaCode ? getAreaLable(row.areaCode) + row.caseAddress : '--';
         } else {

@@ -354,7 +354,7 @@
         }
         return globalValidImg(file, this.$message);
       },
-      //IMSI/图像告警-->10s请求一次
+      //IMSI/人脸告警-->10s请求一次
       statusTask() {
         if (!this.intervalid) {
           this.intervalid = setInterval(() => {

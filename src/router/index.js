@@ -101,7 +101,7 @@ export default new Router({
           name: '告警',
           children: [
             {path: '/imsiWarnings', component: ImsiWarnings, name: 'IMSI告警'},
-            {path: '/catchWarnings', component: CatchWarnings, name: '图像告警'}
+            {path: '/catchWarnings', component: CatchWarnings, name: '人脸告警'}
           ]
         },
         {
@@ -111,7 +111,7 @@ export default new Router({
           children: [
             {path: '/importPersons', component: ImportPersons, name: '人员档案'},
             {path: '/imsiRecords', component: ImsiRecords, name: 'IMSI记录'},
-            {path: '/catchRecords', component: CatchRecords, name: '图像记录'},
+            {path: '/catchRecords', component: CatchRecords, name: '人脸记录'},
             {path: '/carRecords', component: CarRecords, name: '车牌记录'}
           ]
         },
@@ -121,7 +121,7 @@ export default new Router({
           name: '侦查',
           children: [
             {path: '/caseList', component: CaseList, name: '案件管理'},
-            {path: '/collisionAnalysis', component: CollisionAnalysis, name: '碰撞分析'},
+            {path: '/collisionAnalysis', component: CollisionAnalysis, name: '交并分析'},
             {path: '/followAnalysis', component: FollowAnalysis, name: '伴随分析'},
             {path: '/personControl', component: PersonControl, name: '人员布控'},
             {path: '/carTaskList', component: CarTaskList, name: '车码碰撞'},
@@ -190,9 +190,9 @@ export default new Router({
         {
           path: '/catchWarnings',
           component: WarningHome,
-          name: '图像告警',
+          name: '人脸告警',
           children: [
-            {path: '/faceWarningDetail', component: FaceWarningDetail, name: '图像告警详情'}
+            {path: '/faceWarningDetail', component: FaceWarningDetail, name: '人脸告警详情'}
           ]
         }
       ]
@@ -265,9 +265,9 @@ export default new Router({
         {
           path: '/catchRecords',
           component: FileHome,
-          name: '图像记录',
+          name: '人脸记录',
           children: [
-            {path: '/faceDetail', component: FaceDetail, name: '图像详情'}
+            {path: '/faceDetail', component: FaceDetail, name: '人脸详情'}
           ]
         }
       ]
@@ -310,7 +310,7 @@ export default new Router({
         {
           path: '/collisionAnalysis',
           component: AnalysisHome,
-          name: '碰撞分析',
+          name: '交并分析',
           children: [
             {path: '/addCollision', component: AddCollision, name: '新建碰撞任务'},
             {path: '/taskDetail', component: TaskDetail, name: '任务详情'}
@@ -331,7 +331,7 @@ export default new Router({
             {path: '/addFollow', component: AddFollow, name: '新建伴随任务'},
             {path: '/followResult', component: FollowResult, name: '任务详情'},
             {path: '/followIMSIDetail', component: FollowIMSIDetail, name: 'IMSI详情'},
-            {path: '/followImageDetail', component: FollowImageDetail, name: '图像详情'}
+            {path: '/followImageDetail', component: FollowImageDetail, name: '人脸详情'}
           ]
         }
       ]

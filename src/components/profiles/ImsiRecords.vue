@@ -73,9 +73,9 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="placeName" label="抓取场所" min-width="150" max-width="200"
+        <el-table-column align="left" prop="placeName" label="采集场所" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="uptime" label="抓取时间" min-width="170" max-width="200"
+        <el-table-column align="left" prop="uptime" label="采集时间" min-width="170" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="isp" label="运营商" max-width="150" min-width="100"
                          :formatter="formatterAddress"></el-table-column>
@@ -154,8 +154,8 @@
         if ((!this.qTime && !param.imsi) || (param.endTime - param.startTime > 60 * 60 * 24 * 7)) {
           this.isExport = false;
         }
-        delete this.query['pageTime'];
-        delete this.query['size'];
+        delete param['pageTime'];
+        delete param['size'];
         let config;
         if (sessionStorage.getItem("user")) {
           let userId = JSON.parse(sessionStorage.getItem("user")).userId;

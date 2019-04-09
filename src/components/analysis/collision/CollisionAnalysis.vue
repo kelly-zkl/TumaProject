@@ -45,15 +45,13 @@
                 @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="任务编号" prop="taskNo" min-width="150"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="任务名称" prop="taskName" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="创建用户" prop="createBy" min-width="120"
+        <el-table-column align="left" label="创建用户" prop="createBy" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="创建日期" prop="createTime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="关联案件" prop="caseName" min-width="100"
+        <el-table-column align="left" label="关联案件" prop="caseName" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="200" max-width="220" fixed="right">
           <template slot-scope="scope">
@@ -220,9 +218,7 @@
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'collisionType') {
-          return row.collisionType[0] ? row.collisionType[0] === 'IMSI' ? 'IMSI' : row.collisionType[0] === 'FACE' ? '图像' : row.collisionType[0] === 'MAC' ? '' : 'MAC' : '--';
-        } else if (column.property === 'conditionType') {
-          return row.conditionType == 0 ? '多条件碰撞' : row.conditionType == 1 ? '单条件碰撞' : '--';
+          return row.collisionType[0] ? row.collisionType[0] === 'IMSI' ? 'IMSI' : row.collisionType[0] === 'FACE' ? '人脸' : row.collisionType[0] === 'MAC' ? '' : 'MAC' : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'taskStatus') {
@@ -275,7 +271,7 @@
         }).catch(() => {
         });
       },
-      //获取碰撞任务列表
+      //获取交并任务列表
       getData() {
         if (!!this.qTime) {
           this.query.startTime = Math.round(this.qTime[0] / 1000);

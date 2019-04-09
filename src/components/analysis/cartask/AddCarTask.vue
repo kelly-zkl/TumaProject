@@ -20,8 +20,8 @@
           <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">
             碰撞条件
           </div>
-          <el-form-item label="分析车牌" align="left" prop="carLicense" style="margin-top: 20px">
-            <el-input v-model="carTask.carLicense" placeholder="输入车牌"
+          <el-form-item label="分析对象" align="left" prop="followTarget" style="margin-top: 20px">
+            <el-input v-model="carTask.followTarget" placeholder="输入分析对象"
                       style="width: 400px" :maxlength=8></el-input>
           </el-form-item>
           <el-form-item label="分析场所" align="left">
@@ -52,7 +52,7 @@
           </el-form-item>
           <el-form-item label="伴随时间间隔" align="left" prop="interval" style="margin: 0">
             <el-tooltip class="item" effect="dark" placement="bottom">
-              <div slot="content">伴随时间间隔是指，在抓取IMSI的时间点,<br/>前后n秒内抓取的其它IMSI，都可视为伴随IMSI</div>
+              <div slot="content">伴随时间间隔是指，在采集IMSI的时间点,<br/>前后n秒内采集的其它IMSI，都可视为伴随IMSI</div>
               <el-input v-model.number="carTask.interval" placeholder="请输入时间间隔" type="number"
                         style="width: 400px" :maxlength=5>
                 <template slot="append">秒</template>
@@ -166,8 +166,8 @@
           caseId: [
             {required: true, message: '请选择案件', trigger: 'blur'}
           ],
-          carLicense: [
-            {required: true, message: '请输入车牌', trigger: 'blur'}
+          followTarget: [
+            {required: true, message: '请输入分析对象', trigger: 'blur'}
           ],
           interval: [
             {required: true, message: '请输入时间间隔', trigger: 'blur'}

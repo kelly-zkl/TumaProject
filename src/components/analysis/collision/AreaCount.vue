@@ -32,9 +32,9 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="IMSI" prop="imsi" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="抓取辖区" prop="areaCode" min-width="125"
+        <el-table-column align="left" label="采集辖区" prop="areaCode" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="抓取次数" prop="count" min-width="125"
+        <el-table-column align="left" label="采集次数" prop="count" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="130" fixed="right">
           <template slot-scope="scope">
@@ -108,7 +108,7 @@
         this.areaList = [];
         this.getData();
       },
-      //碰撞统计导出
+      //交并统计导出
       exportData() {
         var param = Object.assign({}, this.query);
         param.page = 1;
@@ -136,7 +136,7 @@
       getData() {
         this.query.targetType = this.targetType;
         this.query.targetId = this.taskId;
-        this.query.contentType = "areaCode";//归属地regional、抓取辖区areaCode、抓取场所place
+        this.query.contentType = "areaCode";//归属地regional、采集辖区areaCode、采集场所place
 
         this.listLoading = true;
         this.$post('/collision/imsiRecord/statistics', this.query).then((data) => {

@@ -210,7 +210,7 @@
           window.open(routeData.href, '_blank');
         }
       },
-      //获取图像告警详情
+      //获取人脸告警详情
       getPersonDetail() {
         this.$post('archives/detail', {faceId: this.faceId}).then((data) => {
           let row = data.data;

@@ -3,7 +3,7 @@
     <section class="content">
       <div class="add-appdiv dialog gray-form" style="padding:10px 0 0 0">
         <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">
-          车牌抓取记录
+          车牌采集记录
         </div>
         <el-form :model="carDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
           <el-row style="margin: 0;padding: 10px 0">
@@ -26,7 +26,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="抓取时间" align="left" style="margin: 0">
+              <el-form-item label="采集时间" align="left" style="margin: 0">
                 {{carDetail.timeStr ? carDetail.timeStr : '--'}}
               </el-form-item>
               <el-form-item label="场所地区" align="left" style="margin: 0">
@@ -35,7 +35,7 @@
               <el-form-item label="场所地点" align="left" style="margin: 0">
                 {{carDetail.detailAddress ? carDetail.detailAddress : '--'}}
               </el-form-item>
-              <el-form-item label="抓取场所" align="left" style="margin: 0">
+              <el-form-item label="采集场所" align="left" style="margin: 0">
                 {{carDetail.placeName ? carDetail.placeName : '--'}}
               </el-form-item>
               <el-form-item label="设备标识" align="left" style="margin: 0">
@@ -66,7 +66,7 @@
       }
     },
     methods: {
-      //获取图像详情
+      //获取人脸详情
       getCarDetail() {
         this.$post('car/record/detail', {id: this.carId}).then((data) => {
           this.carDetail = data.data;

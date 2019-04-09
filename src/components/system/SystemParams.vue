@@ -38,7 +38,7 @@
             <el-input v-model.number="systemParam.limitTime" placeholder="30" style="width: 350px"
                       :maxlength=7 size="medium">
               <span slot="prepend">最近</span>
-              <span slot="append">分钟的抓取IMSI数据生成</span>
+              <span slot="append">分钟的采集IMSI数据生成</span>
             </el-input>
           </el-form-item>
           <el-form-item align="left" style="margin:10px 0 0 0;text-align: left;width: 450px"
@@ -68,10 +68,10 @@
             </el-tooltip>
           </el-form-item>
         </div>
-        <h5 class="add-label" style="margin-top: 0">图像搜索阈值</h5>
+        <h5 class="add-label" style="margin-top: 0">人脸搜索阈值</h5>
         <div class="add-appdiv">
           <el-form-item label="相似度阈值" align="left" style="margin: 0;text-align: left">
-            <el-tooltip effect="dark" content="默认的图像搜索的相似度阈值" placement="bottom">
+            <el-tooltip effect="dark" content="默认的人脸搜索的相似度阈值" placement="bottom">
               <el-input v-model="systemParam.similarThreshold" placeholder="相似度阈值" style="width: 300px"></el-input>
             </el-tooltip>
           </el-form-item>

@@ -34,7 +34,7 @@
                 <el-row>
                   <el-col :span="8" align="left" style="text-align: left">
                     <span
-                      class="heat-tip-text">根据最近{{systemParam.limitTime}}分钟的抓取IMSI数量生成</span>
+                      class="heat-tip-text">根据最近{{systemParam.limitTime}}分钟的采集IMSI数量生成</span>
                   </el-col>
                   <el-col :span="16" align="right" class="heat-tip-color" style="text-align: right">
                     <div v-for="(item,idx) in systemParam.heatRanges" :key="idx">
@@ -51,7 +51,7 @@
                   <div
                     v-bind:style="'display:-webkit-box;display:-ms-flexbox;display:flex;align-items: center;justify-content: center;background: rgba(0,0,0,.3);border-radius: 6px;text-align: center;width: 160px;padding: 10px 20px;height:'+(((tableHeight-180)*0.30-20)/2)+'px'">
                     <div style="display: block">
-                      <div style="color: #fff;font-size: 14px">今日抓取IMSI</div>
+                      <div style="color: #fff;font-size: 14px">今日采集IMSI</div>
                       <div style="color: #fff;font-size: 20px;margin-top: 10px">{{addImsiCount}}<span
                         style="color: #fff;font-size: 14px">条</span></div>
                     </div>
@@ -59,7 +59,7 @@
                   <div
                     v-bind:style="'display:-webkit-box;display:-ms-flexbox;display:flex;align-items: center;justify-content: center;background: rgba(0,0,0,.3);border-radius: 6px;width: 160px; margin-top: 10px;padding: 10px 20px;height:'+(((tableHeight-180)*0.30-20)/2)+'px'">
                     <div style="display: block">
-                      <div style="color: #fff;font-size: 14px">今日抓取图像</div>
+                      <div style="color: #fff;font-size: 14px">今日采集人脸</div>
                       <div style="color: #fff;font-size: 20px;margin-top: 10px">{{addFaceCount}}<span
                         style="color: #fff;font-size: 14px">条</span></div>
                     </div>
@@ -101,7 +101,7 @@
             <div class="overview" v-bind:style="'height:'+(tableHeight*0.56-55)+'px'">
               <el-table :data="imgList" :header-cell-style="{background:'#08163d'}" stripe
                         v-bind:style="'height:'+(tableHeight*0.56-55)+'px'">
-                <el-table-column align="left" label="图像" style="align-content: center" min-width="90" max-width="200">
+                <el-table-column align="left" label="人脸" style="align-content: center" min-width="90" max-width="200">
                   <template slot-scope="scope">
                     <div style="height: 80px;line-height:80px">
                       <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" class="user-img" :onerror="img404"/>
@@ -159,7 +159,7 @@
         addImsiCount: 0,//新增imsi数
         addFaceCount: 0,//新增头像数
         collCount: 0,//碰撞次数
-        catchData: {imsi: [], face: [], createTime: []},//近7天抓取数据
+        catchData: {imsi: [], face: [], createTime: []},//近7天采集数据
         warning: {imsi: [], face: [], createTime: []},//近7天告警数据
         hotSpots: [],//热力图数据
         hotPoint: null,//热力图的中心点
@@ -168,7 +168,7 @@
         heatmapOverlay: null,
         devicePieChart: null,//侦码设备饼状图
         cameraPieChart: null,//相机设备饼状图
-        catchLineChart: null,//抓取数据折线图
+        catchLineChart: null,//采集数据折线图
         warningBarChart: null,//告警数据柱状图
         intervalid: null,//定时器
         icon: require('../../assets/img/icon.png'),
@@ -686,7 +686,7 @@
           });
         }
       },
-      //图码抓取数据--折线图
+      //图码采集数据--折线图
       getLineData() {
         this.$post('/home/countLast7DayFaceImsi', {}).then((data) => {
           if (data.code === '000000') {
@@ -746,13 +746,13 @@
           let option = {
             textStyle: {color: '#CFCFD1'},
             title: {
-              text: '近7天抓取数量统计',
+              text: '近7天采集数量统计',
               textStyle: {color: '#999', fontSize: '14'}
             },
             grid: {left: 0, right: 0, bottom: 0, top: 30, containLabel: true},
             color: ['#3fa9f5', '#FFBF00'],
             tooltip: {trigger: 'axis', axisPointer: {type: 'cross'}},
-            legend: {textStyle: {color: '#999'}, data: ['IMSI', '图像'], right: '20'},
+            legend: {textStyle: {color: '#999'}, data: ['IMSI', '人脸'], right: '20'},
             xAxis: {
               data: (this.catchData.createTime ? this.catchData.createTime : []),
               axisLine: {show: true, lineStyle: {color: '#6D6C98'}}
@@ -766,7 +766,7 @@
               type: 'line',//line -> 折线图  bar -> 柱状图
               data: (this.catchData.imsi ? this.catchData.imsi : [])
             }, {
-              name: '图像',
+              name: '人脸',
               type: 'line',//line -> 折线图  bar -> 柱状图
               data: (this.catchData.face ? this.catchData.face : [])
             }]
@@ -782,7 +782,7 @@
               type: 'line',//line -> 折线图  bar -> 柱状图
               data: (this.catchData.imsi ? this.catchData.imsi : [])
             }, {
-              name: '图像',
+              name: '人脸',
               type: 'line',//line -> 折线图  bar -> 柱状图
               data: (this.catchData.face ? this.catchData.face : [])
             }]
@@ -802,7 +802,7 @@
             grid: {left: 0, right: 0, bottom: 0, top: 30, containLabel: true},
             color: ['#3fa9f5', '#FFBF00'],
             tooltip: {trigger: 'axis', axisPointer: {type: 'cross'}},
-            legend: {textStyle: {color: '#999'}, data: ['IMSI', '图像'], right: '20'},
+            legend: {textStyle: {color: '#999'}, data: ['IMSI', '人脸'], right: '20'},
             xAxis: {
               data: (this.warning.createTime ? this.warning.createTime : []), axisLabel: {align: 'center'},
               axisLine: {show: true, lineStyle: {color: '#6D6C98'}}
@@ -816,7 +816,7 @@
               type: 'bar',//line -> 折线图  bar -> 柱状图
               data: (this.warning.imsi ? this.warning.imsi : [])
             }, {
-              name: '图像',
+              name: '人脸',
               type: 'bar',//line -> 折线图  bar -> 柱状图
               data: (this.warning.face ? this.warning.face : [])
             }]
@@ -832,7 +832,7 @@
               type: 'bar',//line -> 折线图  bar -> 柱状图
               data: (this.warning.imsi ? this.warning.imsi : [])
             }, {
-              name: '图像',
+              name: '人脸',
               type: 'bar',//line -> 折线图  bar -> 柱状图
               data: (this.warning.face ? this.warning.face : [])
             }]

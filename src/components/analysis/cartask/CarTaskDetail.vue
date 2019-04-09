@@ -8,9 +8,7 @@
           </el-col>
           <el-col :span="12" align="right" style="text-align: right;padding-right: 30px">
             <router-link :to="{path:'/addCarTask',query:{no:task.taskNo}}">
-              <el-button type="text" @click="" style="margin-right: 20px"
-                         v-show="getButtonVial('car:task:create')">修改
-              </el-button>
+              <el-button type="text" style="margin-right: 20px" v-show="getButtonVial('car:task:create')">修改</el-button>
             </router-link>
             <el-button type="text" @click="deleteTask()" v-show="getButtonVial('car:task:del')">删除</el-button>
           </el-col>
@@ -19,10 +17,10 @@
           <el-form :model="task" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
             <el-col :span="6" align="left" style="text-align: left">
               <el-form-item label="任务编号" align="left" style="margin: 0;text-align: left">
-                {{task.taskNo}}
+                {{task.taskNo?task.taskNo:'--'}}
               </el-form-item>
               <el-form-item label="任务名称" align="left" style="margin: 0;text-align: left">
-                {{task.taskName}}
+                {{task.taskName?task.taskName:'--'}}
               </el-form-item>
               <el-form-item label="分析状态" align="left" style="margin: 0;text-align: left">
                 <span
@@ -31,27 +29,27 @@
               </el-form-item>
             </el-col>
             <el-col :span="6" align="left">
-              <el-form-item label="分析车牌" align="left" style="margin: 0;text-align: left">
-                {{task.carLicense}}
+              <el-form-item label="分析对象" align="left" style="margin: 0;text-align: left">
+                {{task.followTarget?task.followTarget:'--'}}
               </el-form-item>
               <el-form-item label="日期范围" align="left" style="margin: 0;text-align: left">
-                {{task.startStr+' 至 '+ task.endStr}}
+                {{(task.startStr?task.startStr:'--')+' 至 '+ (task.endStr?task.endStr:'--')}}
               </el-form-item>
               <el-form-item label="时间范围" align="left" style="margin: 0;text-align: left">
-                {{task.repeatStartTime+' 至 '+ task.repeatEndTime}}
+                {{(task.repeatStartTime?task.repeatStartTime:'--')+' 至 '+ (task.repeatEndTime?task.repeatEndTime:'--')}}
               </el-form-item>
               <el-form-item label="时间间隔" align="left" style="margin: 0;text-align: left">
-                {{task.interval}}
+                {{task.interval==0?0:task.interval}}
               </el-form-item>
             </el-col>
             <el-col :span="6" align="left">
               <el-form-item label="分析场所" align="left" style="margin: 0;text-align: left">
-                {{task.place}}
+                {{task.place?task.place:'--'}}
               </el-form-item>
             </el-col>
             <el-col :span="6" align="right">
               <el-form-item label="创建时间" align="left" style="margin: 0;text-align: left">
-                {{task.timeStr}}
+                {{task.timeStr?task.timeStr:'--'}}
               </el-form-item>
               <el-form-item label="创建用户" align="left" style="margin: 0;text-align: left">
                 {{task.creatorName?task.creatorName:'--'}}
@@ -108,7 +106,7 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="伴随出现场所数量" prop="placeCount" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="伴随抓取次数" prop="followCount" min-width="125"
+        <el-table-column align="left" label="伴随采集次数" prop="followCount" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="置信度" prop="degree" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -157,8 +155,10 @@
       },
       //跳转案件详情页
       gotoCaseDetail() {
-        let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: this.task.caseId}});
-        window.open(routeData.href, '_blank');
+        if (this.task.caseId) {
+          let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: this.task.caseId}});
+          window.open(routeData.href, '_blank');
+        }
       },
       //伴随结果导出
       exportData() {

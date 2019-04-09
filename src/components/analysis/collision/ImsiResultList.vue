@@ -91,7 +91,7 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
-      //碰撞结果导出
+      //交并结果导出
       exportData() {
         var param = Object.assign({}, this.query);
         param.page = 1;

@@ -48,8 +48,6 @@
                 @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="布控编号" prop="taskNo" min-width="150"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="任务名称" prop="taskName" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="布控类型" prop="dispositionType" min-width="120"
@@ -203,11 +201,11 @@
         } else if (column.property === 'dispositionType') {
           return row.dispositionType == 0 ? '重点人员名单' : row.dispositionType == 1 ? '特征布控' : '--';
         } else if (column.property === 'followType') {
-          return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '图像' : row.followType === "MAC" ? 'MAC' : '--';
+          return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '人脸' : row.followType === "MAC" ? 'MAC' : '--';
         } else if (column.property === 'startTime') {
           let start = row.startTime ? formatDate(new Date(row.startTime * 1000), 'yyyy-MM-dd') : '--';
           let end = row.endTime ? formatDate(new Date(row.endTime * 1000), 'yyyy-MM-dd') : '--';
-          return start + " ~ " + end;
+          return start + " 至 " + end;
         } else if (column.property === 'followCount') {
           return row.followCount === 0 ? 0 : row.followCount;
         } else {

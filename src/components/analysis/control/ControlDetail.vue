@@ -8,7 +8,7 @@
             <el-tab-pane label="IMSI告警" name="IMSI">
               <imsiWarning ref="imsi"></imsiWarning>
             </el-tab-pane>
-            <el-tab-pane label="图像告警" name="FACE">
+            <el-tab-pane label="人脸告警" name="FACE">
               <faceWarning ref="face"></faceWarning>
             </el-tab-pane>
           </el-tabs>
@@ -49,13 +49,14 @@
               </el-col>
               <el-col :span="8">
                 <el-form-item label="有效期限" align="left" style="margin: 0;text-align: left">
-                  {{task.startStr + "~" + task.endStr}}
+                  {{(task.startStr?task.startStr:'--') + ' 至 ' + (task.endStr?task.endStr:'--')}}
                 </el-form-item>
                 <el-form-item label="重复周期" align="left" style="margin: 0;text-align: left">
                   {{task.cycleType == 'EVERYDAY' ? "每天" : task.week}}
                 </el-form-item>
                 <el-form-item label="每日时段" align="left" style="margin: 0;text-align: left">
-                  {{task.intervalType == 'ALLDAY' ? '全天' : task.startTimeInterval + "~" + task.endTimeInterval}}
+                  {{task.intervalType == 'ALLDAY'?'全天':(task.startTimeInterval?task.startTimeInterval:'--')+ ' 至 '
+                  +(task.endTimeInterval?task.endTimeInterval:'--')}}
                 </el-form-item>
               </el-col>
               <el-col :span="8">
@@ -168,10 +169,12 @@
         let routeData = this.$router.resolve({path: '/placeDetail', query: {id: id}});
         window.open(routeData.href, '_blank');
       },
-      //跳转按键详情
+      //跳转案件详情
       gotoCaseDetail() {
-        let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: this.task.caseId}});
-        window.open(routeData.href, '_blank');
+        if (this.task.caseId) {
+          let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: this.task.caseId}});
+          window.open(routeData.href, '_blank');
+        }
       },
       handleType(val) {
         if (this.activeItem == 'TASK') {

@@ -51,13 +51,13 @@
               </el-form-item>
             </el-col>
             <el-col :span="7" align="right" style="border-left: 1px solid #D0CACF;text-align: right;padding-left: 20px">
-              <el-form-item label="抓取时间" align="left" style="margin: 0">
+              <el-form-item label="采集时间" align="left" style="margin: 0">
                 {{userInfo.lastTimeStr ? userInfo.lastTimeStr : '--'}}
               </el-form-item>
-              <el-form-item label="抓取场所" align="left" style="margin: 0">
+              <el-form-item label="采集场所" align="left" style="margin: 0">
                 {{userInfo.lastPlaceName ? userInfo.lastPlaceName : '--'}}
               </el-form-item>
-              <el-form-item label="抓取地址" align="left" style="margin: 0">
+              <el-form-item label="采集地址" align="left" style="margin: 0">
                 {{userInfo.lastArea ? userInfo.lastArea : '--'}}
               </el-form-item>
             </el-col>
@@ -71,7 +71,7 @@
             <el-tab-pane label="IMSI记录" name="second" style="padding-top: 10px">
               <FetchIMSIRecords ref="imsi"></FetchIMSIRecords>
             </el-tab-pane>
-            <el-tab-pane label="图像记录" name="three" style="padding-top: 10px">
+            <el-tab-pane label="人脸记录" name="three" style="padding-top: 10px">
               <FetchImgRecords ref="img"></FetchImgRecords>
             </el-tab-pane>
           </el-tabs>

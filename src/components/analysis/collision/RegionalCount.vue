@@ -16,7 +16,7 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-input v-model="query.regional" placeholder="归属地" style="width: 180px" size="medium"
+              <el-input v-model="query.regional" placeholder="IMSI归属地" style="width: 180px" size="medium"
                         :maxlength=30></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
@@ -41,7 +41,7 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="抓取次数" prop="count" min-width="125"
+        <el-table-column align="left" label="采集次数" prop="count" min-width="125"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="130" fixed="right">
           <template slot-scope="scope">
@@ -107,7 +107,7 @@
         this.query = {page: 1, size: 10};
         this.getData();
       },
-      //碰撞统计导出
+      //交并统计导出
       exportData() {
         var param = Object.assign({}, this.query);
         param.page = 1;
@@ -135,7 +135,7 @@
       getData() {
         this.query.targetType = this.targetType;
         this.query.targetId = this.taskId;
-        this.query.contentType = "regional";//归属地regional、抓取辖区areaCode、抓取场所place
+        this.query.contentType = "regional";//归属地regional、采集辖区areaCode、采集场所place
 
         this.listLoading = true;
         this.$post('/collision/imsiRecord/statistics', this.query).then((data) => {

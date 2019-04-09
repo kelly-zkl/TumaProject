@@ -99,9 +99,9 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="150"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="最近抓取时间" prop="lastAppearTime" min-width="170"
+        <el-table-column align="left" label="最近采集时间" prop="lastAppearTime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="最近抓取场所" prop="lastPlaceName" min-width="150"
+        <el-table-column align="left" label="最近采集场所" prop="lastPlaceName" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="碰撞时间" prop="uptime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>

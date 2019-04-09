@@ -171,7 +171,10 @@
        * imsi告警详情
        */
       gotoDetail(task) {
-        let routeData = this.$router.resolve({path: '/imsiWarningDetail', query: {id: task.id, imsi: task.imsi}});
+        let routeData = this.$router.resolve({
+          path: '/imsiWarningDetail',
+          query: {id: task.id, imsi: task.imsi, taskId: task.dispositionTaskId}
+        });
         window.open(routeData.href, '_blank');
       },
       //获取IMSI告警列表

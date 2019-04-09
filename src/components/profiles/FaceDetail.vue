@@ -3,7 +3,7 @@
     <section class="content">
       <el-row style="background: #F2F2F2">
         <el-col :span="8" align="left">
-          <div style="font-size:14px;padding:10px 20px">图像抓拍记录</div>
+          <div style="font-size:14px;padding:10px 20px">人脸采集记录</div>
         </el-col>
       </el-row>
       <div class="add-appdiv dialog gray-form" style="border-top: none;border-radius: 0 0 4px 4px">
@@ -25,7 +25,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="抓取时间" align="left" style="margin: 0">
+              <el-form-item label="采集时间" align="left" style="margin: 0">
                 {{faceDetail.timeStr ? faceDetail.timeStr : '--'}}
               </el-form-item>
               <el-form-item label="场所地区" align="left" style="margin: 0">
@@ -34,7 +34,7 @@
               <el-form-item label="场所地点" align="left" style="margin: 0">
                 {{faceDetail.detailAddress ? faceDetail.detailAddress : '--'}}
               </el-form-item>
-              <el-form-item label="抓取场所" align="left" style="margin: 0">
+              <el-form-item label="采集场所" align="left" style="margin: 0">
                 {{faceDetail.placeName ? faceDetail.placeName : '--'}}
               </el-form-item>
               <el-form-item label="设备标识" align="left" style="margin: 0">
@@ -176,7 +176,7 @@
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
           <el-table-column type="selection" width="45" align="left"></el-table-column>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="人员图像" prop="fileUrl" min-width="125" max-width="250">
+          <el-table-column align="left" label="人脸图像" prop="fileUrl" min-width="125" max-width="250">
             <template slot-scope="scope">
               <div style="height: 90px;line-height:90px">
                 <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" :onerror="img404"
@@ -190,7 +190,7 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="性别" prop="sex" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="抓取时间" prop="followTarget" width="200"
+          <el-table-column align="left" label="采集时间" prop="followTarget" width="200"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="场所" prop="placeName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -313,7 +313,7 @@
           window.open(routeData.href, '_blank');
         }
       },
-      //获取图像详情
+      //获取人脸详情
       getFaceDetail() {
         this.$post('archives/getFaceRecordById/' + this.imageId, {}).then((data) => {
           this.faceDetail = data.data;

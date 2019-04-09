@@ -32,7 +32,7 @@
           </el-form-item>
           <el-form-item label="头像特征" align="left" v-show="controlTask.dispositionType==1">
             <el-upload :action="uploadUrl" list-type="picture-card" :before-remove="beforeRemove"
-                       :on-change="handleChange" :limit="20">
+                       :on-change="handleChange" :limit="20" :file-list="imgList" :on-remove="handleRemove">
               <div class="el-upload__text" style="color: #777">上传头像</div>
             </el-upload>
           </el-form-item>
@@ -172,6 +172,7 @@
         cases: [],
         places: [],
         placeList: [],
+        imgList: [],
         inputVisible: false,
         taskId: this.$route.query.id || '',
         inputValue: '',
@@ -225,23 +226,30 @@
       getTaskDetail() {
         this.$post('disposition/get/' + this.taskId, {}).then((data) => {
           data.data.week = this.getWeeks(data.data.weekCycleDay);
-          this.controlTask = data.data;
           var arr = [];
-          this.controlTask.blackClassList.forEach((item) => {
+          data.data.blackClassList.forEach((item) => {
             arr.push(item.id);
           });
-          this.controlTask.blackClassList = arr;
+          data.data.blackClassList = arr;
           var places = [];
-          this.controlTask.placeList.forEach((item) => {
+          data.data.placeList.forEach((item) => {
             places.push(item.id);
           });
-          this.controlTask.placeList = places;
-          delete this.controlTask['placeName'];
-          delete this.controlTask['weekCycleDay'];
-          if (this.controlTask.intervalType === 'CUSTOM') {//自定义时段
-            this.controlTask.timerange = [this.controlTask.startTimeInterval, this.controlTask.endTimeInterval];
+          data.data.placeList = places;
+          if (data.data.intervalType === 'CUSTOM') {//自定义时段
+            data.data.timerange = [data.data.startTimeInterval, data.data.endTimeInterval];
           }
-          this.controlTask.startDate = [this.controlTask.startTime * 1000, this.controlTask.endTime * 1000];
+          data.data.startDate = [data.data.startTime * 1000, data.data.endTime * 1000];
+          this.imgList = [];
+          if (data.data.dispositionType == 1) {
+            data.data.featureList.forEach((item) => {
+              this.imgList.push({name: item.imageUrl, url: item.imageUrl});
+            });
+          }
+          delete data.data['placeName'];
+          delete data.data['weekCycleDay'];
+          delete data.data['endTime'];
+          this.controlTask = data.data;
         }).catch((err) => {
         });
       },
@@ -257,20 +265,28 @@
       },
       //图像个数变化
       handleChange(file, fileList) {
-        this.controlTask.featureList = [];
-        fileList.forEach((item) => {
-          if (item.status === 'success') {
-            let data = item.response;
-            if ('000000' === data.code) {
-              let img = {};
-              img.imageUrl = data.data.fileUrl;
-              this.controlTask.featureList.push(img);
-            }
+        if (file.status === 'success') {
+          let data = file.response;
+          if ('000000' === data.code) {
+            let img = {};
+            img.imageUrl = data.data.fileUrl;
+            this.controlTask.featureList.push(img);
+            this.imgList.push({name: data.data.fileUrl, url: data.data.fileUrl});
           }
-        });
+        }
       },
       beforeRemove(file, fileList) {
         return this.$confirm(`确定移除 ${ file.name }？`);
+      },
+      handleRemove(file, fileList) {
+        let index = 0;
+        this.imgList.forEach((item, idx) => {
+          if (file.url == item.url) {
+            index = idx;
+          }
+        });
+        this.imgList.splice(index, 1);
+        this.controlTask.featureList.splice(index, 1);
       },
       //删除标签
       handleClose(tag) {

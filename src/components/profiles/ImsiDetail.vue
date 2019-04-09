@@ -24,7 +24,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="抓取时间" align="left" style="margin: 0">
+              <el-form-item label="采集时间" align="left" style="margin: 0">
                 {{imsiDetail.timeStr ? imsiDetail.timeStr : '--'}}
               </el-form-item>
               <el-form-item label="场所地区" align="left" style="margin: 0">
@@ -35,7 +35,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="抓取场所" align="left" style="margin: 0">
+              <el-form-item label="采集场所" align="left" style="margin: 0">
                 {{imsiDetail.placeName ? imsiDetail.placeName : '--'}}
               </el-form-item>
               <el-form-item label="设备标识" align="left" style="margin: 0">
@@ -163,9 +163,9 @@
         </el-row>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="抓取时间" prop="uptime" width="200"
+          <el-table-column align="left" label="采集时间" prop="uptime" width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="抓取场所" prop="placeName" min-width="150"
+          <el-table-column align="left" label="采集场所" prop="placeName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
                            max-width="250" :formatter="formatterAddress"></el-table-column>

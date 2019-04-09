@@ -30,7 +30,7 @@
                  style="text-align: left">
           <el-form-item style="margin-bottom: 10px">
             <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
-                            start-placeholder="抓取时间" size="medium" end-placeholder="结束日期" clearable
+                            start-placeholder="采集时间" size="medium" end-placeholder="结束日期" clearable
                             :default-time="['00:00:00', '23:59:59']" value-format="timestamp">
             </el-date-picker>
           </el-form-item>
@@ -63,7 +63,7 @@
                            max-width="200" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"
                            max-width="200" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="抓取地点" prop="deviceName" min-width="125"
+          <el-table-column align="left" label="采集地点" prop="deviceName" min-width="125"
                            max-width="200" :formatter="formatterAddress"></el-table-column>
         </el-table>
         <div class="block" style="margin: 20px 0" align="right">

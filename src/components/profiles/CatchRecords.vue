@@ -80,7 +80,7 @@
       </el-form>
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="人员图像" prop="imageUrl" min-width="125" max-width="250">
+        <el-table-column align="left" label="人脸图像" prop="imageUrl" min-width="125" max-width="250">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
               <img v-bind:src="scope.row.imageUrl?scope.row.imageUrl:imgPath"
@@ -93,9 +93,9 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="抓取场所" prop="placeName" min-width="150"
+        <el-table-column align="left" label="采集场所" prop="placeName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="抓取时间" prop="catchTime" min-width="170"
+        <el-table-column align="left" label="采集时间" prop="catchTime" min-width="170"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
@@ -214,7 +214,7 @@
           this.exportKey = 'archives:get:listFaceToday';
         }
       },
-      //查看图像详情
+      //查看人脸详情
       gotoDetail(row) {
         let routeData = this.$router.resolve({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
         window.open(routeData.href, '_blank');

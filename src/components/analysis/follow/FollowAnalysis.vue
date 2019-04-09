@@ -51,13 +51,13 @@
                 @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="任务名称" prop="taskName" min-width="150"
+        <el-table-column align="left" label="任务名称" prop="taskName" min-width="130"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="任务类型" prop="followType" min-width="100"
                          max-width="150" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="分析对象" prop="followTarget" min-width="150"
                          max-width="180" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="120" max-width="150">
+        <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="100" max-width="120">
           <template slot-scope="scope">
             <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已完成</span>
             <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
@@ -66,11 +66,11 @@
             <span style="color:#999" v-show="scope.row.taskStatus == 'STOP'">终止</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="关联案件" prop="caseName" min-width="150"
+        <el-table-column align="left" label="关联案件" prop="caseName" min-width="130"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="创建日期" prop="createTime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" min-width="150" max-width="180" fixed="right">
+        <el-table-column align="left" label="操作" min-width="180" max-width="200" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('follow:get')">查看</el-button>
             <el-button type="text" @click="sels = [];sels.push(scope.row);deleteTask()"
@@ -80,7 +80,7 @@
                        v-show="getButtonVial('follow:reanalysis') && scope.row.taskStatus == 'FAILE'">重新分析
             </el-button>
             <el-button type="text" @click="stopAnalysis(scope.row.id)"
-                       v-show="getButtonVial('follow:reanalysis') && scope.row.taskStatus == 'EXECUTION'">终止分析
+                       v-show="getButtonVial('follow:stopTaskOnYarn') && scope.row.taskStatus == 'EXECUTION'">终止分析
             </el-button>
           </template>
         </el-table-column>
@@ -104,7 +104,7 @@
         qTime: "",
         query: {page: 1, size: 10},
         tableHeight: window.innerHeight - 232,
-        followTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '图像'}],//{value: 'MAC', label: 'MAC'}
+        followTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '人脸'}],//{value: 'MAC', label: 'MAC'}
         taskTypes: [{value: 'EXECUTION', label: '分析中'}, {value: 'FINISH', label: '已完成'},
           {value: 'WAIT', label: '等待中'}, {value: 'FAILE', label: '失败'}, {value: 'STOP', label: '终止'}],
         sels: [],
@@ -218,7 +218,7 @@
         if (column.property === 'taskStatus') {
           return row.taskStatus === "WAIT" ? '等待中' : row.taskStatus === "FINISH" ? '已完成' : row.taskStatus === "FAILE" ? '失败' : row.taskStatus === "EXECUTION" ? '分析中' : '--';
         } else if (column.property === 'followType') {
-          return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '图像' : row.followType === "MAC" ? 'MAC' : '--';
+          return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '人脸' : row.followType === "MAC" ? 'MAC' : '--';
         } else if (column.property === 'status') {
           return row.status === 'UNHANDLED' ? '未处理' : row.status === 'EXECUTION' ? '分析中' : row.status === 'HANDLED' ? '已结案' : '--';
         } else if (column.property === 'createTime') {

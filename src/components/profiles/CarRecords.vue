@@ -54,7 +54,7 @@
       </el-form>
       <el-table :data="list10" class="center-block" v-loading="listLoading" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="现场图像" prop="sceneUrl" min-width="130" max-width="180">
+        <el-table-column align="left" label="现场人脸图像" prop="sceneUrl" min-width="130" max-width="180">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
               <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath2"
@@ -69,9 +69,9 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="carLicenseColor" label="牌号颜色" max-width="100" min-width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="placeName" label="抓取场所" min-width="130" max-width="180"
+        <el-table-column align="left" prop="placeName" label="采集场所" min-width="130" max-width="180"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="catchTime" label="抓取时间" min-width="170" max-width="200"
+        <el-table-column align="left" prop="catchTime" label="采集时间" min-width="170" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="cameraName" label="设备标识" max-width="180" min-width="130"
                          :formatter="formatterAddress"></el-table-column>
