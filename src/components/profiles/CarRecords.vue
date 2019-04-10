@@ -54,7 +54,7 @@
       </el-form>
       <el-table :data="list10" class="center-block" v-loading="listLoading" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="现场人脸图像" prop="sceneUrl" min-width="130" max-width="180">
+        <el-table-column align="left" label="现场车牌图像" prop="sceneUrl" min-width="130" max-width="180">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
               <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath2"

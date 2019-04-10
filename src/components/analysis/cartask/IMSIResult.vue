@@ -90,7 +90,8 @@
               <template slot-scope="scope">
                 <div style="height: 90px;line-height:90px">
                   <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath" :onerror="img404"
-                       style="max-width: 90px;max-height:90px;border-radius:6px;vertical-align:middle"/>
+                       style="max-width: 90px;max-height:90px;border-radius:6px;vertical-align:middle;cursor: pointer"
+                       onclick="javascript:window.open(this.src)"/>
                 </div>
               </template>
             </el-table-column>

@@ -90,7 +90,8 @@
               <template slot-scope="scope">
                 <div style="height: 90px;line-height:90px">
                   <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath" :onerror="img404"
-                       style="max-width: 90px;max-height:90px;border-radius:6px;vertical-align:middle"/>
+                       style="max-width: 90px;max-height:90px;border-radius:6px;vertical-align:middle;cursor: pointer"
+                       onclick="javascript:window.open(this.src)"/>
                 </div>
               </template>
             </el-table-column>
@@ -137,8 +138,11 @@
         places: [],
         imgPath: require('../../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
-        carTypes: [{value: 'small', label: '小型汽车'}, {value: 'veh', label: '大型汽车'}],
-        carColors: [{value: 'blue', label: '蓝色'}, {value: 'yellow', label: '黄色'}]
+        carTypes: [{value: 'small', label: '小型汽车'}, {value: 'veh', label: '大型汽车'}, {value: 'fe', label: '涉外车辆'},
+          {value: 'police', label: '警用汽车'}, {value: 'sol', label: '军用汽车'}, {value: 'soach', label: '教练汽车'},
+          {value: 'gov', label: '政法部门车辆'}],
+        carColors: [{value: 'blue', label: '蓝色'}, {value: 'yellow', label: '黄色'}, {value: 'green', label: '绿色'},
+          {value: 'black', label: '黑色'}, {value: 'white', label: '白色'}]
       }
     },
     methods: {
