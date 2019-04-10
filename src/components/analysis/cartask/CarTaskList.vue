@@ -6,13 +6,12 @@
           <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('car:task:query')"
                    style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
-              <el-input v-model="query.keyWord" placeholder="任务名称/编号" size="medium" style="width: 160px"
+              <el-input v-model="query.keyWord" placeholder="任务名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.status" placeholder="任务状态" style="width: 120px"
-                         size="medium" filterable clearable>
-                <el-option v-for="item in taskTypes" :key="item.value" :label="item.label" :value="item.value">
+              <el-select v-model="query.atype" placeholder="分析类型" size="medium" style="width: 120px">
+                <el-option v-for="item in followTypes" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -33,12 +32,22 @@
               <el-button size="medium" @click="clearData()">重置</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-input placeholder="案件名称" v-model="query.caseName" :maxlength="30" size="medium"
-                        style="width: 160px"></el-input>
+              <el-input placeholder="分析对象" v-model="query.followTarget" style="width:180px"
+                        :maxlength=15 size="medium">
+              </el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-input placeholder="车牌号码" v-model="query.carLicense" :maxlength="8" size="medium"
-                        style="width: 160px"></el-input>
+              <el-select v-model="query.status" placeholder="任务状态" style="width: 120px"
+                         size="medium" filterable clearable>
+                <el-option v-for="item in taskTypes" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-select v-model="query.caseId" placeholder="关联案件" size="medium" style="width: 150px" clearable>
+                <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-form>
         </el-col>
@@ -57,8 +66,10 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="任务名称" prop="taskName" min-width="130"
                          max-width="180" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="分析对象" prop="followTarget" min-width="130"
-                         max-width="180" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="分析对象" prop="followTarget" min-width="180"
+                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="分析目标" prop="followType" min-width="80"
+                         max-width="100" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="任务状态" prop="status" min-width="100" max-width="130">
           <template slot-scope="scope">
             <span style="color:#00C755" v-show="scope.row.status == 'finish'">已完成</span>
@@ -107,11 +118,13 @@
         isMore: false,
         listLoading: false,
         tasks: [],
+        cases: [],
         qTime: "",
         query: {page: 1, size: 10},
         tableHeight: window.innerHeight - 232,
         taskTypes: [{value: 'running', label: '分析中'}, {value: 'finish', label: '已完成'},
           {value: 'waiting', label: '等待中'}, {value: 'failed', label: '失败'}, {value: 'killed', label: '终止'}],
+        followTypes: [{value: 'imsi', label: 'IMSI'}, {value: 'car', label: '车牌'}],
         sels: [],
         count: 0,
         pickerBeginDate: {
@@ -182,7 +195,7 @@
         this.sels = sels;
       },
       gotoDetail(task) {
-        let routeData = this.$router.resolve({path: '/carTaskDetail', query: {no: task.taskNo}});
+        let routeData = this.$router.resolve({path: '/carTaskDetail', query: {no: task.taskNo, atype: task.atype}});
         window.open(routeData.href, '_blank');
       },
       //清除查询条件
@@ -215,10 +228,22 @@
           this.listLoading = false;
         });
       },
+      //关联案件
+      getCases() {
+        this.$post('case/query', {page: 1, size: 999999}).then((data) => {
+          this.cases = data.data.list;
+        }).catch((err) => {
+          this.cases = [];
+        });
+      },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'status') {
           return row.taskStatus === "waiting" ? '等待中' : row.taskStatus === "finish" ? '已完成' : row.taskStatus === "failed" ? '失败' : row.taskStatus === "running" ? '分析中' : row.taskStatus === "killed" ? '终止' : '--';
+        } else if (column.property === 'followTarget') {
+          return '[' + (row.atype == 'imsi' ? 'IMSI' : '车牌') + ']' + row.followTarget;
+        } else if (column.property === 'followType') {
+          return row.atype == 'imsi' ? '车牌' : 'IMSI';
         } else if (column.property === 'resultNumber') {
           return row.resultNumber == undefined ? '--' : row.resultNumber;
         } else if (column.property === 'createTime') {
@@ -233,6 +258,7 @@
       if (bol) {
         this.query = JSON.parse(sessionStorage.getItem("query"));
       }
+      this.getCases();
       this.getData();
     }
   }

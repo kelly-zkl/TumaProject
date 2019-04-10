@@ -86,7 +86,7 @@
               </el-select>
             </el-form-item>
             <el-form-item align="left" style="margin:0">
-              <el-button type="primary" style="margin-top:30px" @click="createTask()" v-loading="listLoading">确认并开始分析
+              <el-button type="primary" style="margin-top:30px" @click="createTask()" :loading="listLoading">确认并开始分析
               </el-button>
             </el-form-item>
           </el-form>

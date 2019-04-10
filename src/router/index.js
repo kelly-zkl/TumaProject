@@ -32,7 +32,6 @@ import AnalysisHome from '@/components/analysis/AnalysisHome'
 import CaseList from '@/components/analysis/case/CaseList'
 import CaseDetail from '@/components/analysis/case/CaseDetail'
 import CollisionAnalysis from '@/components/analysis/collision/CollisionAnalysis'
-import AddCollision from '@/components/analysis/collision/AddCollision'
 import TaskDetail from '@/components/analysis/collision/TaskDetail'
 import FollowAnalysis from '@/components/analysis/follow/FollowAnalysis'
 import AddFollow from '@/components/analysis/follow/AddFollow'
@@ -312,7 +311,6 @@ export default new Router({
           component: AnalysisHome,
           name: '交并分析',
           children: [
-            {path: '/addCollision', component: AddCollision, name: '新建碰撞任务'},
             {path: '/taskDetail', component: TaskDetail, name: '任务详情'}
           ]
         }

@@ -55,6 +55,15 @@ export const intValid = (num) => {
   }
   return isNum;
 };
+//车牌号
+export const carValid = (vehicleNumber) => {
+  var result = false;
+  var express = /^(([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z](([0-9]{5}[DF])|([DF]([A-HJ-NP-Z0-9])[0-9]{4})))|([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z][A-HJ-NP-Z0-9]{4}[A-HJ-NP-Z0-9挂学警港澳使领]))$/;
+  if (express.test(vehicleNumber)) {
+    result = true;
+  }
+  return result;
+};
 //IP地址
 export const ipValid = (num) => {
   let isNum = false;

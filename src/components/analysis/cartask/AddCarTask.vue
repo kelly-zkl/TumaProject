@@ -20,9 +20,28 @@
           <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">
             碰撞条件
           </div>
-          <el-form-item label="分析对象" align="left" prop="followTarget" style="margin-top: 20px">
-            <el-input v-model="carTask.followTarget" placeholder="输入分析对象"
-                      style="width: 400px" :maxlength=8></el-input>
+          <el-form-item label="分析对象" align="left" prop="followTarget" style="margin-top:20px">
+            <el-row type="flex" class="row-bg">
+              <el-col :lg="7" :xl="5" align="left" style="text-align: left" class="inline-input">
+                <el-input placeholder="输入分析对象" v-model="carTask.followTarget" style="width:300px;margin-top: 0"
+                          :maxlength=15>
+                  <el-select v-model="carTask.atype" slot="prepend" placeholder="请选择">
+                    <el-option v-for="item in followTypes" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-input>
+              </el-col>
+              <el-col :span="7" align="left" style="text-align: left;margin-left: 10px">
+                <el-select v-model="carTask.carLicenseKind" placeholder="牌号种类" v-show="carTask.atype=='car'"
+                           filterable clearable style="margin-left: 10px">
+                  <el-option v-for="item in carTypes" :key="item.label" :label="item.label" :value="item.label">
+                  </el-option>
+                </el-select>
+              </el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="分析目标" align="left" style="text-align: left">
+            {{'默认分析目标为'+(carTask.atype=='imsi'?'车牌':'IMSI')}}
           </el-form-item>
           <el-form-item label="分析场所" align="left">
             <el-select v-model="carTask.placeList" placeholder="分析场所" filterable multiple clearable
@@ -129,6 +148,7 @@
 <script>
   import PlaceMap from '../PlaceMap';
   import {formatDate, getAreaLable} from "../../../assets/js/util";
+  import {numValid, carValid} from "../../../assets/js/api";
 
   export default {
     data() {
@@ -144,7 +164,7 @@
         mapVisible: false,
         dialogPlace: false,
         query: {page: 1, size: 10},
-        carTask: {interval: 120},
+        carTask: {atype: 'imsi', interval: 120},
         cases: [],
         qTime: '',
         time2: ['00:00:00', '23:59:59'],
@@ -157,6 +177,8 @@
         placeList: [],
         placeList1: [],
         sels: [],
+        followTypes: [{value: 'imsi', label: 'IMSI'}, {value: 'car', label: '车牌'}],
+        carTypes: [{value: 'small', label: '小型汽车'}, {value: 'veh', label: '大型汽车'}],
         serviceTypes: [{value: '0', label: '网吧'}, {value: '1', label: '旅店宾馆类（住宿服务场所）'},
           {value: '2', label: '图书馆阅览室'}, {value: '3', label: '电脑培训中心类'}, {value: '4', label: '娱乐场所类'},
           {value: '5', label: '交通枢纽'}, {value: '6', label: '公共交通工具'}, {value: '7', label: '餐饮服务场所'},
@@ -229,6 +251,21 @@
       createCarTask() {
         this.$refs['carTask'].validate((valid) => {
           if (valid) {
+            if (this.carTask.atype == 'imsi') {
+              if (!numValid(this.carTask.followTarget)) {
+                this.$message.error('请输入正确的IMSI');
+                return;
+              }
+            } else {
+              if (!carValid(this.carTask.followTarget)) {
+                this.$message.error('请输入正确的车牌号');
+                return;
+              }
+              if (!this.carTask.carLicenseKind) {
+                this.$message.error('请选择牌号种类');
+                return;
+              }
+            }
             if (this.qTime.length === 0) {
               this.$message.error('请选择日期');
               return;

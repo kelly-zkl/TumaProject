@@ -16,7 +16,7 @@
             </el-row>
             <div style="text-align: left;font-size: 12px;color: #999;margin-top:5px">{{'案件：'+task.caseName}}</div>
           </el-col>
-          <el-col :lg="12" :xl="14" align="left" v-loading="listLoading"
+          <el-col :lg="12" :xl="14" align="left" :loading="listLoading"
                   style="text-align: left;border-left: 1px solid #D0CACF;padding-left: 80px">
             <el-button type="text" @click="showSetParam(0)" v-show="getButtonVial('collision:addOrUpdateDataSource')"
                        style="border-right: 1px solid #D0CACF;border-radius: 0;padding:0 20px 0 0">
@@ -209,7 +209,7 @@
           </el-form-item>
         </el-form>
         <div class="block" style="margin-top: 20px">
-          <el-button type="primary" @click="saveParam()" v-loading="listLoading" size="medium"
+          <el-button type="primary" @click="saveParam()" :loading="listLoading" size="medium"
                      v-show="getButtonVial('collision:addOrUpdateDataSource')">保存
           </el-button>
           <el-button @click="runSetParam=false" size="medium">取消</el-button>
