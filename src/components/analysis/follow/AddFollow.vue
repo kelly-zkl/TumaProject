@@ -390,7 +390,7 @@
       createFollowTask() {
         this.$refs['followTask'].validate((valid) => {
           if (valid) {
-            if (this.qTime.length === 0) {
+            if (!this.qTime || this.qTime.length === 0) {
               this.$message.error('请选择日期');
               return;
             }

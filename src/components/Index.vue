@@ -21,7 +21,7 @@
                      v-bind:style="item.orders<6?'font-size: 1.5em':item.orders>6?'font-size: 1.7em':'font-size: 1.6em'"></i>
                   <span>{{item.name}}</span>
                   <el-badge class="mark" :value="imsiCount+faceCount" :max="99"
-                            v-show="item.orders==2&&imsiCount+faceCount>0"/>
+                            v-show="(item.permissionUrl=='/imsiWarnings'||item.permissionUrl=='/catchWarnings')&&imsiCount+faceCount>0"/>
                 </template>
               </el-menu-item>
             </el-menu>
@@ -133,25 +133,21 @@
           <el-form :model="imsiWarning" align="left" style="padding: 10px 50px;border-top: 1px #efefef solid"
                    label-width="100px" label-position="left">
             <el-form-item label="IMSI" style="margin:0" align="left">
-              <span style="font-size: 15px;color:#000">{{imsiWarning.imsi}}</span>
+              <div>{{imsiWarning.imsi?imsiWarning.imsi:'--'}}</div>
             </el-form-item>
             <el-form-item label="运营商" style="margin:0" align="left">
-              <span style="font-size: 15px;color:#000">
+              <div>
                 {{imsiWarning.isp == 0 ? '移动' : imsiWarning.isp == 1 ? '联通' : imsiWarning.isp == 2 ? '电信' : '--'}}
-              </span>
+              </div>
             </el-form-item>
             <el-form-item label="告警时间" style="margin:0" align="left">
-              <span style="font-size: 15px;color:#000">
-                {{imsiWarning.timeStr ? imsiWarning.timeStr : '--'}}
-              </span>
+              <div>{{imsiWarning.timeStr ? imsiWarning.timeStr : '--'}}</div>
             </el-form-item>
             <el-form-item label="告警场所" style="margin:0" align="left">
-              <span style="font-size:15px;color:#000;white-space:nowrap;text-overflow: ellipsis">
-                {{imsiWarning.placeName?imsiWarning.placeName:'--'}}</span>
+              <div>{{imsiWarning.placeName?imsiWarning.placeName:'--'}}</div>
             </el-form-item>
             <el-form-item label="设备标识" style="margin:0" align="left">
-              <span style="font-size:15px;color:#000;white-space:nowrap;text-overflow: ellipsis">
-                {{imsiWarning.deviceName?imsiWarning.deviceName:'--'}}</span>
+              <div>{{imsiWarning.deviceName?imsiWarning.deviceName:'--'}}</div>
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer" align="center">
@@ -165,31 +161,32 @@
     <div class="warning">
       <transition name="fade" mode="out-in" appear>
         <el-dialog width="500px" :visible.sync="runFaceWarning" style="border-radius: 6px" top="60px" title="嫌疑告警">
-          <div style="padding: 20px 20px 10px;text-align: left;position: relative;border-top: 1px #efefef solid">
-            <img :src="faceWarning.faceUrl?faceWarning.faceUrl:imgPath" :onerror="img404">
-            <el-form :model="faceWarning" align="left" label-width="80px" label-position="left"
-                     style="display:inline-block;position: absolute;top: 20px">
-              <el-form-item label="年龄段" style="margin:0" align="left">
-                <span style="font-size: 15px;color:#000">{{faceWarning.age<0?'--':(faceWarning.age-3)+"~"+(faceWarning.age+3)}}</span>
-              </el-form-item>
-              <el-form-item label="性别" style="margin:0" align="left">
-                <span style="font-size: 15px;color:#000">
-                  {{faceWarning.sex == 0 ? '男' : faceWarning.sex == 1 ? '女' : '--'}}
-                </span>
-              </el-form-item>
-              <el-form-item label="告警时间" style="margin:0" align="left">
-                <span style="font-size: 15px;color:#000">{{faceWarning.timeStr ? faceWarning.timeStr : '--'}}</span>
-              </el-form-item>
-              <el-form-item label="告警场所" style="margin:0" align="left">
-                <span style="font-size:15px;color:#000;white-space:nowrap;text-overflow: ellipsis">
-                  {{faceWarning.placeName?faceWarning.placeName:'--'}}</span>
-              </el-form-item>
-              <el-form-item label="设备标识" style="margin:0" align="left">
-                <span style="font-size:15px;color:#000;white-space:nowrap;text-overflow: ellipsis">
-                  {{faceWarning.deviceName?faceWarning.deviceName:'--'}}</span>
-              </el-form-item>
-            </el-form>
-          </div>
+          <el-row style="padding: 20px 20px 10px;text-align: left;border-top: 1px #efefef solid">
+            <el-col :span="11">
+              <img :src="faceWarning.faceUrl?faceWarning.faceUrl:imgPath" :onerror="img404">
+            </el-col>
+            <el-col :span="13">
+              <el-form :model="faceWarning" align="left" label-width="80px" label-position="left">
+                <el-form-item label="年龄段" style="margin:0" align="left">
+                  <div>
+                    {{(faceWarning.age==undefined||faceWarning.age<0)?'--':(faceWarning.age-3)+"~"+(faceWarning.age+3)}}
+                  </div>
+                </el-form-item>
+                <el-form-item label="性别" style="margin:0" align="left">
+                  <div>{{faceWarning.sex == 0 ? '男' : faceWarning.sex == 1 ? '女' : '--'}}</div>
+                </el-form-item>
+                <el-form-item label="告警时间" style="margin:0" align="left">
+                  <div>{{faceWarning.timeStr ? faceWarning.timeStr : '--'}}</div>
+                </el-form-item>
+                <el-form-item label="告警场所" style="margin:0" align="left">
+                  <div>{{faceWarning.placeName?faceWarning.placeName:'--'}}</div>
+                </el-form-item>
+                <el-form-item label="设备标识" style="margin:0" align="left">
+                  <div>{{faceWarning.deviceName?faceWarning.deviceName:'--'}}</div>
+                </el-form-item>
+              </el-form>
+            </el-col>
+          </el-row>
           <div slot="footer" class="dialog-footer" align="center">
             <!--<el-button type="warning" size="medium" @click="gotoFaceDetail">处理告警</el-button>-->
             <el-button type="primary" size="medium" @click="gotoFaceDetail()">查看人员信息</el-button>
@@ -599,11 +596,18 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   .warning img {
-    height: 200px;
-    width: 200px;
+    max-height: 190px;
+    max-width: 190px;
     display: inline-block;
-    margin-right: 20px;
     border-radius: 6px;
+  }
+
+  .warning div {
+    font-size: 15px;
+    color: #000;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis
   }
 
   .msg-title {

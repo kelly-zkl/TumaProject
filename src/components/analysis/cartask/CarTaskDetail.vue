@@ -86,7 +86,6 @@
   import carResult from '../cartask/CarResult.vue';
   import imsiResult from '../cartask/IMSIResult.vue';
 
-
   export default {
     components: {carResult, imsiResult},
     data() {

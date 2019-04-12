@@ -339,7 +339,7 @@
               this.controlTask.weekCycleDay = this.getWeekStr(this.controlTask.week);
             }
             if (this.controlTask.intervalType === 'CUSTOM') {//自定义时段
-              if (this.controlTask.timerange.length === 0) {
+              if (!this.controlTask.timerange || this.controlTask.timerange.length === 0) {
                 this.$message.error('请选择自定义时段');
                 return;
               }

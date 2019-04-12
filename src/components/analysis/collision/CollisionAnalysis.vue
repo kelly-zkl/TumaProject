@@ -110,8 +110,6 @@
         addTitle: '创建任务',
         runAddTask: false,
         tableHeight: window.innerHeight - 232,
-        taskStatus: [{value: 'FINISH', label: '已完成'}, {value: 'FAILE', label: '失败'},
-          {value: 'WAIT', label: '等待中'}, {value: 'EXECUTION', label: '分析中'}],
         query: {page: 1, size: 10},
         qTime: '',
         count: 0,
@@ -217,12 +215,8 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'collisionType') {
-          return row.collisionType[0] ? row.collisionType[0] === 'IMSI' ? 'IMSI' : row.collisionType[0] === 'FACE' ? '人脸' : row.collisionType[0] === 'MAC' ? '' : 'MAC' : '--';
-        } else if (column.property === 'createTime') {
+        if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
-        } else if (column.property === 'taskStatus') {
-          return row.taskStatus === 'EXECUTION' ? "分析中" : row.taskStatus === 'FINISH' ? '已完成' : row.taskStatus === 'WAIT' ? '等待中' : row.taskStatus === 'FAILE' ? '任务失败' : '异常';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

@@ -94,8 +94,11 @@ export const padLeftZero = (str) => {
   return ('00' + str).substr(str.length);
 };
 // 验证按钮权限
-const btnArr = JSON.parse(sessionStorage.getItem("button"));
+var btnArr = JSON.parse(sessionStorage.getItem("button"));
 export const buttonValidator = (button) => {
+  if (!btnArr || btnArr.length == 0) {
+    btnArr = JSON.parse(sessionStorage.getItem("button"));
+  }
   let bol = true;
   if (btnArr) {
     for (let item of btnArr) {
@@ -112,8 +115,11 @@ export const buttonValidator = (button) => {
   return bol;
 };
 //获得省市县
-const provinceList = JSON.parse(localStorage.getItem("areas"));
+var provinceList = JSON.parse(localStorage.getItem("areas"));
 export const getAreaLable = (code) => {
+  if (!provinceList || provinceList.length == 0) {
+    provinceList = JSON.parse(localStorage.getItem("areas"));
+  }
   let lable = '--';
   provinceList.forEach((province) => {
     if (province.subAreas) {

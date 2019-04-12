@@ -268,11 +268,11 @@
                 return;
               }
             }
-            if (this.qTime.length === 0) {
+            if (!this.qTime || this.qTime.length === 0) {
               this.$message.error('请选择日期');
               return;
             }
-            if (this.time2.length === 0) {
+            if (!this.time2 || this.time2.length === 0) {
               this.$message.error('请选择时段');
               return;
             }

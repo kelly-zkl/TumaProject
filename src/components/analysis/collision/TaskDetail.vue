@@ -481,10 +481,10 @@
       //条件选项择变化
       handleParamChange(val, idx) {
         if (val == 'qTime') {
-          this.collision.dscList[idx].qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
+          this.collision.dscList[idx][val] = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
             new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         } else if (val == 'time') {
-          this.collision.dscList[idx].time = ['00:00:00', '23:59:59'];
+          this.collision.dscList[idx][val] = ['00:00:00', '23:59:59'];
         } else if (val == 'isps' || val == 'places') {
           this.collision.dscList[idx][val] = [];
         } else {
@@ -601,6 +601,18 @@
           if (item.type == 'imsi') {
             if (!numValid(item.imsi) || item.imsi.length != 15) {
               this.$message.error('请输入15位正确的IMSI');
+              isBol = false;
+            }
+          }
+          if (item.type == 'qTime') {
+            if (!item.qTime || item.qTime.length == 0) {
+              this.$message.error('请选择日期');
+              isBol = false;
+            }
+          }
+          if (item.type == 'time') {
+            if (!item.time || item.time.length == 0) {
+              this.$message.error('请选择时段');
               isBol = false;
             }
           }

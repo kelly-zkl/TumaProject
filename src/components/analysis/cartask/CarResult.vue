@@ -101,8 +101,8 @@
                              max-width="200" :formatter="formatterAddress"></el-table-column>
             <el-table-column align="left" label="采集间隔" prop="timeDifference" min-width="100"
                              max-width="150" :formatter="formatterAddress"></el-table-column>
-            <!--<el-table-column align="left" label="命中次序/次数" prop="degree" min-width="130"-->
-            <!--max-width="200" :formatter="formatterAddress"></el-table-column>-->
+            <el-table-column align="left" label="命中次序/次数" prop="number" min-width="130"
+                             max-width="200" :formatter="formatterAddress"></el-table-column>
           </el-table>
           <div class="block" style="margin: 15px 0" align="right">
             <el-pagination @size-change="pathSizeChange" @current-change="pathPageChange"
@@ -246,6 +246,8 @@
       formatterAddress(row, column) {
         if (column.property === 'degree') {
           return (row.degree * 100).toFixed(1) + '%';
+        } else if (column.property === 'number') {
+          return '第' + (row.number == undefined ? '--' : row.number) + '次/共' + (row.sumNumber == undefined ? '--' : row.sumNumber) + '次';
         } else if (column.property === 'imsiUptime' || column.property === 'carUptime') {
           return row[column.property] ? formatDate(new Date(row[column.property] * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'timeDifference') {

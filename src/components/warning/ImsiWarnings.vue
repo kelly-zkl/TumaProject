@@ -141,7 +141,7 @@
         tableHeight: window.innerHeight - 280,
         statuses: [{label: '待处理', value: 0}, {label: '已处理', value: 2}, {label: '误报', value: 3}],
         exportKey: 'warning:get:listImsiToday',
-        qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+        qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 60 * 60 * 24 * 7 * 1000,
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         count: 0,
         list: [],
@@ -246,16 +246,9 @@
       },
       handleChange(val) {
         if (!val || val.length == 0) {
-          this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+          this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 60 * 60 * 24 * 7 * 1000,
             new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         }
-        // if (val && val.length == 2) {
-        //   let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 7 * 1000);
-        //   if (bol) {
-        //     this.$message.error('日期范围不能超过7天');
-        //     return;
-        //   }
-        // }
         this.getData();
       },
       handleTime(val) {
@@ -356,7 +349,7 @@
         this.isSearch = true;
         this.query = {size: 100};
         this.time1 = ['00:00:00', '23:59:59'];
-        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 60 * 60 * 24 * 7 * 1000,
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
 
         this.getData();
