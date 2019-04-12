@@ -32,10 +32,16 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
-          <el-time-picker is-range v-model="time1" range-separator="至" start-placeholder="开始时间"
-                          style="width: 230px" value-format="HH:mm:ss" end-placeholder="结束时间"
-                          placeholder="选择时间范围" @change="handleTime" size="medium">
-          </el-time-picker>
+          <el-tooltip class="item" effect="dark" content="开始时间" placement="bottom">
+            <el-time-picker v-model="time1[0]" style="width:120px" value-format="HH:mm:ss"
+                            placeholder="开始时间" @change="handleTime($event,0)" size="medium">
+            </el-time-picker>
+          </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="结束时间" placement="bottom">
+            <el-time-picker v-model="time1[1]" style="width:120px" value-format="HH:mm:ss"
+                            placeholder="结束时间" @change="handleTime($event,1)" size="medium">
+            </el-time-picker>
+          </el-tooltip>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
@@ -145,7 +151,7 @@
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
-        qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 60 * 60 * 24 * 7 * 1000,
+        qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         count: 0,
         list: [],
@@ -189,7 +195,8 @@
         }
         this.getData();
       },
-      handleTime(val) {
+      handleTime(val, idx) {
+        this.time1[idx] = val;
         if (!val || val.length == 0) {
           this.time1 = ['00:00:00', '23:59:59'];
         }
@@ -263,7 +270,15 @@
             }
           }
         }
-        if (!!this.qTime) {
+        if (this.qTime) {
+          if (this.qTime.length < 2) {
+            this.$message.error('请选择日期时间段');
+            return;
+          }
+          if (this.qTime[0] >= this.qTime[1]) {
+            this.$message.error('结束时间要大于开始时间');
+            return;
+          }
           this.query.startTime = Math.round(this.qTime[0] / 1000);
           this.query.endTime = Math.round(this.qTime[1] / 1000);
         }
@@ -334,9 +349,14 @@
         this.query = {size: 100};
         this.isSearch = true;
         delete this.query['faceUrl'];
-        this.time1 = ['00:00:00', '23:59:59'];
-        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 60 * 60 * 24 * 7 * 1000,
-          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        if (this.activeItem === 'H') {
+          this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 60 * 60 * 24 * 7 * 1000,
+            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        } else {
+          this.time1 = ['00:00:00', '23:59:59'];
+          this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " " + this.time1[0]).replace(/-/g, '/')).getTime(),
+            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " " + this.time1[1]).replace(/-/g, '/')).getTime()];
+        }
 
         this.getData();
       },

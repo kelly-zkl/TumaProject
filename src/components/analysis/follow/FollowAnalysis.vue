@@ -209,9 +209,7 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'taskStatus') {
-          return row.taskStatus === "WAIT" ? '等待中' : row.taskStatus === "FINISH" ? '已完成' : row.taskStatus === "FAILE" ? '失败' : row.taskStatus === "EXECUTION" ? '分析中' : '--';
-        } else if (column.property === 'followType') {
+        if (column.property === 'followType') {
           return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '人脸' : row.followType === "MAC" ? 'MAC' : '--';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';

@@ -62,9 +62,16 @@
             </el-tooltip>
           </el-form-item>
           <el-form-item label="时段" align="left" required style="margin: 0">
-            <el-time-picker is-range v-model="time2" range-separator="至" start-placeholder="开始时间"
-                            value-format="HH:mm:ss" end-placeholder="结束时间" placeholder="选择时间范围">
-            </el-time-picker>
+            <el-tooltip class="item" effect="dark" content="开始时间" placement="bottom">
+              <el-time-picker v-model="time2[0]" style="width:120px" value-format="HH:mm:ss"
+                              placeholder="开始时间" size="medium">
+              </el-time-picker>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="结束时间" placement="bottom">
+              <el-time-picker v-model="time2[1]" style="width:120px" value-format="HH:mm:ss"
+                              placeholder="结束时间" size="medium">
+              </el-time-picker>
+            </el-tooltip>
           </el-form-item>
           <el-form-item align="left" style="margin: 0">
             <span style="font-size:13px;color: #999">(时段非必选，默认为全天24小时)</span>
@@ -80,7 +87,7 @@
           </el-form-item>
         </div>
         <el-form-item align="left" style="text-align: left">
-          <el-button type="primary" @click="createCarTask()">确认创建</el-button>
+          <el-button type="primary" @click="createCarTask()">{{taskNo.length>0?'确认修改':'确认创建'}}</el-button>
         </el-form-item>
       </el-form>
       <!--在地图上选择场所-->
@@ -147,18 +154,11 @@
 </template>
 <script>
   import PlaceMap from '../PlaceMap';
-  import {formatDate, getAreaLable} from "../../../assets/js/util";
+  import {formatDate, getAreaLable, compareTime} from "../../../assets/js/util";
   import {numValid, carValid} from "../../../assets/js/api";
 
   export default {
     data() {
-      let nameValidator = (rule, value, callback) => {
-        if (!/[A-Za-z0-9_\u4e00-\u9fa5]$/.test(value)) {
-          callback(new Error("由汉字、数字、英文字母、下划线组成"));
-        } else {
-          callback();
-        }
-      };
       return {
         listLoading: false,
         mapVisible: false,
@@ -187,19 +187,10 @@
           {value: '8', label: '金融服务场所'}, {value: 'A', label: '购物场所'}, {value: 'B', label: '公共服务场所'},
           {value: 'C', label: '文化服务场所'}, {value: 'D', label: '公共休闲场所'}, {value: '9', label: '其他'}],
         rules: {
-          caseId: [
-            {required: true, message: '请选择案件', trigger: 'blur'}
-          ],
-          followTarget: [
-            {required: true, message: '请输入分析对象', trigger: 'blur'}
-          ],
-          interval: [
-            {required: true, message: '请输入时间间隔', trigger: 'blur'}
-          ],
-          taskName: [
-            {required: true, message: '请输入任务名称', trigger: 'blur'},
-            {validator: nameValidator, trigger: "change,blur"}
-          ]
+          caseId: [{required: true, message: '请选择案件', trigger: 'blur'}],
+          followTarget: [{required: true, message: '请输入分析对象', trigger: 'blur'}],
+          interval: [{required: true, message: '请输入时间间隔', trigger: 'blur'}],
+          taskName: [{required: true, message: '请输入任务名称', trigger: 'blur'}]
         },
         pickerBeginDate: {
           disabledDate: (time) => {
@@ -272,10 +263,17 @@
               this.$message.error('请选择日期');
               return;
             }
-            if (!this.time2 || this.time2.length === 0) {
+            if (!this.time2 || this.time2.length == 0) {
               this.$message.error('请选择时段');
               return;
+            } else if (!this.time2[0] || !this.time2[1]) {
+              this.$message.error('请选择时段');
+              return;
+            } else if (!compareTime(this.time2[0], this.time2[1])) {
+              this.$message.error('结束时间要大于开始时间');
+              return;
             }
+
             this.carTask.startDate = Math.round(this.qTime[0] / 1000);
             this.carTask.endDate = Math.round(this.qTime[1] / 1000);
             this.carTask.repeatStartTime = this.time2[0];

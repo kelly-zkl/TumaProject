@@ -91,8 +91,8 @@
     data() {
       return {
         task: {},
-        imgPath: require('../../../assets/img/icon_people.png'),
-        img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
+        imgPath: require('../../../assets/img/icon_img.svg'),
+        img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_img.svg') + "'",
         taskNo: this.$route.query.no || '',
         atype: this.$route.query.atype || '',
         results: [],

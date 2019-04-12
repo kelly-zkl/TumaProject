@@ -239,9 +239,7 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'status') {
-          return row.taskStatus === "waiting" ? '等待中' : row.taskStatus === "finish" ? '已完成' : row.taskStatus === "failed" ? '失败' : row.taskStatus === "running" ? '分析中' : row.taskStatus === "killed" ? '终止' : '--';
-        } else if (column.property === 'followTarget') {
+        if (column.property === 'followTarget') {
           return '[' + (row.atype == 'imsi' ? 'IMSI' : '车牌') + ']' + row.followTarget;
         } else if (column.property === 'followType') {
           return row.atype == 'imsi' ? '车牌' : 'IMSI';

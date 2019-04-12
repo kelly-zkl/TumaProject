@@ -136,8 +136,8 @@
         records: [],
         pathLines: [],
         places: [],
-        imgPath: require('../../../assets/img/icon_people.png'),
-        img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
+        imgPath: require('../../../assets/img/icon_img.svg'),
+        img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_img.svg') + "'",
         operators: [{value: 0, label: '移动'}, {value: 1, label: '联通'}, {value: 2, label: '电信'}],
       }
     },

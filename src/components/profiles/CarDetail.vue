@@ -6,9 +6,9 @@
           车牌采集记录
         </div>
         <el-form :model="carDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">
-          <el-row style="margin: 0;padding: 10px 0">
+          <el-row style="margin: 0;padding: 20px 0">
             <el-col :span="8" align="center">
-              <img :src="carDetail.sceneUrl?carDetail.sceneUrl:imgPath2" :onerror="img2404"
+              <img :src="carDetail.sceneUrl?carDetail.sceneUrl:imgPath" :onerror="img404"
                    style="max-width: 90%;border-radius: 8px;max-height: 250px;cursor: pointer"
                    onclick="javascript:window.open(this.src)"/>
             </el-col>
@@ -57,10 +57,8 @@
   export default {
     data() {
       return {
-        imgPath: require('../../assets/img/icon_people.png'),
-        imgPath2: require('../../assets/img/icon_img.svg'),
-        img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
-        img2404: "this.onerror='';this.src='" + require('../../assets/img/icon_img.svg') + "'",
+        imgPath: require('../../assets/img/icon_img.svg'),
+        img404: "this.onerror='';this.src='" + require('../../assets/img/icon_img.svg') + "'",
         carId: this.$route.query.id || '',
         carDetail: {},
       }

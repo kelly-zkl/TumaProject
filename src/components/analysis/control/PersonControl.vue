@@ -56,9 +56,7 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="布控状态" prop="taskStatus" min-width="100" max-width="150">
           <template slot-scope="scope">
-            <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已完成</span>
-            <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
-            <span style="color:#D76F31" v-show="scope.row.taskStatus == 'WAIT'">等待中</span>
+            <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已结束</span>
             <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">进行中</span>
           </template>
         </el-table-column>
@@ -196,9 +194,7 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'taskStatus') {
-          return row.taskStatus === "WAIT" ? '等待中' : row.taskStatus === "FINISH" ? '已完成' : row.taskStatus === "FAILE" ? '失败' : row.taskStatus === "EXECUTION" ? '进行中' : '--';
-        } else if (column.property === 'dispositionType') {
+        if (column.property === 'dispositionType') {
           return row.dispositionType == 0 ? '重点人员名单' : row.dispositionType == 1 ? '特征布控' : '--';
         } else if (column.property === 'followType') {
           return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '人脸' : row.followType === "MAC" ? 'MAC' : '--';
@@ -230,9 +226,7 @@
       if (bol) {
         let item = Object.assign({}, bol);
         this.query = Object.assign({}, bol);
-        console.log(bol);
         let page = item.page;
-        console.log(this.query);
         this.pageChange(page);
       } else {
         this.getData();

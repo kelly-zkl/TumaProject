@@ -5,16 +5,21 @@
         <el-row style="margin: 0;padding: 0">
           <el-col :lg="8" :xl="6" align="left" style="text-align: left;padding:15px 20px">
             <el-row>
-              <el-col :span="18" align="left" style="text-align: left">
-                <span style="text-align: left;font-size: 15px;color: #000;font-weight: bold">{{task.taskName}}</span>
+              <el-col :span="21" align="left" style="text-align: left">
+                <div style="font-size:12px;color:#999;overflow: hidden;white-space: nowrap;text-overflow: ellipsis">
+                  <span style="text-align: left;font-size: 15px;color: #000;font-weight: bold">{{task.taskName?task.taskName:'--'}}</span>
+                  {{'（编号：'+(task.taskNo?task.taskNo:'--')+'）'}}
+                </div>
               </el-col>
-              <el-col :span="6" align="right" style="text-align: right">
+              <el-col :span="3" align="right" style="text-align: right">
                 <el-button type="text" style="margin-left:8px;padding:0" @click="runModifyTask=true"
                            v-show="getButtonVial('collision:update')">修改
                 </el-button>
               </el-col>
             </el-row>
-            <div style="text-align: left;font-size: 12px;color: #999;margin-top:5px">{{'案件：'+task.caseName}}</div>
+            <div style="text-align: left;font-size: 12px;color: #999;margin-top:5px">
+              {{'案件：'+(task.caseName?task.caseName:'--')}}
+            </div>
           </el-col>
           <el-col :lg="12" :xl="14" align="left" :loading="listLoading"
                   style="text-align: left;border-left: 1px solid #D0CACF;padding-left: 80px">
@@ -180,10 +185,16 @@
                             :default-time="['00:00:00', '23:59:59']" format="yyyy-MM-dd"
                             :picker-options="pickerBeginDate" size="medium" v-show="item.type=='qTime'">
             </el-date-picker>
-            <el-time-picker is-range v-model="item.time" range-separator="至" start-placeholder="开始时间"
-                            value-format="HH:mm:ss" end-placeholder="结束时间" placeholder="选择时间范围"
-                            style="width: 230px" size="medium" v-show="item.type=='time'">
-            </el-time-picker>
+            <el-tooltip class="item" effect="dark" content="开始时间" placement="bottom">
+              <el-time-picker v-model="item.time[0]" style="width:120px" value-format="HH:mm:ss"
+                              placeholder="开始时间" size="medium" v-if="item.type=='time'">
+              </el-time-picker>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="结束时间" placement="bottom">
+              <el-time-picker v-model="item.time[1]" style="width:120px" value-format="HH:mm:ss"
+                              placeholder="结束时间" size="medium" v-if="item.type=='time'">
+              </el-time-picker>
+            </el-tooltip>
             <el-select v-model="item.places" size="medium" multiple collapse-tags style="width:230px"
                        v-show="item.type=='places'" placeholder="选择场所">
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
@@ -258,7 +269,7 @@
         <div class="block">
           <el-form label-width="100px" :model="task" label-position="right">
             <el-form-item label="任务名称" align="left" prop="taskName">
-              <el-input v-model="task.taskName" placeholder="输入任务名称" style="width: 300px" :maxlength=20></el-input>
+              <el-input v-model="task.taskName" placeholder="输入任务名称" style="width: 300px" :maxlength=12></el-input>
             </el-form-item>
             <el-form-item label="关联案件" align="left" style="margin:0" prop="caseId">
               <el-select v-model="task.caseId" placeholder="选择案件" filterable clearable>
@@ -308,7 +319,7 @@
 
 <script>
   import {numValid} from "../../../assets/js/api";
-  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
+  import {formatDate, isPC, buttonValidator, compareTime} from "../../../assets/js/util";
   import areaCount from '../collision/AreaCount.vue';
   import placeCount from '../collision/PlaceCount.vue';
   import regionalCount from '../collision/RegionalCount.vue';
@@ -613,6 +624,12 @@
           if (item.type == 'time') {
             if (!item.time || item.time.length == 0) {
               this.$message.error('请选择时段');
+              isBol = false;
+            } else if (!item.time[0] || !item.time[1]) {
+              this.$message.error('请选择时段');
+              isBol = false;
+            } else if (!compareTime(item.time[0], item.time[1])) {
+              this.$message.error('结束时间要大于开始时间');
               isBol = false;
             }
           }

@@ -3,7 +3,7 @@
     <section class="content">
       <el-form ref="followTask" :model="followTask" label-position="right" label-width="120px" :rules="rules">
         <h5 class="add-label" style="margin-top: 0">任务基本信息</h5>
-        <div class="add-appdiv">
+        <div class="add-appdiv" style="padding: 20px 0">
           <el-form-item label="任务名称" align="left" prop="taskName">
             <el-input v-model="followTask.taskName" placeholder="请输入任务名称" style="width: 400px" :maxlength=30></el-input>
           </el-form-item>
@@ -22,10 +22,10 @@
           </el-form-item>
         </div>
         <h5 class="add-label">设置伴随条件</h5>
-        <div class="add-appdiv">
+        <div class="add-appdiv" style="padding: 20px 0">
           <el-form-item label="分析对象" align="left" prop="followTarget">
             <el-input v-model="followTask.followTarget" placeholder="输入IMSI"
-                      style="width: 500px" :maxlength=15 v-if="followTask.followType == 'IMSI'"></el-input>
+                      style="width: 400px" :maxlength=15 v-if="followTask.followType == 'IMSI'"></el-input>
             <img :src="imgUrl" v-if="imgUrl && followTask.followType == 'FACE'"
                  style="max-width: 90px;max-height:90px;border-radius: 6px">
             <el-button type="primary" v-if="followTask.followType == 'FACE'"
@@ -66,10 +66,10 @@
             </el-tooltip>
           </el-form-item>
         </div>
+        <el-form-item align="left" style="text-align: left">
+          <el-button type="primary" @click="createFollowTask()">{{taskId.length>0?'确认修改':'确认创建'}}</el-button>
+        </el-form-item>
       </el-form>
-      <div class="block" style="margin: 20px 0">
-        <el-button type="primary" @click="createFollowTask()">确认分析</el-button>
-      </div>
       <!--档案列表-->
       <el-dialog title="选择档案人员" :visible.sync="runTranslation" center>
         <div class="block">
@@ -245,13 +245,6 @@
 
   export default {
     data() {
-      let nameValidator = (rule, value, callback) => {
-        if (!/[A-Za-z0-9_\u4e00-\u9fa5]$/.test(value)) {
-          callback(new Error("由汉字、数字、英文字母、下划线组成"));
-        } else {
-          callback();
-        }
-      };
       let noValidator = (rule, value, callback) => {
         if (!/[0-9]{15}$/.test(value)) {
           callback(new Error("请输入正确的IMSI"));
@@ -279,23 +272,14 @@
         vipList: [],
         cameras: [],
         rules: {
-          caseId: [
-            {required: true, message: '请选择案件', trigger: 'blur'}
-          ],
+          caseId: [{required: true, message: '请选择案件', trigger: 'blur'}],
           followTarget: [
             {required: true, message: '请输入IMSI', trigger: 'blur'},
             {validator: noValidator, trigger: "change,blur"}
           ],
-          followType: [
-            {required: true, message: '请选择任务类型', trigger: 'blur'}
-          ],
-          interval: [
-            {required: true, message: '请输入时间间隔', trigger: 'blur'}
-          ],
-          taskName: [
-            {required: true, message: '请输入任务名称', trigger: 'blur'},
-            {validator: nameValidator, trigger: "change,blur"}
-          ]
+          followType: [{required: true, message: '请选择任务类型', trigger: 'blur'}],
+          interval: [{required: true, message: '请输入时间间隔', trigger: 'blur'}],
+          taskName: [{required: true, message: '请输入任务名称', trigger: 'blur'}]
         },
         dialogDevice: false,
         dialogCamera: false,

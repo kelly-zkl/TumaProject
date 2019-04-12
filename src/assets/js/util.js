@@ -203,3 +203,13 @@ export const decryData = (text) => {
   let decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
   return decryptedStr;
 };
+/*验证时间段是否是正常范围*/
+export const compareTime = (start, end) => {
+  var isRange = true;
+  var startTime = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " " + start).replace(/-/g, '/')).getTime();
+  var endTime = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " " + end).replace(/-/g, '/')).getTime();
+  if (startTime >= endTime) {
+    isRange = false;
+  }
+  return isRange;
+};

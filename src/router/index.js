@@ -326,7 +326,7 @@ export default new Router({
           component: AnalysisHome,
           name: '伴随分析',
           children: [
-            {path: '/addFollow', component: AddFollow, name: '新建伴随任务'},
+            {path: '/addFollow', component: AddFollow, name: '新建/修改伴随任务'},
             {path: '/followResult', component: FollowResult, name: '任务详情'},
             {path: '/followIMSIDetail', component: FollowIMSIDetail, name: 'IMSI详情'},
             {path: '/followImageDetail', component: FollowImageDetail, name: '人脸详情'}
@@ -360,7 +360,7 @@ export default new Router({
           component: AnalysisHome,
           name: '车码碰撞',
           children: [
-            {path: '/addCarTask', component: AddCarTask, name: '新建车码碰撞任务'},
+            {path: '/addCarTask', component: AddCarTask, name: '新建/修改车码碰撞任务'},
             {path: '/carTaskDetail', component: CarTaskDetail, name: '车码碰撞分析结果'}
           ]
         }

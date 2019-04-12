@@ -1,10 +1,10 @@
 <template>
   <div>
     <section class="content">
-      <el-form ref="controlTask" :model="controlTask" label-position="left" label-width="120px" :rules="rules">
+      <el-form ref="controlTask" :model="controlTask" label-position="right" label-width="120px" :rules="rules">
         <h5 class="add-label" style="margin-top: 0">任务基本信息</h5>
-        <div class="add-appdiv">
-          <el-form-item label="任务名称" align="left">
+        <div class="add-appdiv" style="padding: 20px 0">
+          <el-form-item label="任务名称" align="left" prop="taskName">
             <el-input v-model="controlTask.taskName" placeholder="请输入任务名称" style="width: 300px"
                       :maxlength=20 size="medium"></el-input>
           </el-form-item>
@@ -16,7 +16,7 @@
           </el-form-item>
         </div>
         <h5 class="add-label">设置布控</h5>
-        <div class="add-appdiv">
+        <div class="add-appdiv" style="padding: 20px 0">
           <el-form-item label="布控类型" align="left" style="text-align: left">
             <el-radio-group v-model="controlTask.dispositionType" size="medium">
               <el-radio-button label="0">重点人员名单</el-radio-button>
@@ -59,7 +59,7 @@
           </el-form-item>
         </div>
         <h5 class="add-label">设置布控有效期</h5>
-        <div class="add-appdiv">
+        <div class="add-appdiv" style="padding: 20px 0">
           <el-form-item label="布控有效期" align="left" prop="startDate">
             <el-date-picker v-model="controlTask.startDate" type="daterange" range-separator="至"
                             start-placeholder="开始日期" end-placeholder="结束日期" clearable :picker-options="pickerBeginDate"
@@ -83,16 +83,22 @@
               <el-radio-button label="ALLDAY">全天</el-radio-button>
               <el-radio-button label="CUSTOM">自定义</el-radio-button>
             </el-radio-group>
-            <el-time-picker is-range v-model="controlTask.timerange" range-separator="至" start-placeholder="开始时间"
-                            end-placeholder="结束时间" placeholder="选择时间范围" v-show="controlTask.intervalType=='CUSTOM'"
-                            size="medium" style="margin-left: 10px" value-format="HH:mm:ss">
-            </el-time-picker>
+            <el-tooltip class="item" effect="dark" content="开始时间" placement="bottom">
+              <el-time-picker v-model="controlTask.timerange[0]" style="width:120px" value-format="HH:mm:ss"
+                              placeholder="开始时间" size="medium" v-show="controlTask.intervalType=='CUSTOM'">
+              </el-time-picker>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="结束时间" placement="bottom">
+              <el-time-picker v-model="controlTask.timerange[1]" style="width:120px" value-format="HH:mm:ss"
+                              placeholder="结束时间" size="medium" v-show="controlTask.intervalType=='CUSTOM'">
+              </el-time-picker>
+            </el-tooltip>
           </el-form-item>
         </div>
+        <el-form-item align="left" style="text-align: left">
+          <el-button type="primary" @click="createControlTask()">{{taskId.length>0?'确认修改':'确认创建'}}</el-button>
+        </el-form-item>
       </el-form>
-      <div class="block" style="margin:20px 0">
-        <el-button type="primary" @click="createControlTask()">确认</el-button>
-      </div>
       <!--在地图上选择场所-->
       <div class="device">
         <el-dialog title="选择场所" :visible.sync="mapVisible" width="90%">
@@ -158,7 +164,7 @@
 <script>
   import {numValid} from "../../../assets/js/api";
   import PlaceMap from '../PlaceMap';
-  import {formatDate, getAreaLable} from "../../../assets/js/util";
+  import {formatDate, getAreaLable, compareTime} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -167,7 +173,7 @@
         dialogPlace: false,
         controlTask: {
           cycleType: 'EVERYDAY', intervalType: 'ALLDAY', week: [], imsiList: [],
-          featureList: [], blackClassList: [], dispositionType: 0
+          featureList: [], blackClassList: [], dispositionType: 0, timerange: []
         },
         cases: [],
         places: [],
@@ -236,6 +242,7 @@
             places.push(item.id);
           });
           data.data.placeList = places;
+          data.data.timerange = [];
           if (data.data.intervalType === 'CUSTOM') {//自定义时段
             data.data.timerange = [data.data.startTimeInterval, data.data.endTimeInterval];
           }
@@ -339,8 +346,14 @@
               this.controlTask.weekCycleDay = this.getWeekStr(this.controlTask.week);
             }
             if (this.controlTask.intervalType === 'CUSTOM') {//自定义时段
-              if (!this.controlTask.timerange || this.controlTask.timerange.length === 0) {
-                this.$message.error('请选择自定义时段');
+              if (!this.controlTask.timerange || this.controlTask.timerange.length == 0) {
+                this.$message.error('请选择时段');
+                return;
+              } else if (!this.controlTask.timerange[0] || !this.controlTask.timerange[1]) {
+                this.$message.error('请选择时段');
+                return;
+              } else if (!compareTime(this.controlTask.timerange[0], this.controlTask.timerange[1])) {
+                this.$message.error('结束时间要大于开始时间');
                 return;
               }
               this.controlTask.startTimeInterval = this.controlTask.timerange[0];

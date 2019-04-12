@@ -46,7 +46,7 @@
         </el-col>
         <el-col :span="6" style="text-align: right">
           <el-button type="primary" size="medium" @click="cancelCollis()" :disabled="sels.length == 0"
-                     v-show="getButtonVial('collision:cancelCase')">取消关联
+                     v-show="getButtonVial('car:cancelCase')">取消关联
           </el-button>
           <el-button size="medium" @click="deleteCoTask()" :disabled="sels.length == 0"
                      v-show="getButtonVial('car:task:del')">删除任务
@@ -204,9 +204,7 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'status') {
-          return row.taskStatus === "waiting" ? '等待中' : row.taskStatus === "finish" ? '已完成' : row.taskStatus === "failed" ? '失败' : row.taskStatus === "running" ? '分析中' : row.taskStatus === "killed" ? '终止' : '--';
-        } else if (column.property === 'followTarget') {
+        if (column.property === 'followTarget') {
           return '[' + (row.atype == 'imsi' ? 'IMSI' : '车牌') + ']' + row.followTarget;
         } else if (column.property === 'followType') {
           return row.atype == 'imsi' ? '车牌' : 'IMSI';

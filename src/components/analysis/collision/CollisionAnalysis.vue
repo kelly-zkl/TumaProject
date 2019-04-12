@@ -24,10 +24,6 @@
               <el-button size="medium" @click="clearData()">重置</el-button>
             </el-form-item>
             <!--<el-form-item style="margin-bottom: 10px" v-show="isMore">-->
-            <!--<el-input v-model="query.taskNo" placeholder="任务编号" size="medium" style="width: 180px"-->
-            <!--:maxlength=20></el-input>-->
-            <!--</el-form-item>-->
-            <!--<el-form-item style="margin-bottom: 10px" v-show="isMore">-->
             <!--<el-input v-model="query.caseName" placeholder="案件名称" size="medium" style="width: 160px"-->
             <!--:maxlength=20></el-input>-->
             <!--</el-form-item>-->
@@ -77,7 +73,7 @@
         <div class="block">
           <el-form label-width="100px" :model="addTask" label-position="right">
             <el-form-item label="任务名称" align="left" prop="taskName">
-              <el-input v-model="addTask.taskName" placeholder="输入任务名称" style="width: 300px" :maxlength=20></el-input>
+              <el-input v-model="addTask.taskName" placeholder="输入任务名称" style="width: 300px" :maxlength=12></el-input>
             </el-form-item>
             <el-form-item label="关联案件" align="left" style="margin:0" prop="caseId">
               <el-select v-model="addTask.caseId" placeholder="选择案件" filterable clearable>
