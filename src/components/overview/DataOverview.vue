@@ -357,7 +357,7 @@
                   lat = [item.devicePos.longitude - 0.00015, item.devicePos.latitude - 0.00015, 1];
                 }
                 let param = {
-                  name: item.city, value: lat, deviceName: item.deviceName, deviceId: item.deviceId,
+                  value: lat, deviceName: item.deviceName, deviceId: item.deviceId,
                   type: '侦码设备', onLine: onLine, placeName: item.placeName
                 };
                 this.multLat.push({value: [item.devicePos.longitude, item.devicePos.latitude]});
@@ -390,8 +390,8 @@
                   lat = [item.longitude - 0.00015, item.latitude - 0.00015, 1];
                 }
                 let param = {
-                  name: item.name, value: lat, deviceName: item.name, deviceId: item.cameraCode,
-                  onLine: onLine, type: item.cameraType == 1 ? '车牌相机' : '人脸相机', placeName: item.placeName
+                  value: lat, deviceName: item.name, deviceId: item.cameraCode, placeName: item.placeName,
+                  onLine: onLine, type: item.cameraType == 1 ? '车牌相机' : '人脸相机'
                 };
                 this.multLat.push({value: [item.longitude, item.latitude]});
                 this.mapData.push(param);

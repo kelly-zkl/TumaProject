@@ -58,6 +58,7 @@
           <template slot-scope="scope">
             <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已结束</span>
             <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">进行中</span>
+            <span style="color:#dd6161" v-show="scope.row.taskStatus == 'EXPIRE'">已过期</span>
           </template>
         </el-table-column>
         <el-table-column align="left" label="告警次数" prop="warningCounts" min-width="100"

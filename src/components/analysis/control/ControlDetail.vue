@@ -62,8 +62,8 @@
               <el-col :span="8">
                 <el-form-item label="布控状态" align="left" style="margin: 0;text-align: left">
                   <span
-                    v-bind:style="{fontSize:'15px',color:task.taskStatus=='EXECUTION'?'#00C755':task.taskStatus =='FINISH'?'#00C755':'#333'}">
-                   {{task.taskStatus === "EXECUTION" ? "进行中" : task.taskStatus === "FINISH" ? "已结束" : "--"}}
+                    v-bind:style="{fontSize:'15px',color:task.taskStatus=='EXECUTION'?'#00C755':task.taskStatus =='FINISH'?'#00C755':task.taskStatus =='EXPIRE' ?'#dd6161':'#333'}">
+                   {{task.taskStatus =="EXECUTION" ? "进行中" : task.taskStatus == "FINISH" ? "已结束" : task.taskStatus == "EXPIRE" ?'已过期':"--"}}
                  </span>
                 </el-form-item>
                 <el-form-item label="布控类型" align="left" style="margin: 0;text-align: left">

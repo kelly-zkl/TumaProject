@@ -327,6 +327,10 @@
           this.$message.error('场所编码需手动输入4位数字');
           return;
         }
+        if (!this.addPlace.longitude || !this.addPlace.latitude || this.addPlace.longitude.length == 0 || this.addPlace.latitude.length == 0) {
+          this.$message.error('请输入经纬度');
+          return;
+        }
 
         this.getScode(this.selectedOptions2);
         this.addPlace.placeCode = this.placeCode + this.numberCode;

@@ -68,7 +68,8 @@
             <el-col :span="8">
               <el-form-item label="布控对象" align="left" style="margin: 0;text-align: left">
                 <img :src="faceDetail.dispositionImageUrl?faceDetail.dispositionImageUrl:imgPath" :onerror="img404"
-                     style="max-height: 110px;max-width: 110px;border-radius: 6px;margin-top: 10px"/>
+                     style="max-height: 110px;max-width: 110px;border-radius: 6px;margin-top: 10px"
+                     @click="taskDetail.dispositionType==0?gotoVipPerson(faceDetail.blackPersonFaceId,faceDetail.blackPersonResourceId):''"/>
               </el-form-item>
             </el-col>
             <el-col :span="8">
@@ -119,7 +120,8 @@
                   <el-col :span="12" align="center" style="text-align: left;padding-left: 15px">
                     <span>疑似重点人员</span>
                     <el-button type="text" style="padding: 0;margin-left: 20px" v-if="item.blackClassPerson"
-                               @click="gotoVipPerson(item)">查看重点人员
+                               @click="gotoVipPerson(item.blackClassPerson.faceId,item.blackClassPerson.resourceId)">
+                      查看重点人员
                     </el-button>
                   </el-col>
                 </el-row>
@@ -368,12 +370,9 @@
         }
       },
       //进入重点人员档案
-      gotoVipPerson(row) {
-        if (row.blackClassPerson.faceId && row.blackClassPerson.resourceId) {
-          let routeData = this.$router.resolve({
-            path: '/vipDetail',
-            query: {faceId: row.blackClassPerson.faceId, resourceId: row.blackClassPerson.resourceId}
-          });
+      gotoVipPerson(faceId, resourceId) {
+        if (faceId && resourceId) {
+          let routeData = this.$router.resolve({path: '/vipDetail', query: {faceId: faceId, resourceId: resourceId}});
           window.open(routeData.href, '_blank');
         }
       },
@@ -448,7 +447,7 @@
         this.persons = [];
         this.imsiList = [];
         this.$post('common/listPersonByUrl', {
-          type: "faceWarning", url: this.faceDetail.faceUrl + '?t=' + this.timeStamp
+          type: "faceWarning", url: this.faceDetail.faceUrl + '?t=' + this.timeStamp, id: this.id
         }, undefined, undefined, "login").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
@@ -483,7 +482,7 @@
         }
 
         this.listLoading = true;
-        this.query.faceId = this.faceId;
+        this.query.warningId = this.id;
         this.$post('common/face/listFaceTrace', this.query).then((data) => {
           if (this.query.pageTime && !this.isSearch) {
             this.list = this.list.concat(data.data);
