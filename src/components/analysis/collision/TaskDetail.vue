@@ -447,12 +447,35 @@
           var arr = [];
           data.dscList.forEach((item) => {
             if (item.type == 'qTime') {
-              arr.push({type: item.type, field: item.field, qTime: [item.startDate * 1000, item.endDate * 1000]});
+              arr.push({
+                type: item.type, field: item.field, qTime: [item.startDate * 1000, item.endDate * 1000],
+                time: ['00:00:00', '23:59:59'], isps: [], places: [], regional: '', imsi: ''
+              });
             } else if (item.type == 'time') {
-              arr.push({type: item.type, field: item.field, time: [item.startTime, item.endTime]});
+              arr.push({
+                type: item.type, field: item.field, time: [item.startTime, item.endTime],
+                qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
+                  new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
+                isps: [], places: [], regional: '', imsi: ''
+              });
             } else {
               var par = {type: item.type, field: item.field};
               par[item.type] = item[item.type];
+              par.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
+                new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+              par.time = ['00:00:00', '23:59:59'];
+              if (!par.isps) {
+                par.isps = [];
+              }
+              if (!par.places) {
+                par.places = [];
+              }
+              if (!par.regional) {
+                par.regional = '';
+              }
+              if (!par.imsi) {
+                par.imsi = '';
+              }
               arr.push(par);
             }
           });
