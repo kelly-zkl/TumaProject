@@ -439,13 +439,16 @@
       },
       gotoImsiDetail() {
         this.runImsiWarning = false;
-        this.$router.push({path: '/imsiWarningDetail', query: {id: this.imsiWarning.id, imsi: this.imsiWarning.imsi}});
+        this.$router.push({
+          path: '/imsiWarningDetail',
+          query: {id: this.imsiWarning.id, imsi: this.imsiWarning.imsi, taskId: this.imsiWarning.dispositionTaskId}
+        });
       },
       gotoFaceDetail() {
         this.runFaceWarning = false;
         this.$router.push({
           path: '/faceWarningDetail',
-          query: {id: this.faceWarning.id, faceId: this.faceWarning.faceId}
+          query: {id: this.faceWarning.id, faceId: this.faceWarning.faceId, taskId: this.faceWarning.dispositionTaskId}
         });
       },
       //告警数量

@@ -163,6 +163,7 @@
         param = Object.assign({}, this.queryResult);
         param.page = 1;
         param.size = 100000;
+        param.rtype = 'imsi';
         this.axios.post("/car/task/result/export", param, config).then((res) => {
           let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
           let fileName = decodeURIComponent(fileStr);

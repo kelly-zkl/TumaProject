@@ -183,7 +183,7 @@
             <el-date-picker v-model="item.qTime" type="daterange" range-separator="至" style="width: 250px"
                             value-format="timestamp" start-placeholder="开始日期" end-placeholder="结束日期"
                             :default-time="['00:00:00', '23:59:59']" format="yyyy-MM-dd"
-                            :picker-options="pickerBeginDate" size="medium" v-show="item.type=='qTime'">
+                            :picker-options="pickerBeginDate" size="medium" v-if="item.type=='qTime'">
             </el-date-picker>
             <el-tooltip class="item" effect="dark" content="开始时间" placement="bottom">
               <el-time-picker v-model="item.time[0]" style="width:120px" value-format="HH:mm:ss"
@@ -196,23 +196,23 @@
               </el-time-picker>
             </el-tooltip>
             <el-select v-model="item.places" size="medium" multiple collapse-tags style="width:230px"
-                       v-show="item.type=='places'" placeholder="选择场所">
+                       v-if="item.type=='places'" placeholder="选择场所">
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
-            <el-button type="primary" size="medium" @click="showMap(idx)" v-show="item.type=='places'">地图
+            <el-button type="primary" size="medium" @click="showMap(idx)" v-if="item.type=='places'">地图
             </el-button>
             <el-select v-model="item.isps" style="width:230px" size="medium" multiple collapse-tags
-                       v-show="item.type=='isps'" placeholder="选择运营商">
+                       v-if="item.type=='isps'" placeholder="选择运营商">
               <el-option :label="param.label" :value="param.value" v-for="param in operators"
                          :key="param.value"></el-option>
             </el-select>
             <el-input v-model="item.imsi" :maxlength=15 placeholder="输入IMSI" size="medium"
-                      style="width: 230px" v-show="item.type=='imsi'"></el-input>
+                      style="width: 230px" v-if="item.type=='imsi'"></el-input>
             <el-input v-model="item.regional" :maxlength=20 placeholder="输入归属地" size="medium"
-                      style="width: 230px" v-show="item.type=='regional'"></el-input>
+                      style="width: 230px" v-if="item.type=='regional'"></el-input>
             <el-button type="text" size="medium" @click="deleteItem(idx)"
-                       v-show="collision.dscList.length>1">删除
+                       v-if="collision.dscList.length>1">删除
             </el-button>
           </el-form-item>
           <el-form-item align="left" style="margin: 0 0 10px 0">
@@ -338,7 +338,8 @@
           collType: 'and', name: '数据源1', dscList: [{
             type: 'qTime', field: 'equal',
             qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
-              new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()]
+              new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
+            time: ['00:00:00', '23:59:59'], isps: [], places: [], regional: '', imsi: ''
           }]
         },
         runHelpDoc: false,
@@ -437,7 +438,8 @@
             collType: 'and', name: '数据源' + (this.records.length + 1), dscList: [{
               type: 'qTime', field: 'equal',
               qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
-                new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()]
+                new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
+              time: ['00:00:00', '23:59:59'], isps: [], places: [], regional: '', imsi: ''
             }]
           };
         } else {
@@ -507,7 +509,8 @@
         var param = {
           type: 'qTime', field: 'equal',
           qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
-            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()]
+            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
+          time: ['00:00:00', '23:59:59'], isps: [], places: [], regional: '', imsi: ''
         };
         this.collision.dscList.push(param);
       },
@@ -820,6 +823,7 @@
           if ("000000" === data.code) {
             data.data.forEach((item) => {
               var dateStr = [], timeStr = [], placeStr = [], ispStr = [], reginStr = [], imsiStr = [];
+              var contentStr = '';
               item.dscList.forEach((child) => {
                 if (child.type == 'qTime') {
                   var qStr = (child.field == 'equal' ? '等于' : '排除') + formatDate(new Date(child.startDate * 1000), 'yyyy-MM-dd') + '至' + formatDate(new Date(child.endDate * 1000), 'yyyy-MM-dd');
@@ -853,21 +857,20 @@
                   imsiStr.push(iStr);
                 }
               });
-              var contentStr = '';
               if (dateStr.length > 0) {
-                contentStr = ' 日期:' + dateStr.join(',');
+                contentStr += ' 日期:' + dateStr.join(',');
               }
               if (timeStr.length > 0) {
                 contentStr += ' 时间段:' + timeStr.join(',');
               }
               if (placeStr.length > 0) {
-                contentStr = ' 场所:' + placeStr.join(',');
+                contentStr += ' 场所:' + placeStr.join(',');
               }
               if (ispStr.length > 0) {
                 contentStr += ' 运营商:' + ispStr.join(',');
               }
               if (reginStr.length > 0) {
-                contentStr = ' 归属地:' + reginStr.join(',');
+                contentStr += ' 归属地:' + reginStr.join(',');
               }
               if (imsiStr.length > 0) {
                 contentStr += ' IMSI:' + imsiStr.join(',');
