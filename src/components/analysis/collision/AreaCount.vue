@@ -24,7 +24,7 @@
         </el-col>
         <el-col :span="6" align="right" style="text-align: right">
           <el-button type="primary" size="medium" @click="exportData()" :disabled="count==0"
-                     v-show="getButtonVial('collision:export:collisionStatistics')">导出数据
+                     v-show="getButtonVial('collision:export:collisionStatistics')">导出
           </el-button>
         </el-col>
       </el-row>

@@ -1,54 +1,97 @@
 <template>
   <div>
     <section>
-      <el-form ref="approval" :model="approval" label-position="left" label-width="100px">
-        <el-row>
-          <el-col :span="6" align="left">
-            <h5 class="add-label" style="margin-top: 0">进度</h5>
-          </el-col>
-          <el-col :span="18" align="right">
-            <el-button type="primary" size="medium" @click="cancel()"
-                       v-show="show==1&&(approval.status==1||approval.status==3)&&getButtonVial('workflow:translation:cancelapply')">
-              撤销申请
-            </el-button>
-            <el-button type="primary" size="medium" @click="applyPass(0)"
-                       v-show="show==2&&approval.status==1&&getButtonVial('workflow:translation:approve')">通过
-            </el-button>
-            <el-button size="medium" @click="applyPass(1)"
-                       v-show="show==2&&approval.status==1&&getButtonVial('workflow:translation:approve')">不通过
-            </el-button>
-            <!--<el-button type="primary" size="medium" @click="updateStatus()"-->
-            <!--v-show="show==3&&approval.ccReadStatus==1&&getButtonVial('workflow:translation:ccread')">标记已读-->
-            <!--</el-button>-->
-            <!--<el-button type="primary" size="medium" v-show="show==4">翻码返回</el-button>-->
-            <el-button type="primary" size="medium" @click="showTranslation()"
-                       v-show="show==4 &&approval.status==3&& getButtonVial('workflow:translation:inputtranslate')">录入翻码
-            </el-button>
-          </el-col>
-        </el-row>
-        <div class="add-appdiv">
-          <el-steps :active="active" finish-status="success" align-center>
+      <el-form ref="approval" :model="approval" label-position="left" label-width="110px">
+        <div class="add-appdiv" style="padding:0;margin-bottom: 13px">
+          <el-row style="border-bottom:1px #D7D7D7 solid;padding:10px 20px">
+            <el-col :span="6" align="left">
+              <div style="font-size:15px;text-align:left;padding-top: 5px">当前进度</div>
+            </el-col>
+            <el-col :span="18" align="right">
+              <el-button type="primary" size="mini" @click="cancel()"
+                         v-show="show==1&&(approval.status==1||approval.status==3)&&getButtonVial('workflow:translation:cancelapply')">
+                撤销申请
+              </el-button>
+              <el-button size="mini" @click="applyPass(1)"
+                         v-show="show==2&&approval.status==1&&getButtonVial('workflow:translation:approve')">拒绝
+              </el-button>
+              <el-button type="primary" size="mini" @click="applyPass(0)"
+                         v-show="show==2&&approval.status==1&&getButtonVial('workflow:translation:approve')">通过
+              </el-button>
+              <!--<el-button type="primary" size="medium" @click="showTranslation()"-->
+              <!--v-show="show==4 &&approval.status==3&& getButtonVial('workflow:translation:inputtranslate')">录入翻码-->
+              <!--</el-button>-->
+            </el-col>
+          </el-row>
+          <el-steps :active="active" finish-status="success" align-center style="margin: 30px 0">
             <el-step v-for="item in approval.nodes" :key="item.nodeName" :title="item.nodeName"
                      :description="item.nodeOperatorName"></el-step>
           </el-steps>
         </div>
-        <h5 class="add-label" style="margin-top: 0">基本信息</h5>
-        <div class="add-appdiv">
-          <el-form-item label="业务类型" align="left" style="margin: 0">IMSI翻码</el-form-item>
-          <el-form-item label="勤务等级" align="left" style="margin: 0">{{approval.staffLevel}}</el-form-item>
+        <div class="add-appdiv" style="padding:0;margin-bottom: 13px">
+          <div style="font-size:15px;padding:10px 20px;text-align:left;border-bottom:1px #D7D7D7 solid">申请信息
+          </div>
+          <el-row style="padding:20px 30px">
+            <el-col :span="12" align="left" style="text-align: left">
+              <el-form-item label="流程编号" align="left" style="margin: 0">{{approval.recordNo}}</el-form-item>
+              <el-form-item label="业务类型" align="left" style="margin: 0">
+                {{approval.businessType == 'imsi2p' ? "IMSI翻手机号" : '手机号翻IMSI'}}
+              </el-form-item>
+              <el-form-item label="勤务等级" align="left" style="margin: 0">{{approval.staffLevel}}</el-form-item>
+            </el-col>
+            <el-col :span="12" align="right" style="text-align: right">
+              <el-form-item label="关联案件" align="left" style="margin: 0">
+                <el-button type="text" @click="gotoCaseDetail()">{{approval.caseName?approval.caseName:'--'}}
+                </el-button>
+              </el-form-item>
+              <el-form-item label="侦查任务" align="left" style="margin: 0">
+                <el-button type="text" @click="gotoTaskDetail()">{{approval.spyTaskName?approval.spyTaskName:'--'}}
+                </el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </div>
-        <h5 class="add-label" style="margin-top: 0">需要翻码的IMSI</h5>
-        <div class="add-appdiv">
-          <el-table :data="approval.imsiList" class="center-block" stripe>
-            <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-            <el-table-column align="left" label="IMSI" prop="imsi" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="手机号码" prop="phone" :formatter="formatterAddress"></el-table-column>
-          </el-table>
+        <div class="add-appdiv" style="padding:0;margin-bottom: 13px">
+          <div style="font-size:15px;padding:10px 20px;text-align:left;border-bottom:1px #D7D7D7 solid">需要翻码的IMSI
+          </div>
+          <el-row v-if="business=='imsi2p'">
+            <el-col :span="12" align="left" style="text-align: left;border-right:1px solid #D7D7D7">
+              <el-table :data="imsiList1" class="center-block" stripe>
+                <el-table-column align="center" type="index" label="序号" width="80"></el-table-column>
+                <el-table-column align="left" label="IMSI" prop="imsi" :formatter="formatterAddress"></el-table-column>
+                <el-table-column align="left" label="手机号" prop="phone" :formatter="formatterAddress"></el-table-column>
+              </el-table>
+            </el-col>
+            <el-col :span="12" align="right" style="text-align: right" v-if="imsiList2.length>0">
+              <el-table :data="imsiList2" class="center-block" stripe>
+                <el-table-column align="center" type="index" label="序号" width="80" :index="6"></el-table-column>
+                <el-table-column align="left" label="IMSI" prop="imsi" :formatter="formatterAddress"></el-table-column>
+                <el-table-column align="left" label="手机号" prop="phone" :formatter="formatterAddress"></el-table-column>
+              </el-table>
+            </el-col>
+          </el-row>
+          <el-row v-else>
+            <el-col :span="12" align="left" style="text-align: left;border-right:1px solid #D7D7D7">
+              <el-table :data="imsiList1" class="center-block" stripe>
+                <el-table-column align="center" type="index" label="序号" width="80"></el-table-column>
+                <el-table-column align="left" label="手机号" prop="phone" :formatter="formatterAddress"></el-table-column>
+                <el-table-column align="left" label="IMSI" prop="imsi" :formatter="formatterAddress"></el-table-column>
+              </el-table>
+            </el-col>
+            <el-col :span="12" align="right" style="text-align: right" v-if="imsiList2.length>0">
+              <el-table :data="imsiList2" class="center-block" stripe>
+                <el-table-column align="center" type="index" label="序号" width="80" :index="6"></el-table-column>
+                <el-table-column align="left" label="手机号" prop="phone" :formatter="formatterAddress"></el-table-column>
+                <el-table-column align="left" label="IMSI" prop="imsi" :formatter="formatterAddress"></el-table-column>
+              </el-table>
+            </el-col>
+          </el-row>
         </div>
-        <h5 class="add-label" style="margin-top: 0">记录</h5>
-        <div class="add-appdiv">
+        <div class="add-appdiv" style="padding:0;margin-bottom: 13px">
+          <div style="font-size:15px;padding:10px 20px;text-align:left;border-bottom:1px #D7D7D7 solid">记录
+          </div>
           <el-table :data="approval.logs" class="center-block" stripe>
-            <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
+            <el-table-column align="center" type="index" label="序号" width="80"></el-table-column>
             <el-table-column align="left" label="操作" prop="operateType" min-width="150"
                              max-width="250" :formatter="formatterAddress"></el-table-column>
             <el-table-column align="left" label="操作人" prop="operator" min-width="150"
@@ -99,11 +142,14 @@
       return {
         show: this.$route.query.type,
         recordId: this.$route.query.recordId || '',
+        business: this.$route.query.business || 'imsi2p',
         approval: {
           imsiList: [{name: 'dfvf', imsi: '153453', phone: ''}, {name: 'dfvf', imsi: '153453', phone: ''}],
           records: []
         },
         translations: [],
+        imsiList1: [],
+        imsiList2: [],
         active: 1,
         runTranslation: false
       }
@@ -111,6 +157,34 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      //跳转布控详情页
+      gotoTaskDetail() {
+        if (this.approval.spyTaskId) {
+          if (this.approval.taskType == 'car') {//车码碰撞
+            let routeData = this.$router.resolve({
+              path: '/carTaskDetail',
+              query: {no: this.approval.spyTaskId, atype: this.approval.ttype}
+            });
+            window.open(routeData.href, '_blank');
+          } else if (this.approval.taskType == 'follow') {//伴随分析
+            let routeData = this.$router.resolve({
+              path: '/followResult',
+              query: {taskId: this.approval.spyTaskId, followType: this.approval.ttype}
+            });
+            window.open(routeData.href, '_blank');
+          } else {//交并分析
+            let routeData = this.$router.resolve({path: '/taskDetail', query: {taskId: this.approval.spyTaskId}});
+            window.open(routeData.href, '_blank');
+          }
+        }
+      },
+      //跳转案件详情页
+      gotoCaseDetail() {
+        if (this.approval.caseId) {
+          let routeData = this.$router.resolve({path: '/caseDetail', query: {caseId: this.approval.caseId}});
+          window.open(routeData.href, '_blank');
+        }
       },
       //获取翻码详情
       getDetail() {
@@ -121,42 +195,78 @@
               this.active = index
             }
           });
-          if (this.show == 3 && this.approval.ccReadStatus == 1) {
-            this.updateStatus();
+          if (this.approval.imsiList > 5) {
+            this.imsiList1.push(this.approval.imsiList.slice(0, 5));
+            this.imsiList2.push(this.approval.imsiList.slice(5, this.approval.imsiList.length));
+          } else {
+            this.imsiList1 = this.approval.imsiList;
+            this.imsiList2 = [];
           }
+          // if (this.show == 3 && this.approval.ccReadStatus == 1) {
+          //   this.updateStatus();
+          // }
         }).catch((err) => {
           this.$message.error(err);
         });
       },
       //撤销
       cancel() {
-        this.$confirm('确定要撤销翻码申请？', '提示', {type: 'warning'}).then(() => {
-          let param = {operator: JSON.parse(sessionStorage.getItem("user")).userId, remark: '申请人撤销'};
-          this.$post('/workflow/translation/cancelapply/' + this.recordId, param, "撤销成功").then((data) => {
+        this.$prompt('确认撤销此次翻码申请？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          inputType: 'textarea',
+          inputPlaceholder: '录入备注（非必填）',
+          inputValidator: function (value) {
+            let bol = true;
+            if (value) {
+              bol = (value.length <= 200)
+            }
+            return bol
+          },
+          inputErrorMessage: '请输入200字以内的备注'
+        }).then(({value}) => {
+          let param = {operator: JSON.parse(sessionStorage.getItem("user")).userId, remark: value ? value : ''};
+          this.$post('/workflow/translation/cancelapply/' + this.recordId, param, "操作成功").then((data) => {
             if ("000000" === data.code) {
               this.getDetail();
             }
           }).catch((err) => {
           });
         }).catch(() => {
-        })
+        });
       },
       //通过/不通过
       applyPass(status) {
-        let msg = '通过';
         if (status == 1) {
-          msg = '不通过';
+          this.$prompt('确认拒绝此次翻码申请？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            inputType: 'textarea',
+            inputPlaceholder: '录入备注（非必填）',
+            inputValidator: function (value) {
+              let bol = true;
+              if (value) {
+                bol = (value.length <= 200)
+              }
+              return bol
+            },
+            inputErrorMessage: '请输入200字以内的备注'
+          }).then(({value}) => {
+            this.applyHttp(status, value ? value : '');
+          }).catch(() => {
+          })
+        } else {
+          this.applyHttp(status, '');
         }
-        this.$confirm('确定' + msg + '该翻码申请？', '提示', {type: 'warning'}).then(() => {
-          let param = {result: status, operator: JSON.parse(sessionStorage.getItem("user")).userId, remark: ''};
-          this.$post('/workflow/translation/approve/' + this.recordId, param, "操作成功").then((data) => {
-            if ("000000" === data.code) {
-              this.getDetail();
-            }
-          }).catch((err) => {
-          });
-        }).catch(() => {
-        })
+      },
+      applyHttp(status, remark) {
+        let param = {result: status, operator: JSON.parse(sessionStorage.getItem("user")).userId, remark: remark};
+        this.$post('/workflow/translation/approve/' + this.recordId, param, "操作成功").then((data) => {
+          if ("000000" === data.code) {
+            this.getDetail();
+          }
+        }).catch((err) => {
+        });
       },
       //标记已读
       updateStatus() {
@@ -211,17 +321,7 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'taskStatus') {
-          return row.taskStatus === "WAIT" ? '等待中' : row.taskStatus === "FINISH" ? '已完成' : row.taskStatus === "FAILE" ? '失败' : row.taskStatus === "EXECUTION" ? '进行中' : '--';
-        } else if (column.property === 'followType') {
-          return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '人脸' : row.followType === "MAC" ? 'MAC' : '--';
-        } else if (column.property === 'status') {
-          return row.status === 'UNHANDLED' ? '未处理' : row.status === 'EXECUTION' ? '进行中' : row.status === 'HANDLED' ? '已结案' : '--';
-        } else if (column.property === 'followCount') {
-          return row.followCount === 0 ? 0 : row.followCount;
-        } else {
-          return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
-        }
+        return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
       }
     },
     mounted() {

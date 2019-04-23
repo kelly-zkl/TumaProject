@@ -11,17 +11,20 @@
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1100px">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
-          <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
+          <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag
                      :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
                      :auto-upload="true" :show-file-list="false">
-            <el-button size="medium" style="width: 100px">
-              <span class="el-upload__text">
-                <span v-if="!query.faceUrl">
-                  <i class="fa fa-photo fa-lg"></i>上传头像
-                </span>
-                <img :src="query.faceUrl" v-if="query.faceUrl" style="height: 30px">
-              </span>
-            </el-button>
+            <div v-if="!query.faceUrl" style="height:34px;vertical-align:middle;text-align: center">
+              <i class="fa fa-photo fa-lg"></i>上传头像
+            </div>
+            <el-row v-if="query.faceUrl" style="height:34px;padding:0;margin:0">
+              <el-col :span="12">
+                <img :src="query.faceUrl" style="height:34px;margin:0;padding:0">
+              </el-col>
+              <el-col :span="12">
+                <el-button type="text" style="margin-left:5px" @click.stop="clearImg()">清除</el-button>
+              </el-col>
+            </el-row>
           </el-upload>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem == 'H'">
@@ -47,7 +50,7 @@
           <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
                     style="width: 170px"></el-input>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem == 'T'">
+        <el-form-item style="margin-bottom: 10px">
           <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable
                      style="width: 170px">
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
@@ -63,12 +66,6 @@
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearData()">重置</el-button>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem == 'H'&&isMore">
-          <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable>
-            <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
-            </el-option>
-          </el-select>
         </el-form-item>
         <el-form-item label="年龄段" style="margin-bottom: 10px" v-show="isMore">
           <el-input-number v-model="query.startAge" controls-position="right" :min="1"
@@ -167,6 +164,47 @@
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         time1: ['00:00:00', '23:59:59'],
         pickerBeginDate: {
+          shortcuts: [{
+            text: '最近6小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 6);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近12小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 12);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }],
           disabledDate: (time) => {
             let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {
@@ -179,6 +217,12 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      clearImg() {
+        delete this.query['faceUrl'];
+        delete this.query['similarThreshold'];
+        this.isSearch = true;
+        this.getData()
       },
       showMore() {
         this.isMore = !this.isMore;

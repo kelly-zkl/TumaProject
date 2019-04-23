@@ -41,7 +41,7 @@
     },
     methods: {
       getWarningCount() {
-        this.$emit('handleSelectTab', null, 'warning');
+        this.$emit('refreshData', 'warning');
       },
       //菜单栏左侧缩小/放大功能
       isCollNav() {
@@ -61,12 +61,10 @@
       }
     },
     mounted() {
-      sessionStorage.setItem("index", 5);
-      this.$emit('handleSelectTab', 5);
       let val = JSON.parse(sessionStorage.getItem("menu")) || [];
       if (val.length > 0) {
         val.forEach((item) => {
-          if (item.orders == 5) {
+          if (item.permissionUrl == '/caseList') {
             this.menu = item.childs;
           }
         });

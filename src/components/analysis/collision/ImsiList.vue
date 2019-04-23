@@ -44,7 +44,7 @@
         </el-col>
         <el-col :span="6" align="right" style="text-align: right">
           <el-button type="primary" size="medium" @click="exportData()" :disabled="count==0"
-                     v-show="getButtonVial('collision:export:dataSourceRecord')">导出数据
+                     v-show="getButtonVial('collision:export:dataSourceRecord')">导出
           </el-button>
         </el-col>
       </el-row>
@@ -106,6 +106,47 @@
         query: {size: 100},
         count: 0,
         pickerBeginDate: {
+          shortcuts: [{
+            text: '最近6小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 6);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近12小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 12);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }],
           disabledDate: (time) => {
             let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {

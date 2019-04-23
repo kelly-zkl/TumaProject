@@ -27,7 +27,7 @@
         <div
           v-bind:style="$route.path =='/imsiWarnings'||$route.path =='/catchWarnings'?'background: #fff;margin: 10px 0 0 0;padding: 10px':'margin: 10px 0 0 0'">
           <transition name="fade" mode="out-in">
-            <router-view @getWarningCount="getWarningCount"></router-view>
+            <router-view @refreshData="refreshData"></router-view>
           </transition>
         </div>
       </div>
@@ -59,8 +59,8 @@
       this.face = this.faceCount;
     },
     methods: {
-      getWarningCount() {
-        this.$emit('handleSelectTab', null, 'warning');
+      refreshData() {
+        this.$emit('refreshData', 'warning');
       },
       //菜单栏左侧缩小/放大功能
       isCollNav() {
@@ -81,12 +81,15 @@
     },
     mounted() {
       sessionStorage.setItem("index", 2);
-      this.$emit('handleSelectTab', 2);
       let val = JSON.parse(sessionStorage.getItem("menu")) || [];
       if (val.length > 0) {
         val.forEach((item) => {
-          if (item.orders == 2) {
-            this.menu = item.childs;
+          if (item.permissionUrl == '/warnings') {
+            item.childs.forEach((child) => {
+              if (item.permissionUrl == '/imsiWarnings') {
+                this.menu = child.childs;
+              }
+            });
           }
         });
       }

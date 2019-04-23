@@ -22,19 +22,22 @@
         <el-button type="text" style="margin: 0;padding: 0;position: absolute;right: 10px"
                    icon="el-icon-close" @click="showTip=false;calcuHeight()"></el-button>
       </div>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1100px">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1200px">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
-          <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
+          <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag
                      :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
                      :auto-upload="true" :show-file-list="false">
-            <el-button size="medium" style="width: 100px">
-              <span class="el-upload__text">
-                <span v-if="!query.faceUrl">
-                  <i class="fa fa-photo fa-lg"></i>上传头像
-                </span>
-                <img :src="query.faceUrl" v-if="query.faceUrl" style="height: 30px">
-              </span>
-            </el-button>
+            <div v-if="!query.faceUrl" style="height:34px;vertical-align:middle;text-align: center">
+              <i class="fa fa-photo fa-lg"></i>上传头像
+            </div>
+            <el-row v-if="query.faceUrl" style="height:34px;padding:0;margin:0">
+              <el-col :span="12">
+                <img :src="query.faceUrl" style="height:34px;margin:0;padding:0">
+              </el-col>
+              <el-col :span="12">
+                <el-button type="text" style="margin-left:5px" @click.stop="clearImg()">清除</el-button>
+              </el-col>
+            </el-row>
           </el-upload>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'">
@@ -143,11 +146,11 @@
         </el-table-column>
         <el-table-column align="left" label="采集时间" prop="catchTime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="布控任务" prop="taskName" min-width="140"
+        <el-table-column align="left" label="预警模型名称" prop="taskName" min-width="140"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="关联案件" prop="caseName" min-width="140"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="布控人脸图像" prop="faceUrl" min-width="120"
+        <el-table-column align="left" label="管控对象" prop="faceUrl" min-width="120"
                          max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
@@ -225,6 +228,47 @@
         sels: [],
         time1: ['00:00:00', '23:59:59'],
         pickerBeginDate: {
+          shortcuts: [{
+            text: '最近6小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 6);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近12小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 12);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }],
           disabledDate: (time) => {
             let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {
@@ -237,6 +281,12 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      clearImg() {
+        delete this.query['faceUrl'];
+        delete this.query['similarThreshold'];
+        this.isSearch = true;
+        this.getData()
       },
       showMore() {
         this.isMore = !this.isMore;
@@ -300,7 +350,7 @@
             dealWithUser: JSON.parse(sessionStorage.getItem("user")).account
           };
           this.$post('warning/dealWithWarningById', param, "处理成功").then((data) => {
-            this.$emit('getWarningCount');
+            this.$emit('refreshData', 'warning');
             this.sels = [];
             this.getData();
           }).catch((err) => {

@@ -50,7 +50,7 @@
                 {{userInfo.remark ? userInfo.remark : '--'}}
               </el-form-item>
             </el-col>
-            <el-col :span="7" align="right" style="border-left: 1px solid #D0CACF;text-align: right;padding-left: 20px">
+            <el-col :span="7" align="right" style="border-left: 1px solid #D7D7D7;text-align: right;padding-left: 20px">
               <el-form-item label="采集时间" align="left" style="margin: 0">
                 {{userInfo.lastTimeStr ? userInfo.lastTimeStr : '--'}}
               </el-form-item>

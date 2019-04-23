@@ -195,7 +195,7 @@
               this.listLoading = false;
               this.addMenuVisible = false;
               if ("000000" === data.code) {
-                this.$emit('setSystem', 'menu');
+                this.$emit('refreshData', 'menu');
                 this.getMenus();
                 this.getMenuTree();
               }

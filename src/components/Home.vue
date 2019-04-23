@@ -11,10 +11,9 @@
             </el-breadcrumb-item>
           </el-breadcrumb>
         </div>
-        <div
-          v-bind:style="$route.path =='/listManage'?'background: #fff;margin: 10px 0 0 0;padding: 10px':'margin: 10px 0 0 0'">
+        <div style="margin:10px 0 0 0">
           <transition name="fade" mode="out-in">
-            <router-view @getWarningCount="getWarningCount"></router-view>
+            <router-view @refreshData="refreshData"></router-view>
           </transition>
         </div>
       </div>
@@ -27,7 +26,9 @@
       return {}
     },
     methods: {
-      getWarningCount() {
+      refreshData(sys, val) {
+        console.log('home');
+        this.$emit('refreshData', sys, val);
       }
     },
     mounted() {

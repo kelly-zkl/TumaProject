@@ -9,7 +9,7 @@
           </el-tabs>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left;width: 1100px">
+      <el-form :inline="true" :model="query" align="left" style="margin-top:15px;text-align:left;width:1300px">
         <el-form-item style="margin-bottom: 10px">
           <el-input placeholder="车牌号" v-model="query.carLicense" :maxlength="7" size="medium"
                     style="width: 160px"></el-input>
@@ -39,12 +39,9 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
+        <el-form-item style="margin-bottom: 10px">
           <el-input placeholder="设备ID" v-model="query.cameraId" :maxlength="30" size="medium"
                     style="width: 160px"></el-input>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'">
-          <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button type="primary" @click="isSearch = true;getData()" size="medium">搜索
@@ -52,10 +49,6 @@
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button @click="clearData()" size="medium">重置</el-button>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="isMore&&activeItem == 'H'">
-          <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
-                    style="width: 160px"></el-input>
         </el-form-item>
       </el-form>
       <el-table :data="list10" class="center-block" v-loading="listLoading" stripe :height="tableHeight">
@@ -119,7 +112,6 @@
     data() {
       return {
         runBigPic: false,
-        isMore: false,
         bigUrl: '',
         activeItem: 'T',
         tableHeight: window.innerHeight - 285,
@@ -140,6 +132,47 @@
         query: {size: 100},
         time1: ['00:00:00', '23:59:59'],
         pickerBeginDate: {
+          shortcuts: [{
+            text: '最近6小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 6);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近12小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 12);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }],
           disabledDate: (time) => {
             let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {
@@ -152,15 +185,6 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
-      },
-      //更多条件
-      showMore() {
-        this.isMore = !this.isMore;
-        if (this.isMore) {
-          this.tableHeight = window.innerHeight - 335
-        } else {
-          this.tableHeight = window.innerHeight - 285
-        }
       },
       handleChange(val) {
         if (!val || val.length == 0) {
@@ -179,7 +203,6 @@
         this.getData();
       },
       handleClick(tab, event) {
-        this.isMore = false;
         this.clearData();
       },
       //查看IMSI详情

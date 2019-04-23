@@ -60,12 +60,10 @@
       }
     },
     mounted() {
-      sessionStorage.setItem("index", 7);
-      this.$emit('handleSelectTab', 7);
       let val = JSON.parse(sessionStorage.getItem("menu")) || [];
       if (val.length > 0) {
         val.forEach((item) => {
-          if (item.orders == 7) {
+          if (item.permissionUrl == '/deviceMap') {
             this.menu = item.childs;
           }
         });

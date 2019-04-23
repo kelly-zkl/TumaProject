@@ -15,7 +15,7 @@
         <!--</el-upload>-->
         <!--</el-form-item>-->
         <!--</div>-->
-        <h5 class="add-label" style="margin-top: 0">地图定位坐标</h5>
+        <h5 class="add-label" style="margin: 0 0 10px 0">地图定位坐标</h5>
         <div class="add-appdiv">
           <el-form-item label="定位城市" align="left" style="margin: 0;text-align: left">
             <el-tooltip effect="dark" content="系统所有地图都根据所选的城市来定位初始位置" placement="center">
@@ -25,7 +25,7 @@
             </el-tooltip>
           </el-form-item>
         </div>
-        <h5 class="add-label" style="margin-top: 0">实时数据热力图</h5>
+        <h5 class="add-label" style="margin: 0 0 10px 0">实时数据热力图</h5>
         <div class="add-appdiv">
           <el-form-item label="刷新频率" align="left" style="margin: 0;text-align: left" class="sys">
             <el-input v-model.number="systemParam.refreshTime" placeholder="10" style="width: 250px"
@@ -68,7 +68,7 @@
             </el-tooltip>
           </el-form-item>
         </div>
-        <h5 class="add-label" style="margin-top: 0">人脸搜索阈值</h5>
+        <h5 class="add-label" style="margin: 0 0 10px 0">人脸搜索阈值</h5>
         <div class="add-appdiv">
           <el-form-item label="相似度阈值" align="left" style="margin: 0;text-align: left">
             <el-tooltip effect="dark" content="默认的人脸搜索的相似度阈值" placement="bottom">
@@ -251,7 +251,7 @@
                   this.systemParam.similarThreshold = item.value;
                 }
                 sessionStorage.setItem("system", JSON.stringify(this.systemParam));
-                this.$emit('setSystem', 'sys');
+                this.$emit('refreshData', 'sys');
               });
             }
           }

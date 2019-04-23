@@ -4,19 +4,19 @@
       <el-row>
         <el-col :span="16" align="left" class="tab-card" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
-            <el-tab-pane label="布控中" name="EXECUTION"></el-tab-pane>
-            <el-tab-pane label="已结束" name="FINISH"></el-tab-pane>
+            <el-tab-pane label="开启中" name="EXECUTION"></el-tab-pane>
+            <el-tab-pane label="已关闭" name="FINISH"></el-tab-pane>
           </el-tabs>
         </el-col>
         <el-col :span="8" align="right" style="text-align: right;margin-top: 10px">
-          <el-button type="primary" size="medium" @click="addControl()" v-show="getButtonVial('disposition:add')">添加布控
+          <el-button type="primary" size="medium" @click="addControl()" v-show="getButtonVial('disposition:add')">添加预警模型
           </el-button>
           <el-button-group>
             <el-button :disabled="sels.length == 0" @click="deleteTask()"
                        v-show="getButtonVial('disposition:delete')">删除
             </el-button>
             <el-button v-show="activeItem == 'EXECUTION' && getButtonVial('disposition:batchUpdateStatus')"
-                       :disabled="sels.length == 0" @click="finishTask()">结束布控
+                       :disabled="sels.length == 0" @click="finishTask()">关闭预警
             </el-button>
           </el-button-group>
         </el-col>
@@ -24,7 +24,7 @@
       <el-form :inline="true" :model="query" align="left" style="text-align: left"
                v-show="getButtonVial('disposition:query')">
         <el-form-item style="margin-bottom: 10px">
-          <el-input v-model="query.taskName" placeholder="任务名称" size="medium" style="width: 160px"
+          <el-input v-model="query.taskName" placeholder="模型名称" size="medium" style="width: 160px"
                     :maxlength=30></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
@@ -48,16 +48,16 @@
                 @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="任务名称" prop="taskName" min-width="150"
+        <el-table-column align="left" label="预警模型名称" prop="taskName" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="布控类型" prop="dispositionType" min-width="120"
+        <el-table-column align="left" label="管控对象类型" prop="dispositionType" min-width="120"
                          max-width="160" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="有效期" prop="startTime" min-width="180"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="布控状态" prop="taskStatus" min-width="100" max-width="150">
+        <el-table-column align="left" label="预警状态" prop="taskStatus" min-width="100" max-width="150">
           <template slot-scope="scope">
-            <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已结束</span>
-            <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">进行中</span>
+            <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已关闭</span>
+            <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">开启中</span>
             <span style="color:#dd6161" v-show="scope.row.taskStatus == 'EXPIRE'">已过期</span>
           </template>
         </el-table-column>
@@ -70,7 +70,7 @@
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('disposition:get')">查看
             </el-button>
             <el-button type="text" @click="sels = [];sels.push(scope.row);finishTask()"
-                       v-show="activeItem== 'EXECUTION' && getButtonVial('disposition:batchUpdateStatus')">结束
+                       v-show="activeItem== 'EXECUTION' && getButtonVial('disposition:batchUpdateStatus')">关闭预警
             </el-button>
             <el-button type="text" @click="sels = [];sels.push(scope.row);deleteTask()"
                        v-show="getButtonVial('disposition:delete')">删除
@@ -95,8 +95,6 @@
         activeItem: 'EXECUTION',
         query: {page: 1, size: 10},
         tableHeight: window.innerHeight - 280,
-        statuses: [{label: '进行中', value: 'EXECUTION'}, {label: '已结案', value: 'FINISH'}],
-        areaList: [],
         count: 0,
         listLoading: false,
         places: [],
@@ -118,7 +116,7 @@
       },
       //结束布控
       finishTask() {
-        this.$confirm('确认结束布控?', '提示', {type: 'info'}).then(() => {
+        this.$confirm('确认关闭预警?', '提示', {type: 'info'}).then(() => {
           let param = [];
           this.sels.forEach((item) => {
             let caseItem = {id: item.id, taskStatus: 'FINISH'};
@@ -140,7 +138,7 @@
         this.sels.forEach((item) => {
           arr.push(item.id);
         });
-        this.$confirm('确认要删除该布控任务吗?', '提示', {type: 'info'}).then(() => {
+        this.$confirm('确认要删除该预警模型吗?', '提示', {type: 'info'}).then(() => {
           this.$post('disposition/delete', arr, '删除成功').then((data) => {
             if ("000000" === data.code) {
               this.getData();
@@ -196,7 +194,7 @@
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'dispositionType') {
-          return row.dispositionType == 0 ? '重点人员名单' : row.dispositionType == 1 ? '特征布控' : '--';
+          return row.dispositionType == 0 ? '重点人员名单' : row.dispositionType == 1 ? '人脸|IMSI特征' : '--';
         } else if (column.property === 'followType') {
           return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '人脸' : row.followType === "MAC" ? 'MAC' : '--';
         } else if (column.property === 'startTime') {

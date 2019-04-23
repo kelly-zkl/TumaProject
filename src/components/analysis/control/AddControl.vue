@@ -2,10 +2,10 @@
   <div>
     <section class="content">
       <el-form ref="controlTask" :model="controlTask" label-position="right" label-width="120px" :rules="rules">
-        <h5 class="add-label" style="margin-top: 0">任务基本信息</h5>
+        <h5 class="add-label" style="margin:10px 0">任务基本信息</h5>
         <div class="add-appdiv" style="padding: 20px 0">
-          <el-form-item label="任务名称" align="left" prop="taskName">
-            <el-input v-model="controlTask.taskName" placeholder="请输入任务名称" style="width: 300px"
+          <el-form-item label="模型名称" align="left" prop="taskName">
+            <el-input v-model="controlTask.taskName" placeholder="请输入模型名称" style="width: 300px"
                       :maxlength=20 size="medium"></el-input>
           </el-form-item>
           <el-form-item label="关联案件" align="left" style="margin:0" prop="caseId">
@@ -15,12 +15,12 @@
             </el-select>
           </el-form-item>
         </div>
-        <h5 class="add-label">设置布控</h5>
+        <h5 class="add-label" style="margin:10px 0">管控对象和布控场所</h5>
         <div class="add-appdiv" style="padding: 20px 0">
-          <el-form-item label="布控类型" align="left" style="text-align: left">
+          <el-form-item label="管控对象类型" align="left" style="text-align: left">
             <el-radio-group v-model="controlTask.dispositionType" size="medium">
               <el-radio-button label="0">重点人员名单</el-radio-button>
-              <el-radio-button label="1">特征布控</el-radio-button>
+              <el-radio-button label="1">人脸|IMSI特征</el-radio-button>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="添加名单" align="left" style="margin:0 0 20px 0" prop="blackClassList"
@@ -30,8 +30,8 @@
               <el-option v-for="item in listTypes" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="头像特征" align="left" v-show="controlTask.dispositionType==1">
-            <el-upload :action="uploadUrl" list-type="picture-card" :before-remove="beforeRemove"
+          <el-form-item label="头像特征" align="left" v-show="controlTask.dispositionType==1" class="vip-140">
+            <el-upload :action="uploadUrl" list-type="picture-card" :before-remove="beforeRemove" drag
                        :on-change="handleChange" :limit="20" :file-list="imgList" :on-remove="handleRemove">
               <div class="el-upload__text" style="color: #777">上传头像</div>
             </el-upload>
@@ -58,7 +58,7 @@
             <el-button type="primary" size="medium" @click="showMap()" style="margin-left: 10px">地图选择</el-button>
           </el-form-item>
         </div>
-        <h5 class="add-label">设置布控有效期</h5>
+        <h5 class="add-label" style="margin:10px 0">设置布控有效期</h5>
         <div class="add-appdiv" style="padding: 20px 0">
           <el-form-item label="布控有效期" align="left" prop="startDate">
             <el-date-picker v-model="controlTask.startDate" type="daterange" range-separator="至"
@@ -366,7 +366,7 @@
               this.controlTask.blackClassList = [];
             }
             if (this.controlTask.featureList.length == 0 && this.controlTask.imsiList.length == 0 && this.controlTask.blackClassList.length == 0) {
-              this.$message.error('请设置布控特征');
+              this.$message.error('请设置管控对象类型');
               return;
             }
             if (this.controlTask.dispositionType == 0) {//名单布控

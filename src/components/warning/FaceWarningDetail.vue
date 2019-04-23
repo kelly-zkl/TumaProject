@@ -61,19 +61,19 @@
         </el-form>
       </div>
       <div class="add-appdiv dialog gray-form" style="padding:10px 0 0 0;margin-top: 13px">
-        <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">布控任务信息
+        <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D7D7D7 solid">预警模型信息
         </div>
         <el-form :model="taskDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="120px">
           <el-row style="margin: 0;padding: 0">
             <el-col :span="8">
-              <el-form-item label="布控对象" align="left" style="margin: 0;text-align: left">
+              <el-form-item label="人脸特征" align="left" style="margin: 0;text-align: left">
                 <img :src="faceDetail.dispositionImageUrl?faceDetail.dispositionImageUrl:imgPath" :onerror="img404"
                      style="max-height: 110px;max-width: 110px;border-radius: 6px;margin-top: 10px"
                      @click="taskDetail.dispositionType==0?gotoVipPerson(faceDetail.blackPersonFaceId,faceDetail.blackPersonResourceId):''"/>
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="任务名称" align="left" style="margin: 0;text-align: left">
+              <el-form-item label="模型名称" align="left" style="margin: 0;text-align: left">
                 <el-button type="text" @click="gotoControl()">{{taskDetail.taskName ? taskDetail.taskName : '--'}}
                 </el-button>
               </el-form-item>
@@ -81,13 +81,13 @@
                 <el-button type="text" @click="gotoCase()">{{taskDetail.caseName ? taskDetail.caseName : '--'}}
                 </el-button>
               </el-form-item>
-              <el-form-item label="布控编号" align="left" style="margin: 0;text-align: left">
+              <el-form-item label="模型编号" align="left" style="margin: 0;text-align: left">
                 {{taskDetail.taskNo ? taskDetail.taskNo : '--'}}
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="布控类型" align="left" style="margin: 0;text-align: left">
-                {{taskDetail.dispositionType==0?'重点人员名单':taskDetail.dispositionType==1?'特征布控':'--'}}
+              <el-form-item label="管控对象类型" align="left" style="margin: 0;text-align: left">
+                {{taskDetail.dispositionType==0?'重点人员名单':taskDetail.dispositionType==1?'人脸|IMSI特征':'--'}}
               </el-form-item>
               <el-form-item label="有效期限" align="left" style="margin: 0;text-align: left">
                 {{(taskDetail.startStr?taskDetail.startStr:'--')+" 至 "+(taskDetail.endStr?taskDetail.endStr:'--')}}
@@ -327,6 +327,47 @@
         listLoading: false,
         timeStamp: new Date().getTime(),
         pickerBeginDate: {
+          shortcuts: [{
+            text: '最近6小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 6);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近12小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 12);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }],
           disabledDate: (time) => {
             let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {
@@ -403,7 +444,7 @@
             dealWithUser: JSON.parse(sessionStorage.getItem("user")).account
           };
           this.$post('warning/dealWithWarningById', param, "处理成功").then((data) => {
-            this.$emit('getWarningCount');
+            this.$emit('refreshData', 'warning');
             this.getImsiDetail();
           }).catch((err) => {
             this.$message.error(err);

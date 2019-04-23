@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <el-form ref="followTask" :model="followTask" label-position="right" label-width="120px" :rules="rules">
-        <h5 class="add-label" style="margin-top: 0">任务基本信息</h5>
+        <h5 class="add-label" style="margin:10px 0">任务基本信息</h5>
         <div class="add-appdiv" style="padding: 20px 0">
           <el-form-item label="任务名称" align="left" prop="taskName">
             <el-input v-model="followTask.taskName" placeholder="请输入任务名称" style="width: 400px" :maxlength=30></el-input>
@@ -21,7 +21,7 @@
             </el-select>
           </el-form-item>
         </div>
-        <h5 class="add-label">设置伴随条件</h5>
+        <h5 class="add-label" style="margin:10px 0">设置伴随条件</h5>
         <div class="add-appdiv" style="padding: 20px 0">
           <el-form-item label="分析对象" align="left" prop="followTarget">
             <el-input v-model="followTask.followTarget" placeholder="输入IMSI"

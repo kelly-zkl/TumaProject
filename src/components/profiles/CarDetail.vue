@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <div class="add-appdiv dialog gray-form" style="padding:10px 0 0 0">
-        <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">
+        <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D7D7D7 solid">
           车牌采集记录
         </div>
         <el-form :model="carDetail" style="margin: 0;padding: 0" labelPosition="right" label-width="100px">

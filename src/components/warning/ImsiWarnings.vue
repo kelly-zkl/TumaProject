@@ -22,7 +22,7 @@
         <el-button type="text" style="margin: 0;padding: 0;position: absolute;right: 10px"
                    icon="el-icon-close" @click="showTip=false;calcuHeight()"></el-button>
       </div>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1100px"
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1200px"
                v-show="getButtonVial(exportKey)">
         <el-form-item style="margin-bottom: 10px">
           <el-input v-model="query.imsi" placeholder="IMSI" size="medium" style="width: 180px"
@@ -53,9 +53,15 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
+        <el-form-item style="margin-bottom: 10px">
           <el-select v-model="query.dispositionTaskId" placeholder="布控任务" size="medium" style="width: 150px" clearable>
             <el-option v-for="item in controlList" :key="item.id" :label="item.taskName" :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
+          <el-select v-model="query.caseId" placeholder="关联案件" size="medium" style="width: 150px" clearable>
+            <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
@@ -70,12 +76,6 @@
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'&&isMore">
-          <el-select v-model="query.dispositionTaskId" placeholder="布控任务" size="medium" style="width: 150px" clearable>
-            <el-option v-for="item in controlList" :key="item.id" :label="item.taskName" :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="isMore">
           <el-select v-model="query.caseId" placeholder="关联案件" size="medium" style="width: 150px" clearable>
             <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
             </el-option>
@@ -114,7 +114,7 @@
             <span style="color:#999" v-show="scope.row.status == 3">误报</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="布控任务" prop="taskName" min-width="140"
+        <el-table-column align="left" label="预警模型名称" prop="taskName" min-width="140"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="关联案件" prop="caseName" min-width="140"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
@@ -163,6 +163,47 @@
         sels: [],
         time1: ['00:00:00', '23:59:59'],
         pickerBeginDate: {
+          shortcuts: [{
+            text: '最近6小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 6);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近12小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 12);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }],
           disabledDate: (time) => {
             let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {
@@ -240,7 +281,8 @@
             dealWithUser: JSON.parse(sessionStorage.getItem("user")).account
           };
           this.$post('warning/dealWithWarningById', param, "处理成功").then((data) => {
-            this.$emit('getWarningCount');
+            console.log('warning/dealWithWarningById');
+            this.$emit('refreshData', 'warning');
             this.sels = [];
             this.getData();
           }).catch((err) => {

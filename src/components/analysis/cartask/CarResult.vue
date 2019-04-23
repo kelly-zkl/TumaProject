@@ -31,7 +31,7 @@
         </el-col>
         <el-col :span="6" align="right" style="text-align: right">
           <el-button type="primary" size="medium" @click="exportData()"
-                     v-show="getButtonVial('car:task:result:export')">导出数据
+                     v-show="getButtonVial('car:task:result:export')">导出
           </el-button>
         </el-col>
       </el-row>

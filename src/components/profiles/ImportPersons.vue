@@ -1,71 +1,82 @@
 <template>
   <div>
     <section class="content">
-      <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('person:query')"
-               style="text-align: left;width: 1100px">
-        <el-form-item style="margin-bottom: 10px">
-          <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file"
-                     :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
-                     :auto-upload="true" :show-file-list="false">
-            <el-button size="medium" style="width: 100px">
-              <span class="el-upload__text">
-                <span v-show="!query.faceUrl">
+      <el-row>
+        <el-col :span="21" align="left" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('person:query')"
+                   style="text-align: left;width: 1100px">
+            <el-form-item style="margin-bottom: 10px">
+              <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag
+                         :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
+                         :auto-upload="true" :show-file-list="false">
+                <div v-if="!query.faceUrl" style="height:34px;vertical-align:middle;text-align: center">
                   <i class="fa fa-photo fa-lg"></i>上传头像
-                </span>
-                <img :src="query.faceUrl" v-show="query.faceUrl" style="height: 30px;margin: 0;padding: 0">
-              </span>
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="人员编号" v-model="query.faceId" :maxlength="18"
-                    style="width: 180px" size="medium"></el-input>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="15"
-                    style="width: 180px" size="medium"></el-input>
-        </el-form-item>
-        <el-form-item label="年龄段" style="margin-bottom: 10px">
-          <el-input-number v-model="query.startAge" controls-position="right" :min="1"
-                           :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
-          <span>~</span>
-          <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
-                           :max="200" style="width: 100px" size="medium"></el-input-number>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-button size="medium" @click="clearData()">重置</el-button>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="isMore">
-          <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px" clearable>
-            <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="isMore">
-          <el-input placeholder="手机号" v-model="query.mobilePhone" :maxlength="11"
-                    style="width: 180px" size="medium"></el-input>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="isMore">
-          <el-input placeholder="姓名" v-model="query.name" :maxlength="10"
-                    style="width: 180px" size="medium"></el-input>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="isMore">
-          <el-input placeholder="身份证号" v-model="query.idCard" :maxlength="18"
-                    style="width: 180px" size="medium"></el-input>
-        </el-form-item>
-        <!--<el-form-item style="margin-bottom: 10px" v-show="isMore">-->
-        <!--<el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"-->
-        <!--start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable-->
-        <!--:default-time="['00:00:00', '23:59:59']" value-format="timestamp"-->
-        <!--:picker-options="pickerBeginDate" style="width: 360px">-->
-        <!--</el-date-picker>-->
-        <!--</el-form-item>-->
-      </el-form>
+                </div>
+                <el-row v-if="query.faceUrl" style="height:34px;padding:0;margin:0">
+                  <el-col :span="12">
+                    <img :src="query.faceUrl" style="height:34px;margin:0;padding:0">
+                  </el-col>
+                  <el-col :span="12">
+                    <el-button type="text" style="margin-left:5px" @click.stop="clearImg()">清除</el-button>
+                  </el-col>
+                </el-row>
+              </el-upload>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-input placeholder="人员编号" v-model="query.faceId" :maxlength="18"
+                        style="width: 180px" size="medium"></el-input>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="15"
+                        style="width: 180px" size="medium"></el-input>
+            </el-form-item>
+            <el-form-item label="年龄段" style="margin-bottom: 10px">
+              <el-input-number v-model="query.startAge" controls-position="right" :min="1"
+                               :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
+              <span>~</span>
+              <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
+                               :max="200" style="width: 100px" size="medium"></el-input-number>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-button size="medium" @click="clearData()">重置</el-button>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px" clearable>
+                <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-input placeholder="手机号" v-model="query.mobilePhone" :maxlength="11"
+                        style="width: 180px" size="medium"></el-input>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-input placeholder="姓名" v-model="query.name" :maxlength="10"
+                        style="width: 180px" size="medium"></el-input>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-input placeholder="身份证号" v-model="query.idCard" :maxlength="18"
+                        style="width: 180px" size="medium"></el-input>
+            </el-form-item>
+            <!--<el-form-item style="margin-bottom: 10px" v-show="isMore">-->
+            <!--<el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"-->
+            <!--start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable-->
+            <!--:default-time="['00:00:00', '23:59:59']" value-format="timestamp"-->
+            <!--:picker-options="pickerBeginDate" style="width: 360px">-->
+            <!--</el-date-picker>-->
+            <!--</el-form-item>-->
+          </el-form>
+        </el-col>
+        <el-col :span="3" align="left" style="text-align: left" v-show="getButtonVial('person:count')">
+          <label class="el-form-item__label" style="font-size:16px">{{personCount}}<span
+            style="font-size:12px;color:#999">个档案</span></label>
+        </el-col>
+      </el-row>
       <el-table ref="table" :data="list10" v-loading="listLoading" class="center-block" stripe
                 :height="tableHeight" :max-height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
@@ -149,20 +160,10 @@
         statuses: [{label: '全部', value: ''}, {label: '待处理', value: '1'}, {label: '处理中', value: '2'},
           {label: '已处理', value: '3'}, {label: '误报', value: '4'}],
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
-        areaList: [],
-        count: 0,
-        list: [],
-        list10: [],
-        isShow: false,
-        isFirst: true,
-        isSearch: false,
-        firstPage: 0,
-        page: 1,
-        listLoading: false,
+        areaList: [], count: 0, personCount: 0, list: [], list10: [], isShow: false, isFirst: true,
+        isSearch: false, firstPage: 0, page: 1, listLoading: false,
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
-        runBigPic: false,
-        addPerson: {},
-        bigUrl: '',
+        runBigPic: false, addPerson: {}, bigUrl: '',
         rules: {
           img: [{required: true, message: '请选择头像', trigger: 'blur'}],
           age: [{required: true, message: '请输入年龄', trigger: 'blur'}],
@@ -186,6 +187,12 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      clearImg() {
+        delete this.query['faceUrl'];
+        delete this.query['similarThreshold'];
+        this.isSearch = true;
+        this.getData()
       },
       handleChange(val) {
         if (!val || val.length == 0) {
@@ -319,6 +326,7 @@
           this.firstPage = this.list.length;
           this.query.pageTime = this.list[this.list.length - 1].uptime;
           this.getData();
+          this.getPersonNum();
         }
         this.list10 = this.list;
         if ((this.list.length - (index * 10)) >= 0) {
@@ -352,10 +360,18 @@
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
+      },
+      getPersonNum() {
+        if (this.getButtonVial('person:count')) {
+          this.$post('/person/count', {}).then((data) => {
+            this.personCount = data.data ? data.data : 0;
+          });
+        }
       }
     },
     mounted() {
       this.getData();
+      this.getPersonNum();
     }
   }
 </script>

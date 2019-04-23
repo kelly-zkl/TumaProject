@@ -16,7 +16,7 @@
           </el-col>
         </el-tooltip>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left;width: 1100px">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 15px;text-align: left;width: 1300px">
         <el-form-item style="margin-bottom: 10px">
           <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="15" size="medium"
                     style="width: 180px"></el-input>
@@ -46,12 +46,13 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)&&activeItem=='first'">
+        <el-form-item style="margin-bottom: 10px">
           <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
                     style="width: 160px"></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
+          <el-input v-model="query.regional" placeholder="IMSI归属地" size="medium" style="width: 160px"
+                    :maxlength=20></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button type="primary" @click="isSearch = true;getData()" size="medium">搜索
@@ -60,21 +61,11 @@
         <el-form-item style="margin-bottom: 10px">
           <el-button @click="clearData()" size="medium">重置</el-button>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)&&isMore&&activeItem == 'second'">
-          <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
-                    style="width: 160px"></el-input>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="isMore">
-          <el-input v-model="query.regional" placeholder="IMSI归属地" size="medium" style="width: 160px"
-                    :maxlength=20></el-input>
-        </el-form-item>
       </el-form>
       <el-table :data="list10" class="center-block" v-loading="listLoading" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <!--<el-table-column align="left" prop="telephone" label="手机号" min-width="150" max-width="200"-->
-        <!--:formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="200"
@@ -134,6 +125,47 @@
         query: {size: 100},
         time1: ['00:00:00', '23:59:59'],
         pickerBeginDate: {
+          shortcuts: [{
+            text: '最近6小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 6);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近12小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 12);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }],
           disabledDate: (time) => {
             let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {
@@ -157,7 +189,7 @@
             return;
           }
         }
-        if ((!this.qTime && !param.imsi) || (param.endTime - param.startTime > 60 * 60 * 24 * 7)) {
+        if (param.endTime - param.startTime > 60 * 60 * 24 * 365) {
           this.isExport = false;
         }
         delete param['pageTime'];

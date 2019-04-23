@@ -9,7 +9,7 @@
           </el-tabs>
         </el-col>
         <el-col :span="8" align="right" style="text-align: right">
-          <el-popover ref="moreBtn" placement="bottom-start" width="80" trigger="hover">
+          <el-popover ref="moreBtn" placement="bottom-start" width="60" trigger="hover">
             <el-col :span="24">
               <el-button type="text" :disabled="sels.length == 0" @click="deleteCase()"
                          v-show="getButtonVial('case:delete')" style="width: 100%">删除
@@ -34,7 +34,7 @@
       <el-row style="padding-top: 10px">
         <el-col :span="24" align="left" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('case:query')"
-                   style="text-align: left;width: 1100px">
+                   style="text-align: left;width: 1250px">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.caseName" placeholder="案件编号/名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
@@ -53,7 +53,9 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
+              <el-cascader :options="provinceList" :props="props" @change="areaChange" change-on-select
+                           v-model="areaList" placeholder="案发地点" size="medium" filterable clearable>
+              </el-cascader>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
@@ -61,22 +63,8 @@
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()">重置</el-button>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-cascader :options="provinceList" :props="props" @change="areaChange" change-on-select
-                           v-model="areaList" placeholder="案发地点" size="medium" filterable clearable>
-              </el-cascader>
-            </el-form-item>
           </el-form>
         </el-col>
-        <!--<el-col :span="6" align="right" style="text-align: right">-->
-        <!--<el-button type="primary" size="medium"-->
-        <!--v-show="query.status == 'EXECUTION' && getButtonVial('case:batchUpdateStatus')"-->
-        <!--:disabled="sels.length == 0" @click="finishCase()">结案-->
-        <!--</el-button>-->
-        <!--<el-button type="primary" size="medium" :disabled="sels.length == 0" @click="deleteCase()"-->
-        <!--v-show="getButtonVial('case:delete')">删除-->
-        <!--</el-button>-->
-        <!--</el-col>-->
       </el-row>
       <el-table :data="caseList" v-loading="listLoading" class="center-block" stripe
                 @selection-change="selsChange" :height="tableHeight">
@@ -190,7 +178,6 @@
         activeItem: 'EXECUTION',
         runningCreateCase: false,
         runningCaseType: false,
-        isMore: false,
         listLoading: false,
         dialogWidth: '600px',
         labelWidth: isPC() ? '100px' : '80px',
@@ -228,6 +215,47 @@
           caseAddress: [{required: true, message: '请输入详细地点', trigger: 'blur'}]
         },
         pickerBeginDate: {
+          shortcuts: [{
+            text: '最近6小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 6);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近12小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 12);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }],
           disabledDate: (time) => {
             let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {
@@ -240,14 +268,6 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
-      },
-      showMore() {
-        this.isMore = !this.isMore;
-        if (this.isMore) {
-          this.tableHeight = window.innerHeight - 330
-        } else {
-          this.tableHeight = window.innerHeight - 280
-        }
       },
       //案件属性
       showCaseType() {

@@ -3,7 +3,7 @@
     <section class="content">
       <el-form ref="carTask" :model="carTask" label-position="right" label-width="120px" :rules="rules">
         <div class="add-appdiv" style="padding: 10px 0 20px 0;margin-bottom: 15px">
-          <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">
+          <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D7D7D7 solid">
             基本信息
           </div>
           <el-form-item label="任务名称" align="left" prop="taskName" style="margin-top: 20px">
@@ -17,7 +17,7 @@
           </el-form-item>
         </div>
         <div class="add-appdiv" style="padding: 10px 0 20px 0;margin-bottom: 15px">
-          <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">
+          <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D7D7D7 solid">
             碰撞条件
           </div>
           <el-form-item label="分析对象" align="left" prop="followTarget" style="margin-top:20px">

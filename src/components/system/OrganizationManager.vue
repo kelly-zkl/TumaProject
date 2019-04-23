@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="18" align="left" v-show="getButtonVial('manager:group:query')" style="text-align: left">
+        <el-col :span="20" align="left" v-show="getButtonVial('manager:group:query')" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="组织名称" v-model="query.groupName" :maxlength="20"
@@ -22,7 +22,10 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
+              <el-select v-model="query.type" placeholder="组织类型" size="medium" filterable style="width: 160px">
+                <el-option label="公安机关" :value="0"></el-option>
+                <el-option label="派出所" :value="1"></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" icon="search" @click.stop="query.page=1;getOrganizations()" size="medium">搜索
@@ -31,15 +34,9 @@
             <el-form-item style="margin-bottom: 10px">
               <el-button @click.stop="clearData()" size="medium">重置</el-button>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-select v-model="query.type" placeholder="组织类型" size="medium" filterable style="width: 160px">
-                <el-option label="公安机关" :value="0"></el-option>
-                <el-option label="派出所" :value="1"></el-option>
-              </el-select>
-            </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="6" align="right" style="text-align: right">
+        <el-col :span="4" align="right" style="text-align: right">
           <el-button type="primary" v-show="getButtonVial('manager:group:create')&&groupState==0"
                      size="medium" @click="addOrganization()">创建公安机关
           </el-button>
@@ -186,7 +183,6 @@
       return {
         listLoading: false,
         isShow: true,
-        isMore: false,
         addAdminVisible: false,
         tableHeight: window.innerHeight - 232,
         provinceList: JSON.parse(localStorage.getItem("areas")),
@@ -225,14 +221,6 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
-      },
-      showMore() {
-        this.isMore = !this.isMore;
-        if (this.isMore) {
-          this.tableHeight = window.innerHeight - 282
-        } else {
-          this.tableHeight = window.innerHeight - 232
-        }
       },
       addPolice() {
         this.police = {isCreateAdmin: 0};

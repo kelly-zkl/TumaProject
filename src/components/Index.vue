@@ -7,23 +7,42 @@
           <div align="left"
                style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 60px;align-items: center;flex: 0 0 auto;margin-right:10px">
             <img src="../assets/img/icon_logo.svg" style="display:inline-block;height: 30px;width: 30px">
-            <span style="display:inline-block;font-size:16px;margin-left:10px;color:#22CEFC">图码联侦实战布控平台
-            </span>
+            <span style="display:inline-block;font-size:16px;margin-left:10px;color:#22CEFC">图码联侦实战布控平台</span>
           </div>
           <div class="head-menu"
                style="flex:1 1 auto;height:60px;align-items:center;justify-content:flex-start;white-space:nowrap;overflow:hidden">
             <el-menu :default-active="$route.path" background-color="#08163d" text-color="#B3B3B3" router
-                     active-text-color="#fff" mode="horizontal" @select="handleSelectItem">
-              <el-menu-item :index="item.permissionUrl" v-for="item in menu" :key="item.permissionUrl"
-                            v-if="item.permissionUrl!='/searchAll'">
-                <template slot="title">
-                  <i :class="item.icon"
-                     v-bind:style="item.orders<6?'font-size: 1.5em':item.orders>6?'font-size: 1.7em':'font-size: 1.6em'"></i>
-                  <span>{{item.name}}</span>
-                  <el-badge class="mark" :value="imsiCount+faceCount" :max="99"
-                            v-show="(item.permissionUrl=='/imsiWarnings'||item.permissionUrl=='/catchWarnings')&&imsiCount+faceCount>0"/>
-                </template>
-              </el-menu-item>
+                     active-text-color="#3FA8F3" mode="horizontal" @select="handleSelectItem">
+              <template v-for="item in menu">
+                <el-submenu :index="item.permissionUrl" v-if="item.permissionUrl!='/searchAll'&&item.childs">
+                  <template slot="title">
+                    <i :class="item.icon" v-bind:style="item.orders>5?'font-size: 1.6em':'font-size: 1.3em'"></i>
+                    <span>{{item.name}}</span>
+                    <el-badge class="mark" :value="imsiCount+faceCount" :max="99"
+                              v-if="item.permissionUrl=='/imsiWarnings'&&(imsiCount+faceCount)>0"/>
+                    <el-badge class="mark" :value="turnCount" :max="99"
+                              v-if="item.permissionUrl=='/myApply'&&turnCount>0"/>
+                  </template>
+                  <el-menu-item :index="child.permissionUrl" v-for="child in item.childs" :key="child.permissionUrl"
+                                v-if="child.permissionUrl!='/searchAll'">
+                    <template slot="title">
+                      <span>{{child.name}}</span>
+                      <el-badge class="mark" :value="imsiCount" :max="99"
+                                v-if="child.permissionUrl=='/imsiWarnings'&&imsiCount>0"/>
+                      <el-badge class="mark" :value="faceCount" :max="99"
+                                v-if="child.permissionUrl=='/catchWarnings'&&faceCount>0"/>
+                      <el-badge class="mark" :value="turnCount" :max="99"
+                                v-if="child.permissionUrl=='/myApproval'&&turnCount>0"/>
+                    </template>
+                  </el-menu-item>
+                </el-submenu>
+                <el-menu-item :index="item.permissionUrl" v-if="item.permissionUrl!='/searchAll'&&!item.childs">
+                  <template slot="title">
+                    <i :class="item.icon"></i>
+                    <span>{{item.name}}</span>
+                  </template>
+                </el-menu-item>
+              </template>
             </el-menu>
           </div>
           <div align="right"
@@ -54,17 +73,17 @@
                 </div>
               </el-popover>
               <el-popover ref="image" placement="bottom-start" width="235" trigger="click">
-                <div style="padding:10px">
+                <div style="padding:10px" class="image">
                   <el-upload :action="uploadUrl" :show-file-list="false" :on-success="handleAvatarSuccess"
-                             :before-upload="beforeAvatarUpload">
+                             :before-upload="beforeAvatarUpload" drag>
                     <img v-if="imageUrl" :src="imageUrl?imageUrl:imgPath" class="avatar" :onerror="img404">
                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                    <span style="display:inline-block;font-size:12px;color:#5F6165;margin:10px 0">请选择人脸照片。支持：JPG、JPEG、PNG格式，且文件大小不超过2M。</span>
+                    <span style="display:inline-block;font-size:12px;color:#5F6165;margin:5px 0">请选择人脸照片。支持：JPG、JPEG、PNG格式，且文件大小不超过2M。</span>
                   </el-upload>
                   <el-button type="primary" size="medium" @click="searchImage()" style="width: 100%">搜索</el-button>
                 </div>
               </el-popover>
-              <el-button icon="el-icon-picture" v-popover:image></el-button>
+              <el-button icon="el-icon-picture" v-popover:image v-show="getButtonVial('home:allSearch')"></el-button>
               <el-input placeholder="请输入IMSI" :maxlength="15" style="width: 190px" v-popover:imsi clearable
                         v-model="imsi" @keyup.13.native="searchImsi()" v-show="getButtonVial('home:allSearch')">
                 <el-button slot="append" icon="el-icon-search" @click.stop="searchImsi()"></el-button>
@@ -82,7 +101,7 @@
                 </el-button>
               </el-col>
               <el-col :span="24">
-                <el-button type="text" @click="loginOut()"
+                <el-button type="text" @click="goLoginDialog()"
                            style="width: 100%;border-radius: 0 0 0 4px;border: none;height: 40px">
                   <i class="fa fa-sign-out" style="margin-right: 5px;font-size: 1.2em"></i>
                   退出登录
@@ -102,11 +121,25 @@
           </div>
         </div>
       </el-header>
-      <el-main style="width: 100%;padding: 0;margin: 0;background: #E9ECF0">
-        <transition name="fade" mode="out-in">
-          <router-view @handleSelectTab="handleSelectTab" v-bind:faceCount="faceCount"
-                       v-bind:imsiCount="imsiCount" ref="mychild"></router-view>
-        </transition>
+      <el-main
+        v-bind:style="{width:'100%',margin:'0',background:$route.path!=='dataOverview'?'#E9ECF0':'#040d2e',padding:$route.path!=='dataOverview'?'10px 20px 20px 20px':'0',overflowY:$route.path!=='dataOverview'?'auto':'hidden'}">
+        <div style="margin: 0;padding: 0">
+          <div align="left" style="text-align: left;margin: 0;padding: 0" v-show="$route.path!=='dataOverview'">
+            <span style="color: #999;font-size: 14px;vertical-align: middle;">当前位置：</span>
+            <el-breadcrumb separator-class="el-icon-arrow-right" class="bread-bar">
+              <el-breadcrumb-item v-for="item in $route.matched" v-if="item.name && item.path"
+                                  :key="item.name" :to="{ path: item.path}">{{ item.name}}
+              </el-breadcrumb-item>
+            </el-breadcrumb>
+          </div>
+          <div
+            v-bind:style="$route.path!=='dataOverview'?'background:#ffffff;margin:10px 0 0 0;padding:10px':'margin:10px 0 0 0'">
+            <transition name="fade" mode="out-in">
+              <router-view @refreshData="refreshData" v-bind:faceCount="faceCount"
+                           v-bind:imsiCount="imsiCount" ref="mychild"></router-view>
+            </transition>
+          </div>
+        </div>
       </el-main>
     </el-container>
     <!--告警通知-->
@@ -230,7 +263,7 @@
   import md5 from 'js-md5';
   import searchAll from './SearchAll.vue'
   import {numValid, pswValidator, globalValidImg} from '../assets/js/api';
-  import {formatDate, isPC, buttonValidator} from "../assets/js/util";
+  import {formatDate, buttonValidator} from "../assets/js/util";
 
   export default {
     data() {
@@ -246,9 +279,7 @@
         }
       };
       return {
-        indx: 1,
-        imsiCount: 0,
-        faceCount: 0,
+        imsiCount: 0, faceCount: 0, turnCount: 0, maxTime: 30,
         runSearch: false,
         imageUrl: '',
         imsi: '',
@@ -270,6 +301,7 @@
         faceWarning: {id: ''},
         menu: [],
         intervalid: null,
+        loginOutIntervalid: null,
         audio: null,
         rules: {
           password1: [
@@ -289,6 +321,7 @@
     beforeDestroy() {
       this.audio = null;
       clearInterval(this.intervalid);
+      clearInterval(this.loginOutIntervalid);
     },
     methods: {
       getButtonVial(msg) {
@@ -362,23 +395,17 @@
         }
       },
       //页面变化-->导航栏选中状态变化
-      handleSelectTab(val, sys) {
-        if (val) {
-          this.indx = val;
-        } else {
-          if (sys == 'sys') {//系统参数变动
-            this.systemParam = JSON.parse(sessionStorage.getItem("system"));
-          } else if (sys == 'warning') {//告警数量变动
-            this.getWarningCount();
-          } else if (sys == 'menu') {//权限变动
-            this.getButton();
-          }
+      refreshData(sys, val) {
+        if (sys == 'sys') {//系统参数变动
+          this.systemParam = JSON.parse(sessionStorage.getItem("system"));
+        } else if (sys == 'warning') {//告警数量变动
+          this.getWarningCount();
+        } else if (sys == 'menu') {//权限变动
+          this.getButton();
         }
       },
       //上方导航栏点击切换页面
       handleSelectItem(item) {
-        // this.indx = item.orders;
-        // this.$router.push(item.permissionUrl);
         sessionStorage.removeItem("query");
         sessionStorage.removeItem("qTime");
         sessionStorage.removeItem("page");
@@ -388,6 +415,7 @@
         localStorage.removeItem("pathImsi");
         localStorage.removeItem("pathFace");
         localStorage.removeItem("pathUrl");
+        sessionStorage.removeItem('apply');
       },
       getImsiWarning() {
         this.imsiWarning = JSON.parse(sessionStorage.getItem("imsi"));
@@ -471,26 +499,49 @@
         });
       },
       //退出
-      loginOut() {
+      goLoginDialog() {
         this.$confirm('确认退出系统吗?', '提示', {type: 'info'}).then(() => {
-          this.$post('/manager/user/logout', {}, '退出成功').then((data) => {
-            if ('000000' == data.code) {
-              sessionStorage.removeItem("user");
-              sessionStorage.removeItem("button");
-              sessionStorage.removeItem("menu");
-              sessionStorage.removeItem("query");
-              sessionStorage.removeItem("qTime");
-              sessionStorage.removeItem("activeItem");
-              sessionStorage.removeItem("index");
-              sessionStorage.removeItem("face");
-              sessionStorage.removeItem("imsi");
-              localStorage.removeItem("login");
-              sessionStorage.removeItem("search");
-              this.$router.push("/login");
-            }
-          });
+          this.loginOut();
         }).catch(() => {
         });
+      },
+      loginOut() {
+        this.$post('/manager/user/logout', {}, '退出成功').then((data) => {
+          if ('000000' == data.code) {
+            sessionStorage.removeItem("user");
+            sessionStorage.removeItem("button");
+            sessionStorage.removeItem("menu");
+            sessionStorage.removeItem("query");
+            sessionStorage.removeItem("qTime");
+            sessionStorage.removeItem("activeItem");
+            sessionStorage.removeItem("index");
+            sessionStorage.removeItem("face");
+            sessionStorage.removeItem("imsi");
+            localStorage.removeItem("login");
+            sessionStorage.removeItem("search");
+            sessionStorage.removeItem('apply');
+            this.$router.push("/login");
+          }
+        });
+      },
+      //15或30分钟不操作退出
+      pageEvent() {
+        if (this.maxTime == 30) {
+          clearInterval(this.loginOutIntervalid);
+          this.timeOut();
+        } else {
+          this.maxTime = 30;
+        }
+      },
+      timeOut() {
+        this.loginOutIntervalid = setInterval(() => {
+          if (this.maxTime == 0) {
+            clearInterval(this.loginOutIntervalid);
+            this.loginOut();
+          } else {
+            this.maxTime--;
+          }
+        }, 60 * 1000);
       },
       //修改密码
       modifyPsw(formName) {
@@ -577,7 +628,6 @@
 
       this.searchImsis = localStorage.getItem("imsis") ? JSON.parse(localStorage.getItem("imsis")).imsi : [];
 
-      this.indx = sessionStorage.getItem("index") ? sessionStorage.getItem("index") : 1;
       this.userName = JSON.parse(sessionStorage.getItem("user")).realName || '';
 
       this.userId = JSON.parse(sessionStorage.getItem("user")).userId;
@@ -588,15 +638,14 @@
       this.getFaceWarning();
       this.getWarningCount();
       this.statusTask();
-
-      // window.onresize = function () {
-      //   window.location.reload();
-      // }
+      /*账号在15分钟或者30分钟无人使用的情况下应自动退出；*/
+      // document.body.addEventListener("click", this.pageEvent);
+      // document.body.addEventListener("keydown", this.pageEvent);
+      // document.body.addEventListener("mousemove", this.pageEvent);
+      // document.body.addEventListener("mousewheel", this.pageEvent);
     }
   }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   .warning img {
     max-height: 190px;

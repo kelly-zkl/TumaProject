@@ -28,7 +28,7 @@
         <el-col :span="20" style="padding-left: 10px">
           <el-row>
             <el-col :span="20" align="left" v-show="getButtonVial('manager:user:query')" style="text-align: left">
-              <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left;width: 700px">
+              <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left;width: 900px">
                 <el-form-item style="margin-bottom: 10px">
                   <el-input placeholder="账号/用户名" v-model="query.keyword" :maxlength="30"
                             style="width: 200px" size="medium"></el-input>
@@ -42,7 +42,10 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item style="margin-bottom: 10px">
-                  <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
+                  <el-select v-model="query.roleId" placeholder="全部角色" size="medium" filterable clearable>
+                    <el-option v-for="item in roles" :key="item.roleId" :label="item.roleName" :value="item.roleId">
+                    </el-option>
+                  </el-select>
                 </el-form-item>
                 <el-form-item style="margin-bottom: 10px">
                   <el-button type="primary" icon="search" @click.stop="query.page=1;getUserList()" size="medium">搜索
@@ -50,12 +53,6 @@
                 </el-form-item>
                 <el-form-item style="margin-bottom: 10px">
                   <el-button @click.stop="clearData()" size="medium">重置</el-button>
-                </el-form-item>
-                <el-form-item style="margin-bottom: 10px" v-show="isMore">
-                  <el-select v-model="query.roleId" placeholder="全部角色" size="medium" filterable clearable>
-                    <el-option v-for="item in roles" :key="item.roleId" :label="item.roleName" :value="item.roleId">
-                    </el-option>
-                  </el-select>
                 </el-form-item>
               </el-form>
             </el-col>
@@ -70,6 +67,8 @@
             <el-table-column align="left" prop="account" label="账号" min-width="150"
                              max-width="200" :formatter="formatterAddress"></el-table-column>
             <el-table-column align="left" prop="realName" label="用户名" min-width="150"
+                             max-width="200" :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="policeNum" label="警号" min-width="150"
                              max-width="200" :formatter="formatterAddress"></el-table-column>
             <el-table-column align="left" prop="deptName" label="所属部门" min-width="150"
                              max-width="200" :formatter="formatterAddress"></el-table-column>
@@ -109,6 +108,9 @@
       <!--创建用户-->
       <el-dialog :title="addUserTitle" :visible.sync="addUserVisible" :width="dialogWidth">
         <el-form ref="admin" :model="admin" label-width="100px" :rules="rules" labelPosition="right">
+          <el-form-item label="用户名" prop="realName">
+            <el-input v-model="admin.realName" placeholder="请输入用户名" :maxlength="16" :minlength="2"></el-input>
+          </el-form-item>
           <el-form-item label="账号" prop="account">
             <el-input v-model="admin.account" placeholder="请输入账号" :maxlength="16" :minlength="6"></el-input>
           </el-form-item>
@@ -120,8 +122,11 @@
             <el-input v-show="setPsw =='newPsw'" type="password" v-model="admin.password"
                       placeholder="请输入6-16位密码" :maxlength="16" :minlength="6"></el-input>
           </el-form-item>
-          <el-form-item label="用户名" prop="realName">
-            <el-input v-model="admin.realName" placeholder="请输入用户名" :maxlength="16" :minlength="2"></el-input>
+          <el-form-item label="U盾登录" align="left" style="text-align:left">
+            <el-checkbox v-model="admin.uLogin">开启U盾登录</el-checkbox>
+          </el-form-item>
+          <el-form-item label="警号" v-show="admin.uLogin">
+            <el-input v-model="admin.policeNum" placeholder="登记警号，即可使用警员U盾登录" :maxlength="16"></el-input>
           </el-form-item>
           <!--<el-form-item label="所属组织" align="left" prop="groupId">-->
           <!--<el-select v-model="admin.groupId" placeholder="请选择组织" filterable>-->
@@ -155,6 +160,9 @@
       <!--修改账号-->
       <el-dialog :title="addUserTitle" :visible.sync="modifyUserVisible" :width="dialogWidth">
         <el-form ref="admin" :model="admin" label-width="100px" :rules="rules" labelPosition="right">
+          <el-form-item label="用户名" prop="realName">
+            <el-input v-model="admin.realName" placeholder="请输入用户名" :maxlength="10" :minlength="2"></el-input>
+          </el-form-item>
           <el-form-item label="账号" prop="loginId" align="left">
             <span>{{admin.account}}</span>
           </el-form-item>
@@ -171,8 +179,11 @@
               </el-col>
             </el-row>
           </el-form-item>
-          <el-form-item label="用户名" prop="realName">
-            <el-input v-model="admin.realName" placeholder="请输入用户名" :maxlength="10" :minlength="2"></el-input>
+          <el-form-item label="U盾登录" align="left" style="text-align:left">
+            <el-checkbox v-model="admin.uLogin">开启U盾登录</el-checkbox>
+          </el-form-item>
+          <el-form-item label="警号" v-show="admin.uLogin">
+            <el-input v-model="admin.policeNum" placeholder="登记警号，即可使用警员U盾登录" :maxlength="16"></el-input>
           </el-form-item>
           <!--<el-form-item label="所属组织" align="left" prop="groupId">-->
           <!--<el-select v-model="admin.groupId" placeholder="请选择组织" v-if="admin.groupAdmin != true" filterable>-->
@@ -238,6 +249,7 @@
           <el-button type="primary" @click="resetPsw()" size="medium">确认重置</el-button>
         </div>
       </el-dialog>
+      <!--添加/修改部门-->
       <el-dialog :title="addDepart" :visible.sync="addDepartVisible" :width="dialogWidth">
         <el-form label-width="100px" labelPosition="right">
           <el-form-item label="部门名称">
@@ -312,7 +324,7 @@
         dialogWidth: isPC() ? '35%' : '90%',
         userId: JSON.parse(sessionStorage.getItem("user")).userId,
         admin: {
-          account: '', realName: '', password: '12345678', roleList: [],
+          account: '', realName: '', password: '12345678', roleList: [], uLogin: false,
           groupId: JSON.parse(sessionStorage.getItem("user")).groupId
         },
         rules: {
@@ -456,7 +468,7 @@
       addInfo() {
         this.clearData();
         this.admin = {
-          account: '', realName: '', password: '12345678', roleList: [],
+          account: '', realName: '', password: '12345678', roleList: [], uLogin: false,
           groupId: JSON.parse(sessionStorage.getItem("user")).groupId
         };
         this.setPsw = 'defaultPsw';
@@ -576,6 +588,10 @@
       onSubmit(formName, title) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
+            if (this.admin.uLogin && (!this.admin.policeNum || this.admin.policeNum.length == 0)) {
+              this.$message.error('请输入警号');
+              return;
+            }
             if (!this.role) {
               this.$message.error('请选择角色');
               return;

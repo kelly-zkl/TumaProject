@@ -53,7 +53,7 @@
         }
       },
       setSystem(val) {
-        this.$emit('handleSelectTab', null, val);
+        this.$emit('getWarningCount', null, val);
       },
       //菜单激活回调
       handleActive(index, indexPath) {
@@ -63,12 +63,10 @@
       }
     },
     mounted() {
-      sessionStorage.setItem("index", 8);
-      this.$emit('handleSelectTab', 8);
       let val = JSON.parse(sessionStorage.getItem("menu")) || [];
       if (val.length > 0) {
         val.forEach((item) => {
-          if (item.orders == 8) {
+          if (item.permissionUrl == '/userList') {
             this.menu = item.childs;
           }
         });

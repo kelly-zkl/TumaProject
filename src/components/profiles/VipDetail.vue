@@ -19,8 +19,8 @@
                  ref="person">
           <el-row style="margin: 0;padding: 0">
             <el-col :span="6" align="left" style="text-align: left">
-              <el-form-item prop="faceUrl" style="margin: 0">
-                <el-upload :action="uploadUrl" :show-file-list="false"
+              <el-form-item prop="faceUrl" style="margin: 0" class="vip-180">
+                <el-upload :action="uploadUrl" :show-file-list="false" drag
                            :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
                   <img :src="person.faceUrl?person.faceUrl:imgPath" class="avatar" :onerror="img404">
                 </el-upload>

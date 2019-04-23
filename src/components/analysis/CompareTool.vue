@@ -13,8 +13,8 @@
       </div>
       <div class="bg-compare">
         <el-row>
-          <el-col :span="8" align="right" style="text-align: right">
-            <el-upload class="avatar-uploader" :action="uploadUrl" :show-file-list="false"
+          <el-col :span="8" align="right" style="text-align: right" class="avatar-uploader">
+            <el-upload :action="uploadUrl" :show-file-list="false" drag
                        :on-success="handleAvatarSuccess1" :before-upload="beforeAvatarUpload1">
               <img :src="image1?image1:imageUrl1" class="avatar">
             </el-upload>
@@ -26,10 +26,9 @@
               交换头像
             </el-button>
           </el-col>
-          <el-col :span="8" align="left" style="text-align: left">
-            <el-upload
-              class="avatar-uploader" :action="uploadUrl" :show-file-list="false"
-              :on-success="handleAvatarSuccess2" :before-upload="beforeAvatarUpload2">
+          <el-col :span="8" align="left" style="text-align: left" class="avatar-uploader">
+            <el-upload :action="uploadUrl" :show-file-list="false" drag
+                       :on-success="handleAvatarSuccess2" :before-upload="beforeAvatarUpload2">
               <img :src="image2?image2:imageUrl2" class="avatar">
             </el-upload>
           </el-col>
@@ -157,8 +156,8 @@
   }
 
   .avatar {
-    max-width: 210px;
-    max-height: 210px;
+    max-width: 200px;
+    max-height: 200px;
     margin: 5px;
     display: block;
   }

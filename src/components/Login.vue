@@ -1,18 +1,22 @@
 <template>
   <div class="login-bg">
+    <object classid="clsid:707C7D52-85A8-4584-8954-573EFCE77488" height='0'
+            id="JITDSignOcx" width="0" codebase="./JITDSign.cab#version=2,0,24,19"></object>
     <section class="content" style="margin: 0;padding: 0">
-      <el-col :span="24" align="center">
-        <el-form label-width="0" label-position="left" :model="account" class="login-input">
-          <!--<el-form-item align="left" style="position: absolute;top: 0;left: 15px">-->
-          <!--<el-button type="text" style="font-size: 16px" @click="changePlatform()">-->
-          <!--<i class="fa fa-retweet" style="margin-right: 5px;font-size: 1.4em"></i>切换系统-->
-          <!--</el-button>-->
-          <!--</el-form-item>-->
-          <div style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 80px;align-items: center">
-            <img src="../assets/img/icon_logo.svg"
-                 style="display:inline-block;height: 36px;width: 36px;margin-right: 10px">
-            <div style="display:inline-block;font-size: 24px;color: #22CEFC;text-align: center">图码联侦实战布控平台</div>
-          </div>
+      <el-col :span="24" class="main-header" align="left">
+        <div style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 50px;align-items: center">
+          <img src="../assets/img/icon_logo.svg"
+               style="display:inline-block;height: 32px;width: 32px;margin-right: 10px">
+          <div style="display:inline-block;font-size: 24px;color: #22CEFC;text-align: center">图码联侦实战布控平台</div>
+        </div>
+      </el-col>
+      <div class="login-input">
+        <el-radio-group v-model="activeItem">
+          <el-radio-button label="u">U盾登录</el-radio-button>
+          <el-radio-button label="acc">账号密码登录</el-radio-button>
+        </el-radio-group>
+        <el-form label-width="0" label-position="left" :model="account" style="margin:30px 40px"
+                 v-show="activeItem=='acc'">
           <el-form-item class="login-box">
             <el-input placeholder="账号" v-model="account.loginId" :maxlength="18" prefix-icon="fa fa-user"></el-input>
           </el-form-item>
@@ -38,9 +42,15 @@
             <el-button type="primary" @click="login()" :loading="logining" style="width: 100%">登录</el-button>
           </el-form-item>
         </el-form>
-      </el-col>
+        <div v-show="activeItem=='u'" style="margin:40px">
+          <div style="color:#C7CCD0;font-size:16px;height:165px;padding-top:60px;text-align:left;line-height: 30px">
+            如果您的U盾已在图码平台登记，请插入U盾，然后点击“U盾登录”按钮
+          </div>
+          <el-button type="primary" @click="uLogin()" :loading="logining" style="width:100%">U盾登录</el-button>
+        </div>
+      </div>
       <el-col :span="24" class="main-footer">
-        Copyright © 2019 深圳前海中电慧安科技有限公司
+        Copyright © {{dataStr}} 深圳前海中电慧安科技有限公司
       </el-col>
     </section>
   </div>
@@ -48,19 +58,72 @@
 
 <script>
   import md5 from 'js-md5';
+  import {formatDate} from "../assets/js/util";
 
   export default {
     data() {
       return {
+        activeItem: 'u',
         logining: false,
         savePsw: false,
         account: {loginId: '', password: '', checkcode: ''},
         imgUrl: '',
+        dataStr: '',
         systemParam: {sysLogo: '../assets/img/icon_logo.svg'},
         options: []
       }
     },
     methods: {
+      //U盾登录
+      uLogin() {
+        var Auth_Content = this.generateRandomNum();
+        console.log(Auth_Content);
+        var temp_DSign_Result = '';
+        var DSign_Subject = 'CN=DemoCA, O=JIT, C=CN';
+        //控制证书为一个时，不弹出证书选择框
+        JITDSignOcx.SetCertChooseType(1);
+        JITDSignOcx.SetCert("SC", "", "", "", DSign_Subject, "");
+        if (JITDSignOcx.GetErrorCode() != 0) {
+          alert("错误码：" + JITDSignOcx.GetErrorCode() + "　错误信息：" + JITDSignOcx.GetErrorMessage(JITDSignOcx.GetErrorCode()));
+          return false;
+        } else {
+          temp_DSign_Result = JITDSignOcx.DetachSignStr("", Auth_Content);
+          if (JITDSignOcx.GetErrorCode() != 0) {
+            alert("错误码：" + JITDSignOcx.GetErrorCode() + "　错误信息：" + JITDSignOcx.GetErrorMessage(JITDSignOcx.GetErrorCode()));
+            return false;
+          }
+        }
+        this.logining = true;
+        this.$post("/manager/user/ulogin", {authContent: Auth_Content, dsignResult: temp_DSign_Result},
+          "登录成功", undefined, "login").then((data) => {
+          this.logining = false;
+          if ("000000" === data.code) {
+            if (data) {
+              localStorage.setItem("login", 'true');
+              sessionStorage.setItem("user", JSON.stringify(data.data));//用户信息
+              sessionStorage.setItem("face", JSON.stringify({id: ''}));
+              sessionStorage.setItem("imsi", JSON.stringify({id: ''}));
+              this.getMenuTree();
+              this.getButton();
+              this.getAreas();
+            }
+          } else {
+            this.$message.error(data.msg);
+          }
+        })
+      },
+      generateRandomNum() {
+        /**************************
+         * 第二步 服务端产生认证原文   *
+         **************************/
+        var num = "1234567890abcdefghijklmnopqrstopqrstuvwxyz";
+        var size = 6;
+        var auth = '';
+        for (var i = 0; i < size; i++) {
+          auth += num.charAt((parseInt((Math.random() * 10000)) % num.length));
+        }
+        return auth;
+      },
       myBrowser() {
         var userAgent = navigator.userAgent;
         //取得浏览器的userAgent字符串
@@ -103,9 +166,9 @@
                 user.acc = this.account.loginId;
                 user.psw = this.account.password;
               }
-              localStorage.setItem("user", JSON.stringify(user));
+              localStorage.setItem("user", JSON.stringify(user));//是否保存账号/密码
               localStorage.setItem("login", 'true');
-              sessionStorage.setItem("user", JSON.stringify(data.data));
+              sessionStorage.setItem("user", JSON.stringify(data.data));//用户信息
               sessionStorage.setItem("face", JSON.stringify({id: ''}));
               sessionStorage.setItem("imsi", JSON.stringify({id: ''}));
               this.getMenuTree();
@@ -203,6 +266,7 @@
       }
     },
     mounted() {
+      this.dataStr = formatDate(new Date(), 'yyyy');
       // this.myBrowser();
       this.getSystemDetail();
       let bol = JSON.parse(localStorage.getItem("user"));
@@ -235,6 +299,16 @@
     background-color: #08163d;
   }
 
+  .main-header {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    background: rgba(0, 0, 0, 0);
+    border-top: none;
+    padding: 10px 20px;
+  }
+
   .main-footer {
     position: absolute;
     bottom: 0;
@@ -249,12 +323,10 @@
 
   .login-input {
     position: absolute;
-    width: 310px;
-    height: 350px;
-    line-height: 350px;
-    background: rgba(0, 0, 0, 0);
-    padding: 30px 40px;
-    border-radius: 3px;
+    width: 380px;
+    height: 400px;
+    background: rgba(0, 8, 42, 0.6);
+    border-radius: 4px;
     left: 75%;
     margin-left: -195px;
     top: 50%;

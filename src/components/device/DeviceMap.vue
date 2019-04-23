@@ -517,17 +517,17 @@
 <style scoped>
   .view-map {
     position: absolute;
-    left: 200px;
+    left: 0;
     right: 0;
     bottom: 0;
-    top: 40px;
+    top: 100px;
     color: #fff;
     font-size: 30px;
   }
 
   .content .view-top {
     position: absolute;
-    top: 0;
+    top: 60px;
     right: 0;
     width: 100%;
   }

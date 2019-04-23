@@ -28,12 +28,16 @@
           </el-form>
         </el-col>
         <el-col :span="6" align="right" style="text-align: right">
+          <el-button type="primary" size="medium" @click="gotoTurnIMSI()" :disabled="sels.length==0"
+                     v-show="getButtonVial('workflow:translation:apply')">翻码
+          </el-button>
           <el-button type="primary" size="medium" @click="exportData()"
-                     v-show="getButtonVial('car:task:result:export')">导出数据
+                     v-show="getButtonVial('car:task:result:export')">导出
           </el-button>
         </el-col>
       </el-row>
-      <el-table :data="results" v-loading="listLoading" class="center-block" stripe>
+      <el-table :data="results" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
+        <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="目标IMSI" prop="imsi" min-width="130"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
@@ -136,6 +140,7 @@
         records: [],
         pathLines: [],
         places: [],
+        sels: [],
         imgPath: require('../../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_img.svg') + "'",
         operators: [{value: 0, label: '移动'}, {value: 1, label: '联通'}, {value: 2, label: '电信'}],
@@ -144,6 +149,23 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      /*翻码*/
+      gotoTurnIMSI() {
+        if (this.sels.length > 10) {
+          this.$message.error('翻码最多支持10个IMSI');
+          return;
+        }
+        var arr = [];
+        this.sels.forEach((item) => {
+          arr.push(item.imsi);
+        });
+        var param = {caseId: this.$parent.task.caseId, task: ['car', this.taskNo], imsi: arr};
+        sessionStorage.setItem("apply", JSON.stringify(param));
+        this.$router.push({path: '/approvalApply', query: {type: 'car'}});
+      },
+      selsChange(sels) {
+        this.sels = sels;
       },
       //伴随结果导出
       exportData() {

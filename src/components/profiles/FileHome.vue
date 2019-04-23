@@ -65,12 +65,10 @@
       }
     },
     mounted() {
-      sessionStorage.setItem("index", 3);
-      this.$emit('handleSelectTab', 3);
       let val = JSON.parse(sessionStorage.getItem("menu")) || [];
       if (val.length > 0) {
         val.forEach((item) => {
-          if (item.orders == 3) {
+          if (item.permissionUrl == '/importPersons') {
             this.menu = item.childs;
           }
         });

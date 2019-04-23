@@ -60,12 +60,10 @@
       }
     },
     mounted() {
-      sessionStorage.setItem("index", 6);
-      this.$emit('handleSelectTab', 6);
       let val = JSON.parse(sessionStorage.getItem("menu")) || [];
       if (val.length > 0) {
         val.forEach((item) => {
-          if (item.orders == 6) {
+          if (item.permissionUrl == '/myApply') {
             this.menu = item.childs;
           }
         });

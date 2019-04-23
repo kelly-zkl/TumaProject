@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <div class="add-appdiv gray-form" style="margin-bottom: 15px;padding: 0">
-        <el-row style="border-bottom:1px #D0CACF solid;margin: 0">
+        <el-row style="border-bottom:1px #D7D7D7 solid;margin: 0">
           <el-col :span="12" align="left" style="text-align: left">
             <div style="font-size:15px;padding:10px 20px;text-align:left">基本信息</div>
           </el-col>

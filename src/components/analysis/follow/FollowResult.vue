@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <div class="add-appdiv gray-form" style="margin-bottom: 15px;padding: 0">
-        <el-row style="border-bottom:1px #D0CACF solid;margin: 0">
+        <el-row style="border-bottom:1px #D7D7D7 solid;margin: 0">
           <el-col :span="12" align="left" style="text-align: left">
             <div style="font-size:15px;padding:10px 20px;text-align:left">伴随分析任务信息</div>
           </el-col>
@@ -66,7 +66,11 @@
           </el-tabs>
         </el-col>
         <el-col :span="8" align="right" style="text-align: right">
-          <el-button type="primary" size="medium" @click="exportData()" v-show="getButtonVial(exportKey)">导出数据
+          <el-button type="primary" size="medium" @click="gotoTurnIMSI()" :disabled="sels.length==0"
+                     v-show="getButtonVial('workflow:translation:apply')&&activeItem=='result'&&task.followType=='IMSI'">
+            翻码
+          </el-button>
+          <el-button type="primary" size="medium" @click="exportData()" v-show="getButtonVial(exportKey)">导出
           </el-button>
         </el-col>
       </el-row>
@@ -98,7 +102,8 @@
             <el-button size="medium" @click="clearData()">重置</el-button>
           </el-form-item>
         </el-form>
-        <el-table :data="results" v-loading="listLoading1" class="center-block" stripe>
+        <el-table :data="results" v-loading="listLoading1" class="center-block" stripe @selection-change="selsChange">
+          <el-table-column type="selection" width="45" align="left"></el-table-column>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="IMSI" prop="imsi" min-width="150"
                            max-width="300" :formatter="formatterAddress"></el-table-column>
@@ -355,7 +360,7 @@
         dialogWidth: isPC() ? '35%' : '90%',
         activeItem: 'result',
         qTime: "",
-        results: [],
+        results: [], sels: [],
         exportKey: 'follow:export:analyze',
         queryResult: {page: 1, size: 10},
         listLoading1: false,
@@ -367,6 +372,47 @@
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         operators: [{value: 0, label: '移动'}, {value: 1, label: '联通'}, {value: 2, label: '电信'}],
         pickerBeginDate: {
+          shortcuts: [{
+            text: '最近6小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 6);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近12小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 12);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }],
           disabledDate: (time) => {
             let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {
@@ -379,6 +425,23 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      /*翻码*/
+      gotoTurnIMSI() {
+        if (this.sels.length > 10) {
+          this.$message.error('翻码最多支持10个IMSI');
+          return;
+        }
+        var arr = [];
+        this.sels.forEach((item) => {
+          arr.push(item.imsi);
+        });
+        var param = {caseId: this.task.caseId, task: ['follow', this.taskId], imsi: arr};
+        sessionStorage.setItem("apply", JSON.stringify(param));
+        this.$router.push({path: '/approvalApply', query: {type: 'follow'}});
+      },
+      selsChange(sels) {
+        this.sels = sels;
       },
       //跳转案件详情页
       gotoCaseDetail() {

@@ -22,9 +22,9 @@
             </div>
           </el-col>
           <el-col :lg="12" :xl="14" align="left" :loading="listLoading"
-                  style="text-align: left;border-left: 1px solid #D0CACF;padding-left: 80px">
+                  style="text-align: left;border-left: 1px solid #D7D7D7;padding-left: 80px">
             <el-button type="text" @click="showSetParam(0)" v-show="getButtonVial('collision:addOrUpdateDataSource')"
-                       style="border-right: 1px solid #D0CACF;border-radius: 0;padding:0 20px 0 0">
+                       style="border-right: 1px solid #D7D7D7;border-radius: 0;padding:0 20px 0 0">
               <img src="../../../assets/img/icon_data.svg" style="height: 28px;width: 28px">
               <div style="font-size: 12px;padding: 5px 0 0 0;margin: 0">数据源</div>
             </el-button>
@@ -41,7 +41,7 @@
               <div style="font-size: 12px;padding: 5px 0 0 0;margin: 0">并集</div>
             </el-button>
             <el-button type="text" @click="showSubtract()" :disabled="selResults.length+selResources.length<2"
-                       style="border-right: 1px solid #D0CACF;border-radius: 0;padding:0 20px 0 0;"
+                       style="border-right: 1px solid #D7D7D7;border-radius: 0;padding:0 20px 0 0;"
                        v-show="getButtonVial('collision:addOrUpdateAnalyseTask')">
               <img src="../../../assets/img/icon_subtract.svg" style="height: 28px;width: 28px">
               <div style="font-size: 12px;padding: 5px 0 0 0;margin: 0">差集</div>
@@ -65,8 +65,8 @@
             </el-button>
           </el-col>
         </el-row>
-        <el-row style="border-top: 1px solid #D0CACF">
-          <el-col :span="11" style="border-right: 1px solid #D0CACF">
+        <el-row style="border-top: 1px solid #D7D7D7">
+          <el-col :span="11" style="border-right: 1px solid #D7D7D7">
             <div class="title-head">数据源</div>
             <el-table :data="records" class="center-block" @selection-change="selDataChange" :height="tableHeight"
                       :row-key="getRowKey" ref="recordTable">
@@ -342,30 +342,13 @@
             time: ['00:00:00', '23:59:59'], isps: [], places: [], regional: '', imsi: ''
           }]
         },
-        runHelpDoc: false,
-        runSubtract: false,
-        runModifyTask: false,
-        runImsiList: false,
-        runImsiResult: false,
-        runResult: false,
-        mapVisible: false,
-        runSetParam: false,
-        sourceId: '',
-        sourceData: '',
-        activeItem: 'regional',
-        cases: [],
-        records: [],
-        results: [],
-        places: [],
-        placeList: [],
-        selResources: [],
-        selResults: [],
-        subArr: [],
-        listLoading: false,
-        intervalid: null,
-        nameModify: false,
-        pIndx: 0,
-        task: {},
+        runHelpDoc: false, runSubtract: false, runModifyTask: false, runImsiList: false,
+        runImsiResult: false, runResult: false, mapVisible: false, runSetParam: false,
+        sourceId: '', sourceData: '', activeItem: 'regional',
+        cases: [], records: [], results: [], places: [], placeList: [], selResources: [],
+        selResults: [], subArr: [],
+        listLoading: false, intervalid: null, nameModify: false,
+        pIndx: 0, task: {},
         conParams: [{value: 'qTime', label: 'IMSI采集日期范围'}, {value: 'time', label: 'IMSI采集每日时段'},
           {value: 'places', label: 'IMSI采集场所'}, {value: 'isps', label: 'IMSI运营商'},
           {value: 'regional', label: 'IMSI归属地'}, {value: 'imsi', label: '指定IMSI'}],
@@ -934,7 +917,7 @@
     line-height: 36px;
     text-align: left;
     padding-left: 20px;
-    border-bottom: 1px solid #D0CACF;
+    border-bottom: 1px solid #D7D7D7;
   }
 
   .data-content {

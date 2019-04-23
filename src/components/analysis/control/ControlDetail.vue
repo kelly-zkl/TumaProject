@@ -4,7 +4,7 @@
       <el-row style="margin-bottom: 10px">
         <el-col :span="24" align="left" class="tab-card no" style="text-align: left">
           <el-tabs v-model="activeItem" @tab-click="handleType" type="border-card">
-            <el-tab-pane label="布控信息" name="TASK"></el-tab-pane>
+            <el-tab-pane label="基本信息" name="TASK"></el-tab-pane>
             <el-tab-pane label="IMSI告警" name="IMSI">
               <imsiWarning ref="imsi"></imsiWarning>
             </el-tab-pane>
@@ -17,7 +17,7 @@
       <div class="content gray-form" v-show="activeItem == 'TASK'">
         <el-form :model="task" style="margin: 0;padding: 0" labelPosition="right" label-width="120px">
           <div class="add-appdiv dialog" style="padding:10px 0 0 0;margin-bottom: 13px">
-            <el-row style="margin: 0;padding: 0;border-bottom:1px #D0CACF solid">
+            <el-row style="margin: 0;padding: 0;border-bottom:1px #D7D7D7 solid">
               <el-col :span="12" align="left" style="text-align: left">
                 <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left">任务信息</div>
               </el-col>
@@ -31,7 +31,7 @@
                            style="margin: 0 10px 0 0" size="mini">删除
                 </el-button>
                 <el-button type="text" @click="finishTask()" v-show="getButtonVial('disposition:batchUpdateStatus')"
-                           style="margin: 0 20px 0 0" size="mini">结束
+                           style="margin: 0 20px 0 0" size="mini">关闭预警
                 </el-button>
               </el-col>
             </el-row>
@@ -40,10 +40,10 @@
                 <el-form-item label="关联案件" align="left" style="margin: 0;text-align: left">
                   <el-button type="text" @click="gotoCaseDetail()">{{task.caseName?task.caseName:'--'}}</el-button>
                 </el-form-item>
-                <el-form-item label="任务名称" align="left" style="margin: 0;text-align: left">
+                <el-form-item label="模型名称" align="left" style="margin: 0;text-align: left">
                   {{task.taskName?task.taskName:'--'}}
                 </el-form-item>
-                <el-form-item label="布控编号" align="left" style="margin: 0;text-align: left">
+                <el-form-item label="模型编号" align="left" style="margin: 0;text-align: left">
                   {{task.taskNo?task.taskNo:'--'}}
                 </el-form-item>
               </el-col>
@@ -60,14 +60,14 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="布控状态" align="left" style="margin: 0;text-align: left">
+                <el-form-item label="预警状态" align="left" style="margin: 0;text-align: left">
                   <span
                     v-bind:style="{fontSize:'15px',color:task.taskStatus=='EXECUTION'?'#00C755':task.taskStatus =='FINISH'?'#00C755':task.taskStatus =='EXPIRE' ?'#dd6161':'#333'}">
                    {{task.taskStatus =="EXECUTION" ? "进行中" : task.taskStatus == "FINISH" ? "已结束" : task.taskStatus == "EXPIRE" ?'已过期':"--"}}
                  </span>
                 </el-form-item>
-                <el-form-item label="布控类型" align="left" style="margin: 0;text-align: left">
-                  {{task.dispositionType==0?'重点人员名单':task.dispositionType==1?'特征布控':'--'}}
+                <el-form-item label="管控对象类型" align="left" style="margin: 0;text-align: left">
+                  {{task.dispositionType==0?'重点人员名单':task.dispositionType==1?'人脸|IMSI特征':'--'}}
                 </el-form-item>
                 <el-form-item label="创建时间" align="left" style="margin: 0;text-align: left">
                   {{task.timeStr?task.timeStr:'--'}}
@@ -82,8 +82,8 @@
             <el-col :span="15">
               <div class="add-appdiv dialog"
                    v-bind:style="{padding:'10px 0 0 0',marginBottom:'13px',height:tableHeight+'px'}">
-                <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">
-                  布控对象
+                <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D7D7D7 solid">
+                  管控对象类型
                 </div>
                 <el-table :data="task.blackClassList" class="center-block" v-if="task.blackClassList">
                   <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
@@ -115,7 +115,7 @@
             <el-col :span="9">
               <div class="add-appdiv dialog"
                    v-bind:style="{padding:'10px 0 0 0',marginBottom:'13px',height:tableHeight+'px'}">
-                <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D0CACF solid">
+                <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D7D7D7 solid">
                   布控场所
                 </div>
                 <el-table :data="task.placeList" class="center-block">

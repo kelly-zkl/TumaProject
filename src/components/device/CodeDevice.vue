@@ -2,10 +2,10 @@
   <div>
     <section class="content">
       <div class="center-block">
-        <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1100px">
+        <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1300px">
           <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('device:query')">
             <el-input placeholder="设备标识/ID" v-model="query.deviceName" :maxlength="30"
-                      @change="changeDevice" size="medium"></el-input>
+                      @change="changeDevice" size="medium" style="width:180px"></el-input>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable>
@@ -19,26 +19,23 @@
             </el-cascader>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
-            <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
+            <el-select v-model="query.deviceType" placeholder="全部类型" size="medium" filterable clearable>
+              <el-option v-for="item in deviceTypes" :key="item.code" :label="item.name" :value="item.code">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-select v-model="query.deviceForm" placeholder="全部形态" size="medium" filterable clearable
+                       style="width: 160px">
+              <el-option v-for="item in deviceForms" :key="item.code" :label="item.name" :value="item.code">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button type="primary" @click.stop="query.page=1;getData()" size="medium">搜索</el-button>
           </el-form-item>
           <el-form-item style="margin-bottom: 10px">
             <el-button @click.stop="clearData()" size="medium">重置</el-button>
-          </el-form-item>
-          <el-form-item style="margin-bottom: 10px" v-show="isMore">
-            <el-select v-model="query.deviceType" placeholder="全部类型" size="medium" filterable clearable>
-              <el-option v-for="item in deviceTypes" :key="item.code" :label="item.name" :value="item.code">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item style="margin-bottom: 10px" v-show="isMore">
-            <el-select v-model="query.deviceForm" placeholder="全部形态" size="medium" filterable clearable
-                       style="width: 160px">
-              <el-option v-for="item in deviceForms" :key="item.code" :label="item.name" :value="item.code">
-              </el-option>
-            </el-select>
           </el-form-item>
         </el-form>
         <el-table :data="deviceList" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
@@ -111,7 +108,6 @@
   export default {
     data() {
       return {
-        isMore: false,
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
         provinceList: JSON.parse(localStorage.getItem("areas")),
         lineStatus: '',
@@ -140,14 +136,6 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
-      },
-      showMore() {
-        this.isMore = !this.isMore;
-        if (this.isMore) {
-          this.tableHeight = window.innerHeight - 282
-        } else {
-          this.tableHeight = window.innerHeight - 232
-        }
       },
       //省市县变化
       areaChange(value) {

@@ -5,17 +5,20 @@
         <el-col :span="20" align="left" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1020px">
             <el-form-item style="margin-bottom: 10px">
-              <el-upload ref="upload" class="upload img" :action="uploadImgUrl" name="file"
+              <el-upload ref="upload" class="upload img" :action="uploadImgUrl" name="file" drag
                          :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
                          :auto-upload="true" :show-file-list="false">
-                <el-button size="medium" style="width: 100px">
-                  <span class="el-upload__text">
-                    <span v-if="!query.faceUrl">
-                      <i class="fa fa-photo fa-lg"></i>上传头像
-                    </span>
-                    <img :src="query.faceUrl" v-if="query.faceUrl" style="height: 30px">
-                  </span>
-                </el-button>
+                <div v-if="!query.faceUrl" style="height:34px;vertical-align:middle;text-align: center">
+                  <i class="fa fa-photo fa-lg"></i>上传头像
+                </div>
+                <el-row v-if="query.faceUrl" style="height:34px;padding:0;margin:0">
+                  <el-col :span="12">
+                    <img :src="query.faceUrl" style="height:34px;margin:0;padding:0">
+                  </el-col>
+                  <el-col :span="12">
+                    <el-button type="text" style="margin-left:5px" @click.stop="clearImg()">清除</el-button>
+                  </el-col>
+                </el-row>
               </el-upload>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
@@ -171,8 +174,8 @@
       <el-dialog title="修改人员信息" :visible.sync="runningModifyPerson" width="600px" center class="dialog">
         <el-form :model="modifyPerson" align="left" label-width="120px" label-position="right" :rules="rules"
                  ref="modifyPerson">
-          <el-form-item label="对应头像" prop="faceUrl" style="margin: 0">
-            <el-upload :action="uploadImgUrl" :show-file-list="false"
+          <el-form-item label="对应头像" prop="faceUrl" style="margin: 0" class="vip-150">
+            <el-upload :action="uploadImgUrl" :show-file-list="false" drag
                        :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
               <img :src="modifyPerson.faceUrl?modifyPerson.faceUrl:imgPath" class="avatar" :onerror="img404">
             </el-upload>
@@ -560,6 +563,12 @@
         } else {
           this.$message.error(res.msg);
         }
+      },
+      clearImg() {
+        delete this.query['faceUrl'];
+        delete this.query['similarThreshold'];
+        this.isSearch = true;
+        this.getData()
       },
       //删除人员
       deletePerson() {

@@ -28,12 +28,16 @@
           </el-form>
         </el-col>
         <el-col :span="6" align="right" style="text-align: right">
+          <el-button type="primary" size="medium" @click="gotoTurnIMSI()" :disabled="sels.length==0"
+                     v-show="getButtonVial('workflow:translation:apply')">翻码
+          </el-button>
           <el-button type="primary" size="medium" @click="exportData()" :disabled="count==0"
-                     v-show="getButtonVial('collision:export:analyseResult')">导出数据
+                     v-show="getButtonVial('collision:export:analyseResult')">导出
           </el-button>
         </el-col>
       </el-row>
-      <el-table :data="records" v-loading="listLoading" class="center-block" stripe>
+      <el-table :data="records" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
+        <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="IMSI" prop="imsi" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
@@ -73,7 +77,7 @@
         taskId: this.sourceId,
         query: {page: 1, size: 10},
         count: 0,
-        records: [],
+        records: [], sels: [],
         operators: [{value: 0, label: '移动'}, {value: 1, label: '联通'}, {value: 2, label: '电信'}]
       }
     },
@@ -90,6 +94,23 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      /*翻码*/
+      gotoTurnIMSI() {
+        if (this.sels.length > 10) {
+          this.$message.error('翻码最多支持10个IMSI');
+          return;
+        }
+        var arr = [];
+        this.sels.forEach((item) => {
+          arr.push(item.imsi);
+        });
+        var param = {caseId: this.$parent.task.caseId, task: ['coll', this.$parent.task.taskId], imsi: arr};
+        sessionStorage.setItem("apply", JSON.stringify(param));
+        this.$router.push({path: '/approvalApply', query: {type: 'coll'}});
+      },
+      selsChange(sels) {
+        this.sels = sels;
       },
       //交并结果导出
       exportData() {
