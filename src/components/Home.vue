@@ -27,7 +27,6 @@
     },
     methods: {
       refreshData(sys, val) {
-        console.log('home');
         this.$emit('refreshData', sys, val);
       }
     },

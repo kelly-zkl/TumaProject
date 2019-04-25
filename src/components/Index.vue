@@ -391,6 +391,7 @@
             this.getImsiWarning();
             this.getFaceWarning();
             this.getWarningCount();
+            this.getTurnCount();
           }, 10 * 1000);
         }
       },
@@ -402,6 +403,8 @@
           this.getWarningCount();
         } else if (sys == 'menu') {//权限变动
           this.getButton();
+        } else if (sys == 'turn') {//翻码审批中的数量
+          this.getTurnCount();
         }
       },
       //上方导航栏点击切换页面
@@ -497,6 +500,19 @@
           }
         }).catch((err) => {
         });
+      },
+      /*获取翻码待审批数量*/
+      getTurnCount() {
+        if (this.getButtonVial('workflow:translation:myapprove')) {
+          this.$post('/workflow/translation/myapprove/' + this.userId,
+            {page: 1, size: 10, approveStatus: 1}).then((data) => {
+            if ("000000" === data.code) {
+              this.turnCount = data.data.count;
+            }
+          }).catch((err) => {
+            this.turnCount = 0;
+          });
+        }
       },
       //退出
       goLoginDialog() {
@@ -637,12 +653,13 @@
       this.getImsiWarning();
       this.getFaceWarning();
       this.getWarningCount();
+      this.getTurnCount();
       this.statusTask();
       /*账号在15分钟或者30分钟无人使用的情况下应自动退出；*/
-      // document.body.addEventListener("click", this.pageEvent);
-      // document.body.addEventListener("keydown", this.pageEvent);
-      // document.body.addEventListener("mousemove", this.pageEvent);
-      // document.body.addEventListener("mousewheel", this.pageEvent);
+      document.body.addEventListener("click", this.pageEvent);
+      document.body.addEventListener("keydown", this.pageEvent);
+      document.body.addEventListener("mousemove", this.pageEvent);
+      document.body.addEventListener("mousewheel", this.pageEvent);
     }
   }
 </script>

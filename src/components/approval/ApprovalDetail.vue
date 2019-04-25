@@ -192,7 +192,11 @@
           this.approval = data.data.record;
           data.data.record.nodes.forEach((item, index) => {
             if (item.nodeName === data.data.record.currentNode) {
-              this.active = index
+              this.active = index;
+              console.log(this.active);
+              if (this.active == (data.data.record.nodes.length - 1)) {
+                this.active = (this.active + 1);
+              }
             }
           });
           if (this.approval.imsiList > 5) {
@@ -263,6 +267,7 @@
         let param = {result: status, operator: JSON.parse(sessionStorage.getItem("user")).userId, remark: remark};
         this.$post('/workflow/translation/approve/' + this.recordId, param, "操作成功").then((data) => {
           if ("000000" === data.code) {
+            this.$emit('refreshData', 'turn');
             this.getDetail();
           }
         }).catch((err) => {

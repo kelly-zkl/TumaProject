@@ -195,8 +195,8 @@
       },
       handleType(val) {
         this.isMore = false;
+        this.timeColumn = [];
         if (val.name === 'EXECUTION') {
-          this.timeColumn = [];
           this.query.approveStatus = 1;
         } else {
           if (val.name === 'FINISH') {
@@ -237,6 +237,7 @@
         let param = {operator: JSON.parse(sessionStorage.getItem("user")).userId, result: status, remark: remark};
         this.$post('/workflow/translation/approve/' + recordId, param, "操作成功").then((data) => {
           if ("000000" === data.code) {
+            this.$emit('refreshData', 'turn');
             this.getData();
           }
         }).catch((err) => {

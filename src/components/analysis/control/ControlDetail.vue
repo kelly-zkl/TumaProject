@@ -23,14 +23,16 @@
               </el-col>
               <el-col :span="12" align="right" style="text-align: right">
                 <router-link :to="{path:'/addControl',query:{id:task.id}}">
-                  <el-button type="text" v-show="getButtonVial('disposition:add')"
+                  <el-button type="text" v-show="getButtonVial('disposition:add')&&task.threeFlag!='QING_ZHI'"
                              style="margin: 0 10px 0 0" size="mini">修改
                   </el-button>
                 </router-link>
-                <el-button type="text" @click="deleteTask()" v-show="getButtonVial('disposition:delete')"
+                <el-button type="text" @click="deleteTask()"
+                           v-show="getButtonVial('disposition:delete')&&task.threeFlag!='QING_ZHI'"
                            style="margin: 0 10px 0 0" size="mini">删除
                 </el-button>
-                <el-button type="text" @click="finishTask()" v-show="getButtonVial('disposition:batchUpdateStatus')"
+                <el-button type="text" @click="finishTask()"
+                           v-show="getButtonVial('disposition:batchUpdateStatus')&&task.threeFlag!='QING_ZHI'"
                            style="margin: 0 20px 0 0" size="mini">关闭预警
                 </el-button>
               </el-col>

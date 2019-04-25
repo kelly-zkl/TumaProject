@@ -46,7 +46,7 @@
       </el-form>
       <el-table :data="controlList" v-loading="listLoading" class="center-block" stripe
                 @selection-change="selsChange" :height="tableHeight">
-        <el-table-column type="selection" width="45" align="left"></el-table-column>
+        <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="预警模型名称" prop="taskName" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
@@ -70,10 +70,11 @@
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('disposition:get')">查看
             </el-button>
             <el-button type="text" @click="sels = [];sels.push(scope.row);finishTask()"
-                       v-show="activeItem== 'EXECUTION' && getButtonVial('disposition:batchUpdateStatus')">关闭预警
+                       v-show="activeItem== 'EXECUTION' && getButtonVial('disposition:batchUpdateStatus')&&scope.row.threeFlag!='QING_ZHI'">
+              关闭预警
             </el-button>
             <el-button type="text" @click="sels = [];sels.push(scope.row);deleteTask()"
-                       v-show="getButtonVial('disposition:delete')">删除
+                       v-show="getButtonVial('disposition:delete')&&scope.row.threeFlag!='QING_ZHI'">删除
             </el-button>
           </template>
         </el-table-column>
@@ -105,6 +106,12 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      checkboxInit(row, index) {
+        if (row.threeFlag == 'QING_ZHI')
+          return 0;//不可勾选
+        else
+          return 1;//可勾选
       },
       //全选  ==>  删除/结案
       selsChange(sels) {

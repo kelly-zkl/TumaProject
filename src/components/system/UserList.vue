@@ -89,7 +89,7 @@
             <el-table-column align="left" label="操作" min-width="100" max-width="130" fixed="right">
               <template slot-scope="scope">
                 <el-button type="text" style="margin-right: 10px" @click.stop="updateInfo(scope.row)"
-                           v-show="getButtonVial('manager:user:update')">修改
+                           v-show="getButtonVial('manager:user:update')&&userId!=scope.row.userId">修改
                 </el-button>
                 <el-button type="text" @click="userUse(scope.row)"
                            v-show="getButtonVial('manager:user:update') && scope.row.groupAdmin != true">

@@ -94,7 +94,6 @@ export default new Router({
       component: Index,
       name: '档案',
       children: [
-        {path: '/imsiRecords', component: ImsiRecords, name: 'IMSI记录'},
         {path: '/importPersons', component: ImportPersons, name: '特征档案'},
         {path: '/imsiRecords', component: ImsiRecords, name: 'IMSI记录'},
         {path: '/catchRecords', component: CatchRecords, name: '人脸记录'},
@@ -148,14 +147,14 @@ export default new Router({
         {
           path: '/collisionAnalysis', component: Home, name: '交并分析',
           children: [
-            {path: '/taskDetail', component: TaskDetail, name: '任务详情'}
+            {path: '/taskDetail', component: TaskDetail, name: '交并任务详情'}
           ]
         },
         {
           path: '/followAnalysis', component: Home, name: '伴随分析',
           children: [
             {path: '/addFollow', component: AddFollow, name: '新建/修改伴随任务'},
-            {path: '/followResult', component: FollowResult, name: '任务详情'},
+            {path: '/followResult', component: FollowResult, name: '伴随任务详情'},
             {path: '/followIMSIDetail', component: FollowIMSIDetail, name: 'IMSI详情'},
             {path: '/followImageDetail', component: FollowImageDetail, name: '人脸详情'}
           ]
