@@ -80,7 +80,7 @@
           </el-form-item>
           <el-form-item label="功能权限" align="left" required>
             <el-tree :data="permissions" show-checkbox node-key="permissionId" :props="defaultProps" ref="tree"
-                     default-expand-all check-strictly :default-checked-keys="role.permissions"></el-tree>
+                     :default-expand-all="false" :default-checked-keys="role.permissions"></el-tree>
           </el-form-item>
         </el-form>
         <div class="block" style="margin-top: 20px" v-show="isShow">
@@ -145,6 +145,7 @@
       //修改角色
       modifyrole(row) {
         this.role = Object.assign({}, row);
+        this.getRolePermissions();
         this.addroleTitle = '修改角色';
         this.isShow = true;
         this.listLoading = false;
@@ -167,7 +168,7 @@
       onSubmit(formName, title) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.role.permissions = this.$refs.tree.getCheckedKeys();
+            this.role.permissions = Object.assign([], this.$refs.tree.getCheckedKeys());
             if (this.role.permissions.length === 0) {
               this.$message.error('请选择功能权限');
               return;
@@ -183,6 +184,7 @@
               this.role.state = '0';
               this.role.roleType = 1;
             }
+            this.getSavePermissions();
             this.listLoading = true;
             this.$post(url, this.role, msg).then((data) => {
               this.$refs.tree.setCheckedKeys([]);
@@ -196,6 +198,101 @@
             });
           }
         });
+      },
+      //子菜单没有全选时，要把父菜单选上
+      getSavePermissions() {
+        for (var i = 0; i < this.permissions.length; i++) {
+          var tree = this.permissions[i];
+          if (tree.childs) {
+            for (var j = 0; j < tree.childs.length; j++) {
+              var menu = tree.childs[j];
+              if (menu.childs) {
+                for (var z = 0; z < menu.childs.length; z++) {
+                  var button = menu.childs[z];
+                  for (var m = 0; m < this.role.permissions.length; m++) {
+                    var id = this.role.permissions[m];
+                    if (button.permissionId == id) {
+                      if (this.mulitData(menu.permissionId)) {
+                        this.role.permissions.push(menu.permissionId);
+                      }
+                      if (this.mulitData(tree.permissionId)) {
+                        this.role.permissions.push(tree.permissionId);
+                      }
+                      break;
+                    }
+                  }
+                }
+              } else {
+                for (var n = 0; n < this.role.permissions.length; n++) {
+                  var sid = this.role.permissions[n];
+                  if (menu.permissionId == sid) {
+                    if (this.mulitData(tree.permissionId)) {
+                      this.role.permissions.push(tree.permissionId);
+                    }
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      getRolePermissions() {
+        for (var i = 0; i < this.permissions.length; i++) {
+          var tree = this.permissions[i];
+          if (tree.childs) {
+            for (var j = 0; j < tree.childs.length; j++) {
+              var menu = tree.childs[j];
+              if (menu.childs) {
+                for (var z = 0; z < menu.childs.length; z++) {
+                  var button = menu.childs[z];
+                  var isSelect = false;
+                  for (var m = 0; m < this.role.permissions.length; m++) {
+                    var id = this.role.permissions[m];
+                    if (button.permissionId == id) {
+                      isSelect = true;
+                      break;
+                    }
+                  }
+                  if (!isSelect) {
+                    var mIdx = this.role.permissions.indexOf(menu.permissionId);
+                    var bIdx = this.role.permissions.indexOf(tree.permissionId);
+                    if (mIdx >= 0) {
+                      this.role.permissions.splice(mIdx, 1);
+                    }
+                    if (bIdx >= 0) {
+                      this.role.permissions.splice(bIdx, 1);
+                    }
+                  }
+                }
+              } else {
+                var isSelect2 = false;
+                for (var n = 0; n < this.role.permissions.length; n++) {
+                  var sid = this.role.permissions[n];
+                  if (menu.permissionId == sid) {
+                    isSelect2 = true;
+                    break;
+                  }
+                }
+                if (!isSelect2) {
+                  var tIdx = this.role.permissions.indexOf(tree.permissionId);
+                  if (tIdx >= 0) {
+                    this.role.permissions.splice(tIdx, 1);
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      mulitData(permissionId) {
+        var isMulti = true;
+        this.role.permissions.forEach((id) => {
+          if (permissionId == id) {
+            isMulti = false;
+          }
+        });
+        return isMulti;
       },
       //删除角色
       deleterole(id) {
