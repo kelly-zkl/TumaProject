@@ -34,7 +34,7 @@
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
           <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable
-                     style="width: 160px">
+                     style="width: 160px" :filter-method="pinyinMatch">
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
           </el-select>
@@ -107,6 +107,7 @@
 <script>
   import {numValid, noValidator} from "../../assets/js/api";
   import {formatDate, buttonValidator} from "../../assets/js/util";
+  import PinyinMatch from 'pinyin-match';
 
   export default {
     data() {
@@ -117,15 +118,8 @@
         tableHeight: window.innerHeight - 285,
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
-        count: 0,
-        places: [],
-        list: [],
-        list10: [],
-        isShow: false,
-        isFirst: true,
-        isSearch: false,
-        firstPage: 0,
-        page: 1,
+        count: 0, places: [], placesCopy: [], list: [], list10: [],
+        isShow: false, isFirst: true, isSearch: false, firstPage: 0, page: 1,
         imgPath: require('../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_img.svg') + "'",
         listLoading: false,
@@ -185,6 +179,21 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
       },
       handleChange(val) {
         if (!val || val.length == 0) {
@@ -317,11 +326,15 @@
       },
       //告警场所
       getPlaces() {
-        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          this.places = data.data.list;
-        }).catch((err) => {
-          this.places = [];
-        });
+        if (this.getButtonVial('place:query')) {
+          this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+            this.places = data.data.list;
+            this.placesCopy = Object.assign([], this.places);
+          }).catch((err) => {
+            this.places = [];
+            this.placesCopy = [];
+          });
+        }
       }
     },
     mounted() {

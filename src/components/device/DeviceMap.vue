@@ -40,7 +40,8 @@
 </template>
 <script>
   import echarts from "echarts";
-  import {buttonValidator} from "../../assets/js/util";
+  import {buttonValidator, encryData, decryData} from "../../assets/js/util";
+  import PinyinMatch from 'pinyin-match';
 
   export default {
     data() {
@@ -64,14 +65,8 @@
           fillOpacity: 0.15,      //填充的透明度，取值范围0 - 1。
           strokeStyle: 'solid' //边线的样式，solid或dashed。
         },
-        mapData: [],
-        intervalid: null,
-        markers: [],
-        markerClusterer: null,
-        queryParam: '',
-        queryType: 'place',
-        results: [],
-        multLat: []
+        mapData: [], intervalid: null, markers: [], markerClusterer: null, queryParam: '',
+        queryType: 'place', results: [], multLat: [], resultCopy: []
       }
     },
     //页面关闭时停止更新设备在线状态
@@ -84,14 +79,31 @@
       },
       handleChange(val) {
         this.queryParam = '';
+        if (this.getButtonVial('deviceMap:search')) {
+          this.$post("deviceMap/search", {type: this.queryType, content: this.queryParam}).then((data) => {
+            this.results = data.data;
+            this.resultCopy = Object.assign([], this.results);
+          }).catch((err) => {
+            this.results = [];
+            this.resultCopy = [];
+          });
+        }
       },
       querySearch(queryString, cb) {
-        this.$post("deviceMap/search", {type: this.queryType, content: this.queryParam}).then((data) => {
-          this.results = data.data;
+        if (this.queryParam.length > 0) {
+          var result = [];
+          this.resultCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.name, this.queryParam);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.results = result;
           cb(this.results);
-        }).catch((err) => {
-          this.results = [];
-        });
+        } else {
+          this.results = this.resultCopy;
+          cb(this.results);
+        }
       },
       handleSelect(item) {
         this.queryParam = item.name;
@@ -506,8 +518,9 @@
       }
     },
     mounted() {
-      this.systemParam = JSON.parse(sessionStorage.getItem("system"));
+      this.systemParam = JSON.parse(decryData(sessionStorage.getItem("system")));
       this.mapPoint = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
+      this.handleChange();
       this.deviceMapData();
       this.getMapData();
       this.statusTask();

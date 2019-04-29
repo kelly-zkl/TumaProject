@@ -3,8 +3,7 @@
     <section class="content">
       <el-row>
         <el-col :span="20" align="left" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('car:task:query')"
-                   style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.keyWord" placeholder="任务名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
@@ -43,7 +42,7 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+            <el-form-item style="margin-bottom: 10px" v-show="isMore&&getButtonVial('case:query')">
               <el-select v-model="query.caseId" placeholder="关联案件" size="medium" style="width: 150px" clearable>
                 <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
                 </el-option>
@@ -272,11 +271,13 @@
       },
       //关联案件
       getCases() {
-        this.$post('case/query', {page: 1, size: 999999}).then((data) => {
-          this.cases = data.data.list;
-        }).catch((err) => {
-          this.cases = [];
-        });
+        if (this.getButtonVial('case:query')) {
+          this.$post('case/query', {page: 1, size: 999999}).then((data) => {
+            this.cases = data.data.list;
+          }).catch((err) => {
+            this.cases = [];
+          });
+        }
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {

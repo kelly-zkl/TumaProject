@@ -60,7 +60,7 @@
   </div>
 </template>
 <script>
-  import {buttonValidator} from "../../../assets/js/util";
+  import {buttonValidator, encryData, decryData} from "../../../assets/js/util";
 
   var fileDownload = require('js-file-download');
   let md5 = require("crypto-js/md5");
@@ -114,7 +114,7 @@
         param.size = 100000;
         let config;
         if (sessionStorage.getItem("user")) {
-          let userId = JSON.parse(sessionStorage.getItem("user")).userId;
+          let userId = JSON.parse(decryData(sessionStorage.getItem("user"))).userId;
           if (userId) {
             if (!param) {
               param = {}

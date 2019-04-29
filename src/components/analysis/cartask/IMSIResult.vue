@@ -29,7 +29,7 @@
         </el-col>
         <el-col :span="6" align="right" style="text-align: right">
           <el-button type="primary" size="medium" @click="gotoTurnIMSI()" :disabled="sels.length==0"
-                     v-show="getButtonVial('workflow:translation:apply')">翻码
+                     v-show="getButtonVial('workflow:translation:apply')&&uLogin=='uLogin'">翻码
           </el-button>
           <el-button type="primary" size="medium" @click="exportData()"
                      v-show="getButtonVial('car:task:result:export')">导出
@@ -71,8 +71,9 @@
       <div class="device">
         <el-dialog title="碰撞轨迹分析" :visible.sync="runPathLine" width="96%">
           <el-form :inline="true" :model="queryPath" align="left" style="text-align: left">
-            <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="queryPath.placeId" placeholder="场所" size="medium" filterable clearable>
+            <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
+              <el-select v-model="queryPath.placeId" placeholder="场所" size="medium" filterable clearable
+                         :filter-method="pinyinMatch">
                 <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                 </el-option>
               </el-select>
@@ -120,7 +121,8 @@
   </div>
 </template>
 <script>
-  import {buttonValidator, formatDate} from "../../../assets/js/util";
+  import {buttonValidator, formatDate, encryData, decryData} from "../../../assets/js/util";
+  import PinyinMatch from 'pinyin-match';
 
   var fileDownload = require('js-file-download');
   let md5 = require("crypto-js/md5");
@@ -139,8 +141,9 @@
         imsi: '',
         records: [],
         pathLines: [],
-        places: [],
+        places: [], placesCopy: [],
         sels: [],
+        uLogin: localStorage.getItem('login'),
         imgPath: require('../../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_img.svg') + "'",
         operators: [{value: 0, label: '移动'}, {value: 1, label: '联通'}, {value: 2, label: '电信'}],
@@ -150,6 +153,21 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
+      },
       /*翻码*/
       gotoTurnIMSI() {
         if (this.sels.length > 10) {
@@ -158,11 +176,23 @@
         }
         var arr = [];
         this.sels.forEach((item) => {
-          arr.push(item.imsi);
+          if (this.isSingle(item.imsi, arr)) {
+            arr.push(item.imsi);
+          }
         });
         var param = {caseId: this.$parent.task.caseId, task: ['car', this.taskNo], imsi: arr};
         sessionStorage.setItem("apply", JSON.stringify(param));
         this.$router.push({path: '/approvalApply', query: {type: 'car'}});
+      },
+      //是否重复
+      isSingle(val, arr) {
+        let bol = true;
+        arr.forEach((item) => {
+          if (val == item) {
+            bol = false;
+          }
+        });
+        return bol;
       },
       selsChange(sels) {
         this.sels = sels;
@@ -172,7 +202,7 @@
         let param = {};
         let config;
         if (sessionStorage.getItem("user")) {
-          let userId = JSON.parse(sessionStorage.getItem("user")).userId;
+          let userId = JSON.parse(decryData(sessionStorage.getItem("user"))).userId;
           if (userId) {
             if (!param) {
               param = {}
@@ -275,11 +305,15 @@
       },
       //场所
       getPlaces() {
-        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          this.places = data.data.list;
-        }).catch((err) => {
-          this.places = [];
-        });
+        if (this.getButtonVial('place:query')) {
+          this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+            this.places = data.data.list;
+            this.placesCopy = Object.assign([], this.places);
+          }).catch((err) => {
+            this.places = [];
+            this.placesCopy = [];
+          });
+        }
       },
       getNetType(isp) {
         let moduleId = "--";

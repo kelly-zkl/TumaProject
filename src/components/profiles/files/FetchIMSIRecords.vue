@@ -17,7 +17,8 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
-          <el-select v-model="queryImsi.placeId" placeholder="场所" size="medium" filterable clearable>
+          <el-select v-model="queryImsi.placeId" placeholder="场所" size="medium" filterable clearable
+                     :filter-method="pinyinMatch">
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
           </el-select>
@@ -66,8 +67,8 @@
   </div>
 </template>
 <script>
-  import {globalValidImg, doubleValid, noValidator} from "../../../assets/js/api";
-  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
+  import {formatDate, buttonValidator} from "../../../assets/js/util";
+  import PinyinMatch from 'pinyin-match';
 
   export default {
     data() {
@@ -78,12 +79,8 @@
         qTime: [new Date((formatDate(new Date((new Date().getTime() - 30 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
-        places: [],
-        imsis: [],
-        count: 0,
-        listLoading: false,
-        list: [],
-        list10: [],
+        places: [], placesCopy: [], imsis: [], count: 0,
+        listLoading: false, list: [], list10: [],
         isShow: false,
         isFirst: true,
         isSearch: false,
@@ -143,6 +140,21 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
       },
       handleChange(val) {
         if (!val || val.length == 0) {
@@ -249,11 +261,15 @@
             this.clearImsiData();
           }
         });
-        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          this.places = data.data.list;
-        }).catch((err) => {
-          this.places = [];
-        });
+        if (this.getButtonVial('place:query')) {
+          this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+            this.places = data.data.list;
+            this.placesCopy = Object.assign([], this.places);
+          }).catch((err) => {
+            this.places = [];
+            this.placesCopy = [];
+          });
+        }
       }
     },
     mounted() {

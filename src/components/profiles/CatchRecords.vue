@@ -50,9 +50,9 @@
           <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
                     style="width: 170px"></el-input>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
+        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
           <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable
-                     style="width: 170px">
+                     style="width: 170px" :filter-method="pinyinMatch">
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
           </el-select>
@@ -134,7 +134,8 @@
 </template>
 <script>
   import {globalValidImg, doubleValid, noValidator} from "../../assets/js/api";
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {formatDate, encryData, decryData, buttonValidator} from "../../assets/js/util";
+  import PinyinMatch from 'pinyin-match';
 
   export default {
     data() {
@@ -160,7 +161,7 @@
         page: 1,
         listLoading: false,
         exportKey: 'archives:get:listFaceToday',
-        places: [],
+        places: [], placesCopy: [],
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         time1: ['00:00:00', '23:59:59'],
         pickerBeginDate: {
@@ -275,7 +276,7 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
-            let param = JSON.parse(sessionStorage.getItem("system")).similarThreshold;
+            let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
             this.query.similarThreshold = param ? param : 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.isSearch = true;
@@ -418,13 +419,32 @@
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
       },
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
+      },
       //告警场所
       getPlaces() {
-        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          this.places = data.data.list;
-        }).catch((err) => {
-          this.places = [];
-        });
+        if (this.getButtonVial('place:query')) {
+          this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+            this.places = data.data.list;
+            this.placesCopy = Object.assign([], this.places);
+          }).catch((err) => {
+            this.places = [];
+            this.placesCopy = [];
+          });
+        }
       }
     },
     mounted() {

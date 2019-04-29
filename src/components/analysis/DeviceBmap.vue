@@ -7,6 +7,7 @@
 </template>
 <script>
   import echarts from "echarts";
+  import {encryData, decryData} from "../../assets/js/util";
 
   export default {
     props: ['deviceData'],
@@ -418,7 +419,7 @@
       }
     },
     mounted() {
-      this.systemParam = JSON.parse(sessionStorage.getItem("system"));
+      this.systemParam = JSON.parse(decryData(sessionStorage.getItem("system")));
       this.point = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
       this.deviceMap();
     }

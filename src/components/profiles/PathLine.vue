@@ -2,22 +2,22 @@
   <div>
     <section>
       <el-form :model="query" style="text-align: left" :inline="true">
-        <el-form-item label="时间范围">
+        <el-form-item label="时间范围" style="margin-bottom:10px">
           <el-date-picker v-model="cTime" type="datetimerange" range-separator="至" start-placeholder="开始日期"
                           end-placeholder="结束日期" value-format="timestamp" :picker-options="pickerBeginDate"
                           :default-time="['00:00:00', '23:59:59']" size="medium">
           </el-date-picker>
         </el-form-item>
-        <!--<el-form-item label="轨迹模式">-->
+        <!--<el-form-item label="轨迹模式" style="margin-bottom:10px">-->
         <!--<el-radio-group v-model="query.merge" size="medium" @change="handleChange">-->
         <!--<el-radio-button :label="false">记录轨迹</el-radio-button>-->
         <!--<el-radio-button :label="true">合并轨迹</el-radio-button>-->
         <!--</el-radio-group>-->
         <!--</el-form-item>-->
-        <el-form-item>
+        <el-form-item style="margin-bottom:10px">
           <el-button @click="getLineData()" size="medium" type="primary">搜索</el-button>
         </el-form-item>
-        <el-form-item>
+        <el-form-item style="margin-bottom:10px">
           <el-button @click="luShu()" size="medium" type="primary" v-show="query.merge == false"
                      :icon="isPause?'fa fa-pause':'fa fa-play'">
             {{isPause?'暂停回放':'回放轨迹'}}
@@ -35,12 +35,13 @@
         </el-col>
       </el-row>
       <div class="view-map" id="path"
-           v-bind:style="query.merge == false&&imsis.length>0?'top: 150px':'top: 100px'"></div>
-      <div v-bind:class="isShow?'arrow-list':'arrow-none'" @click="handleArrow()">
+           v-bind:style="query.merge == false&&imsis.length>0?'top: 120px':'top: 70px'"></div>
+      <div v-bind:class="isShow?'arrow-list':'arrow-none'" @click="handleArrow()"
+           v-bind:style="query.merge == false&&imsis.length>0?'top: 120px':'top: 70px'">
         <i v-bind:class="isShow?'fa fa-angle-double-right fa-3x':'fa fa-angle-double-left fa-3x'"></i>
       </div>
       <div v-bind:class="isShow?'view-list':'list-none'"
-           v-bind:style="query.merge == false&&imsis.length>0?'top: 150px':'top: 100px'">
+           v-bind:style="query.merge == false&&imsis.length>0?'top: 120px':'top: 70px'">
         <div style="color: #999;font-size: 14px;margin-top: 15px">对应IMSI</div>
         <div style="color: #333;font-size: 14px">{{choose.imsi}}</div>
         <div style="border-top: #6699FF 3px solid;margin-top: 15px">
@@ -68,7 +69,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {formatDate, buttonValidator, encryData, decryData} from "../../assets/js/util";
 
   export default {
     data() {
@@ -384,7 +385,7 @@
       this.map.enableScrollWheelZoom(true);
       this.map.enableDragging();
 
-      let systemParam = JSON.parse(sessionStorage.getItem("system"));
+      let systemParam = JSON.parse(decryData(sessionStorage.getItem("system")));
       var point = new BMap.Point(systemParam.localPoint[0], systemParam.localPoint[1]);
       this.map.centerAndZoom(point, 12);
       this.walking = new BMap.WalkingRoute(this.map, {
@@ -425,17 +426,17 @@
 <style scoped>
   .view-map {
     position: absolute;
-    left: 200px;
-    right: 15px;
-    bottom: 10px;
+    left: 0;
+    right: 0;
+    bottom: 0;
     top: 100px;
   }
 
   .view-list {
     position: absolute;
-    right: 15px;
-    bottom: 20px;
-    top: 100px;
+    right: 10px;
+    bottom: 10px;
+    top: 120px;
     background: #fff;
     width: 300px;
     overflow-y: scroll;
@@ -463,8 +464,8 @@
 
   .arrow-list {
     position: absolute;
-    right: 315px;
-    top: 150px;
+    right: 310px;
+    top: 120px;
     background: #ccc;
     padding: 0 15px;
     color: #fff;
@@ -476,7 +477,7 @@
   .arrow-none {
     position: absolute;
     right: 15px;
-    top: 150px;
+    top: 120px;
     padding: 0 15px;
     background: #ccc;
     color: #fff;

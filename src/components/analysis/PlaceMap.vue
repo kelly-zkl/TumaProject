@@ -7,7 +7,7 @@
 </template>
 <script>
   import echarts from "echarts";
-  import {getAreaLable} from "../../assets/js/util";
+  import {getAreaLable, encryData, decryData} from "../../assets/js/util";
 
   export default {
     data() {
@@ -309,7 +309,7 @@
       }
     },
     mounted() {
-      this.systemParam = JSON.parse(sessionStorage.getItem("system"));
+      this.systemParam = JSON.parse(decryData(sessionStorage.getItem("system")));
       this.point = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
       this.placeMap();
       this.getPlaceData();

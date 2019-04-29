@@ -3,7 +3,7 @@
     <section class="content">
       <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left">
         <el-row>
-          <el-col :span="20" align="left" v-show="getButtonVial('manager:role:query')" style="text-align: left">
+          <el-col :span="20" align="left" style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="角色名称" v-model="query.roleName" :maxlength="30" size="medium"
                         style="width: 200px"></el-input>
@@ -47,13 +47,12 @@
         </el-table-column>
         <el-table-column align="left" label="操作" min-width="150" max-width="250" fixed="right">
           <template slot-scope="scope">
-            <el-button type="text" @click="roleInfo(scope.row)" v-show="getButtonVial('manager:role:detail:*')">查看
-            </el-button>
+            <el-button type="text" @click="roleInfo(scope.row)">查看</el-button>
             <el-button v-show="getButtonVial('manager:role:update') && scope.row.roleId!=1"
                        type="text" @click="modifyrole(scope.row)">修改
             </el-button>
             <el-button @click="deleterole(scope.row.roleId)" type="text"
-                       v-show="getButtonVial('manager:role:delete:*') && scope.row.roleType==1">删除
+                       v-show="getButtonVial('manager:role:delete') && scope.row.roleType==1">删除
             </el-button>
             <el-button type="text" @click="userole(scope.row)"
                        v-show="getButtonVial('manager:role:update') && scope.row.roleType==1">
@@ -93,7 +92,7 @@
 </template>
 <script>
   import {pswValidator, nameValidator, noValidator} from '../../assets/js/api';
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {formatDate, isPC, buttonValidator, encryData, decryData} from "../../assets/js/util";
 
   export default {
     data() {
@@ -111,9 +110,10 @@
         dialogWidth: isPC() ? '40%' : '90%',
         labelWidth: isPC() ? '120px' : '80px',
         tableHeight: window.innerHeight - 232,
+        user: JSON.parse(decryData(sessionStorage.getItem("user"))),
         query: {
           page: 1, size: 10, roleName: '', roleType: '', lastNode: true,
-          creatorGroupId: JSON.parse(sessionStorage.getItem("user")).groupId
+          creatorGroupId: JSON.parse(decryData(sessionStorage.getItem("user"))).groupId
         },
         count: 0,
         roleTypes: [{value: '', label: '全部类型'}, {value: 0, label: '通用'}, {value: 1, label: '自定义'}],
@@ -179,8 +179,8 @@
               url = '/manager/role/update';
               msg = '修改成功';
             } else {
-              this.role.creatorId = JSON.parse(sessionStorage.getItem("user")).userId;
-              this.role.creatorGroupId = JSON.parse(sessionStorage.getItem("user")).groupId;
+              this.role.creatorId = this.user.userId;
+              this.role.creatorGroupId = this.user.groupId;
               this.role.state = '0';
               this.role.roleType = 1;
             }
@@ -349,8 +349,7 @@
       },
       clearData() {
         this.query = {
-          page: 1, size: 10, roleName: '', roleType: '', lastNode: true,
-          creatorGroupId: JSON.parse(sessionStorage.getItem("user")).groupId
+          page: 1, size: 10, roleName: '', roleType: '', lastNode: true, creatorGroupId: this.user.groupId
         };
         this.getRoles();
       },
@@ -366,12 +365,13 @@
       },
       //获取菜单树
       getMenuTree() {
-        this.$post('/manager/permission/menuTree/' + JSON.parse(sessionStorage.getItem("user")).userId + '/3', {}).then((data) => {
+        this.$post('/manager/permission/menuTree/' + this.user.userId + '/3', {}).then((data) => {
           this.permissions = data.data;
         });
       }
     },
     mounted() {
+      this.user = JSON.parse(decryData(sessionStorage.getItem("user")));
       this.getMenuTree();
       this.getRoles();
     }

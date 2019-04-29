@@ -2,8 +2,8 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="18" v-show="getButtonVial('follow:query')" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 840px">
+        <el-col :span="20" v-show="getButtonVial('follow:query')" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1100px">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.taskName" placeholder="任务名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
@@ -16,7 +16,11 @@
               </el-date-picker>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
+              <el-select v-model="query.taskStatus" placeholder="任务状态" style="width: 150px"
+                         size="medium" filterable clearable>
+                <el-option v-for="item in taskStatus" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
@@ -24,16 +28,9 @@
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()">重置</el-button>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-select v-model="query.taskStatus" placeholder="任务状态" style="width: 150px"
-                         size="medium" filterable clearable>
-                <el-option v-for="item in taskStatus" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="6" style="text-align: right">
+        <el-col :span="4" style="text-align: right">
           <el-button type="primary" size="medium" @click="cancelFollow()" :disabled="sels.length == 0"
                      v-show="getButtonVial('follow:cancelCase')">取消关联
           </el-button>
@@ -89,7 +86,6 @@
   export default {
     data() {
       return {
-        isMore: false,
         caseId: this.$route.query.caseId || '',
         qTime: "",
         taskStatus: [{value: 'FINISH', label: '已完成'}, {value: 'FAILE', label: '失败'},

@@ -33,8 +33,7 @@
       </el-row>
       <el-row style="padding-top: 10px">
         <el-col :span="24" align="left" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('case:query')"
-                   style="text-align: left;width: 1250px">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1250px">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.caseName" placeholder="案件编号/名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>
@@ -46,8 +45,8 @@
                               :picker-options="pickerBeginDate">
               </el-date-picker>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.caseType" placeholder="案件类型" size="medium" filterable clearable>
+            <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('lookup:get:caseType')">
+              <el-select v-model="query.caseType" placeholder="案件属性" size="medium" filterable clearable>
                 <el-option v-for="item in caseTypes" :key="item.idx" :label="item.label" :value="item.label">
                 </el-option>
               </el-select>
@@ -101,8 +100,8 @@
             <el-form-item label="案件名称" prop="caseName">
               <el-input v-model="createCase.caseName" auto-complete="off" :maxlength="20" placeholder="案件名称"></el-input>
             </el-form-item>
-            <el-form-item label="案件类型" prop="caseType">
-              <el-select v-model="createCase.caseType" placeholder="案件类型" filterable clearable style="width: 100%">
+            <el-form-item label="案件属性" prop="caseType">
+              <el-select v-model="createCase.caseType" placeholder="案件属性" filterable clearable style="width: 100%">
                 <el-option v-for="item in caseTypes" :key="item.idx" :label="item.label" :value="item.label">
                 </el-option>
               </el-select>
@@ -135,7 +134,8 @@
       <!--管理案件属性-->
       <el-dialog title="案件属性管理" :visible.sync="runningCaseType" :width="dialogWidth" center>
         <div class="block">
-          <el-input v-model="caseTypeAdd" placeholder="输入属性" style="width: 400px" :maxlength=20>
+          <el-input v-model="caseTypeAdd" placeholder="输入属性" style="width: 400px" :maxlength=20
+                    v-show="getButtonVial('lookup:add:caseType')">
             <el-button slot="append" type="primary" @click="addCaseType()">添加</el-button>
           </el-input>
           <el-table :data="caseTypes" class="center-block" stripe>
@@ -196,7 +196,7 @@
         createCase: {startTime: []},
         defaultProps: [{value: 'caseNo', name: '案件编号', min: 150, max: 200},
           {value: 'caseName', name: '案件名称', min: 150, max: 200},
-          {value: 'caseType', name: '案件类型', min: 100, max: 150},
+          {value: 'caseType', name: '案件属性', min: 100, max: 150},
           {value: 'caseTime', name: '案发时间', min: 300, max: 300},
           {value: 'caseAddress', name: '案发地点', min: 200, max: 250},
           {value: 'creatTime', name: '创建时间', min: 170, max: 170}],
@@ -209,7 +209,7 @@
             {required: true, message: '请输入案件名称', trigger: 'blur', maxlength: 30},
             {validator: nameValidator, trigger: "change,blur"}
           ],
-          caseType: [{required: true, message: '请输入案件类型', trigger: 'blur'}],
+          caseType: [{required: true, message: '请输入案件属性', trigger: 'blur'}],
           caseArea: [{required: true, message: '请选择案发地点', trigger: 'blur'}],
           startTime: [{required: true, message: '请选择案发时间', trigger: 'blur'}],
           caseAddress: [{required: true, message: '请输入详细地点', trigger: 'blur'}]
@@ -277,21 +277,23 @@
       },
       getCaseType() {
         this.caseTypes = [];
-        this.$post('lookup/get/caseType', {}).then((data) => {
-          if ("000000" === data.code) {
-            if (data.data.items && data.data.items.length > 0) {
-              data.data.items.forEach((item, idx) => {
-                let label = {label: item.label, idx: idx};
-                this.caseTypes.push(label);
-              });
+        if (this.getButtonVial('lookup:get:caseType')) {
+          this.$post('lookup/get/caseType', {}).then((data) => {
+            if ("000000" === data.code) {
+              if (data.data.items && data.data.items.length > 0) {
+                data.data.items.forEach((item, idx) => {
+                  let label = {label: item.label, idx: idx};
+                  this.caseTypes.push(label);
+                });
+              }
             }
-          }
-        }).catch((err) => {
-        });
+          }).catch((err) => {
+          });
+        }
       },
       addCaseType() {
         if (this.caseTypeAdd.length == 0) {
-          this.$message.error('请输入案件类型');
+          this.$message.error('请输入案件属性');
           return;
         }
         this.$post('lookup/add/caseType', {label: this.caseTypeAdd}, '添加成功').then((data) => {
@@ -322,14 +324,14 @@
         if (val.name === 'EXECUTION') {
           this.defaultProps = [{value: 'caseNo', name: '案件编号', min: 150, max: 200},
             {value: 'caseName', name: '案件名称', min: 150, max: 200},
-            {value: 'caseType', name: '案件类型', min: 100, max: 150},
+            {value: 'caseType', name: '案件属性', min: 100, max: 150},
             {value: 'caseTime', name: '案发时间', min: 300, max: 300},
             {value: 'caseAddress', name: '案发地点', min: 200, max: 250},
             {value: 'creatTime', name: '创建时间', min: 170, max: 170}];
         } else {
           this.defaultProps = [{value: 'caseNo', name: '案件编号', min: 150, max: 200},
             {value: 'caseName', name: '案件名称', min: 150, max: 200},
-            {value: 'caseType', name: '案件类型', min: 100, max: 150},
+            {value: 'caseType', name: '案件属性', min: 100, max: 150},
             {value: 'caseTime', name: '案发时间', min: 300, max: 300},
             {value: 'caseAddress', name: '案发地点', min: 200, max: 250},
             {value: 'creatTime', name: '创建时间', min: 170, max: 170},

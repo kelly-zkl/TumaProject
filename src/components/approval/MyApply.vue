@@ -9,7 +9,7 @@
             <el-tab-pane label="终止" name="FINISH"></el-tab-pane>
           </el-tabs>
         </el-col>
-        <el-col :span="8" align="right" v-show="getButtonVial('workflow:translation:apply')&& uLogin"
+        <el-col :span="8" align="right" v-show="getButtonVial('workflow:translation:apply')&&uLogin=='uLogin'"
                 style="text-align: right">
           <el-button type="primary" size="medium" @click="addApply()">发起申请</el-button>
         </el-col>
@@ -47,14 +47,15 @@
         <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
-        <el-form-item align="left" style="margin-bottom: 10px" v-show="isMore">
+        <el-form-item align="left" style="margin-bottom: 10px" v-show="isMore&&getButtonVial('case:query')">
           <el-select v-model="query.caseId" placeholder="关联案件" filterable clearable size="medium"
                      style="width:160px">
             <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item align="left" style="margin-bottom: 10px" v-show="isMore">
+        <el-form-item align="left" style="margin-bottom: 10px"
+                      v-show="isMore&&(getButtonVial('collision:query')||getButtonVial('follow:query')||getButtonVial('car:task:query'))">
           <el-cascader placeholder="选择侦查任务" :options="tasks" filterable clearable
                        v-model="queryTask" style="width:200px" size="medium"></el-cascader>
         </el-form-item>
@@ -108,20 +109,21 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {formatDate, buttonValidator, encryData, decryData} from "../../assets/js/util";
 
   export default {
     data() {
       return {
         listLoading: false,
         isMore: false,
-        uLogin: false,
         activeItem: 'EXECUTION',
         imsiList: [],
         query: {page: 1, size: 10, applyStatus: 1},
         tableHeight: window.innerHeight - 280,
         qTime: '',
         count: 0,
+        userId: JSON.parse(decryData(sessionStorage.getItem("user"))).userId,
+        uLogin: localStorage.getItem('login'),
         timeColumn: [], cases: [], queryTask: [],
         levs: [{value: '一级', label: '一级'}, {value: '二级', label: '二级'}, {value: '三级', label: '三级'}],
         tasks: [{value: 'coll', label: '交并分析', children: []}, {value: 'car', label: '车码碰撞', children: []},
@@ -220,7 +222,7 @@
           },
           inputErrorMessage: '请输入200字以内的备注'
         }).then(({value}) => {
-          let param = {operator: JSON.parse(sessionStorage.getItem("user")).userId, remark: '申请人撤销'};
+          let param = {operator: this.userId, remark: '申请人撤销'};
           this.$post('/workflow/translation/cancelapply/' + row.recordId, param, "操作成功").then((data) => {
             if ("000000" === data.code) {
               this.getData();
@@ -279,7 +281,7 @@
           this.query.taskId = this.queryTask[1];
         }
         this.listLoading = true;
-        this.$post('/workflow/translation/myapply/' + JSON.parse(sessionStorage.getItem("user")).userId, this.query).then((data) => {
+        this.$post('/workflow/translation/myapply/' + this.userId, this.query).then((data) => {
           this.imsiList = data.data.records;
           this.count = data.data.count;
           setTimeout(() => {
@@ -300,41 +302,49 @@
       },
       //获取案件列表
       getCases() {
-        this.$post('case/query', {page: 1, size: 999999, status: 'EXECUTION'}).then((data) => {
-          this.cases = data.data.list;
-        }).catch((err) => {
-          this.cases = [];
-        });
+        if (this.getButtonVial('case:query')) {
+          this.$post('case/query', {page: 1, size: 999999, status: 'EXECUTION'}).then((data) => {
+            this.cases = data.data.list;
+          }).catch((err) => {
+            this.cases = [];
+          });
+        }
       },
       //获取侦查任务列表
       getTasks() {
-        this.$post('/collision/query', {page: 1, size: 999999}).then((data) => {
-          var arr = [];
-          data.data.list.forEach((item) => {
-            arr.push({value: item.id, label: item.taskName})
+        if (this.getButtonVial('collision:query')) {
+          this.$post('/collision/query', {page: 1, size: 999999}).then((data) => {
+            var arr = [];
+            data.data.list.forEach((item) => {
+              arr.push({value: item.id, label: item.taskName})
+            });
+            this.tasks[0].children = arr;
+          }).catch((err) => {
+            this.tasks[0].children = [];
           });
-          this.tasks[0].children = arr;
-        }).catch((err) => {
-          this.tasks[0].children = [];
-        });
-        this.$post('/car/task/query', {page: 1, size: 999999}).then((data) => {
-          var arr = [];
-          data.data.list.forEach((item) => {
-            arr.push({value: item.taskNo, label: item.taskName})
+        }
+        if (this.getButtonVial('car:task:query')) {
+          this.$post('/car/task/query', {page: 1, size: 999999}).then((data) => {
+            var arr = [];
+            data.data.list.forEach((item) => {
+              arr.push({value: item.taskNo, label: item.taskName})
+            });
+            this.tasks[1].children = arr;
+          }).catch((err) => {
+            this.tasks[1].children = [];
           });
-          this.tasks[1].children = arr;
-        }).catch((err) => {
-          this.tasks[1].children = [];
-        });
-        this.$post('/follow/query', {page: 1, size: 999999}).then((data) => {
-          var arr = [];
-          data.data.list.forEach((item) => {
-            arr.push({value: item.id, label: item.taskName})
+        }
+        if (this.getButtonVial('follow:query')) {
+          this.$post('/follow/query', {page: 1, size: 999999}).then((data) => {
+            var arr = [];
+            data.data.list.forEach((item) => {
+              arr.push({value: item.id, label: item.taskName})
+            });
+            this.tasks[2].children = arr;
+          }).catch((err) => {
+            this.tasks[2].children = [];
           });
-          this.tasks[2].children = arr;
-        }).catch((err) => {
-          this.tasks[2].children = [];
-        });
+        }
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
@@ -348,7 +358,6 @@
       }
     },
     mounted() {
-      this.uLogin = JSON.parse(sessionStorage.getItem("user")).uLogin;
       let bol = JSON.parse(sessionStorage.getItem("query"));
       let tab = sessionStorage.getItem("activeItem");
       let time1 = JSON.parse(sessionStorage.getItem("qTime"));

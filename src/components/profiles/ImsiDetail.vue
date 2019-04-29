@@ -136,7 +136,8 @@
             <el-form :inline="true" :model="query" align="left" style="text-align: left"
                      v-show="getButtonVial('common:imsi:listImsiRecordBySpecialImsi')">
               <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
-                <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable>
+                <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable
+                           :filter-method="pinyinMatch">
                   <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                   </el-option>
                 </el-select>
@@ -157,8 +158,7 @@
             </el-form>
           </el-col>
           <el-col :span="6" align="right" v-show="getButtonVial('route:query')" style="text-align: right">
-            <el-button type="primary" size="medium" @click="gotoPath()" v-show="getButtonVial('place:query')">查看轨迹
-            </el-button>
+            <el-button type="primary" size="medium" @click="gotoPath()">查看轨迹</el-button>
           </el-col>
         </el-row>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
@@ -188,6 +188,7 @@
 </template>
 <script>
   import {formatDate, buttonValidator, getAreaLable} from "../../assets/js/util";
+  import PinyinMatch from 'pinyin-match';
 
   export default {
     data() {
@@ -201,7 +202,7 @@
         qTime: '',
         imsiDetail: {},
         persons: [],
-        places: [],
+        places: [], placesCopy: [],
         query: {size: 100},
         count: 0,
         list: [],
@@ -266,6 +267,21 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
       },
       handleType(val) {
         if (this.activeItem === 'person') {
@@ -424,11 +440,15 @@
       },
       //告警场所
       getPlaces() {
-        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          this.places = data.data.list;
-        }).catch((err) => {
-          this.places = [];
-        });
+        if (this.getButtonVial('place:query')) {
+          this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+            this.places = data.data.list;
+            this.placesCopy = Object.assign([], this.places);
+          }).catch((err) => {
+            this.places = [];
+            this.placesCopy = [];
+          });
+        }
       }
     },
     mounted() {

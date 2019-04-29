@@ -67,7 +67,7 @@
         </el-col>
         <el-col :span="8" align="right" style="text-align: right">
           <el-button type="primary" size="medium" @click="gotoTurnIMSI()" :disabled="sels.length==0"
-                     v-show="getButtonVial('workflow:translation:apply')&&activeItem=='result'&&task.followType=='IMSI'">
+                     v-show="getButtonVial('workflow:translation:apply')&&activeItem=='result'&&task.followType=='IMSI'&&uLogin=='uLogin'">
             翻码
           </el-button>
           <el-button type="primary" size="medium" @click="exportData()" v-show="getButtonVial(exportKey)">导出
@@ -342,7 +342,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC, buttonValidator} from "../../../assets/js/util";
+  import {formatDate, isPC, buttonValidator, encryData, decryData} from "../../../assets/js/util";
 
   var fileDownload = require('js-file-download');
   let md5 = require("crypto-js/md5");
@@ -353,6 +353,7 @@
         task: {},
         runBigPic: false,
         bigUrl: '',
+        uLogin: localStorage.getItem('login'),
         taskId: this.$route.query.taskId || '',
         followType: this.$route.query.followType || '',
         imgPath: require('../../../assets/img/icon_people.png'),
@@ -434,11 +435,23 @@
         }
         var arr = [];
         this.sels.forEach((item) => {
-          arr.push(item.imsi);
+          if (this.isSingle(item.imsi, arr)) {
+            arr.push(item.imsi);
+          }
         });
         var param = {caseId: this.task.caseId, task: ['follow', this.taskId], imsi: arr};
         sessionStorage.setItem("apply", JSON.stringify(param));
         this.$router.push({path: '/approvalApply', query: {type: 'follow'}});
+      },
+      //是否重复
+      isSingle(val, arr) {
+        let bol = true;
+        arr.forEach((item) => {
+          if (val == item) {
+            bol = false;
+          }
+        });
+        return bol;
       },
       selsChange(sels) {
         this.sels = sels;
@@ -465,7 +478,7 @@
         let pathUrl = "";
         let config;
         if (sessionStorage.getItem("user")) {
-          let userId = JSON.parse(sessionStorage.getItem("user")).userId;
+          let userId = JSON.parse(decryData(sessionStorage.getItem("user"))).userId;
           if (userId) {
             if (!param) {
               param = {}

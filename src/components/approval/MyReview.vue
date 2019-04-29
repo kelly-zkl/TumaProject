@@ -87,7 +87,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {formatDate, buttonValidator, encryData, decryData} from "../../assets/js/util";
 
   export default {
     data() {
@@ -176,7 +176,7 @@
           this.sels.forEach((item) => {
             ids.push(item.recordId);
           });
-          param = {ids: ids, operator: JSON.parse(sessionStorage.getItem("user")).userId, remark: ''};
+          param = {ids: ids, operator: JSON.parse(decryData(sessionStorage.getItem("user"))).userId, remark: ''};
           this.$post('/workflow/translation/ccread', param, '操作成功').then((data) => {
             if ("000000" === data.code) {
               this.getData();
@@ -225,7 +225,7 @@
           this.query.ccReadStatus = 0;
         }
         this.listLoading = true;
-        this.$post('/workflow/translation/mycc/' + JSON.parse(sessionStorage.getItem("user")).userId, this.query).then((data) => {
+        this.$post('/workflow/translation/mycc/' + JSON.parse(decryData(sessionStorage.getItem("user"))).userId, this.query).then((data) => {
           this.imsiList = data.data.records;
           this.count = data.data.count;
           setTimeout(() => {

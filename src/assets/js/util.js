@@ -37,36 +37,23 @@ export const setPropFromJSON = (json, name, value) => {
   return stringify;
 };
 
-// Bean: {
-//   /**
-//    * @param source 网络请求的数据
-//    * @param target data声明的对象
-//    */
-//   copyProperty: function (source, target) {
-//     if (source === undefined) source = {};
-//     let targetFileds = Object.getOwnPropertyNames(target);
-//     let sourceFileds = Object.getOwnPropertyNames(source);
-//     let index;
-//     for (index in targetFileds) {
-//       let filed = targetFileds[index];
-//       if (!$.List.contains(sourceFileds, filed)) {
-//         source[filed] = undefined;
-//       }
-//     }
-//     return source;
-//   },
-// },
-
-// List: {
-//   contains: function (list, obj) {
-//     let index;
-//     for (index in list) {
-//       if (list[index] === obj) return true;
-//     }
-//     return false;
-//   }
-// },
-
+//数据加解密
+//加密
+export const encryData = (text) => {
+  var key = CryptoJS.enc.Utf8.parse('wisec-zkl-2019-04-26');
+  var iv = CryptoJS.enc.Utf8.parse('wisec-2017-szcsddfdgfd');
+  var encrypted = CryptoJS.AES.encrypt(text, key,
+    {iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7});
+  return encrypted.toString();    //返回的是base64格式的密文
+};
+//解密
+export const decryData = (text) => {
+  var key = CryptoJS.enc.Utf8.parse('wisec-zkl-2019-04-26');
+  var iv = CryptoJS.enc.Utf8.parse('wisec-2017-szcsddfdgfd');
+  var decrypted = CryptoJS.AES.decrypt(text, key,
+    {iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7});
+  return decrypted.toString(CryptoJS.enc.Utf8);
+};
 
 export const formatDate = (date, fmt) => {
   if (/(y+)/.test(fmt)) {
@@ -154,54 +141,6 @@ export const isPC = () => {
     flag = true;
   }
   return flag;
-};
-//数据加解密
-
-//加密
-export const encryData = (text) => {
-  // let key = CryptoJS.enc.Utf8.parse("8NONwyJtHesysWpM");
-  //
-  // let encryptedData = CryptoJS.AES.encrypt(text, key, {
-  //   mode: CryptoJS.mode.ECB,
-  //   padding: CryptoJS.pad.Pkcs7
-  // });
-  //需要加密的内容
-  var C = CryptoJS;
-
-  var message = C.enc.Utf8.parse('123456789');
-  var key = C.enc.Utf8.parse('8NONwyJtHesysWpM');
-  var iv = C.enc.Utf8.parse('0000000000000000');
-
-
-  var str1 = C.AES.encrypt(message, key, {
-    iv: iv,
-    mode: C.mode.CBC,
-    padding: C.pad.NoPadding
-  }).ciphertext.toString();
-  console.log(str1);
-  var str2 = C.AES.decrypt(C.lib.CipherParams.create({ciphertext: C.enc.Hex.parse(str1)}),
-    key, {iv: iv, mode: C.mode.CBC, padding: C.pad.NoPadding}).toString();
-
-
-  console.log(str2)
-  return str2;
-};
-//解密
-export const decryData = (text) => {
-  let key = CryptoJS.enc.Utf8.parse("8NONwyJtHesysWpM");
-
-  let encryptedData = text.ciphertext.toString();
-
-  let encryptedHexStr = CryptoJS.enc.Hex.parse(encryptedData);
-  let encryptedBase64Str = CryptoJS.enc.Base64.stringify(encryptedHexStr);
-
-  let decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, {
-    mode: CryptoJS.mode.ECB,
-    padding: CryptoJS.pad.Pkcs7
-  });
-
-  let decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
-  return decryptedStr;
 };
 /*验证时间段是否是正常范围*/
 export const compareTime = (start, end) => {

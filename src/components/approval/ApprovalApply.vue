@@ -31,13 +31,13 @@
                     </el-radio-button>
                   </el-radio-group>
                 </el-form-item>
-                <el-form-item label="关联案件" align="left" style="margin:0 0 15px 0" prop="caseId">
+                <el-form-item label="关联案件" align="left" style="margin:0 0 15px 0">
                   <el-select v-model="approval.caseId" placeholder="选择案件" filterable clearable>
                     <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
                     </el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="侦查任务" align="left" style="margin:0 0 15px 0" prop="caseId">
+                <el-form-item label="侦查任务" align="left" style="margin:0 0 15px 0">
                   <el-cascader placeholder="选择侦查任务" :options="tasks" filterable clearable
                                v-model="approval.task"></el-cascader>
                 </el-form-item>
@@ -79,6 +79,7 @@
 </template>
 <script>
   import {numValid, mobileValidator} from "../../assets/js/api";
+  import {encryData, decryData} from "../../assets/js/util";
 
   export default {
     data() {
@@ -120,7 +121,7 @@
             this.$message.error('请输入15位正确的IMSI');
             return;
           }
-          if (this.isMultiple(inputValue)) {
+          if (this.isSingle(inputValue)) {
             this.approval.applyImsiList.push(inputValue);
           }
         }
@@ -128,7 +129,7 @@
         this.inputValue = '';
       },
       //是否重复
-      isMultiple(val) {
+      isSingle(val) {
         let bol = true;
         this.approval.applyImsiList.forEach((item) => {
           if (val == item) {
@@ -151,7 +152,7 @@
           this.approval.spyTaskId = this.approval.task[1];
           this.getTaskName(this.approval.task[0], this.approval.task[1]);
         }
-        this.approval.creatorId = JSON.parse(sessionStorage.getItem("user")).userId;
+        this.approval.creatorId = JSON.parse(decryData(sessionStorage.getItem("user"))).userId;
         delete this.approval['task'];
         this.$post('/workflow/translation/apply', this.approval, "申请成功").then((data) => {
           sessionStorage.removeItem('apply');
@@ -238,10 +239,10 @@
       this.getTasks();
       if (this.$route.query.type) {
         var param = JSON.parse(sessionStorage.getItem('apply'));
-        this.approval.businessType = 'imsi2p';
-        this.approval.caseId = param.caseId;
-        this.approval.task = param.task;
-        this.approval.applyImsiList = param.imsi;
+        this.approval = {
+          businessType: 'imsi2p', staffLevel: '一级', applyImsiList: param.imsi,
+          caseId: param.caseId, task: param.task
+        };
       }
     }
   }

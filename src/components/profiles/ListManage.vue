@@ -125,7 +125,7 @@
         </el-table-column>
         <el-table-column align="left" label="操作" min-width="150" max-width="200" fixed="right">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('person:delKeyPerson')">查看
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('archives:detail')">查看
             </el-button>
             <el-button type="text" @click="showModify(scope.row)" v-show="getButtonVial('archives:updateDetails')">修改
             </el-button>
@@ -279,7 +279,7 @@
     globalValidImg, nameValidator, numValid, mobileValidator, doubleValid, mobileValidator2,
     userCardValid, globalValidZIP, isNull
   } from "../../assets/js/api";
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {formatDate, buttonValidator, encryData, decryData} from "../../assets/js/util";
 
   export default {
     data() {
@@ -555,7 +555,7 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
-            let param = JSON.parse(sessionStorage.getItem("system")).similarThreshold;
+            let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
             this.query.similarThreshold = param ? param : 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.getData();

@@ -26,8 +26,9 @@
                           :picker-options="pickerBeginDate" style="width: 360px">
           </el-date-picker>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable>
+        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
+          <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable
+                     :filter-method="pinyinMatch">
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
           </el-select>
@@ -108,7 +109,8 @@
 </template>
 <script>
   import {globalValidImg, doubleValid} from "../../../assets/js/api";
-  import {formatDate, buttonValidator} from "../../../assets/js/util";
+  import {formatDate, buttonValidator, encryData, decryData} from "../../../assets/js/util";
+  import PinyinMatch from 'pinyin-match';
 
   export default {
     data() {
@@ -123,13 +125,8 @@
         qTime: [new Date((formatDate(new Date((new Date().getTime() - 30 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
-        places: [],
-        count: 0,
-        listLoading: false,
-        list: [],
-        list10: [],
-        isShow: false,
-        isFirst: true,
+        places: [], placesCopy: [], count: 0, listLoading: false,
+        list: [], list10: [], isShow: false, isFirst: true,
         isSearch: false,
         firstPage: 0,
         page: 1,
@@ -189,6 +186,21 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
+      },
       handleChange(val) {
         if (!val || val.length == 0) {
           this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 30 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
@@ -211,7 +223,7 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
-            let param = JSON.parse(sessionStorage.getItem("system")).similarThreshold;
+            let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
             this.query.similarThreshold = param ? param : 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.isSearch = true;
@@ -345,11 +357,15 @@
       },
       //告警场所
       getPlaces() {
-        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          this.places = data.data.list;
-        }).catch((err) => {
-          this.places = [];
-        });
+        if (this.getButtonVial('place:query')) {
+          this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+            this.places = data.data.list;
+            this.placesCopy = Object.assign([], this.places);
+          }).catch((err) => {
+            this.places = [];
+            this.placesCopy = [];
+          });
+        }
       }
     },
     mounted() {

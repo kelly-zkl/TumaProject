@@ -67,8 +67,9 @@
       <div class="device">
         <el-dialog title="碰撞轨迹分析" :visible.sync="runPathLine" width="96%">
           <el-form :inline="true" :model="queryPath" align="left" style="text-align: left">
-            <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="queryPath.placeId" placeholder="场所" size="medium" filterable clearable>
+            <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
+              <el-select v-model="queryPath.placeId" placeholder="场所" size="medium" filterable clearable
+                         :filter-method="pinyinMatch">
                 <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                 </el-option>
               </el-select>
@@ -116,7 +117,8 @@
   </div>
 </template>
 <script>
-  import {buttonValidator, formatDate} from "../../../assets/js/util";
+  import {buttonValidator, formatDate, encryData, decryData} from "../../../assets/js/util";
+  import PinyinMatch from 'pinyin-match';
 
   var fileDownload = require('js-file-download');
   let md5 = require("crypto-js/md5");
@@ -135,7 +137,7 @@
         carLicense: '',
         records: [],
         pathLines: [],
-        places: [],
+        places: [], placesCopy: [],
         imgPath: require('../../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_img.svg') + "'",
         carTypes: [{value: 'small', label: '小型汽车'}, {value: 'veh', label: '大型汽车'}, {value: 'fe', label: '涉外车辆'},
@@ -149,12 +151,27 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
+      },
       //伴随结果导出
       exportData() {
         let param = {};
         let config;
         if (sessionStorage.getItem("user")) {
-          let userId = JSON.parse(sessionStorage.getItem("user")).userId;
+          let userId = JSON.parse(decryData(sessionStorage.getItem("user"))).userId;
           if (userId) {
             if (!param) {
               param = {}
@@ -237,11 +254,15 @@
       },
       //场所
       getPlaces() {
-        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          this.places = data.data.list;
-        }).catch((err) => {
-          this.places = [];
-        });
+        if (this.getButtonVial('place:query')) {
+          this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+            this.places = data.data.list;
+            this.placesCopy = Object.assign([], this.places);
+          }).catch((err) => {
+            this.places = [];
+            this.placesCopy = [];
+          });
+        }
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {

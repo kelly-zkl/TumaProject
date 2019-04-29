@@ -134,7 +134,7 @@
 </template>
 <script>
   import echarts from "echarts";
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {formatDate, encryData, decryData, buttonValidator} from "../../assets/js/util";
 
   export default {
     data() {
@@ -849,7 +849,7 @@
       }
     },
     mounted() {
-      var conPara = JSON.parse(sessionStorage.getItem("system"));
+      var conPara = JSON.parse(decryData(sessionStorage.getItem("system")));
       if (conPara) {
         this.systemParam = conPara;
       }

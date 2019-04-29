@@ -10,7 +10,7 @@
   </div>
 </template>
 <script>
-  import {getAreaLable} from "../../../assets/js/util";
+  import {getAreaLable, encryData, decryData} from "../../../assets/js/util";
 
   export default {
     props: ['formattedAddress'],
@@ -199,7 +199,7 @@
     },
     mounted() {
       let _this = this;
-      this.systemParam = JSON.parse(sessionStorage.getItem("system"));
+      this.systemParam = JSON.parse(decryData(sessionStorage.getItem("system")));
 
       this.map = new BMap.Map("container", {minZoom: 5, maxZoom: 20});
       this.map.enableScrollWheelZoom(true);

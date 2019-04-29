@@ -87,7 +87,8 @@
                 <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D7D7D7 solid">
                   管控对象类型
                 </div>
-                <el-table :data="task.blackClassList" class="center-block" v-if="task.blackClassList">
+                <el-table :data="task.blackClassList" class="center-block" v-if="task.blackClassList"
+                          :height="(tableHeight-40)+'px'">
                   <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
                   <el-table-column align="left" prop="name" label="重点人员名单">
                     <template slot-scope="scope">
@@ -97,7 +98,7 @@
                   <el-table-column align="left" prop="personNumbers" label="人员数量"
                                    :formatter="formatterAddress"></el-table-column>
                 </el-table>
-                <div v-else>
+                <div v-else v-bind:style="{height:(tableHeight-40)+'px',overflowY: 'auto'}">
                   <el-form-item label="人脸" align="left" style="margin: 0" v-if="task.featureList.length>0">
                     <div class="img-main" style="margin-top: 10px">
                       <div class="img-item" v-for="item in task.featureList" :key="item.imageId">
@@ -120,7 +121,7 @@
                 <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D7D7D7 solid">
                   布控场所
                 </div>
-                <el-table :data="task.placeList" class="center-block">
+                <el-table :data="task.placeList" class="center-block" :height="(tableHeight-40)+'px'">
                   <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
                   <el-table-column align="left" prop="permissionUrl" label="场所名称">
                     <template slot-scope="scope">

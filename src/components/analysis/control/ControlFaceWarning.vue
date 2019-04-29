@@ -2,8 +2,8 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="19" align="left" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 920px">
+        <el-col :span="20" align="left" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1100px">
             <el-form-item style="margin-bottom: 10px">
               <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag
                          :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -28,6 +28,13 @@
                               :picker-options="pickerBeginDate">
               </el-date-picker>
             </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
+              <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable
+                         :filter-method="pinyinMatch" style="width: 180px">
+                <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 130px">
                 <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
@@ -42,12 +49,6 @@
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearImgData()">重置</el-button>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable>
-                <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
-                </el-option>
-              </el-select>
             </el-form-item>
             <el-form-item label="年龄段" style="margin-bottom: 10px" v-show="isMore">
               <el-input-number v-model="query.startAge" controls-position="right" :min="1"
@@ -64,7 +65,7 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="5" align="right" style="text-align: right;margin-top:10px"
+        <el-col :span="4" align="right" style="text-align: right;margin-top:10px"
                 v-show="getButtonVial('warning:dealWithWarningById')">
           <el-button type="primary" size="medium" @click=changeStatus(2) :disabled="sels.length == 0">已处理</el-button>
           <el-button size="medium" @click=changeStatus(3) :disabled="sels.length == 0">误报</el-button>
@@ -141,16 +142,14 @@
   </div>
 </template>
 <script>
-  import {formatDate, buttonValidator} from "../../../assets/js/util";
+  import {formatDate, buttonValidator, encryData, decryData} from "../../../assets/js/util";
   import {globalValidImg, doubleValid} from "../../../assets/js/api";
+  import PinyinMatch from 'pinyin-match';
 
   export default {
     data() {
       return {
-        places: [],
-        isMore: false,
-        runBigPic: false,
-        bigUrl: '',
+        places: [], placesCopy: [], isMore: false, runBigPic: false, bigUrl: '',
         taskId: this.$route.query.taskId || '',
         imgPath: require('../../../assets/img/icon_people.png'),
         imgPath2: require('../../../assets/img/icon_img.svg'),
@@ -226,6 +225,21 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
+      },
       //全选  ==>  删除/结案
       selsChange(sels) {
         this.sels = sels;
@@ -257,7 +271,7 @@
         }).then(({value}) => {
           let param = {
             ids: arr, status: status, remark: value ? value : '',
-            dealWithUser: JSON.parse(sessionStorage.getItem("user")).account
+            dealWithUser: JSON.parse(decryData(sessionStorage.getItem("user"))).account
           };
           this.$post('warning/dealWithWarningById', param, "处理成功").then((data) => {
             this.$emit('refreshData', 'warning');
@@ -283,7 +297,7 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
-            let param = JSON.parse(sessionStorage.getItem("system")).similarThreshold;
+            let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
             this.query.similarThreshold = param ? param : 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.isSearch = true;
@@ -431,13 +445,17 @@
       },
       //场所
       getPlaces() {
-        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          if (data.data.list && data.data.list.length > 0) {
-            this.places = data.data.list;
-          }
-        }).catch((err) => {
-          this.places = [];
-        });
+        if (this.getButtonVial('place:query')) {
+          this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+            if (data.data.list && data.data.list.length > 0) {
+              this.places = data.data.list;
+              this.placesCopy = Object.assign([], this.places);
+            }
+          }).catch((err) => {
+            this.places = [];
+            this.placesCopy = [];
+          });
+        }
       }
     },
     mounted() {

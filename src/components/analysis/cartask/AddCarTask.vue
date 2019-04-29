@@ -45,7 +45,7 @@
           </el-form-item>
           <el-form-item label="分析场所" align="left">
             <el-select v-model="carTask.placeList" placeholder="分析场所" filterable multiple clearable
-                       collapse-tags style="width: 300px">
+                       collapse-tags style="width: 300px" :filter-method="pinyinMatch">
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
@@ -154,8 +154,9 @@
 </template>
 <script>
   import PlaceMap from '../PlaceMap';
-  import {formatDate, getAreaLable, compareTime} from "../../../assets/js/util";
+  import {formatDate, getAreaLable, compareTime, encryData, decryData} from "../../../assets/js/util";
   import {numValid, carValid} from "../../../assets/js/api";
+  import PinyinMatch from 'pinyin-match';
 
   export default {
     data() {
@@ -172,11 +173,7 @@
         taskNo: this.$route.query.no || '',
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
         provinceList: JSON.parse(localStorage.getItem("areas")),
-        areaList: [],
-        places: [],
-        placeList: [],
-        placeList1: [],
-        sels: [],
+        areaList: [], places: [], placesCopy: [], placeList: [], placeList1: [], sels: [],
         followTypes: [{value: 'imsi', label: 'IMSI'}, {value: 'car', label: '车牌'}],
         carTypes: [{value: 'small', label: '小型汽车'}, {value: 'veh', label: '大型汽车'}, {value: 'fe', label: '涉外车辆'},
           {value: 'police', label: '警用汽车'}, {value: 'sol', label: '军用汽车'}, {value: 'soach', label: '教练汽车'},
@@ -203,6 +200,21 @@
       }
     },
     methods: {
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
+      },
       getTaskDetail() {
         this.$post('car/task/detail', {taskNo: this.taskNo}).then((data) => {
           this.carTask = data.data;
@@ -305,9 +317,9 @@
               }).catch((err) => {
               });
             } else {
-              this.carTask.groupId = JSON.parse(sessionStorage.getItem("user")).groupId;
-              this.carTask.creatorId = JSON.parse(sessionStorage.getItem("user")).userId;
-              this.carTask.creatorName = JSON.parse(sessionStorage.getItem("user")).realName;
+              this.carTask.groupId = JSON.parse(decryData(sessionStorage.getItem("user"))).groupId;
+              this.carTask.creatorId = JSON.parse(decryData(sessionStorage.getItem("user"))).userId;
+              this.carTask.creatorName = JSON.parse(decryData(sessionStorage.getItem("user"))).realName;
               this.$post("car/task/create", this.carTask, "创建成功").then((data) => {
                 if ("000000" === data.code)
                   this.$router.go(-1);
@@ -415,8 +427,10 @@
       getPlaces() {
         this.$post("place/query", {page: 1, size: 999999}).then((data) => {
           this.places = data.data.list;
+          this.placesCopy = Object.assign([], this.places);
         }).catch((err) => {
           this.places = [];
+          this.placesCopy = [];
         });
       }
     },

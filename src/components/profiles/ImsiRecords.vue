@@ -41,7 +41,7 @@
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
           <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable
-                     style="width: 160px">
+                     style="width: 160px" :filter-method="pinyinMatch">
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
           </el-select>
@@ -98,7 +98,8 @@
 
 <script>
   import {numValid, noValidator} from "../../assets/js/api";
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {formatDate, encryData, decryData, buttonValidator} from "../../assets/js/util";
+  import PinyinMatch from 'pinyin-match';
 
   var fileDownload = require('js-file-download');
   let md5 = require("crypto-js/md5");
@@ -111,10 +112,7 @@
         tableHeight: window.innerHeight - 285,
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
-        count: 0,
-        places: [],
-        list: [],
-        list10: [],
+        count: 0, places: [], placesCopy: [], list: [], list10: [],
         isShow: false,
         isFirst: true,
         isSearch: false,
@@ -172,13 +170,27 @@
               return beginDateVal < time.getTime();
             }
           }
-        },
-        isExport: true
+        }
       }
     },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
       },
       //导出数据
       confirmExport() {
@@ -190,37 +202,26 @@
           }
         }
         if (param.endTime - param.startTime > 60 * 60 * 24 * 365) {
-          this.isExport = false;
+          this.$message.error('日期超过一年，不能导出');
+          return;
         }
         delete param['pageTime'];
         delete param['size'];
         let config;
         if (sessionStorage.getItem("user")) {
-          let userId = JSON.parse(sessionStorage.getItem("user")).userId;
+          let userId = JSON.parse(decryData(sessionStorage.getItem("user"))).userId;
           if (userId) {
             let stringify = JSON.stringify(param);
             let token = md5(stringify + userId + "key-hz-20180123").toString();
             config = {headers: {token: token, tokenId: userId}, responseType: 'arraybuffer'};
           }
         }
-        if (this.isExport) {
-          this.axios.post("archives/export/record", param, config).then((res) => {
-            let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
-            let fileName = decodeURIComponent(fileStr);
-            fileDownload(res.data, fileName);
-          }).catch((res) => {
-          });
-        } else {
-          this.$confirm('当前数据量过大，导出需要较长时间，是否确认立即导出？', '提示', {type: 'info'}).then(() => {
-            this.axios.post("archives/export/record", param, config).then((res) => {
-              let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
-              let fileName = decodeURIComponent(fileStr);
-              fileDownload(res.data, fileName);
-            }).catch((res) => {
-            });
-          }).catch((res) => {
-          });
-        }
+        this.axios.post("archives/export/record", param, config).then((res) => {
+          let fileStr = res.headers['content-disposition'].split(";")[1].split("filename=")[1];
+          let fileName = decodeURIComponent(fileStr);
+          fileDownload(res.data, fileName);
+        }).catch((res) => {
+        });
       },
       //更多条件
       showMore() {
@@ -375,11 +376,15 @@
       },
       //告警场所
       getPlaces() {
-        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          this.places = data.data.list;
-        }).catch((err) => {
-          this.places = [];
-        });
+        if (this.getButtonVial('place:query')) {
+          this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+            this.places = data.data.list;
+            this.placesCopy = Object.assign([], this.places);
+          }).catch((err) => {
+            this.places = [];
+            this.placesCopy = [];
+          });
+        }
       }
     },
     mounted() {

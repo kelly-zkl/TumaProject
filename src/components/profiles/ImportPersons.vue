@@ -3,8 +3,7 @@
     <section class="content">
       <el-row>
         <el-col :span="21" align="left" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('person:query')"
-                   style="text-align: left;width: 1100px">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1100px">
             <el-form-item style="margin-bottom: 10px">
               <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag
                          :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -73,8 +72,9 @@
           </el-form>
         </el-col>
         <el-col :span="3" align="left" style="text-align: left" v-show="getButtonVial('person:count')">
-          <label class="el-form-item__label" style="font-size:16px">{{personCount}}<span
-            style="font-size:12px;color:#999">个档案</span></label>
+          <label class="el-form-item__label" style="font-size:16px"><span
+            style="font-size:12px;color:#999">档案总数 </span>{{personCount}}<span
+            style="font-size:12px;color:#999"> 个</span></label>
         </el-col>
       </el-row>
       <el-table ref="table" :data="list10" v-loading="listLoading" class="center-block" stripe
@@ -145,7 +145,7 @@
 </template>
 <script>
   import {globalValidImg, doubleValid, mobileValidator, mobileValidator2} from "../../assets/js/api";
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {formatDate, encryData, decryData, buttonValidator} from "../../assets/js/util";
 
   export default {
     data() {
@@ -226,7 +226,7 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
-            let param = JSON.parse(sessionStorage.getItem("system")).similarThreshold;
+            let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
             this.query.similarThreshold = param ? param : 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.getData();

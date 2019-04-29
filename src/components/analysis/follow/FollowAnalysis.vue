@@ -3,8 +3,7 @@
     <section class="content">
       <el-row>
         <el-col :span="19" align="left" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('follow:query')"
-                   style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.taskName" placeholder="任务名称" size="medium" style="width: 160px"
                         :maxlength=20></el-input>

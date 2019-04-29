@@ -3,8 +3,7 @@
     <section class="content">
       <el-row>
         <el-col :span="19" align="left" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('place:query')"
-                   style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.placeName" placeholder="场所编码/名称" size="medium" :maxlength=30></el-input>
             </el-form-item>
@@ -150,7 +149,7 @@
   </div>
 </template>
 <script>
-  import {buttonValidator, getAreaLable} from "../../assets/js/util";
+  import {buttonValidator, getAreaLable, encryData, decryData} from "../../assets/js/util";
   import MapView from './deviceSet/BMap';
   import {numValid} from "../../assets/js/api";
 
@@ -515,11 +514,13 @@
       },
       //获取组织列表
       getOrganizations() {
-        this.$post('/manager/group/query', {
-          page: 1, size: 9999, userId: JSON.parse(sessionStorage.getItem("user")).userId
-        }).then((data) => {
-          this.organizations = data.data.content;
-        });
+        if (this.getButtonVial('manager:group:query')) {
+          this.$post('/manager/group/query', {
+            page: 1, size: 9999, userId: JSON.parse(decryData(sessionStorage.getItem("user"))).userId
+          }).then((data) => {
+            this.organizations = data.data.content;
+          });
+        }
       },
       getGroupName(val) {
         for (let item of this.organizations) {

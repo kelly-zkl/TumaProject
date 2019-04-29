@@ -49,8 +49,8 @@
             </el-button>
           </el-form-item>
           <el-form-item label="布控场所" align="left" style="margin:0" prop="placeList">
-            <el-select v-model="controlTask.placeList" placeholder="布控场所" size="medium" filterable multiple clearable
-                       collapse-tags>
+            <el-select v-model="controlTask.placeList" placeholder="布控场所" size="medium" filterable multiple
+                       clearable collapse-tags :filter-method="pinyinMatch">
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
@@ -164,7 +164,8 @@
 <script>
   import {numValid} from "../../../assets/js/api";
   import PlaceMap from '../PlaceMap';
-  import {formatDate, getAreaLable, compareTime} from "../../../assets/js/util";
+  import {formatDate, getAreaLable, compareTime, encryData, decryData} from "../../../assets/js/util";
+  import PinyinMatch from 'pinyin-match';
 
   export default {
     data() {
@@ -176,7 +177,7 @@
           featureList: [], blackClassList: [], dispositionType: 0, timerange: []
         },
         cases: [],
-        places: [],
+        places: [], placesCopy: [],
         placeList: [],
         imgList: [],
         inputVisible: false,
@@ -206,6 +207,47 @@
         sels: [],
         placeList1: [],
         pickerBeginDate: {
+          shortcuts: [{
+            text: '最近6小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              end.setTime(start.getTime() + 3600 * 1000 * 6);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近12小时',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              end.setTime(start.getTime() + 3600 * 1000 * 12);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              end.setTime(start.getTime() + 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              end.setTime(start.getTime() + 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              const start = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/'));
+              end.setTime(start.getTime() + 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }],
           disabledDate: (time) => {
             let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
             if (beginDateVal) {
@@ -219,6 +261,21 @@
       showMap() {
         this.mapVisible = true;
         // this.$refs.map.clearArea();
+      },
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
       },
       getWeeks(week) {
         let arr = [];
@@ -401,7 +458,7 @@
               }).catch((err) => {
               });
             } else {
-              this.controlTask.createBy = JSON.parse(sessionStorage.getItem("user")).realName;
+              this.controlTask.createBy = JSON.parse(decryData(sessionStorage.getItem("user"))).realName;
               this.$post("disposition/add", this.controlTask, "创建成功").then((data) => {
                 if ("000000" === data.code)
                   this.$router.go(-1);
@@ -440,8 +497,10 @@
       getPlaces() {
         this.$post("place/query", {page: 1, size: 999999}).then((data) => {
           this.places = data.data.list;
+          this.placesCopy = Object.assign([], this.places);
         }).catch((err) => {
           this.places = [];
+          this.placesCopy = [];
         });
       },
       showDialog() {

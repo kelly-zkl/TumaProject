@@ -3,8 +3,7 @@
     <section class="content">
       <el-row>
         <el-col :span="24" align="left" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" v-show="getButtonVial('camera:query')"
-                   style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.cameraCode" placeholder="相机编码" size="medium" :maxlength=30></el-input>
             </el-form-item>
@@ -14,8 +13,9 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.placeId" placeholder="安装场所" size="medium" filterable clearable>
+            <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
+              <el-select v-model="query.placeId" placeholder="安装场所" size="medium" filterable clearable
+                         :filter-method="pinyinMatch">
                 <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                 </el-option>
               </el-select>
@@ -104,6 +104,7 @@
 <script>
   import {noSValidator} from "../../assets/js/api";
   import {isPC, buttonValidator, getAreaLable} from "../../assets/js/util";
+  import PinyinMatch from 'pinyin-match';
 
   export default {
     data() {
@@ -123,13 +124,27 @@
         areaList: [],
         count: 0,
         listLoading: false,
-        deviceList: [],
-        places: []
+        deviceList: [], places: [], placesCopy: [],
       }
     },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
       },
       //设置场所
       placeAdd() {
@@ -203,11 +218,15 @@
       },
       //获取场所列表
       getPlaces() {
-        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          this.places = data.data.list;
-        }).catch((err) => {
-          this.places = [];
-        });
+        if (this.getButtonVial('place:query')) {
+          this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+            this.places = data.data.list;
+            this.placesCopy = Object.assign([], this.places);
+          }).catch((err) => {
+            this.places = [];
+            this.placesCopy = [];
+          });
+        }
       },
       getPlaceName(id) {
         for (let item of this.places) {

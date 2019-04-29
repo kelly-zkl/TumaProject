@@ -27,7 +27,7 @@
         </el-col>
         <el-col :span="20" style="padding-left: 10px">
           <el-row>
-            <el-col :span="20" align="left" v-show="getButtonVial('manager:user:query')" style="text-align: left">
+            <el-col :span="20" align="left" style="text-align: left">
               <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left;width: 900px">
                 <el-form-item style="margin-bottom: 10px">
                   <el-input placeholder="账号/用户名" v-model="query.keyword" :maxlength="30"
@@ -89,7 +89,7 @@
             <el-table-column align="left" label="操作" min-width="100" max-width="130" fixed="right">
               <template slot-scope="scope">
                 <el-button type="text" style="margin-right: 10px" @click.stop="updateInfo(scope.row)"
-                           v-show="getButtonVial('manager:user:update')&&userId!=scope.row.userId">修改
+                           v-show="getButtonVial('manager:user:update')&&user.userId!=scope.row.userId">修改
                 </el-button>
                 <el-button type="text" @click="userUse(scope.row)"
                            v-show="getButtonVial('manager:user:update') && scope.row.groupAdmin != true">
@@ -170,11 +170,11 @@
             <el-row>
               <el-col :span="8" align="left">**********</el-col>
               <el-col :span="16" align="right" v-show="getButtonVial('manager:user:updatePwdByAdmin')">
-                <el-button type="text" v-show="userId === this.admin.creatorId"
+                <el-button type="text" v-show="user.userId === this.admin.creatorId"
                            @click="modifyPswVisible = true;modify = {adminPsw: '', newPsw: '', newPsw1: ''}">修改密码
                 </el-button>
                 <el-button type="text" @click="resetPswVisible = true;reset={adminPsw: ''}"
-                           v-show="userId === this.admin.creatorId">重置
+                           v-show="user.userId === this.admin.creatorId">重置
                 </el-button>
               </el-col>
             </el-row>
@@ -183,7 +183,7 @@
             <el-checkbox v-model="admin.uLogin">开启U盾登录</el-checkbox>
           </el-form-item>
           <el-form-item label="警号" v-show="admin.uLogin">
-            <el-input v-model="admin.policeNum" placeholder="登记警号，即可使用警员U盾登录" :maxlength="16"></el-input>
+            <el-input v-model.number="admin.policeNum" placeholder="登记警号，即可使用警员U盾登录" :maxlength="7"></el-input>
           </el-form-item>
           <!--<el-form-item label="所属组织" align="left" prop="groupId">-->
           <!--<el-select v-model="admin.groupId" placeholder="请选择组织" v-if="admin.groupAdmin != true" filterable>-->
@@ -269,8 +269,8 @@
 
 <script>
   import md5 from 'js-md5';
-  import {pswValidator, nameValidator, noValidator} from '../../assets/js/api';
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {pswValidator, nameValidator, numValid} from '../../assets/js/api';
+  import {formatDate, isPC, buttonValidator, encryData, decryData} from "../../assets/js/util";
 
   export default {
     data() {
@@ -308,24 +308,19 @@
         }
       };
       return {
-        listLoading: false,
-        addUserVisible: false,
-        modifyUserVisible: false,
-        modifyPswVisible: false,
-        resetPswVisible: false,
+        listLoading: false, addUserVisible: false, modifyUserVisible: false, modifyPswVisible: false,
+        resetPswVisible: false, addDepartVisible: false, isMore: false,
         addUserTitle: '创建用户',
         addDepart: '创建部门',
         departObj: {deptName: ''},
-        addDepartVisible: false,
-        isMore: false,
         groupName: '', groupMem: 0, depmMem: 0,
         leftHeight: window.innerHeight - 222,
         tableHeight: window.innerHeight - 232,
         dialogWidth: isPC() ? '35%' : '90%',
-        userId: JSON.parse(sessionStorage.getItem("user")).userId,
+        user: JSON.parse(decryData(sessionStorage.getItem("user"))),
         admin: {
           account: '', realName: '', password: '12345678', roleList: [], uLogin: false,
-          groupId: JSON.parse(sessionStorage.getItem("user")).groupId
+          groupId: JSON.parse(decryData(sessionStorage.getItem("user"))).groupId
         },
         rules: {
           account: [
@@ -352,7 +347,7 @@
           ]
         },
         count: 0,
-        query: {page: 1, size: 10, myGroupId: JSON.parse(sessionStorage.getItem("user")).groupId},
+        query: {page: 1, size: 10, myGroupId: JSON.parse(decryData(sessionStorage.getItem("user"))).groupId},
         users: [],
         departments: [],
         setPsw: 'defaultPsw',
@@ -390,7 +385,7 @@
       },
       //获取部门列表
       getDepartments(id) {
-        let param = {groupId: id ? id : JSON.parse(sessionStorage.getItem("user")).groupId};
+        let param = {groupId: id ? id : this.user.groupId};
         this.$post('/manager/dept/query', param).then((data) => {
           if ("000000" === data.code) {
             this.departments = data.data ? data.data : [];
@@ -425,9 +420,9 @@
           msg = '修改成功';
           param = {deptId: this.departObj.deptId, deptName: this.departObj.deptName};
         } else {
-          let groupId = JSON.parse(sessionStorage.getItem("user")).groupId;
+          let groupId = this.user.groupId;
           let groupName = this.getGroupName(groupId);
-          let creatorId = JSON.parse(sessionStorage.getItem("user")).userId;
+          let creatorId = this.user.userId;
           param = {
             groupId: groupId, creatorId: creatorId,
             groupName: groupName, deptName: this.departObj.deptName, remark: ''
@@ -469,7 +464,7 @@
         this.clearData();
         this.admin = {
           account: '', realName: '', password: '12345678', roleList: [], uLogin: false,
-          groupId: JSON.parse(sessionStorage.getItem("user")).groupId
+          groupId: this.user.groupId
         };
         this.setPsw = 'defaultPsw';
         this.role = '';
@@ -579,17 +574,21 @@
         this.getUserList();
       },
       clearData() {
-        this.query = {page: 1, size: 10, myGroupId: JSON.parse(sessionStorage.getItem("user")).groupId};
+        this.query = {page: 1, size: 10, myGroupId: this.user.groupId};
         this.currentIdx = -1;
-        this.groupName = this.getGroupName(JSON.parse(sessionStorage.getItem("user")).groupId);
+        this.groupName = this.getGroupName(this.user.groupId);
         this.getUserList();
-        this.getDepartments(JSON.parse(sessionStorage.getItem("user")).groupId);
+        this.getDepartments(this.user.groupId);
       },
       onSubmit(formName, title) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
             if (this.admin.uLogin && (!this.admin.policeNum || this.admin.policeNum.length == 0)) {
               this.$message.error('请输入警号');
+              return;
+            }
+            if (this.admin.uLogin && !numValid(this.admin.policeNum)) {
+              this.$message.error('请输入正确的警号');
               return;
             }
             if (!this.role) {
@@ -602,7 +601,7 @@
               url = '/manager/user/update';
               msg = '修改成功';
             } else {
-              this.admin.creatorId = this.userId;
+              this.admin.creatorId = this.user.userId;
               this.admin.locked = 0;
               this.admin.password = md5(this.admin.password);
             }
@@ -631,21 +630,26 @@
       },
       //获取角色列表
       getRoles() {
-        this.$post('/manager/role/query', {
-          page: 1, size: 9999, state: 0, creatorGroupId: JSON.parse(sessionStorage.getItem("user")).groupId
-        }).then((data) => {
-          this.roles = data.data.content;
-        })
+        if (this.getButtonVial('manager:role:query')) {
+          this.$post('/manager/role/query', {
+            page: 1, size: 9999, state: 0, creatorGroupId: this.user.groupId
+          }).then((data) => {
+            this.roles = data.data.content;
+          })
+        }
       },
       //获取组织列表
       getOrganizations() {
-        this.$post('/manager/group/query', {page: 1, size: 9999, userId: this.userId}).then((data) => {
-          this.organizations = data.data.content;
-          this.groupName = this.getGroupName(JSON.parse(sessionStorage.getItem("user")).groupId);
-        });
+        if (this.getButtonVial('manager:group:query')) {
+          this.$post('/manager/group/query', {page: 1, size: 9999, userId: this.user.userId}).then((data) => {
+            this.organizations = data.data.content;
+            this.groupName = this.getGroupName(this.user.groupId);
+          });
+        }
       }
     },
     mounted() {
+      this.user = JSON.parse(decryData(sessionStorage.getItem("user")));
       this.getOrganizations();
       this.getRoles();
       this.getDepartments();

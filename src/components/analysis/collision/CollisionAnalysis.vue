@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="19" align="left" v-show="getButtonVial('collision:query')" style="text-align: left">
+        <el-col :span="19" align="left" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 920px">
             <el-form-item style="margin-bottom: 10px">
               <el-input v-model="query.taskName" placeholder="任务名称" size="medium" style="width: 160px"
@@ -93,7 +93,7 @@
 </template>
 
 <script>
-  import {formatDate, buttonValidator} from "../../../assets/js/util";
+  import {formatDate, buttonValidator, encryData, decryData} from "../../../assets/js/util";
 
   export default {
     data() {
@@ -204,7 +204,7 @@
           }).catch((err) => {
           });
         } else {
-          this.addTask.createBy = JSON.parse(sessionStorage.getItem("user")).realName;
+          this.addTask.createBy = JSON.parse(decryData(sessionStorage.getItem("user"))).realName;
           this.listLoading = true;
           this.$post('/collision/add', this.addTask, "创建成功").then((data) => {
             if ("000000" === data.code) {

@@ -3,20 +3,16 @@ import Router from 'vue-router'
 import Index from '@/components/Index'
 import Home from '@/components/Home'
 import Login from '@/components/Login'
-import Platforms from '@/components/Platforms'
 import PageError from "@/components/404";
 
 import DataHome from '@/components/overview/DataHome'
 import DataOverview from '@/components/overview/DataOverview'
 
-import WarningHome from '@/components/warning/WarningHome'
 import ImsiWarnings from '@/components/warning/ImsiWarnings'
 import CatchWarnings from '@/components/warning/CatchWarnings'
 import FaceWarningDetail from '@/components/warning/FaceWarningDetail'
 import ImsiWarningDetail from '@/components/warning/ImsiWarningDetail'
 
-import FileHome from '@/components/profiles/FileHome'
-import VipHome from '@/components/profiles/VipHome'
 import ImsiRecords from '@/components/profiles/ImsiRecords'
 import CatchRecords from '@/components/profiles/CatchRecords'
 import ImportPersons from '@/components/profiles/ImportPersons'
@@ -29,7 +25,6 @@ import PathLine from '@/components/profiles/PathLine'
 import CarRecords from '@/components/profiles/CarRecords'
 import CarDetail from '@/components/profiles/CarDetail'
 
-import AnalysisHome from '@/components/analysis/AnalysisHome'
 import CaseList from '@/components/analysis/case/CaseList'
 import CaseDetail from '@/components/analysis/case/CaseDetail'
 import CollisionAnalysis from '@/components/analysis/collision/CollisionAnalysis'
@@ -47,7 +42,6 @@ import CarTaskDetail from '@/components/analysis/cartask/CarTaskDetail'
 import ControlDetail from '@/components/analysis/control/ControlDetail'
 import CompareTool from '@/components/analysis/CompareTool'
 
-import ApprovalIndex from '@/components/approval/ApprovalIndex'
 import MyApply from '@/components/approval/MyApply'
 import MyReview from '@/components/approval/MyReview'
 import MyApproval from '@/components/approval/MyApproval'
@@ -55,14 +49,12 @@ import ImsiConver from '@/components/approval/ImsiConver'
 import ApprovalApply from '@/components/approval/ApprovalApply'
 import ApprovalDetail from '@/components/approval/ApprovalDetail'
 
-import DeviceHome from '@/components/device/DeviceHome'
 import DeviceMap from '@/components/device/DeviceMap'
 import CameraDevice from '@/components/device/CameraDevice'
 import CodeDevice from '@/components/device/CodeDevice'
 import PlaceManager from '@/components/device/PlaceManager'
 import PlaceDetail from '@/components/device/deviceSet/PlaceDetail'
 
-import SystemHome from '@/components/system/SystemHome'
 import UserList from '@/components/system/UserList'
 import RoleList from '@/components/system/RoleList'
 import MenuManager from '@/components/system/MenuManager'
@@ -262,12 +254,6 @@ export default new Router({
       name: "登录",
       hidden: true,
       component: Login
-    },
-    {
-      path: '/platforms',
-      name: "切换平台",
-      hidden: true,
-      component: Platforms
     },
     {
       path: '/404',

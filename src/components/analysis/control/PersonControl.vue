@@ -21,8 +21,7 @@
           </el-button-group>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="text-align: left"
-               v-show="getButtonVial('disposition:query')">
+      <el-form :inline="true" :model="query" align="left" style="text-align: left">
         <el-form-item style="margin-bottom: 10px">
           <el-input v-model="query.taskName" placeholder="模型名称" size="medium" style="width: 160px"
                     :maxlength=30></el-input>
@@ -31,12 +30,6 @@
           <el-input v-model="query.caseName" placeholder="案件名称" size="medium" style="width: 160px"
                     :maxlength=30></el-input>
         </el-form-item>
-        <!--<el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">-->
-        <!--<el-select v-model="query.placeId" placeholder="布控场所" size="medium" filterable clearable>-->
-        <!--<el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">-->
-        <!--</el-option>-->
-        <!--</el-select>-->
-        <!--</el-form-item>-->
         <el-form-item style="margin-bottom: 10px">
           <el-button type="primary" size="medium" @click="query.page=1;getData()">搜索</el-button>
         </el-form-item>
@@ -98,7 +91,6 @@
         tableHeight: window.innerHeight - 280,
         count: 0,
         listLoading: false,
-        places: [],
         controlList: [],
         sels: []
       }
@@ -213,14 +205,6 @@
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
-      },
-      //布控场所
-      getPlaces() {
-        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          this.places = data.data.list;
-        }).catch((err) => {
-          this.places = [];
-        });
       }
     },
     mounted() {
@@ -237,7 +221,6 @@
       } else {
         this.getData();
       }
-      this.getPlaces();
     }
   }
 </script>

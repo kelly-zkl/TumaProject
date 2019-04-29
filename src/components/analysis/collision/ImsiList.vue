@@ -16,9 +16,9 @@
                               :picker-options="pickerBeginDate">
               </el-date-picker>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
+            <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
               <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable
-                         style="width: 160px">
+                         style="width: 160px" :filter-method="pinyinMatch">
                 <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                 </el-option>
               </el-select>
@@ -82,7 +82,8 @@
   </div>
 </template>
 <script>
-  import {formatDate, buttonValidator} from "../../../assets/js/util";
+  import {formatDate, buttonValidator, encryData, decryData} from "../../../assets/js/util";
+  import PinyinMatch from 'pinyin-match';
 
   var fileDownload = require('js-file-download');
   let md5 = require("crypto-js/md5");
@@ -93,15 +94,13 @@
       return {
         isMore: false,
         taskId: this.sourceId,
-        listLoading: false,
-        qTime: '',
-        list: [],
-        list10: [],
+        listLoading: false, qTime: '',
+        list: [], list10: [],
         isShow: false,
         isFirst: true,
         isSearch: false,
         firstPage: 0,
-        places: [],
+        places: [], placesCopy: [],
         page: 1,
         query: {size: 100},
         count: 0,
@@ -171,6 +170,21 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
+      },
       //跳转IMSI记录
       gotoImsi(imsi) {
         let routeData = this.$router.resolve({path: '/imsiDetail', query: {imsi: imsi}});
@@ -182,7 +196,7 @@
         param.size = 100000;
         let config;
         if (sessionStorage.getItem("user")) {
-          let userId = JSON.parse(sessionStorage.getItem("user")).userId;
+          let userId = JSON.parse(decryData(sessionStorage.getItem("user"))).userId;
           if (userId) {
             if (!param) {
               param = {}
@@ -307,11 +321,15 @@
       },
       //场所列表
       getPlaces() {
-        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          this.places = data.data.list;
-        }).catch((err) => {
-          this.places = [];
-        });
+        if (this.getButtonVial('place:query')) {
+          this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+            this.places = data.data.list;
+            this.placesCopy = Object.assign([], this.places);
+          }).catch((err) => {
+            this.places = [];
+            this.placesCopy = [];
+          });
+        }
       }
     },
     mounted() {

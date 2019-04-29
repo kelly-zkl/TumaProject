@@ -195,7 +195,8 @@
                                  :max="99" style="width: 100px" size="medium" :step="0.1"></el-input-number>
               </el-form-item>
               <el-form-item style="margin-bottom: 10px">
-                <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable>
+                <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable
+                           :filter-method="pinyinMatch">
                   <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                   </el-option>
                 </el-select>
@@ -293,7 +294,8 @@
   </div>
 </template>
 <script>
-  import {formatDate, buttonValidator, getAreaLable} from "../../assets/js/util";
+  import {formatDate, buttonValidator, getAreaLable, encryData, decryData} from "../../assets/js/util";
+  import PinyinMatch from 'pinyin-match';
 
   export default {
     data() {
@@ -314,7 +316,7 @@
         faceList: [],
         imsiList: [],
         persons: [],
-        places: [],
+        places: [],placesCopy: [],
         query: {size: 100},
         count: 0,
         list: [],
@@ -381,6 +383,21 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
+      },
       //跳转布控详情页
       gotoControl() {
         if (this.taskDetail.id) {
@@ -441,7 +458,7 @@
         }).then(({value}) => {
           let param = {
             ids: [this.id], status: status, remark: value ? value : '',
-            dealWithUser: JSON.parse(sessionStorage.getItem("user")).account
+            dealWithUser: JSON.parse(decryData(sessionStorage.getItem("user"))).account
           };
           this.$post('warning/dealWithWarningById', param, "处理成功").then((data) => {
             this.$emit('refreshData', 'warning');
@@ -608,11 +625,15 @@
       },
       //告警场所
       getPlaces() {
-        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          this.places = data.data.list;
-        }).catch((err) => {
-          this.places = [];
-        });
+        if (this.getButtonVial('place:query')) {
+          this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+            this.places = data.data.list;
+            this.placesCopy = Object.assign([], this.places);
+          }).catch((err) => {
+            this.places = [];
+            this.placesCopy = [];
+          });
+        }
       },
       //处理记录
       getDealDetail() {

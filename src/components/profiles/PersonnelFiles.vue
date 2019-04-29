@@ -102,7 +102,8 @@
                                  max-width="100" :formatter="formatterAddress"></el-table-column>
                 <el-table-column align="left" label="操作" min-width="60" max-width="100">
                   <template slot-scope="scope">
-                    <el-button type="text" @click="gotoPathLine(scope)">轨迹</el-button>
+                    <el-button type="text" @click="gotoPathLine(scope)" v-show="getButtonVial('route:query')">轨迹
+                    </el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -332,16 +333,17 @@
                 imsis.push(item.imsi);
               });
             }
+            localStorage.setItem("pathUrl", JSON.stringify(this.userInfo.faceUrl));
+            console.log(imsis);
+            localStorage.setItem("pathImsi", JSON.stringify(imsis));
+            localStorage.setItem("pathFace", JSON.stringify(faces));
+
             this.userInfo.timeStr = formatDate(new Date(data.data.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
             this.userInfo.area = data.data.areaCode ? getAreaLable(data.data.areaCode) : '--';
             this.userInfo.lastTimeStr = formatDate(new Date(data.data.lastAppearTime * 1000), 'yyyy-MM-dd hh:mm:ss');
             this.userInfo.lastPlaceName = data.data.lastAppearPlace.placeName;
             var detail = data.data.lastAppearPlace.areaCode ? getAreaLable(data.data.lastAppearPlace.areaCode) : '--';
             this.userInfo.lastArea = data.data.lastAppearPlace.detailAddress ? detail + data.data.lastAppearPlace.detailAddress : detail;
-
-            localStorage.setItem("pathUrl", JSON.stringify(this.userInfo.faceUrl));
-            localStorage.setItem("pathImsi", JSON.stringify(imsis));
-            localStorage.setItem("pathFace", JSON.stringify(faces));
           }
         }).catch((err) => {
           this.$message.error(err);

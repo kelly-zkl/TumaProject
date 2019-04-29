@@ -14,6 +14,7 @@ import './assets/css/element-variables.scss'
 import "./assets/css/font-awesome.min.css";
 import './assets/css/el-custom.css'
 import "./assets/js/util.js";
+import {decryData} from "./assets/js/util.js";
 import "./assets/js/api.js";
 
 let md5 = require("crypto-js/md5");
@@ -44,7 +45,7 @@ Vue.prototype.$User_Url = "http://192.168.31.244:8090/manager-api";
 Vue.prototype.$post = function (path, param, successMsg, failMsg, isLogin) {
   let config;
   if (sessionStorage.getItem("user")) {
-    let userId = JSON.parse(sessionStorage.getItem("user")).userId;
+    let userId = JSON.parse(decryData(sessionStorage.getItem("user"))).userId;
     if (userId) {
       if (!param) {
         param = {}
@@ -97,7 +98,7 @@ Vue.prototype.$post = function (path, param, successMsg, failMsg, isLogin) {
 Vue.use(VueAxios, axios);
 
 router.beforeEach((to, from, next) => {
-  let user = JSON.parse(sessionStorage.getItem('user'));
+  let user = sessionStorage.getItem("user") ? JSON.parse(decryData(sessionStorage.getItem("user"))) : undefined;
   let login = localStorage.getItem('login');
   if (to.path === '/login' && from.path !== '/login' && from.path !== '/' && user && login) {//登录后不能返回到登录页
     next({path: from.path});

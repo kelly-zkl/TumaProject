@@ -38,7 +38,8 @@
               <el-option v-for="item in cameras" :key="item.cameraCode" :label="item.name" :value="item.cameraCode">
               </el-option>
             </el-select>
-            <el-select v-model="followTask.deviceId" placeholder="请选择设备" size="medium" v-else multiple collapse-tags>
+            <el-select v-model="followTask.deviceId" placeholder="请选择设备" size="medium" v-else multiple
+                       collapse-tags :filter-method="pinyinMatch" filterable clearable>
               <el-option v-for="item in deviceList" :key="item.deviceId" :label="item.deviceName"
                          :value="item.deviceId">
               </el-option>
@@ -241,7 +242,8 @@
 <script>
   import DeviceBmap from '../DeviceBmap';
   import {noSValidator} from "../../../assets/js/api";
-  import {formatDate, getAreaLable} from "../../../assets/js/util";
+  import {formatDate, getAreaLable, encryData, decryData} from "../../../assets/js/util";
+  import PinyinMatch from 'pinyin-match';
 
   export default {
     data() {
@@ -263,10 +265,7 @@
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
         cases: [],
         tasks: [{value: "IMSI", label: "IMSI"}],
-        qTime: '',
-        deviceList: [],
-        imgUrl: '',
-        returnData: {},
+        qTime: '', deviceList: [], deviceListCopy: [], imgUrl: '', returnData: {},
         deviceData: '',
         count: 0,
         vipList: [],
@@ -305,6 +304,21 @@
       }
     },
     methods: {
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.deviceListCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.deviceName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.deviceList = result;
+        } else {
+          this.deviceList = this.deviceListCopy;
+        }
+      },
       //获取伴随详情
       getTaskDetail() {
         this.$post('/follow/get/' + this.taskId, {}).then((data) => {
@@ -394,7 +408,7 @@
               }).catch((err) => {
               });
             } else {
-              this.followTask.createBy = JSON.parse(sessionStorage.getItem("user")).realName;
+              this.followTask.createBy = JSON.parse(decryData(sessionStorage.getItem("user"))).realName;
               this.$post("follow/add", this.followTask, "创建成功").then((data) => {
                 if ("000000" === data.code)
                   this.$router.go(-1);
@@ -424,8 +438,10 @@
       getDevice() {
         this.$post("device/query", {page: 1, size: 999999}).then((data) => {
           this.deviceList = data.data.list;
+          this.deviceListCopy = Object.assign([], this.deviceList);
         }).catch((err) => {
           this.deviceList = [];
+          this.deviceListCopy = [];
         });
       },
       //获取案件列表
@@ -602,7 +618,7 @@
       this.getPlaces();
       this.getCases();
       this.getDevice();
-      this.getCameras();
+      // this.getCameras();
     },
     components: {
       DeviceBmap

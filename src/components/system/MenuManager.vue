@@ -3,7 +3,7 @@
     <section class="content">
       <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left">
         <el-row>
-          <el-col :span="20" align="left" v-show="getButtonVial('manager:permission:query')" style="text-align: left">
+          <el-col :span="20" align="left" style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="菜单名称" v-model="query.name" :maxlength="30" size="medium"
                         style="width: 200px"></el-input>
@@ -62,7 +62,7 @@
                        v-show="getButtonVial('manager:permission:update')">修改
             </el-button>
             <el-button @click="deleteMenu(scope.row.permissionId)" type="text"
-                       v-show="getButtonVial('manager:permission:delete:*')">删除
+                       v-show="getButtonVial('manager:permission:delete')">删除
             </el-button>
             <el-button type="text" @click="menuUse(scope.row)" v-show="getButtonVial('manager:permission:update')">
               {{scope.row.status == 0 ? '停用' : '启用'}}
@@ -115,7 +115,7 @@
 </template>
 <script>
   import {pswValidator, nameValidator, noValidator} from '../../assets/js/api';
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {formatDate, isPC, buttonValidator, encryData, decryData} from "../../assets/js/util";
 
   export default {
     data() {
@@ -134,6 +134,7 @@
         menus: [],
         query: {page: 1, size: 10},
         count: 0,
+        userId: JSON.parse(decryData(sessionStorage.getItem("user"))).userId,
         menuTypes: [{value: 1, label: '目录'}, {value: 2, label: '菜单'}, {value: 3, label: '按钮'}],
         menu: {type: 1},
         addMenuTitle: '创建菜单',
@@ -183,7 +184,7 @@
             msg = '修改成功';
             tip = '修改菜单可能会改变系统的页面布局及功能，请谨慎操作！';
           } else {
-            this.menu.userId = JSON.parse(sessionStorage.getItem("user")).userId;
+            this.menu.userId = this.userId;
             this.menu.status = 0;
           }
           if (this.menu.pid === '' || this.menu.pid === null) {
@@ -287,7 +288,7 @@
       },
       //获取菜单树
       getMenuTree() {
-        this.$post('/manager/permission/menuTree/' + JSON.parse(sessionStorage.getItem("user")).userId + '/2', {}).then((data) => {
+        this.$post('/manager/permission/menuTree/' + this.userId + '/2', {}).then((data) => {
           this.menuTree = data.data;
         });
       }

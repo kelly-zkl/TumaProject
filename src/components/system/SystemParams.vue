@@ -86,7 +86,7 @@
 <script>
   import json from '../../assets/area.json';
   import {globalValidImg, doubleValid, numValid} from "../../assets/js/api";
-  import {buttonValidator} from "../../assets/js/util";
+  import {buttonValidator, encryData, decryData} from "../../assets/js/util";
 
   export default {
     data() {
@@ -250,9 +250,9 @@
                 if (item.code == 'image_search_threshold') {
                   this.systemParam.similarThreshold = item.value;
                 }
-                sessionStorage.setItem("system", JSON.stringify(this.systemParam));
-                this.$emit('refreshData', 'sys');
               });
+              sessionStorage.setItem("system", encryData(JSON.stringify(this.systemParam)));
+              this.$emit('refreshData', 'sys');
             }
           }
         }).catch((err) => {

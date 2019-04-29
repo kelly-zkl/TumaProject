@@ -64,7 +64,7 @@
       }
     },
     methods: {
-      //获取人脸详情
+      //获取车牌详情
       getCarDetail() {
         this.$post('car/record/detail', {id: this.carId}).then((data) => {
           this.carDetail = data.data;

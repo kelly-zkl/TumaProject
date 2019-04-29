@@ -29,7 +29,7 @@
         </el-col>
         <el-col :span="6" align="right" style="text-align: right">
           <el-button type="primary" size="medium" @click="gotoTurnIMSI()" :disabled="sels.length==0"
-                     v-show="getButtonVial('workflow:translation:apply')">翻码
+                     v-show="getButtonVial('workflow:translation:apply')&&uLogin=='uLogin'">翻码
           </el-button>
           <el-button type="primary" size="medium" @click="exportData()" :disabled="count==0"
                      v-show="getButtonVial('collision:export:analyseResult')">导出
@@ -64,7 +64,7 @@
   </div>
 </template>
 <script>
-  import {buttonValidator} from "../../../assets/js/util";
+  import {buttonValidator, encryData, decryData} from "../../../assets/js/util";
 
   var fileDownload = require('js-file-download');
   let md5 = require("crypto-js/md5");
@@ -78,6 +78,7 @@
         query: {page: 1, size: 10},
         count: 0,
         records: [], sels: [],
+        uLogin: localStorage.getItem('login'),
         operators: [{value: 0, label: '移动'}, {value: 1, label: '联通'}, {value: 2, label: '电信'}]
       }
     },
@@ -103,11 +104,26 @@
         }
         var arr = [];
         this.sels.forEach((item) => {
-          arr.push(item.imsi);
+          if (this.isSingle(item.imsi, arr)) {
+            arr.push(item.imsi);
+          }
         });
-        var param = {caseId: this.$parent.task.caseId, task: ['coll', this.$parent.task.taskId], imsi: arr};
+        var param = {
+          caseId: this.$parent.$parent.task.caseId,
+          task: ['coll', this.$parent.$parent.task.taskId], imsi: arr
+        };
         sessionStorage.setItem("apply", JSON.stringify(param));
         this.$router.push({path: '/approvalApply', query: {type: 'coll'}});
+      },
+      //是否重复
+      isSingle(val, arr) {
+        let bol = true;
+        arr.forEach((item) => {
+          if (val == item) {
+            bol = false;
+          }
+        });
+        return bol;
       },
       selsChange(sels) {
         this.sels = sels;
@@ -119,7 +135,7 @@
         param.size = 100000;
         let config;
         if (sessionStorage.getItem("user")) {
-          let userId = JSON.parse(sessionStorage.getItem("user")).userId;
+          let userId = JSON.parse(decryData(sessionStorage.getItem("user"))).userId;
           if (userId) {
             if (!param) {
               param = {}

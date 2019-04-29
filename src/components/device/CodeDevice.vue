@@ -3,12 +3,13 @@
     <section class="content">
       <div class="center-block">
         <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1300px">
-          <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('device:query')">
+          <el-form-item style="margin-bottom: 10px">
             <el-input placeholder="设备标识/ID" v-model="query.deviceName" :maxlength="30"
                       @change="changeDevice" size="medium" style="width:180px"></el-input>
           </el-form-item>
-          <el-form-item style="margin-bottom: 10px">
-            <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable>
+          <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
+            <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable
+                       :filter-method="pinyinMatch">
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
@@ -104,6 +105,7 @@
   import axios from "axios";
   import {noSValidator} from "../../assets/js/api";
   import {isPC, buttonValidator, getAreaLable} from "../../assets/js/util";
+  import PinyinMatch from 'pinyin-match';
 
   export default {
     data() {
@@ -123,7 +125,7 @@
         runningSetPlace: false,
         addPlace: {deviceId: '', deviceName: '', deviceForm: '', deviceType: ''},
         online: [{value: true, label: '在线'}, {value: false, label: '离线'}],
-        places: [],
+        places: [], placesCopy: [],
         deviceForms: [],
         deviceTypes: [],
         intervalid: null,
@@ -136,6 +138,21 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
       },
       //省市县变化
       areaChange(value) {
@@ -278,11 +295,15 @@
         }
       },
       getPlaces() {
-        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          this.places = data.data.list;
-        }).catch((err) => {
-          this.places = [];
-        });
+        if (this.getButtonVial('place:query')) {
+          this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+            this.places = data.data.list;
+            this.placesCopy = Object.assign([], this.places);
+          }).catch((err) => {
+            this.places = [];
+            this.placesCopy = [];
+          });
+        }
       }
     },
     mounted() {

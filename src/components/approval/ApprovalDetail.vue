@@ -134,7 +134,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {formatDate, encryData, decryData, buttonValidator} from "../../assets/js/util";
   import {mobileValidator} from "../../assets/js/api";
 
   export default {
@@ -143,6 +143,7 @@
         show: this.$route.query.type,
         recordId: this.$route.query.recordId || '',
         business: this.$route.query.business || 'imsi2p',
+        userId: JSON.parse(decryData(sessionStorage.getItem("user"))).userId,
         approval: {
           imsiList: [{name: 'dfvf', imsi: '153453', phone: ''}, {name: 'dfvf', imsi: '153453', phone: ''}],
           records: []
@@ -188,7 +189,7 @@
       },
       //获取翻码详情
       getDetail() {
-        this.$post('/workflow/translation/detail/' + this.recordId, {userId: JSON.parse(sessionStorage.getItem("user")).userId}).then((data) => {
+        this.$post('/workflow/translation/detail/' + this.recordId, {userId: this.userId}).then((data) => {
           this.approval = data.data.record;
           data.data.record.nodes.forEach((item, index) => {
             if (item.nodeName === data.data.record.currentNode) {
@@ -229,7 +230,7 @@
           },
           inputErrorMessage: '请输入200字以内的备注'
         }).then(({value}) => {
-          let param = {operator: JSON.parse(sessionStorage.getItem("user")).userId, remark: value ? value : ''};
+          let param = {operator: this.userId, remark: value ? value : ''};
           this.$post('/workflow/translation/cancelapply/' + this.recordId, param, "操作成功").then((data) => {
             if ("000000" === data.code) {
               this.getDetail();
@@ -264,7 +265,7 @@
         }
       },
       applyHttp(status, remark) {
-        let param = {result: status, operator: JSON.parse(sessionStorage.getItem("user")).userId, remark: remark};
+        let param = {result: status, operator: this.userId, remark: remark};
         this.$post('/workflow/translation/approve/' + this.recordId, param, "操作成功").then((data) => {
           if ("000000" === data.code) {
             this.$emit('refreshData', 'turn');
@@ -277,7 +278,7 @@
       updateStatus() {
         // this.$confirm('确认标记为已读?', '提示', {type: 'info'}).then(() => {
         let ids = [this.recordId];
-        let param = {ids: ids, operator: JSON.parse(sessionStorage.getItem("user")).userId, remark: ''};
+        let param = {ids: ids, operator: this.userId, remark: ''};
         this.$post('/workflow/translation/ccread', param).then((data) => {
           if ("000000" === data.code) {
             this.getDetail();
@@ -293,7 +294,7 @@
         this.runTranslation = true;
       },
       handleTranslation() {
-        let param = {operator: JSON.parse(sessionStorage.getItem("user")).userId, remark: ''};
+        let param = {operator: this.userId, remark: ''};
         let imsis = [];
         this.translations.forEach((item) => {
           if (item.phone && item.phone.length > 0) {

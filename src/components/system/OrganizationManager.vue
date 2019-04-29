@@ -2,7 +2,7 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="20" align="left" v-show="getButtonVial('manager:group:query')" style="text-align: left">
+        <el-col :span="20" align="left" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left">
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="组织名称" v-model="query.groupName" :maxlength="20"
@@ -65,11 +65,11 @@
           <template slot-scope="scope">
             <el-button type="text" @click.stop="modifyOrganization(scope.row)"
                        v-show="getButtonVial('manager:group:update') && scope.row.groupId.length > 3
-                                && groupId != scope.row.groupId&&userId==scope.row.creatorId">修改
+                                && user.groupId != scope.row.groupId&&user.userId==scope.row.creatorId">修改
             </el-button>
             <el-button @click="deleteOrganization(scope.row.groupId)" type="text"
-                       v-show="getButtonVial('manager:group:delete:*') && scope.row.groupId.length > 3
-                                && groupId!=scope.row.groupId&&userId==scope.row.creatorId">删除
+                       v-show="getButtonVial('manager:group:delete') && scope.row.groupId.length > 3
+                                && user.groupId!=scope.row.groupId&&user.userId==scope.row.creatorId">删除
             </el-button>
           </template>
         </el-table-column>
@@ -165,7 +165,7 @@
 <script>
   import md5 from 'js-md5';
   import {pswValidator, nameValidator, noValidator} from '../../assets/js/api';
-  import {isPC, buttonValidator, getAreaLable} from "../../assets/js/util";
+  import {isPC, buttonValidator, getAreaLable, encryData, decryData} from "../../assets/js/util";
 
   export default {
     data() {
@@ -190,10 +190,12 @@
         addPoliceTitle: '创建派出所',
         addPoliceVisible: false,
         dialogWidth: isPC ? '40%' : '90%',
-        groupId: JSON.parse(sessionStorage.getItem("user")).groupId,
-        userId: JSON.parse(sessionStorage.getItem("user")).userId,
+        user: JSON.parse(decryData(sessionStorage.getItem("user"))),
         groupName: '--',
-        query: {page: 1, size: 10, userId: JSON.parse(sessionStorage.getItem("user")).userId, relateAreas: []},
+        query: {
+          page: 1, size: 10, relateAreas: [],
+          userId: JSON.parse(decryData(sessionStorage.getItem("user"))).userId
+        },
         count: 0,
         groupState: '',
         group: {areaCodes: [], isCreateAdmin: 0},
@@ -254,8 +256,8 @@
                 }
                 this.police.adminPsw = md5(this.police.adminPsw);
               }
-              this.police.creatorId = JSON.parse(sessionStorage.getItem("user")).userId;
-              this.police.pgroupId = this.groupId;
+              this.police.creatorId = this.user.userId;
+              this.police.pgroupId = this.user.groupId;
               this.police.type = 1;//0：公安机关，1：派出所
             }
 
@@ -306,8 +308,8 @@
                 }
                 this.group.adminPsw = md5(this.group.adminPsw);
               }
-              this.group.creatorId = JSON.parse(sessionStorage.getItem("user")).userId;
-              this.group.pgroupId = this.groupId;
+              this.group.creatorId = this.user.userId;
+              this.group.pgroupId = this.user.groupId;
               this.group.type = 0;//0：公安机关，1：派出所
             }
 
@@ -389,7 +391,7 @@
         this.getOrganizations();
       },
       clearData() {
-        this.query = {page: 1, size: 10, userId: JSON.parse(sessionStorage.getItem("user")).userId, relateAreas: []};
+        this.query = {page: 1, size: 10, userId: this.user.userId, relateAreas: []};
         this.getOrganizations();
       },
       //格式化内容   有数据就展示，没有数据就显示--
@@ -411,20 +413,16 @@
       },
       //获取当前用户的管辖区域
       getAreas() {
-        this.$post("/manager/area/querysubs", {
-          parentCodes: JSON.parse(sessionStorage.getItem("user")).authorizeAreaCodes
-        }).then((data) => {
+        this.$post("/manager/area/querysubs", {parentCodes: this.user.authorizeAreaCodes}).then((data) => {
           this.provinceList = data.data;
         });
       },
       //获取用户列表
       getUserList() {
-        this.$post("/manager/user/query", {
-          page: 1, size: 9999, locked: 0,
-          myGroupId: JSON.parse(sessionStorage.getItem("user")).groupId
-        }).then((data) => {
-          this.users = data.data.content;
-        });
+        this.$post("/manager/user/query", {page: 1, size: 9999, locked: 0, myGroupId: this.user.groupId})
+          .then((data) => {
+            this.users = data.data.content;
+          });
       },
       getGroupName(groupId) {
         let str = '';
@@ -437,19 +435,17 @@
       },
       //获取全部组织列表
       getAllGroups() {
-        this.$post('/manager/group/query', {
-          page: 1, size: 9999,
-          userId: JSON.parse(sessionStorage.getItem("user")).userId
-        }).then((data) => {
+        this.$post('/manager/group/query', {page: 1, size: 9999, userId: this.user.userId}).then((data) => {
           this.groups = data.data.content;
-          this.groupName = this.getGroupName(JSON.parse(sessionStorage.getItem("user")).groupId);
+          this.groupName = this.getGroupName(this.user.groupId);
         }).catch((err) => {
           this.groups = [];
         });
       }
     },
     mounted() {
-      this.groupState = JSON.parse(sessionStorage.getItem("user")).newGroupState;
+      this.user = JSON.parse(decryData(sessionStorage.getItem("user")));
+      this.groupState = this.user.newGroupState;
       this.getAllGroups();
       this.getUserList();
       this.getAreas();

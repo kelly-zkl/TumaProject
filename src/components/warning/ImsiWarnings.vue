@@ -15,9 +15,9 @@
       </el-row>
       <div class="s-tip" v-show="showTip && getButtonVial('disposition:query')">
         <i class="el-icon-info" style="color: #1890FF;font-size: 15px;margin-right: 5px"></i>
-        <span style="color: #343434">当前没有进行中的布控任务。
+        <span style="color: #343434">当前没有进行中的预警模型。
           <el-button type="text" style="margin: 0;padding: 0" @click="$router.push('/addControl')"
-                     v-show="getButtonVial('disposition:add')">添加布控任务</el-button>
+                     v-show="getButtonVial('disposition:add')">添加预警模型</el-button>
         </span>
         <el-button type="text" style="margin: 0;padding: 0;position: absolute;right: 10px"
                    icon="el-icon-close" @click="showTip=false;calcuHeight()"></el-button>
@@ -46,20 +46,20 @@
             </el-time-picker>
           </el-tooltip>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
+        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
           <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable
-                     style="width: 160px">
+                     style="width: 160px" :filter-method="pinyinMatch">
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="query.dispositionTaskId" placeholder="布控任务" size="medium" style="width: 150px" clearable>
+        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('disposition:query')">
+          <el-select v-model="query.dispositionTaskId" placeholder="预警模型" size="medium" style="width: 150px" clearable>
             <el-option v-for="item in controlList" :key="item.id" :label="item.taskName" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'&&getButtonVial('case:query')">
           <el-select v-model="query.caseId" placeholder="关联案件" size="medium" style="width: 150px" clearable>
             <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
             </el-option>
@@ -75,7 +75,7 @@
         <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'&&isMore">
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'&&isMore&&getButtonVial('case:query')">
           <el-select v-model="query.caseId" placeholder="关联案件" size="medium" style="width: 150px" clearable>
             <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
             </el-option>
@@ -134,7 +134,8 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {formatDate, buttonValidator, encryData, decryData} from "../../assets/js/util";
+  import PinyinMatch from 'pinyin-match';
 
   export default {
     data() {
@@ -156,9 +157,7 @@
         isSearch: false,
         firstPage: 0,
         page: 1,
-        places: [],
-        cases: [],
-        controlList: [],
+        places: [], placesCopy: [], cases: [], controlList: [],
         showTip: false,
         sels: [],
         time1: ['00:00:00', '23:59:59'],
@@ -217,6 +216,21 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
+      },
       showMore() {
         this.isMore = !this.isMore;
         this.calcuHeight();
@@ -235,7 +249,7 @@
           }
         }
       },
-      //是否有进行中的布控任务
+      //是否有进行中的预警模型
       getTask() {
         if (this.getButtonVial('disposition:query')) {
           this.$post('disposition/query', {page: 1, size: 10, taskStatus: "EXECUTION"}).then((data) => {
@@ -278,10 +292,9 @@
         }).then(({value}) => {
           let param = {
             ids: arr, status: status, remark: value ? value : '',
-            dealWithUser: JSON.parse(sessionStorage.getItem("user")).account
+            dealWithUser: JSON.parse(decryData(sessionStorage.getItem("user"))).account
           };
           this.$post('warning/dealWithWarningById', param, "处理成功").then((data) => {
-            console.log('warning/dealWithWarningById');
             this.$emit('refreshData', 'warning');
             this.sels = [];
             this.getData();
@@ -426,27 +439,36 @@
       },
       //告警场所
       getPlaces() {
-        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          this.places = data.data.list;
-        }).catch((err) => {
-          this.places = [];
-        });
+        if (this.getButtonVial('place:query')) {
+          this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+            this.places = data.data.list;
+            this.placesCopy = Object.assign([], this.places);
+          }).catch((err) => {
+            this.places = [];
+            this.placesCopy = [];
+          });
+        }
       },
-      //布控任务
+      //预警模型
       getControl() {
-        this.$post('disposition/query', {size: 999999, page: 1}).then((data) => {
-          this.controlList = data.data.list;
-        }).catch((err) => {
-          this.controlList = [];
-        });
+        if (this.getButtonVial('disposition:query')) {
+          this.$post('disposition/query', {size: 999999, page: 1}).then((data) => {
+            this.controlList = data.data.list;
+          }).catch((err) => {
+            this.controlList = [];
+            this.placesCopy = [];
+          });
+        }
       },
       //关联案件
       getCases() {
-        this.$post('case/query', {page: 1, size: 999999}).then((data) => {
-          this.cases = data.data.list;
-        }).catch((err) => {
-          this.cases = [];
-        });
+        if (this.getButtonVial('case:query')) {
+          this.$post('case/query', {page: 1, size: 999999}).then((data) => {
+            this.cases = data.data.list;
+          }).catch((err) => {
+            this.cases = [];
+          });
+        }
       }
     },
     mounted() {

@@ -76,7 +76,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, isPC, buttonValidator} from "../../assets/js/util";
+  import {formatDate, buttonValidator, encryData, decryData} from "../../assets/js/util";
 
   export default {
     data() {
@@ -193,7 +193,7 @@
           this.query.finishStatus = 1;
         }
         this.listLoading = true;
-        this.$post('/workflow/translation/mytranslate/' + JSON.parse(sessionStorage.getItem("user")).userId, this.query).then((data) => {
+        this.$post('/workflow/translation/mytranslate/' + JSON.parse(decryData(sessionStorage.getItem("user"))).userId, this.query).then((data) => {
           this.imsiList = data.data.records;
           this.count = data.data.count;
           setTimeout(() => {

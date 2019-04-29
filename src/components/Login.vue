@@ -58,7 +58,7 @@
 
 <script>
   import md5 from 'js-md5';
-  import {formatDate} from "../assets/js/util";
+  import {formatDate, encryData, decryData} from "../assets/js/util";
 
   export default {
     data() {
@@ -99,8 +99,8 @@
           this.logining = false;
           if ("000000" === data.code) {
             if (data) {
-              localStorage.setItem("login", 'true');
-              sessionStorage.setItem("user", JSON.stringify(data.data));//用户信息
+              localStorage.setItem("login", 'uLogin');
+              sessionStorage.setItem("user", encryData(JSON.stringify(data.data)));//用户信息
               sessionStorage.setItem("face", JSON.stringify({id: ''}));
               sessionStorage.setItem("imsi", JSON.stringify({id: ''}));
               this.getMenuTree();
@@ -164,11 +164,11 @@
             if (data) {
               if (this.savePsw === true) {
                 user.acc = this.account.loginId;
-                user.psw = this.account.password;
+                user.psw = encryData(this.account.password);
               }
               localStorage.setItem("user", JSON.stringify(user));//是否保存账号/密码
               localStorage.setItem("login", 'true');
-              sessionStorage.setItem("user", JSON.stringify(data.data));//用户信息
+              sessionStorage.setItem("user", encryData(JSON.stringify(data.data)));//用户信息
               sessionStorage.setItem("face", JSON.stringify({id: ''}));
               sessionStorage.setItem("imsi", JSON.stringify({id: ''}));
               this.getMenuTree();
@@ -204,9 +204,9 @@
       },
       //获取用户菜单权限
       getMenuTree() {
-        this.$post('/manager/permission/menuTree/' + JSON.parse(sessionStorage.getItem("user")).userId + '/2', {}).then((data) => {
+        this.$post('/manager/permission/menuTree/' + JSON.parse(decryData(sessionStorage.getItem("user"))).userId + '/2', {}).then((data) => {
           if (data.data) {
-            sessionStorage.setItem("menu", JSON.stringify(data.data));
+            sessionStorage.setItem("menu", encryData(JSON.stringify(data.data)));
             if (data.data[0].permissionUrl) {
               this.$router.push(data.data[0].permissionUrl);
             } else if (data.data[0].childs) {
@@ -218,7 +218,7 @@
       //获取用户按钮权限
       getButton() {
         //菜单类型(1:目录,2:菜单,3:按钮)
-        this.$post('/manager/permission/listByType/' + JSON.parse(sessionStorage.getItem("user")).userId + '/3', {}).then((data) => {
+        this.$post('/manager/permission/listByType/' + JSON.parse(decryData(sessionStorage.getItem("user"))).userId + '/3', {}).then((data) => {
           sessionStorage.setItem("button", JSON.stringify(data.data));
         });
       },
@@ -256,8 +256,8 @@
                 if (item.code == 'image_search_threshold') {
                   this.systemParam.similarThreshold = item.value;
                 }
-                sessionStorage.setItem("system", JSON.stringify(this.systemParam));
               });
+              sessionStorage.setItem("system", encryData(JSON.stringify(this.systemParam)));
             }
           }
         }).catch((err) => {
@@ -274,7 +274,7 @@
         this.savePsw = true;
         this.account = {
           loginId: JSON.parse(localStorage.getItem("user")).acc,
-          password: JSON.parse(localStorage.getItem("user")).psw
+          password: decryData(JSON.parse(localStorage.getItem("user")).psw)
         };
       } else {
         this.savePsw = false;

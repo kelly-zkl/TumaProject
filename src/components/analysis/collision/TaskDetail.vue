@@ -195,8 +195,8 @@
                               placeholder="结束时间" size="medium" v-if="item.type=='time'">
               </el-time-picker>
             </el-tooltip>
-            <el-select v-model="item.places" size="medium" multiple collapse-tags style="width:230px"
-                       v-if="item.type=='places'" placeholder="选择场所">
+            <el-select v-model="item.places" size="medium" filterable multiple collapse-tags style="width:230px"
+                       clearable v-if="item.type=='places'" placeholder="选择场所" :filter-method="pinyinMatch">
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
@@ -327,6 +327,7 @@
   import imsiResultList from '../collision/ImsiResultList.vue';
   import helpDoc from '../collision/HelpDoc.vue';
   import PlaceMap from '../PlaceMap';
+  import PinyinMatch from 'pinyin-match';
 
   export default {
     data() {
@@ -345,7 +346,7 @@
         runHelpDoc: false, runSubtract: false, runModifyTask: false, runImsiList: false,
         runImsiResult: false, runResult: false, mapVisible: false, runSetParam: false,
         sourceId: '', sourceData: '', activeItem: 'regional',
-        cases: [], records: [], results: [], places: [], placeList: [], selResources: [],
+        cases: [], records: [], results: [], places: [], placesCopy: [], placeList: [], selResources: [],
         selResults: [], subArr: [],
         listLoading: false, intervalid: null, nameModify: false,
         pIndx: 0, task: {},
@@ -369,6 +370,21 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      //首字母搜索
+      pinyinMatch(val) {
+        if (val) {
+          var result = [];
+          this.placesCopy.forEach((item) => {
+            var m = PinyinMatch.match(item.placeName, val);
+            if (m) {
+              result.push(item);
+            }
+          });
+          this.places = result;
+        } else {
+          this.places = this.placesCopy;
+        }
       },
       //定时刷新设备的在线状态
       statusTask() {
@@ -812,8 +828,10 @@
       getPlaces() {
         this.$post("place/query", {page: 1, size: 999999}).then((data) => {
           this.places = data.data.list;
+          this.placesCopy = Object.assign([], this.places);
         }).catch((err) => {
           this.places = [];
+          this.placesCopy = [];
         });
       },
       //任务详情

@@ -183,8 +183,7 @@
               <div>{{imsiWarning.deviceName?imsiWarning.deviceName:'--'}}</div>
             </el-form-item>
           </el-form>
-          <div slot="footer" class="dialog-footer" align="center">
-            <!--<el-button type="warning" size="medium" @click="gotoImsiDetail">处理告警</el-button>-->
+          <div slot="footer" class="dialog-footer" align="center" v-show="getButtonVial('warning:getImsiWarning')">
             <el-button type="primary" size="medium" @click="gotoImsiDetail()">查看人员信息</el-button>
           </div>
         </el-dialog>
@@ -220,8 +219,7 @@
               </el-form>
             </el-col>
           </el-row>
-          <div slot="footer" class="dialog-footer" align="center">
-            <!--<el-button type="warning" size="medium" @click="gotoFaceDetail">处理告警</el-button>-->
+          <div slot="footer" class="dialog-footer" align="center" v-show="getButtonVial('warning:getFaceWarning')">
             <el-button type="primary" size="medium" @click="gotoFaceDetail()">查看人员信息</el-button>
           </div>
         </el-dialog>
@@ -263,7 +261,7 @@
   import md5 from 'js-md5';
   import searchAll from './SearchAll.vue'
   import {numValid, pswValidator, globalValidImg} from '../assets/js/api';
-  import {formatDate, buttonValidator} from "../assets/js/util";
+  import {formatDate, buttonValidator, encryData, decryData} from "../assets/js/util";
 
   export default {
     data() {
@@ -294,8 +292,8 @@
         warning: require('../assets/warning.mp3'),
         imgPath: require('../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../assets/img/icon_people.png') + "'",
-        userName: JSON.parse(sessionStorage.getItem("user")).realName || '',
-        userId: JSON.parse(sessionStorage.getItem("user")).userId,
+        userName: JSON.parse(decryData(sessionStorage.getItem("user"))).realName || '',
+        userId: JSON.parse(decryData(sessionStorage.getItem("user"))).userId,
         psw: {password: '', password1: '', password2: ''},
         imsiWarning: {id: ''},
         faceWarning: {id: ''},
@@ -398,7 +396,7 @@
       //页面变化-->导航栏选中状态变化
       refreshData(sys, val) {
         if (sys == 'sys') {//系统参数变动
-          this.systemParam = JSON.parse(sessionStorage.getItem("system"));
+          this.systemParam = JSON.parse(decryData(sessionStorage.getItem("system")));
         } else if (sys == 'warning') {//告警数量变动
           this.getWarningCount();
         } else if (sys == 'menu') {//权限变动
@@ -421,85 +419,100 @@
         sessionStorage.removeItem('apply');
       },
       getImsiWarning() {
-        this.imsiWarning = JSON.parse(sessionStorage.getItem("imsi"));
-        this.$post("warning/get/listImsiToday", {size: 1}).then((data) => {
-          if (data.data && data.data.length > 0) {
-            let imsi = data.data[0];
-            // console.log(new Date().getTime() - imsi.createTime * 1000);
-            if ((new Date().getTime() - imsi.createTime * 1000) >= -60 * 3 * 1000 && (new Date().getTime() - imsi.createTime * 1000) <= 60 * 3 * 1000) {//30s内的数据
-              // console.log(this.imsiWarning.id);
-              if (this.imsiWarning.id !== imsi.id) {
-                // console.log(imsi.id);
-                sessionStorage.setItem("imsi", JSON.stringify(imsi));
-                this.audio.play();
-                this.imsiWarning = imsi;
-                this.imsiWarning.timeStr = formatDate(new Date(this.imsiWarning.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-                this.runFaceWarning = false;
-                this.runImsiWarning = true;
-                setTimeout(() => {
-                  this.runImsiWarning = false;
-                }, 5000);
+        if (this.getButtonVial('warning:get:listImsiToday')) {
+          this.imsiWarning = JSON.parse(sessionStorage.getItem("imsi"));
+          this.$post("warning/get/listImsiToday", {size: 1}).then((data) => {
+            if (data.data && data.data.length > 0) {
+              let imsi = data.data[0];
+              // console.log(new Date().getTime() - imsi.createTime * 1000);
+              if ((new Date().getTime() - imsi.createTime * 1000) >= -60 * 3 * 1000 && (new Date().getTime() - imsi.createTime * 1000) <= 60 * 3 * 1000) {//30s内的数据
+                // console.log(this.imsiWarning.id);
+                if (this.imsiWarning.id !== imsi.id) {
+                  // console.log(imsi.id);
+                  sessionStorage.setItem("imsi", JSON.stringify(imsi));
+                  this.audio.play();
+                  this.imsiWarning = imsi;
+                  this.imsiWarning.timeStr = formatDate(new Date(this.imsiWarning.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+                  this.runFaceWarning = false;
+                  this.runImsiWarning = true;
+                  setTimeout(() => {
+                    this.runImsiWarning = false;
+                  }, 5000);
+                }
               }
             }
-          }
-        });
+          });
+        }
       },
       getFaceWarning() {
-        this.faceWarning = JSON.parse(sessionStorage.getItem("face"));
-        this.$post("warning/get/listFaceToday", {size: 1}).then((data) => {
-          if (data.data && data.data.length > 0) {
-            let face = data.data[0];
-            // console.log(new Date().getTime() - face.createTime * 1000);
-            if ((new Date().getTime() - face.createTime * 1000) >= -60 * 3 * 1000 && (new Date().getTime() - face.createTime * 1000) <= 60 * 3 * 1000) {//30s内的数据
-              // console.log(this.faceWarning.id);
-              if (this.faceWarning.id !== face.id) {
-                // console.log(face.id);
-                sessionStorage.setItem("face", JSON.stringify(face));
-                this.audio.play();
-                this.faceWarning = face;
-                this.faceWarning.timeStr = formatDate(new Date(this.faceWarning.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-                this.runImsiWarning = false;
-                this.runFaceWarning = true;
-                setTimeout(() => {
-                  this.runFaceWarning = false;
-                }, 5000);
+        if (this.getButtonVial('warning:get:listFaceToday')) {
+          this.faceWarning = JSON.parse(sessionStorage.getItem("face"));
+          this.$post("warning/get/listFaceToday", {size: 1}).then((data) => {
+            if (data.data && data.data.length > 0) {
+              let face = data.data[0];
+              // console.log(new Date().getTime() - face.createTime * 1000);
+              if ((new Date().getTime() - face.createTime * 1000) >= -60 * 3 * 1000 && (new Date().getTime() - face.createTime * 1000) <= 60 * 3 * 1000) {//30s内的数据
+                // console.log(this.faceWarning.id);
+                if (this.faceWarning.id !== face.id) {
+                  // console.log(face.id);
+                  sessionStorage.setItem("face", JSON.stringify(face));
+                  this.audio.play();
+                  this.faceWarning = face;
+                  this.faceWarning.timeStr = formatDate(new Date(this.faceWarning.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+                  this.runImsiWarning = false;
+                  this.runFaceWarning = true;
+                  setTimeout(() => {
+                    this.runFaceWarning = false;
+                  }, 5000);
+                }
               }
             }
-          }
-        });
+          });
+        }
       },
       gotoImsiDetail() {
-        this.runImsiWarning = false;
-        this.$router.push({
-          path: '/imsiWarningDetail',
-          query: {id: this.imsiWarning.id, imsi: this.imsiWarning.imsi, taskId: this.imsiWarning.dispositionTaskId}
-        });
+        if (this.getButtonVial('warning:getImsiWarning')) {
+          this.runImsiWarning = false;
+          this.$router.push({
+            path: '/imsiWarningDetail',
+            query: {id: this.imsiWarning.id, imsi: this.imsiWarning.imsi, taskId: this.imsiWarning.dispositionTaskId}
+          });
+        }
       },
       gotoFaceDetail() {
-        this.runFaceWarning = false;
-        this.$router.push({
-          path: '/faceWarningDetail',
-          query: {id: this.faceWarning.id, faceId: this.faceWarning.faceId, taskId: this.faceWarning.dispositionTaskId}
-        });
+        if (this.getButtonVial('warning:getFaceWarning')) {
+          this.runFaceWarning = false;
+          this.$router.push({
+            path: '/faceWarningDetail',
+            query: {
+              id: this.faceWarning.id, faceId: this.faceWarning.faceId,
+              taskId: this.faceWarning.dispositionTaskId
+            }
+          });
+        }
       },
       //告警数量
       getWarningCount() {
-        this.$post('/warning/countNoDealWithImsiWarning', {}).then((data) => {
-          if ("000000" === data.code) {
-            this.imsiCount = data.data;
-            this.$refs.mychild.imsi = this.imsiCount;
-            this.$refs.mychild.face = this.faceCount;
-          }
-        }).catch((err) => {
-        });
-        this.$post('/warning/countNoDealWithFaceWarning', {}).then((data) => {
-          if ("000000" === data.code) {
-            this.faceCount = data.data;
-            this.$refs.mychild.imsi = this.imsiCount;
-            this.$refs.mychild.face = this.faceCount;
-          }
-        }).catch((err) => {
-        });
+        if (this.getButtonVial('warning:countNoDealWithImsiWarning')) {
+          this.$post('/warning/countNoDealWithImsiWarning', {}).then((data) => {
+            if ("000000" === data.code) {
+              this.imsiCount = data.data;
+              this.$refs.mychild.imsi = this.imsiCount;
+              this.$refs.mychild.face = this.faceCount;
+            }
+          }).catch((err) => {
+          });
+        }
+        if (this.getButtonVial('warning:countNoDealWithFaceWarning')) {
+          this.$post('/warning/countNoDealWithFaceWarning', {}).then((data) => {
+            if ("000000" === data.code) {
+              this.faceCount = data.data;
+              this.$refs.mychild.imsi = this.imsiCount;
+              this.$refs.mychild.face = this.faceCount;
+            }
+          }).catch((err) => {
+          });
+        }
       },
       /*获取翻码待审批数量*/
       getTurnCount() {
@@ -597,7 +610,7 @@
       //获取用户按钮权限
       getButton() {
         //菜单类型(1:目录,2:菜单,3:按钮)
-        this.$post('/manager/permission/listByType/' + JSON.parse(sessionStorage.getItem("user")).userId + '/3', {}).then((data) => {
+        this.$post('/manager/permission/listByType/' + this.userId + '/3', {}).then((data) => {
           sessionStorage.setItem("button", JSON.stringify(data.data));
         });
       },
@@ -628,9 +641,9 @@
                 if (item.code == 'image_search_threshold') {
                   this.systemParam.similarThreshold = item.value;
                 }
-                this.$refs.mychild.systemParam = this.systemParam;
-                sessionStorage.setItem("system", JSON.stringify(this.systemParam));
               });
+              this.$refs.mychild.systemParam = this.systemParam;
+              sessionStorage.setItem("system", encryData(JSON.stringify(this.systemParam)));
             }
           }
         }).catch((err) => {
@@ -643,11 +656,7 @@
       this.getSystemDetail();
 
       this.searchImsis = localStorage.getItem("imsis") ? JSON.parse(localStorage.getItem("imsis")).imsi : [];
-
-      this.userName = JSON.parse(sessionStorage.getItem("user")).realName || '';
-
-      this.userId = JSON.parse(sessionStorage.getItem("user")).userId;
-      this.menu = JSON.parse(sessionStorage.getItem("menu")) || [];
+      this.menu = JSON.parse(decryData(sessionStorage.getItem("menu"))) || [];
       this.audio = document.getElementById('audio');
 
       this.getImsiWarning();
