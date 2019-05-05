@@ -9,9 +9,10 @@
             <el-tab-pane label="终止" name="FINISH"></el-tab-pane>
           </el-tabs>
         </el-col>
-        <el-col :span="8" align="right" v-show="getButtonVial('workflow:translation:apply')&&uLogin=='uLogin'"
-                style="text-align: right">
-          <el-button type="primary" size="medium" @click="addApply()">发起申请</el-button>
+        <el-col :span="8" align="right" style="text-align: right">
+          <el-button type="primary" size="medium" @click="addApply()" :disabled="uLogin!='uLogin'"
+                     v-show="getButtonVial('workflow:translation:apply')">发起申请
+          </el-button>
         </el-col>
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1200px">

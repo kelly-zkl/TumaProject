@@ -62,7 +62,7 @@
                        v-show="getButtonVial('manager:permission:update')">修改
             </el-button>
             <el-button @click="deleteMenu(scope.row.permissionId)" type="text"
-                       v-show="getButtonVial('manager:permission:delete')">删除
+                       v-show="getButtonVial('manager:permission:delete')&&scope.row.permissionId.length>3">删除
             </el-button>
             <el-button type="text" @click="menuUse(scope.row)" v-show="getButtonVial('manager:permission:update')">
               {{scope.row.status == 0 ? '停用' : '启用'}}

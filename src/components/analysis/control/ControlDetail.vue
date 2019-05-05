@@ -245,7 +245,7 @@
       },
       //删除布控任务
       deleteTask() {
-        this.$confirm('确认要删除该布控任务吗?', '提示', {type: 'info'}).then(() => {
+        this.$confirm('确认要删除该预警模型吗?', '提示', {type: 'info'}).then(() => {
           this.$post('disposition/delete', [this.taskId], '删除成功').then((data) => {
             if ("000000" === data.code) {
               if ("000000" === data.code)
@@ -258,7 +258,7 @@
       },
       //结束布控
       finishTask() {
-        this.$confirm('确认结束布控?', '提示', {type: 'info'}).then(() => {
+        this.$confirm('确认关闭预警?', '提示', {type: 'info'}).then(() => {
           this.$post('disposition/batchUpdateStatus', [this.taskId], '操作成功').then((data) => {
             if ("000000" === data.code) {
               if ("000000" === data.code)
