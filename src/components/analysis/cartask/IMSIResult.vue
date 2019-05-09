@@ -28,7 +28,7 @@
           </el-form>
         </el-col>
         <el-col :span="6" align="right" style="text-align: right">
-          <el-button type="primary" size="medium" @click="gotoTurnIMSI()" :disabled="sels.length==0&&uLogin!='uLogin'"
+          <el-button type="primary" size="medium" @click="gotoTurnIMSI()" :disabled="sels.length==0||uLogin!='uLogin'"
                      v-show="getButtonVial('workflow:translation:apply')">翻码
           </el-button>
           <el-button type="primary" size="medium" @click="exportData()" :disabled="count==0"
