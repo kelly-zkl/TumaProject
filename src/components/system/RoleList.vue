@@ -155,6 +155,7 @@
       //查看角色
       roleInfo(row) {
         this.role = Object.assign({}, row);
+        this.getRolePermissions();
         this.addroleTitle = '角色信息';
         this.isShow = false;
         this.addroleVisible = true;
