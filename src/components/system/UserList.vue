@@ -68,7 +68,7 @@
                              max-width="200" :formatter="formatterAddress"></el-table-column>
             <el-table-column align="left" prop="realName" label="用户名" min-width="150"
                              max-width="200" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" prop="policeNum" label="警号" min-width="150"
+            <el-table-column align="left" prop="policeNum" label="身份证号" min-width="160"
                              max-width="200" :formatter="formatterAddress"></el-table-column>
             <el-table-column align="left" prop="deptName" label="所属部门" min-width="150"
                              max-width="200" :formatter="formatterAddress"></el-table-column>
@@ -125,8 +125,8 @@
           <el-form-item label="U盾登录" align="left" style="text-align:left">
             <el-checkbox v-model="admin.uLogin">开启U盾登录</el-checkbox>
           </el-form-item>
-          <el-form-item label="警号" v-show="admin.uLogin">
-            <el-input v-model="admin.policeNum" placeholder="登记警号，即可使用警员U盾登录" :maxlength="16"></el-input>
+          <el-form-item label="身份证号" v-show="admin.uLogin">
+            <el-input v-model="admin.policeNum" placeholder="登记身份证号，即可使用警员U盾登录" :maxlength="18"></el-input>
           </el-form-item>
           <!--<el-form-item label="所属组织" align="left" prop="groupId">-->
           <!--<el-select v-model="admin.groupId" placeholder="请选择组织" filterable>-->
@@ -182,8 +182,8 @@
           <el-form-item label="U盾登录" align="left" style="text-align:left">
             <el-checkbox v-model="admin.uLogin">开启U盾登录</el-checkbox>
           </el-form-item>
-          <el-form-item label="警号" v-show="admin.uLogin">
-            <el-input v-model.number="admin.policeNum" placeholder="登记警号，即可使用警员U盾登录" :maxlength="7"></el-input>
+          <el-form-item label="身份证号" v-show="admin.uLogin">
+            <el-input v-model="admin.policeNum" placeholder="登记身份证号，即可使用警员U盾登录" :maxlength="18"></el-input>
           </el-form-item>
           <!--<el-form-item label="所属组织" align="left" prop="groupId">-->
           <!--<el-select v-model="admin.groupId" placeholder="请选择组织" v-if="admin.groupAdmin != true" filterable>-->
@@ -269,8 +269,8 @@
 
 <script>
   import md5 from 'js-md5';
-  import {pswValidator, nameValidator, numValid} from '../../assets/js/api';
-  import {formatDate, isPC, buttonValidator, encryData, decryData} from "../../assets/js/util";
+  import {pswValidator, nameValidator, userCardValid} from '../../assets/js/api';
+  import {isPC, buttonValidator, encryData, decryData} from "../../assets/js/util";
 
   export default {
     data() {
@@ -584,11 +584,11 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             if (this.admin.uLogin && (!this.admin.policeNum || this.admin.policeNum.length == 0)) {
-              this.$message.error('请输入警号');
+              this.$message.error('请输入身份证号');
               return;
             }
-            if (this.admin.uLogin && !numValid(this.admin.policeNum)) {
-              this.$message.error('请输入正确的警号');
+            if (this.admin.uLogin && !userCardValid(this.admin.policeNum)) {
+              this.$message.error('请输入正确的身份证号');
               return;
             }
             if (!this.role) {
