@@ -4,23 +4,23 @@
       <el-row>
         <el-col :span="20" align="left" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1100px">
-            <el-form-item style="margin-bottom: 10px">
-              <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag
-                         :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
-                         :auto-upload="true" :show-file-list="false">
-                <div v-if="!query.faceUrl" style="height:34px;vertical-align:middle;text-align: center">
-                  <i class="fa fa-photo fa-lg"></i>上传头像
-                </div>
-                <el-row v-if="query.faceUrl" style="height:34px;padding:0;margin:0">
-                  <el-col :span="12">
-                    <img :src="query.faceUrl" style="height:34px;margin:0;padding:0">
-                  </el-col>
-                  <el-col :span="12">
-                    <el-button type="text" style="margin-left:5px" @click.stop="clearImg()">清除</el-button>
-                  </el-col>
-                </el-row>
-              </el-upload>
-            </el-form-item>
+            <!--<el-form-item style="margin-bottom: 10px">-->
+            <!--<el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag-->
+            <!--:on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"-->
+            <!--:auto-upload="true" :show-file-list="false">-->
+            <!--<div v-if="!query.faceUrl" style="height:34px;vertical-align:middle;text-align: center">-->
+            <!--<i class="fa fa-photo fa-lg"></i>上传头像-->
+            <!--</div>-->
+            <!--<el-row v-if="query.faceUrl" style="height:34px;padding:0;margin:0">-->
+            <!--<el-col :span="12">-->
+            <!--<img :src="query.faceUrl" style="height:34px;margin:0;padding:0">-->
+            <!--</el-col>-->
+            <!--<el-col :span="12">-->
+            <!--<el-button type="text" style="margin-left:5px" @click.stop="clearImg()">清除</el-button>-->
+            <!--</el-col>-->
+            <!--</el-row>-->
+            <!--</el-upload>-->
+            <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px">
               <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                               start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable

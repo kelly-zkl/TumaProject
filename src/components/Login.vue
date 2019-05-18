@@ -1,8 +1,8 @@
 <template>
   <div class="login-bg">
-    <object classid="clsid:707C7D52-85A8-4584-8954-573EFCE77488" height='0'
-            id="JITDSignOcx" width="0" codebase="./JITDSign.cab#version=2,0,24,19"></object>
     <section class="content" style="margin: 0;padding: 0">
+      <object classid="clsid:707C7D52-85A8-4584-8954-573EFCE77488" height="0"
+              id="JITDSignOcx" width="0" codebase="./JITDSign.cab#version=2,0,24,19"></object>
       <el-col :span="24" class="main-header" align="left">
         <div style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 50px;align-items: center">
           <img src="../assets/img/icon_logo.svg"
@@ -77,19 +77,18 @@
       //U盾登录
       uLogin() {
         var Auth_Content = this.generateRandomNum();
-        console.log(Auth_Content);
         var temp_DSign_Result = '';
-        var DSign_Subject = 'CN=DemoCA, O=JIT, C=CN';
+        var DSign_Subject = '';
         //控制证书为一个时，不弹出证书选择框
         JITDSignOcx.SetCertChooseType(1);
         JITDSignOcx.SetCert("SC", "", "", "", DSign_Subject, "");
         if (JITDSignOcx.GetErrorCode() != 0) {
-          alert("错误码：" + JITDSignOcx.GetErrorCode() + "　错误信息：" + JITDSignOcx.GetErrorMessage(JITDSignOcx.GetErrorCode()));
+          this.$message.error("错误码：" + JITDSignOcx.GetErrorCode() + "　错误信息：" + JITDSignOcx.GetErrorMessage(JITDSignOcx.GetErrorCode()));
           return false;
         } else {
           temp_DSign_Result = JITDSignOcx.DetachSignStr("", Auth_Content);
           if (JITDSignOcx.GetErrorCode() != 0) {
-            alert("错误码：" + JITDSignOcx.GetErrorCode() + "　错误信息：" + JITDSignOcx.GetErrorMessage(JITDSignOcx.GetErrorCode()));
+            this.$message.error("错误码：" + JITDSignOcx.GetErrorCode() + "　错误信息：" + JITDSignOcx.GetErrorMessage(JITDSignOcx.GetErrorCode()));
             return false;
           }
         }

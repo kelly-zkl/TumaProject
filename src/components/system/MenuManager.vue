@@ -89,7 +89,7 @@
             <el-input v-model="menu.name" placeholder="请输入菜单名称" :maxlength="20"></el-input>
           </el-form-item>
           <el-form-item label="父级菜单" v-show="menu.type != '1'" required align="left">
-            <el-cascader :options="menuTree" change-on-select :props="defaultProps" :show-all-levels="false"
+            <el-cascader :options="menuTree" change-on-select :props="defaultProps" :show-all-levels="false" clearable
                          placeholder="请选择父级菜单" @change="handleChange" v-model="menu.pidArray"></el-cascader>
           </el-form-item>
           <el-form-item label="菜单图标">
