@@ -61,6 +61,7 @@ import MenuManager from '@/components/system/MenuManager'
 import OrganizationManager from '@/components/system/OrganizationManager'
 import SystemLog from '@/components/system/SystemLog'
 import SystemParams from '@/components/system/SystemParams'
+import DataChart from '@/components/system/DataChart'
 
 Vue.use(Router);
 
@@ -246,7 +247,8 @@ export default new Router({
           ]
         },
         {path: '/systemLog', component: SystemLog, name: '审计日志'},
-        {path: '/menuManager', component: MenuManager, name: '菜单管理'}
+        {path: '/menuManager', component: MenuManager, name: '菜单管理'},
+        {path: '/dataChart', component: DataChart, name: '数据统计'}
       ]
     },
     {

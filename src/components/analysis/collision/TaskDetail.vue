@@ -178,7 +178,7 @@
             </el-select>
             <el-select v-model="item.field" style="width:80px" size="medium">
               <el-option :label="param.label" :value="param.value" v-for="param in fields" :key="param.value"
-                         :disabled="item.type=='qTime'&&param.value=='ne'"></el-option>
+                         :disabled="(item.type=='qTime'||item.type=='time')&&param.value=='ne'"></el-option>
             </el-select>
             <el-date-picker v-model="item.qTime" type="daterange" range-separator="至" style="width: 250px"
                             value-format="timestamp" start-placeholder="开始日期" end-placeholder="结束日期"
