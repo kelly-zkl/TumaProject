@@ -91,11 +91,17 @@
       },
       handleType(val) {
         if (this.activeItem == "collision") {//交并任务
-          this.$refs.collision.clearData();
+          this.$nextTick(() => {
+            this.$refs.collision.clearData();
+          });
         } else if (this.activeItem == "follow") {//伴随任务
-          this.$refs.follow.clearData();
+          this.$nextTick(() => {
+            this.$refs.follow.clearData();
+          });
         } else {
-          this.$refs.car.clearData();
+          this.$nextTick(() => {
+            this.$refs.car.clearData();
+          });
         }
       },
       //删除案件

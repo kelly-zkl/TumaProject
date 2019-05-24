@@ -12,7 +12,7 @@
       </el-col>
       <div class="login-input">
         <el-radio-group v-model="activeItem">
-          <el-radio-button label="u">U盾登录</el-radio-button>
+          <el-radio-button label="u">PKI登录</el-radio-button>
           <el-radio-button label="acc">账号密码登录</el-radio-button>
         </el-radio-group>
         <el-form label-width="0" label-position="left" :model="account" style="margin:30px 40px"
@@ -44,9 +44,9 @@
         </el-form>
         <div v-show="activeItem=='u'" style="margin:40px">
           <div style="color:#C7CCD0;font-size:16px;height:165px;padding-top:60px;text-align:left;line-height: 30px">
-            如果您的U盾已在图码平台登记，请插入U盾，然后点击“U盾登录”按钮
+            如果您的PKI已在图码平台登记，请插入PKI，然后点击“PKI登录”按钮
           </div>
-          <el-button type="primary" @click="uLogin()" :loading="logining" style="width:100%">U盾登录</el-button>
+          <el-button type="primary" @click="uLogin()" :loading="logining" style="width:100%">PKI登录</el-button>
         </div>
       </div>
       <el-col :span="24" class="main-footer">
@@ -102,6 +102,7 @@
               sessionStorage.setItem("user", encryData(JSON.stringify(data.data)));//用户信息
               sessionStorage.setItem("face", JSON.stringify({id: ''}));
               sessionStorage.setItem("imsi", JSON.stringify({id: ''}));
+              localStorage.setItem("clickTime", new Date().getTime());
               this.getMenuTree();
               this.getButton();
               this.getAreas();
@@ -170,6 +171,7 @@
               sessionStorage.setItem("user", encryData(JSON.stringify(data.data)));//用户信息
               sessionStorage.setItem("face", JSON.stringify({id: ''}));
               sessionStorage.setItem("imsi", JSON.stringify({id: ''}));
+              localStorage.setItem("clickTime", new Date().getTime());
               this.getMenuTree();
               this.getButton();
               this.getAreas();

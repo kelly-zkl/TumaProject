@@ -66,7 +66,7 @@
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="130" fixed="right">
+        <el-table-column align="left" label="操作" min-width="110" max-width="130" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoImsi(scope.row.imsi)"
                        v-show="getButtonVial('archives:getImsiRecordByImsi')">查看详情
@@ -96,7 +96,6 @@
         taskId: this.sourceId,
         listLoading: false, qTime: '',
         list: [], list10: [],
-        isShow: false,
         isFirst: true,
         isSearch: false,
         firstPage: 0,
@@ -194,6 +193,7 @@
       exportData() {
         var param = Object.assign({}, this.query);
         param.size = 100000;
+        delete param['pageTime'];
         let config;
         if (sessionStorage.getItem("user")) {
           let userId = JSON.parse(decryData(sessionStorage.getItem("user"))).userId;
@@ -284,9 +284,7 @@
         this.list10 = [];
         this.isSearch = true;
         this.query = {size: 100};
-        this.time1 = ['00:00:00', '23:59:59'];
-        this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
+        this.qTime = '';
 
         this.getData();
       },

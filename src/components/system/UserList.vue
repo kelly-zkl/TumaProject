@@ -122,11 +122,11 @@
             <el-input v-show="setPsw =='newPsw'" type="password" v-model="admin.password"
                       placeholder="请输入6-16位密码" :maxlength="16" :minlength="6"></el-input>
           </el-form-item>
-          <el-form-item label="U盾登录" align="left" style="text-align:left">
-            <el-checkbox v-model="admin.uLogin">开启U盾登录</el-checkbox>
+          <el-form-item label="PKI登录" align="left" style="text-align:left">
+            <el-checkbox v-model="admin.uLogin">开启PKI登录</el-checkbox>
           </el-form-item>
           <el-form-item label="身份证号" v-show="admin.uLogin">
-            <el-input v-model="admin.policeNum" placeholder="登记身份证号，即可使用警员U盾登录" :maxlength="18"></el-input>
+            <el-input v-model="admin.policeNum" placeholder="登记身份证号，即可使用警员PKI登录" :maxlength="18"></el-input>
           </el-form-item>
           <!--<el-form-item label="所属组织" align="left" prop="groupId">-->
           <!--<el-select v-model="admin.groupId" placeholder="请选择组织" filterable>-->
@@ -179,11 +179,11 @@
               </el-col>
             </el-row>
           </el-form-item>
-          <el-form-item label="U盾登录" align="left" style="text-align:left">
-            <el-checkbox v-model="admin.uLogin">开启U盾登录</el-checkbox>
+          <el-form-item label="PKI登录" align="left" style="text-align:left">
+            <el-checkbox v-model="admin.uLogin">开启PKI登录</el-checkbox>
           </el-form-item>
           <el-form-item label="身份证号" v-show="admin.uLogin">
-            <el-input v-model="admin.policeNum" placeholder="登记身份证号，即可使用警员U盾登录" :maxlength="18"></el-input>
+            <el-input v-model="admin.policeNum" placeholder="登记身份证号，即可使用警员PKI登录" :maxlength="18"></el-input>
           </el-form-item>
           <!--<el-form-item label="所属组织" align="left" prop="groupId">-->
           <!--<el-select v-model="admin.groupId" placeholder="请选择组织" v-if="admin.groupAdmin != true" filterable>-->

@@ -35,7 +35,7 @@
               </el-form-item>
               <el-form-item align="left" style="margin: 0;text-align: left" v-if="task.atype=='car'">
                 <img :src="imgUrl?imgUrl:imgPath" :onerror="img404" onclick="javascript:window.open(this.src)"
-                     style="max-height:66px;border-radius:5px;cursor:pointer"/>
+                     style="max-height:50px;border-radius:4px;cursor:pointer"/>
               </el-form-item>
               <el-form-item label="分析目标" align="left" style="margin: 0;text-align: left">
                 {{task.atype=='imsi'?'车牌':'IMSI'}}

@@ -277,7 +277,7 @@
         }
       };
       return {
-        imsiCount: 0, faceCount: 0, turnCount: 0, maxTime: 30,
+        imsiCount: 0, faceCount: 0, turnCount: 0,
         runSearch: false,
         imageUrl: '',
         imsi: '',
@@ -497,8 +497,10 @@
           this.$post('/warning/countNoDealWithImsiWarning', {}).then((data) => {
             if ("000000" === data.code) {
               this.imsiCount = data.data;
-              this.$refs.mychild.imsi = this.imsiCount;
-              this.$refs.mychild.face = this.faceCount;
+              this.$nextTick(() => {
+                this.$refs.mychild.imsi = this.imsiCount;
+                this.$refs.mychild.face = this.faceCount;
+              });
             }
           }).catch((err) => {
           });
@@ -507,8 +509,10 @@
           this.$post('/warning/countNoDealWithFaceWarning', {}).then((data) => {
             if ("000000" === data.code) {
               this.faceCount = data.data;
-              this.$refs.mychild.imsi = this.imsiCount;
-              this.$refs.mychild.face = this.faceCount;
+              this.$nextTick(() => {
+                this.$refs.mychild.imsi = this.imsiCount;
+                this.$refs.mychild.face = this.faceCount;
+              });
             }
           }).catch((err) => {
           });
@@ -546,31 +550,32 @@
             sessionStorage.removeItem("index");
             sessionStorage.removeItem("face");
             sessionStorage.removeItem("imsi");
-            localStorage.removeItem("login");
             sessionStorage.removeItem("search");
             sessionStorage.removeItem('apply');
+            localStorage.removeItem("login");
+            localStorage.removeItem("clickTime");
             this.$router.push("/login");
           }
         });
       },
-      //15或30分钟不操作退出
+      //页面30分钟不操作退出
       pageEvent() {
-        if (this.maxTime == 30) {
-          clearInterval(this.loginOutIntervalid);
+        if (this.$route.path != '/login') {//登录页面不执行
+          localStorage.setItem("clickTime", new Date().getTime());
           this.timeOut();
-        } else {
-          this.maxTime = 30;
         }
       },
       timeOut() {
-        this.loginOutIntervalid = setInterval(() => {
-          if (this.maxTime == 0) {
-            clearInterval(this.loginOutIntervalid);
-            this.loginOut();
-          } else {
-            this.maxTime--;
-          }
-        }, 60 * 1000);
+        if (!this.loginOutIntervalid) {
+          this.loginOutIntervalid = setInterval(() => {
+            let clickTime = localStorage.getItem("clickTime");
+            let subTime = new Date().getTime() - clickTime;
+            if (subTime > 30 * 60 * 1000) {//超过30分钟退出
+              clearInterval(this.loginOutIntervalid);
+              this.loginOut();
+            }
+          }, 10 * 1000);
+        }
       },
       //修改密码
       modifyPsw(formName) {
@@ -642,7 +647,9 @@
                   this.systemParam.similarThreshold = item.value;
                 }
               });
-              this.$refs.mychild.systemParam = this.systemParam;
+              this.$nextTick(() => {
+                this.$refs.mychild.systemParam = this.systemParam;
+              });
               sessionStorage.setItem("system", encryData(JSON.stringify(this.systemParam)));
             }
           }

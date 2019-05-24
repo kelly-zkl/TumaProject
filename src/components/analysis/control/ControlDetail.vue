@@ -183,11 +183,15 @@
         if (this.activeItem == 'TASK') {
           this.getTaskDetail();
         } else if (this.activeItem == 'IMSI') {
-          this.$refs.imsi.getPlaces();
-          this.$refs.imsi.clearData();
+          this.$nextTick(() => {
+            this.$refs.imsi.getPlaces();
+            this.$refs.imsi.clearData();
+          });
         } else {
-          this.$refs.face.getPlaces();
-          this.$refs.face.clearImgData();
+          this.$nextTick(() => {
+            this.$refs.face.getPlaces();
+            this.$refs.face.clearImgData();
+          });
         }
       },
       getTaskDetail() {

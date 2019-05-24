@@ -24,7 +24,7 @@
               </el-form-item>
               <el-form-item label="任务状态" align="left" style="margin: 0;text-align: left">
                 <span
-                  v-bind:style="{fontSize:'15px',color:task.taskStatus=='EXECUTION'?'#00C755':task.taskStatus =='FINISH'?'#00C755':task.taskStatus=='FAILE'?'#dd6161':task.taskStatus =='WAIT'?'#D76F31':task.taskStatus =='STOP'?'#999':'#333'}">
+                  v-bind:style="{fontSize:'15px',color:task.taskStatus=='EXECUTION'?'#6699FF':task.taskStatus =='FINISH'?'#00C755':task.taskStatus=='FAILE'?'#dd6161':task.taskStatus =='WAIT'?'#D76F31':task.taskStatus =='STOP'?'#999':'#333'}">
                   {{task.taskStatus === "EXECUTION" ? "进行中" : task.taskStatus === "FINISH" ? "已完成" :task.taskStatus=='FAILE'?'失败':task.taskStatus =='WAIT'?'等待中':task.taskStatus =='STOP'?'终止': "--"}}</span>
               </el-form-item>
             </el-col>

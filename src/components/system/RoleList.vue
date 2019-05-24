@@ -140,7 +140,9 @@
         this.isShow = true;
         this.listLoading = false;
         this.addroleVisible = true;
-        this.$refs.tree.setCheckedKeys([]);
+        this.$nextTick(() => {
+          this.$refs.tree.setCheckedKeys([]);
+        });
       },
       //修改角色
       modifyrole(row) {
@@ -150,7 +152,9 @@
         this.isShow = true;
         this.listLoading = false;
         this.addroleVisible = true;
-        this.$refs.tree.setCheckedKeys(this.role.permissions);
+        this.$nextTick(() => {
+          this.$refs.tree.setCheckedKeys(this.role.permissions);
+        });
       },
       //查看角色
       roleInfo(row) {
@@ -159,7 +163,9 @@
         this.addroleTitle = '角色信息';
         this.isShow = false;
         this.addroleVisible = true;
-        this.$refs.tree.setCheckedKeys(this.role.permissions);
+        this.$nextTick(() => {
+          this.$refs.tree.setCheckedKeys(this.role.permissions);
+        });
       },
       //取消
       cancelSubmit(title) {
@@ -188,7 +194,9 @@
             this.getSavePermissions();
             this.listLoading = true;
             this.$post(url, this.role, msg).then((data) => {
-              this.$refs.tree.setCheckedKeys([]);
+              this.$nextTick(() => {
+                this.$refs.tree.setCheckedKeys([]);
+              });
               this.listLoading = false;
               this.addroleVisible = false;
               if ("000000" === data.code) {
@@ -202,32 +210,32 @@
       },
       //子菜单没有全选时，要把父菜单选上
       getSavePermissions() {
-        for (var i = 0; i < this.permissions.length; i++) {
+        for (var i = 0; i < this.permissions.length; i++) {//目录
           var tree = this.permissions[i];
-          if (tree.childs) {
-            for (var j = 0; j < tree.childs.length; j++) {
+          if (tree.childs) {//目录有菜单
+            for (var j = 0; j < tree.childs.length; j++) {//菜单
               var menu = tree.childs[j];
-              if (menu.childs) {
-                for (var z = 0; z < menu.childs.length; z++) {
+              if (menu.childs) {//菜单有按钮
+                for (var z = 0; z < menu.childs.length; z++) {//按钮
                   var button = menu.childs[z];
-                  for (var m = 0; m < this.role.permissions.length; m++) {
+                  for (var m = 0; m < this.role.permissions.length; m++) {//遍历权限
                     var id = this.role.permissions[m];
-                    if (button.permissionId == id) {
-                      if (this.mulitData(menu.permissionId)) {
+                    if (button.permissionId == id) {//含有按钮权限,则加上父菜单id
+                      if (this.mulitData(menu.permissionId)) {//去重加上菜单id
                         this.role.permissions.push(menu.permissionId);
                       }
-                      if (this.mulitData(tree.permissionId)) {
+                      if (this.mulitData(tree.permissionId)) {//去重加上目录id
                         this.role.permissions.push(tree.permissionId);
                       }
                       break;
                     }
                   }
                 }
-              } else {
-                for (var n = 0; n < this.role.permissions.length; n++) {
+              } else {//菜单下没有按钮
+                for (var n = 0; n < this.role.permissions.length; n++) {//遍历权限
                   var sid = this.role.permissions[n];
-                  if (menu.permissionId == sid) {
-                    if (this.mulitData(tree.permissionId)) {
+                  if (menu.permissionId == sid) {//含有菜单权限,则加上父菜单id
+                    if (this.mulitData(tree.permissionId)) {//去重加上目录id
                       this.role.permissions.push(tree.permissionId);
                     }
                     break;
@@ -238,44 +246,45 @@
           }
         }
       },
+      //没有全选的把父菜单的id删掉
       getRolePermissions() {
-        for (var i = 0; i < this.permissions.length; i++) {
+        for (var i = 0; i < this.permissions.length; i++) {//目录
           var tree = this.permissions[i];
-          if (tree.childs) {
-            for (var j = 0; j < tree.childs.length; j++) {
+          if (tree.childs) {//目录有菜单
+            for (var j = 0; j < tree.childs.length; j++) {//菜单
               var menu = tree.childs[j];
-              if (menu.childs) {
-                for (var z = 0; z < menu.childs.length; z++) {
+              if (menu.childs) {//菜单有按钮
+                for (var z = 0; z < menu.childs.length; z++) {//按钮
                   var button = menu.childs[z];
                   var isSelect = false;
-                  for (var m = 0; m < this.role.permissions.length; m++) {
+                  for (var m = 0; m < this.role.permissions.length; m++) {//遍历权限
                     var id = this.role.permissions[m];
                     if (button.permissionId == id) {
                       isSelect = true;
                       break;
                     }
                   }
-                  if (!isSelect) {
+                  if (!isSelect) {//按钮是全不选
                     var mIdx = this.role.permissions.indexOf(menu.permissionId);
                     var bIdx = this.role.permissions.indexOf(tree.permissionId);
-                    if (mIdx >= 0) {
+                    if (mIdx >= 0) {//删除菜单id
                       this.role.permissions.splice(mIdx, 1);
                     }
-                    if (bIdx >= 0) {
+                    if (bIdx >= 0) {//删除目录id
                       this.role.permissions.splice(bIdx, 1);
                     }
                   }
                 }
-              } else {
+              } else {//菜单下没有按钮
                 var isSelect2 = false;
-                for (var n = 0; n < this.role.permissions.length; n++) {
+                for (var n = 0; n < this.role.permissions.length; n++) {//遍历权限
                   var sid = this.role.permissions[n];
                   if (menu.permissionId == sid) {
                     isSelect2 = true;
                     break;
                   }
                 }
-                if (!isSelect2) {
+                if (!isSelect2) {//菜单没有全选，删除目录的id
                   var tIdx = this.role.permissions.indexOf(tree.permissionId);
                   if (tIdx >= 0) {
                     this.role.permissions.splice(tIdx, 1);
@@ -286,6 +295,7 @@
           }
         }
       },
+      //重复的id
       mulitData(permissionId) {
         var isMulti = true;
         this.role.permissions.forEach((id) => {

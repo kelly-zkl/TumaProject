@@ -53,7 +53,7 @@
       </el-form>
       <el-table :data="list10" class="center-block" v-loading="listLoading" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="现场车牌图像" prop="sceneUrl" min-width="130" max-width="180">
+        <el-table-column align="left" label="现场车牌图像" prop="sceneUrl" min-width="150" max-width="200">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
               <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath"
@@ -62,7 +62,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="left" prop="carLicense" label="车牌号码" min-width="120" max-width="180"
+        <el-table-column align="left" prop="carLicense" label="车牌号码" min-width="100" max-width="150"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="carLicenseKind" label="牌号种类" min-width="100" max-width="120"
                          :formatter="formatterAddress"></el-table-column>

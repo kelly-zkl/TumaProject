@@ -233,10 +233,14 @@
           this.getUserData();
           this.getPersons();
         } else if (this.activeItem == 'second') {
-          this.$refs.imsi.getPlaces();
+          this.$nextTick(() => {
+            this.$refs.imsi.getPlaces();
+          });
         } else {
-          this.$refs.img.getPlaces();
-          this.$refs.img.clearData();
+          this.$nextTick(() => {
+            this.$refs.img.getPlaces();
+            this.$refs.img.clearData();
+          });
         }
       },
       clickModify() {
@@ -334,7 +338,6 @@
               });
             }
             localStorage.setItem("pathUrl", JSON.stringify(this.userInfo.faceUrl));
-            console.log(imsis);
             localStorage.setItem("pathImsi", JSON.stringify(imsis));
             localStorage.setItem("pathFace", JSON.stringify(faces));
 

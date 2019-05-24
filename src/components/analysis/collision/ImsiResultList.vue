@@ -20,7 +20,7 @@
                         :maxlength=20></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" size="medium" @click="getData()">搜索</el-button>
+              <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()">重置</el-button>
@@ -36,7 +36,7 @@
           </el-button>
         </el-col>
       </el-row>
-      <el-table :data="records" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
+      <el-table :data="list10" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="IMSI" prop="imsi" min-width="150"
@@ -56,9 +56,8 @@
         </el-table-column>
       </el-table>
       <div class="block" style="margin: 20px 0" align="right">
-        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
-                       :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
-                       layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+        <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
+                       :page-size="10" :total="count" background layout="prev, pager, next"></el-pagination>
       </div>
     </section>
   </div>
@@ -75,9 +74,13 @@
       return {
         listLoading: false,
         taskId: this.sourceId,
-        query: {page: 1, size: 10},
+        isFirst: true,
+        isSearch: false,
+        firstPage: 0,
+        page: 1,
+        query: {size: 100},
         count: 0,
-        records: [], sels: [],
+        list: [], list10: [], sels: [],
         uLogin: localStorage.getItem('login'),
         operators: [{value: 0, label: '移动'}, {value: 1, label: '联通'}, {value: 2, label: '电信'}]
       }
@@ -104,7 +107,7 @@
         }
         var arr = [];
         this.sels.forEach((item) => {
-          if (this.isSingle(item.imsi, arr)) {
+          if (this.isSingle(item.imsi, arr)) {//翻码的IMSI不能重复
             arr.push(item.imsi);
           }
         });
@@ -115,7 +118,7 @@
         sessionStorage.setItem("apply", JSON.stringify(param));
         this.$router.push({path: '/approvalApply', query: {type: 'coll'}});
       },
-      //是否重复
+      //判断IMSI是否重复,翻码的IMSI最多为10个
       isSingle(val, arr) {
         let bol = true;
         arr.forEach((item) => {
@@ -131,8 +134,8 @@
       //交并结果导出
       exportData() {
         var param = Object.assign({}, this.query);
-        param.page = 1;
         param.size = 100000;
+        delete param['pageImsi'];
         let config;
         if (sessionStorage.getItem("user")) {
           let userId = JSON.parse(decryData(sessionStorage.getItem("user"))).userId;
@@ -159,30 +162,68 @@
       },
       //清除查询条件
       clearData() {
-        this.query = {page: 1, size: 10};
+        this.list10 = [];
+        this.isSearch = true;
+        this.query = {size: 100};
         this.getData();
       },
       //获取记录
       getData() {
+        if (this.isSearch) {
+          this.list = [];
+          this.list10 = [];
+          delete this.query['pageImsi'];
+          this.isSearch = false;
+        }
         this.query.analyseTaskId = this.taskId;
         this.listLoading = true;
         this.$post('/collision/getAnalyseResultList', this.query).then((data) => {
-          this.records = data.data.list;
-          this.count = data.data.count;
+          if (this.query.pageImsi && !this.isSearch) {
+            this.list = this.list.concat(data.data);
+          } else {
+            this.list = data.data;
+            this.page = 1;
+            this.firstPage = 0
+          }
+          this.list10 = this.list;
+          if (this.list.length - this.page * 10 >= 0) {
+            this.list10 = this.list10.slice((this.page * 10 - 10), (this.page * 10));
+          } else {
+            this.list10 = this.list10.slice((this.page * 10 - 10), this.list.length);
+          }
+          this.count = this.list.length;
+          if (this.list.length - this.firstPage === 100) {
+            this.isFirst = false;
+          } else {
+            this.isFirst = true;
+          }
           this.listLoading = false;
         }).catch((err) => {
-          this.records = [];
+          this.list = [];
+          this.list10 = [];
           this.count = 0;
           this.listLoading = false;
+          this.$message.error(err);
         });
       },
       pageChange(index) {
-        this.query.page = index;
-        this.getData();
+        this.page = index;
+        if (!this.isFirst && this.list.length > this.firstPage) {
+          this.isFirst = true;
+        }
+        if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst && (this.list.length % 100 === 0)) {
+          this.firstPage = this.list.length;
+          this.query.pageImsi = this.list[this.list.length - 1].imsi;
+          this.getData();
+        }
+        this.list10 = this.list;
+        if ((this.list.length - (index * 10)) >= 0) {
+          this.list10 = this.list10.slice((index * 10 - 10), (index * 10));
+        } else {
+          this.list10 = this.list10.slice((index * 10 - 10), this.list.length);
+        }
       },
       handleSizeChange(val) {
-        this.query.size = val;
-        this.getData();
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
