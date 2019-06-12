@@ -208,7 +208,7 @@
           }
         });
       },
-      //子菜单没有全选时，要把父菜单选上
+      //子菜单选中时，要把父菜单选上（在角色权限中遍历有没有包含某个权限）
       getSavePermissions() {
         for (var i = 0; i < this.permissions.length; i++) {//目录
           var tree = this.permissions[i];
@@ -218,7 +218,7 @@
               if (menu.childs) {//菜单有按钮
                 for (var z = 0; z < menu.childs.length; z++) {//按钮
                   var button = menu.childs[z];
-                  for (var m = 0; m < this.role.permissions.length; m++) {//遍历权限
+                  for (var m = 0; m < this.role.permissions.length; m++) {//遍历角色权限
                     var id = this.role.permissions[m];
                     if (button.permissionId == id) {//含有按钮权限,则加上父菜单id
                       if (this.mulitData(menu.permissionId)) {//去重加上菜单id
@@ -232,7 +232,7 @@
                   }
                 }
               } else {//菜单下没有按钮
-                for (var n = 0; n < this.role.permissions.length; n++) {//遍历权限
+                for (var n = 0; n < this.role.permissions.length; n++) {//遍历角色权限
                   var sid = this.role.permissions[n];
                   if (menu.permissionId == sid) {//含有菜单权限,则加上父菜单id
                     if (this.mulitData(tree.permissionId)) {//去重加上目录id
@@ -246,7 +246,7 @@
           }
         }
       },
-      //没有全选的把父菜单的id删掉
+      //子菜单没有选中时，把父菜单的id删掉（在角色权限中遍历有没有包含某个权限）
       getRolePermissions() {
         for (var i = 0; i < this.permissions.length; i++) {//目录
           var tree = this.permissions[i];
@@ -257,14 +257,14 @@
                 for (var z = 0; z < menu.childs.length; z++) {//按钮
                   var button = menu.childs[z];
                   var isSelect = false;
-                  for (var m = 0; m < this.role.permissions.length; m++) {//遍历权限
+                  for (var m = 0; m < this.role.permissions.length; m++) {//遍历角色权限
                     var id = this.role.permissions[m];
-                    if (button.permissionId == id) {
+                    if (button.permissionId == id) {//角色包含该权限
                       isSelect = true;
                       break;
                     }
                   }
-                  if (!isSelect) {//按钮是全不选
+                  if (!isSelect) {//角色不包含该权限，则删除父节点id
                     var mIdx = this.role.permissions.indexOf(menu.permissionId);
                     var bIdx = this.role.permissions.indexOf(tree.permissionId);
                     if (mIdx >= 0) {//删除菜单id
@@ -273,22 +273,24 @@
                     if (bIdx >= 0) {//删除目录id
                       this.role.permissions.splice(bIdx, 1);
                     }
+                    break;
                   }
                 }
               } else {//菜单下没有按钮
                 var isSelect2 = false;
-                for (var n = 0; n < this.role.permissions.length; n++) {//遍历权限
+                for (var n = 0; n < this.role.permissions.length; n++) {//遍历角色权限
                   var sid = this.role.permissions[n];
-                  if (menu.permissionId == sid) {
+                  if (menu.permissionId == sid) {//角色包含该权限
                     isSelect2 = true;
                     break;
                   }
                 }
-                if (!isSelect2) {//菜单没有全选，删除目录的id
+                if (!isSelect2) {//角色不包含该权限，则删除父节点id
                   var tIdx = this.role.permissions.indexOf(tree.permissionId);
                   if (tIdx >= 0) {
                     this.role.permissions.splice(tIdx, 1);
                   }
+                  break;
                 }
               }
             }

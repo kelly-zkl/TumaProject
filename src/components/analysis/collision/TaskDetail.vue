@@ -80,21 +80,20 @@
                       </div>
                     </el-col>
                     <el-col :span="12" align="right" style="text-align: right">
-                      <span
-                        v-bind:style="{fontSize:'14px',paddingRight:'10px',color:scope.row.dataStatus=='EXECUTION'?'#6699FF':scope.row.dataStatus =='FINISH'?'#00C755':scope.row.dataStatus=='FAILE'?'#dd6161':scope.row.dataStatus =='WAIT'?'#D76F31':scope.row.dataStatus =='STOP'?'#999':'#333'}">
-                  {{scope.row.dataStatus === "EXECUTION" ? "进行中" : scope.row.dataStatus === "FINISH" ? "已完成" :scope.row.dataStatus=='FAILE'?'失败':scope.row.dataStatus =='WAIT'?'等待中':scope.row.dataStatus =='STOP'?'终止': ""}}</span>
                       <el-tooltip class="item" effect="dark" content="设立条件" placement="bottom">
                         <el-button type="text" class="fa fa-filter" @click="showSetParam(1,scope.row)"
                                    style="margin: 0;padding: 0;font-size: 20px"></el-button>
                       </el-tooltip>
                       <el-tooltip class="item" effect="dark" content="查看IMSI" placement="bottom">
-                        <el-button type="text" class="fa fa-file-text-o fa-lg" @click="showImsi(0,scope.row.id)"
-                                   style="margin: 0;padding: 0 10px" :disabled="scope.row.status==0"
-                                   v-show="getButtonVial('collision:queryRecord')"></el-button>
+                        <el-button type="text" class="fa fa-file-text-o fa-lg" style="margin: 0;padding: 0 10px"
+                                   @click="dataId=scope.row.id;runImsiList = true"
+                                   v-show="getButtonVial('collision:queryRecord')">
+                        </el-button>
                       </el-tooltip>
                       <el-tooltip class="item" effect="dark" content="查看统计" placement="bottom">
-                        <el-button type="text" class="fa fa-bar-chart fa-lg" style="margin: 0;padding: 0"
-                                   @click="showImsi(2,scope.row.id,'source')" :disabled="scope.row.status==0"
+                        <el-button type="text" class="fa fa-bar-chart fa-lg"
+                                   :loading="scope.row.dataStatus=='WAIT'||scope.row.dataStatus=='EXECUTION'"
+                                   style="margin: 0;padding: 0" @click="showImsi(scope.row.id,'source')"
                                    v-show="getButtonVial('collision:imsiRecord:statistics')"></el-button>
                       </el-tooltip>
                     </el-col>
@@ -135,11 +134,12 @@
               <el-table-column align="left" label="操作" min-width="90" max-width="100">
                 <template slot-scope="scope">
                   <el-tooltip class="item" effect="dark" content="查看分析结果" placement="bottom">
-                    <el-button type="text" class="fa fa-list-alt fa-lg" @click="showImsi(1,scope.row.id)"
+                    <el-button type="text" class="fa fa-list-alt fa-lg"
+                               @click="sourceId=scope.row.id;runImsiResult = true"
                                v-show="getButtonVial('collision:getAnalyseResultList')&&scope.row.status=='FINISH'"></el-button>
                   </el-tooltip>
                   <el-tooltip class="item" effect="dark" content="查看统计结果" placement="bottom">
-                    <el-button type="text" class="fa fa-bar-chart fa-lg" @click="showImsi(2,scope.row.id,'result')"
+                    <el-button type="text" class="fa fa-bar-chart fa-lg" @click="showImsi(scope.row.id,'result')"
                                v-show="getButtonVial('collision:imsiRecord:statistics')&&scope.row.status=='FINISH'"></el-button>
                   </el-tooltip>
                   <el-tooltip class="item" effect="dark" content="终止分析" placement="bottom">
@@ -157,67 +157,63 @@
         </el-row>
       </div>
       <!--设立条件-->
-      <el-dialog title="设立条件" width="700px" :visible.sync="runSetParam" :show-close="false"
+      <el-dialog title="设立条件" width="800px" :visible.sync="runSetParam" :show-close="false"
                  :close-on-press-escape="false" :close-on-click-modal="false">
-        <el-form :model="collision" label-position="left" label-width="1px">
-          <el-form-item align="left" style="margin: 0 0 10px 0">
-            <span style="margin-right: 20px">数据源名称</span>
+        <el-form :model="collision" label-position="right" label-width="150px">
+          <el-form-item align="left" style="margin: 0 0 10px 0" label="数据源名称">
             <el-input v-model="collision.name" size="medium" :maxLength="10" placeholder="输入数据源名称"
-                      style="width: 200px">
+                      style="width: 500px">
             </el-input>
           </el-form-item>
-          <el-form-item align="left" style="margin: 0 0 10px 0">
-            符合下列
-            <el-radio-group v-model="collision.collType" size="medium">
-              <el-radio-button label="and">全部(and)</el-radio-button>
-              <el-radio-button label="or">任一(or)</el-radio-button>
-            </el-radio-group>
-            条件的数据集
+          <hr style="background-color: #D7D7D7;border: none;height: 1px;margin: 20px"/>
+          <el-form-item align="left" style="margin:10px 0 0 0" label="日期范围">
+            <div v-for="(item,idx) in collision.dscList" :key="idx+''" v-if="item.type=='qTime'"
+                 style="margin-bottom: 5px">
+              <el-date-picker v-model="item.qTime" type="daterange" range-separator="至" style="width: 250px"
+                              value-format="timestamp" start-placeholder="开始日期" end-placeholder="结束日期"
+                              :default-time="['00:00:00', '23:59:59']" format="yyyy-MM-dd"
+                              :picker-options="pickerBeginDate" size="medium">
+              </el-date-picker>
+              <el-tooltip class="item" effect="dark" content="开始时间" placement="bottom">
+                <el-time-picker v-model="item.time[0]" style="width:120px" value-format="HH:mm:ss"
+                                placeholder="开始时间" size="medium">
+                </el-time-picker>
+              </el-tooltip>
+              <el-tooltip class="item" effect="dark" content="结束时间" placement="bottom">
+                <el-time-picker v-model="item.time[1]" style="width:120px" value-format="HH:mm:ss"
+                                placeholder="结束时间" size="medium">
+                </el-time-picker>
+              </el-tooltip>
+              <el-button type="text" size="medium" @click="deleteItem(idx)" v-if="idx>5">删除</el-button>
+            </div>
           </el-form-item>
-          <el-form-item align="left" v-for="(item,idx) in collision.dscList" :key="idx+''" style="margin: 0 0 10px 0">
-            <el-select v-model="item.type" style="width:160px" size="medium" @change="handleParamChange($event,idx)">
-              <el-option :label="param.label" :value="param.value" v-for="param in conParams" :key="param.value"
-                         :disabled="(param.value!='qTime'&&idx==0)||(param.value!='time'&&idx==1)"></el-option>
-            </el-select>
-            <el-select v-model="item.field" style="width:80px" size="medium">
-              <el-option :label="param.label" :value="param.value" v-for="param in fields" :key="param.value"
-                         :disabled="(item.type=='qTime'||item.type=='time')&&param.value=='ne'"></el-option>
-            </el-select>
-            <el-date-picker v-model="item.qTime" type="daterange" range-separator="至" style="width: 250px"
-                            value-format="timestamp" start-placeholder="开始日期" end-placeholder="结束日期"
-                            :default-time="['00:00:00', '23:59:59']" format="yyyy-MM-dd"
-                            :picker-options="pickerBeginDate" size="medium" v-if="item.type=='qTime'">
-            </el-date-picker>
-            <el-tooltip class="item" effect="dark" content="开始时间" placement="bottom">
-              <el-time-picker v-model="item.time[0]" style="width:120px" value-format="HH:mm:ss"
-                              placeholder="开始时间" size="medium" v-if="item.type=='time'">
-              </el-time-picker>
-            </el-tooltip>
-            <el-tooltip class="item" effect="dark" content="结束时间" placement="bottom">
-              <el-time-picker v-model="item.time[1]" style="width:120px" value-format="HH:mm:ss"
-                              placeholder="结束时间" size="medium" v-if="item.type=='time'">
-              </el-time-picker>
-            </el-tooltip>
-            <el-select v-model="item.places" size="medium" filterable multiple collapse-tags style="width:230px"
+          <el-form-item align="left" style="margin: 0 0 10px 0">
+            <el-button plain size="medium" icon="el-icon-plus" @click="addParam()">日期范围</el-button>
+          </el-form-item>
+          <hr style="background-color: #D7D7D7;border: none;height: 1px;margin: 20px"/>
+          <el-form-item align="left" v-for="(item,idx) in collision.dscList" :key="idx+''" style="margin: 10px 0"
+                        :label="item.type=='places'?'IMSI采集场所':item.type=='isps'?'IMSI运营商':item.type=='imsi'?'指定IMSI':'IMSI归属地'"
+                        v-if="item.type!=='qTime'">
+            <el-select v-model="item.places" size="medium" filterable multiple collapse-tags style="width:430px"
                        clearable v-if="item.type=='places'" placeholder="选择场所" :filter-method="pinyinMatch">
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
             <el-button type="primary" size="medium" @click="showMap(idx)" v-if="item.type=='places'">地图
             </el-button>
-            <el-select v-model="item.isps" style="width:230px" size="medium" multiple collapse-tags
+            <el-select v-model="item.isps" style="width:500px" size="medium" multiple collapse-tags
                        v-if="item.type=='isps'" placeholder="选择运营商">
               <el-option :label="param.label" :value="param.value" v-for="param in operators"
                          :key="param.value"></el-option>
             </el-select>
-            <el-input v-model="item.imsi" :maxlength=15 placeholder="输入IMSI" size="medium"
-                      style="width: 230px" v-if="item.type=='imsi'"></el-input>
-            <el-input v-model="item.regional" :maxlength=20 placeholder="输入归属地" size="medium"
-                      style="width: 230px" v-if="item.type=='regional'"></el-input>
-            <el-button type="text" size="medium" @click="deleteItem(idx)" v-if="idx>1">删除</el-button>
-          </el-form-item>
-          <el-form-item align="left" style="margin: 0 0 10px 0">
-            <el-button plain size="medium" icon="el-icon-plus" @click="addParam()">添加</el-button>
+            <el-tooltip class="item" effect="dark" content="归属地格式应为XX省XX市，例：广东省深圳市" placement="bottom">
+              <el-input v-model="item.regional" placeholder="可输入多个归属地，用逗号隔开" size="medium"
+                        style="width: 500px" v-if="item.type=='regional'"></el-input>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="IMSI应为15位数字" placement="bottom">
+              <el-input v-model="item.imsi" placeholder="可输入多个IMSI，用逗号隔开" size="medium"
+                        style="width: 500px" v-if="item.type=='imsi'"></el-input>
+            </el-tooltip>
           </el-form-item>
         </el-form>
         <div class="block" style="margin-top: 20px">
@@ -230,7 +226,7 @@
       <!--IMSI记录-->
       <div class="device">
         <el-dialog title="IMSI记录" :visible.sync="runImsiList" width="96%">
-          <imsiList ref="imsiList" v-bind:sourceId="sourceId"></imsiList>
+          <imsiList ref="imsiList" v-bind:dataId="dataId"></imsiList>
         </el-dialog>
       </div>
       <!--分析结果-->
@@ -325,27 +321,18 @@
         taskId: this.$route.query.taskId || '',
         tableHeight: window.innerHeight - 235,
         collision: {
-          collType: 'and', name: '数据源1', dscList: [{
-            type: 'qTime', field: 'equal',
+          name: '数据源1', dscList: [{
+            type: 'qTime', time: ['00:00:00', '23:59:59'],
             qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
               new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
-            time: ['00:00:00', '23:59:59'], isps: [], places: [], regional: '', imsi: ''
-          }, {
-            type: 'time', field: 'equal',
-            qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
-              new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
-            time: ['00:00:00', '23:59:59'], isps: [], places: [], regional: '', imsi: ''
-          }]
+          }, {type: 'places', places: []}, {type: 'isps', isps: []}, {type: 'regional', regional: ''},
+            {type: 'imsi', imsi: ''}]
         },
         runHelpDoc: false, runSubtract: false, runModifyTask: false, runImsiList: false,
         runImsiResult: false, runResult: false, mapVisible: false, runSetParam: false,
-        sourceId: '', sourceData: '', selResults: [], subArr: [], pIndx: 0, task: {},
+        sourceId: '', dataId: '', sourceData: '', selResults: [], subArr: [], pIndx: 0, task: {},
         cases: [], records: [], results: [], places: [], placesCopy: [], placeList: [], selResources: [],
         listLoading: false, intervalid: null, nameModify: false,
-        conParams: [{value: 'qTime', label: 'IMSI采集日期范围'}, {value: 'time', label: 'IMSI采集每日时段'},
-          {value: 'places', label: 'IMSI采集场所'}, {value: 'isps', label: 'IMSI运营商'},
-          {value: 'regional', label: 'IMSI归属地'}, {value: 'imsi', label: '指定IMSI'}],
-        fields: [{value: 'equal', label: '等于'}, {value: 'ne', label: '排除'}],//小于lt，大于gt
         operators: [{value: 0, label: '移动'}, {value: 1, label: '联通'}, {value: 2, label: '电信'}],
         resultModes: [{value: 'intersect', label: '交集'}, {value: 'union', label: '并集'},
           {value: 'subtract', label: '差集'}],
@@ -430,52 +417,26 @@
       showSetParam(val, data) {
         if (val == 0) {//添加数据源时，默认2个条件，且不可修改；日期和时间必选
           this.collision = {
-            collType: 'and', name: '数据源' + (this.records.length + 1), dscList: [{
-              type: 'qTime', field: 'equal',
+            name: '数据源' + (this.records.length + 1),
+            dscList: [{
+              type: 'qTime', time: ['00:00:00', '23:59:59'],
               qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
-                new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
-              time: ['00:00:00', '23:59:59'], isps: [], places: [], regional: '', imsi: ''
-            }, {
-              type: 'time', field: 'equal',
-              qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
-                new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
-              time: ['00:00:00', '23:59:59'], isps: [], places: [], regional: '', imsi: ''
-            }]
+                new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()]
+            }, {type: 'places', places: []}, {type: 'isps', isps: []}, {type: 'regional', regional: ''},
+              {type: 'imsi', imsi: ''}]
           };
         } else {//数据源列表里的条件展示
-          var param = {name: data.name, collType: data.collType, id: data.id};
+          var param = {name: data.name, id: data.id};
           var arr = [];
           data.dscList.forEach((item) => {
             if (item.type == 'qTime') {
               arr.push({
-                type: item.type, field: item.field, qTime: [item.startDate * 1000, item.endDate * 1000],
-                time: ['00:00:00', '23:59:59'], isps: [], places: [], regional: '', imsi: ''
-              });
-            } else if (item.type == 'time') {
-              arr.push({
-                type: item.type, field: item.field, time: [item.startTime, item.endTime],
-                qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
-                  new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
-                isps: [], places: [], regional: '', imsi: ''
+                type: item.type, qTime: [item.startDate * 1000, item.endDate * 1000],
+                time: [item.startTime, item.endTime]
               });
             } else {
-              var par = {type: item.type, field: item.field};
+              var par = {type: item.type};
               par[item.type] = item[item.type];
-              par.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
-                new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
-              par.time = ['00:00:00', '23:59:59'];
-              if (!par.isps) {
-                par.isps = [];
-              }
-              if (!par.places) {
-                par.places = [];
-              }
-              if (!par.regional) {
-                par.regional = '';
-              }
-              if (!par.imsi) {
-                par.imsi = '';
-              }
               arr.push(par);
             }
           });
@@ -501,45 +462,19 @@
       getPlaceList(pos) {
         this.placeList = pos;
       },
-      //IMSI记录/分析结果页签展示 0：数据源IMSI记录 1：分析任务的结果 2：统计
-      showImsi(val, id, type) {
-        this.sourceId = id;
-        if (val == 0) {
-          this.runImsiList = true;
-        } else if (val == 1) {
-          this.runImsiResult = true;
-        } else {
-          let param = {sourceId: id, dataType: type};
-          this.sourceData = JSON.stringify(param);
-          this.runResult = true;
-        }
-      },
-      //条件选项择变化时，展示的值跟着变化 数组，string
-      handleParamChange(val, idx) {
-        if (val == 'qTime') {
-          this.collision.dscList[idx][val] = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
-            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
-        } else if (val == 'time') {
-          this.collision.dscList[idx][val] = ['00:00:00', '23:59:59'];
-        } else if (val == 'isps' || val == 'places') {
-          this.collision.dscList[idx][val] = [];
-        } else {
-          this.collision.dscList[idx][val] = '';
-        }
+      //数据源/交并分析的统计页面展示
+      showImsi(id, type) {
+        let param = {sourceId: id, dataType: type};
+        this.sourceData = JSON.stringify(param);
+        this.runResult = true;
       },
       //添加条件参数
       addParam() {
         var param = {
-          type: 'qTime', field: 'equal',
+          type: 'qTime', time: ['00:00:00', '23:59:59'],
           qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
-            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
-          time: ['00:00:00', '23:59:59'], isps: [], places: [], regional: '', imsi: ''
+            new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()]
         };
-        if (this.collision.dscList.length == 1) {//日期和时间必选，且第一个条件为日期，第二个条件为时间
-          param.type = 'time';
-        } else {
-          param.type = 'qTime';
-        }
         this.collision.dscList.push(param);
       },
       deleteItem(idx) {
@@ -598,13 +533,6 @@
       //判断数据源/分析任务是否是成功状态的
       judgeState() {
         let isFail = false;
-        for (let m = 0; m < this.selResources.length; m++) {
-          let status = this.selResources[m].dataStatus;
-          if (status != 'FINISH') {
-            isFail = true;
-            break;
-          }
-        }
         for (let m = 0; m < this.selResults.length; m++) {
           let status = this.selResults[m].status;
           if (status != 'FINISH') {
@@ -613,10 +541,11 @@
           }
         }
         if (isFail) {//交并差数据只能由成功的数据源、交并任务开始
-          this.$message.error('请选择已完成的数据源/分析任务');
+          this.$message.error('请选择已完成的分析任务');
         }
         return isFail;
       },
+      //判断数据源/分析任务是否是成功状态的
       addRelany(val) {
         if (this.judgeState()) return;
         let arr = [], str = [];
@@ -661,23 +590,24 @@
           isBol = false;
         }
         this.collision.dscList.forEach((item) => {
-          if (!item[item.type] || item[item.type].length == 0) {
-            this.$message.error('完善条件信息');
-            isBol = false;
+          if (item.type == 'regional' && item.regional.length > 0) {
+            item.regional = item.regional.replace(",", "，");
           }
-          if (item.type == 'imsi') {
-            if (!numValid(item.imsi) || item.imsi.length != 15) {
-              this.$message.error('请输入15位正确的IMSI');
-              isBol = false;
-            }
+          if (item.type == 'imsi' && item.imsi.length > 0) {
+            item.imsi = item.imsi.replace(",", "，");
+            let imsiArr = item.imsi.split("，");
+            imsiArr.forEach((imsi) => {
+              if (!numValid(imsi) || imsi.length != 15) {
+                this.$message.error('请输入15位正确的IMSI');
+                isBol = false;
+              }
+            });
           }
           if (item.type == 'qTime') {
             if (!item.qTime || item.qTime.length == 0) {
               this.$message.error('请选择日期');
               isBol = false;
             }
-          }
-          if (item.type == 'time') {
             if (!item.time || item.time.length == 0) {
               this.$message.error('请选择时段');
               isBol = false;
@@ -691,21 +621,16 @@
           }
         });
         if (isBol) {//条件全部符合
-          var param = {collType: this.collision.collType, taskId: this.taskId, name: this.collision.name};
+          var param = {taskId: this.taskId, name: this.collision.name};
           var arr = [];
           this.collision.dscList.forEach((item) => {
             if (item.type == 'qTime') {
               arr.push({
-                type: item.type, field: item.field,
+                type: item.type, startTime: item.time[0], endTime: item.time[1],
                 startDate: item.qTime[0] / 1000, endDate: item.qTime[1] / 1000
               });
-            } else if (item.type == 'time') {
-              arr.push({
-                type: item.type, field: item.field,
-                startTime: item.time[0], endTime: item.time[1]
-              });
             } else {
-              var child = {type: item.type, field: item.field};
+              var child = {type: item.type};
               child[item.type] = item[item.type];
               arr.push(child);
             }
@@ -750,7 +675,7 @@
         this.selResults.forEach((item) => {
           arr2.push(item.id);
         });
-        this.$confirm('确定要删除该数据源/任务吗?', '提示', {type: 'info'}).then(() => {
+        this.$confirm('确定要删除该数据源/交并分析吗?', '提示', {type: 'info'}).then(() => {
           if (arr1.length > 0) {
             this.listLoading = true;
             this.$post('/collision/deleteTaskOrDataSourceOrResult', {type: 'dataSource', ids: arr1},
@@ -867,46 +792,49 @@
         this.$post('/collision/getDataSourceList/' + this.taskId, {}).then((data) => {
           if ("000000" === data.code) {
             data.data.forEach((item) => {
-              var dateStr = [], timeStr = [], placeStr = [], ispStr = [], reginStr = [], imsiStr = [];
+              var dateStr = [], placeStr = [], ispStr = [], reginStr = [], imsiStr = [];
               var contentStr = '';
               item.dscList.forEach((child) => {
                 if (child.type == 'qTime') {
-                  var qStr = (child.field == 'equal' ? '等于' : '排除') + formatDate(new Date(child.startDate * 1000), 'yyyy-MM-dd') + '至' + formatDate(new Date(child.endDate * 1000), 'yyyy-MM-dd');
+                  var qStr = formatDate(new Date(child.startDate * 1000), 'yyyy-MM-dd') + '至' + formatDate(new Date(child.endDate * 1000), 'yyyy-MM-dd') +
+                    ' 时间:' + child.startTime + '至' + child.endTime;
                   dateStr.push(qStr);
-                } else if (child.type == 'time') {
-                  var tStr = (child.field == 'equal' ? '等于' : '排除') + child.startTime + '至' + child.endTime;
-                  timeStr.push(tStr);
                 } else if (child.type == 'places') {
-                  var pArr = [];
-                  this.places.forEach((p1) => {
-                    child.places.forEach((p2) => {
-                      if (p1.id == p2) {
-                        pArr.push(p1.placeName);
-                      }
-                    })
-                  });
-                  var pStr = (child.field == 'equal' ? '等于' : '排除') + pArr.join(',');
-                  placeStr.push(pStr);
+                  if (child.places.length > 0) {
+                    var pArr = [];
+                    this.places.forEach((p1) => {
+                      child.places.forEach((p2) => {
+                        if (p1.id == p2) {
+                          pArr.push(p1.placeName);
+                        }
+                      })
+                    });
+                    var pStr = pArr.join(',');
+                    placeStr.push(pStr);
+                  }
                 } else if (child.type == 'isps') {
-                  var ispArr = [];
-                  child.isps.forEach((isp) => {
-                    ispArr.push(isp == 0 ? '移动' : isp == 1 ? '联通' : isp == 2 ? '电信' : '未知');
-                  });
-                  var iStr = (child.field == 'equal' ? '等于' : '排除') + ispArr.join(",");
-                  ispStr.push(iStr);
+                  if (child.isps.length > 0) {
+                    var ispArr = [];
+                    child.isps.forEach((isp) => {
+                      ispArr.push(isp == 0 ? '移动' : isp == 1 ? '联通' : isp == 2 ? '电信' : '未知');
+                    });
+                    let iStr = ispArr.join(",");
+                    ispStr.push(iStr);
+                  }
                 } else if (child.type == 'regional') {
-                  var rStr = (child.field == 'equal' ? '等于' : '排除') + child.regional;
-                  reginStr.push(rStr);
+                  if (child.regional.length > 0) {
+                    let rStr = child.regional;
+                    reginStr.push(rStr);
+                  }
                 } else if (child.type == 'imsi') {
-                  var iStr = (child.field == 'equal' ? '等于' : '排除') + child.imsi;
-                  imsiStr.push(iStr);
+                  if (child.imsi.length > 0) {
+                    let iStr = child.imsi;
+                    imsiStr.push(iStr);
+                  }
                 }
               });
               if (dateStr.length > 0) {
                 contentStr += ' 日期:' + dateStr.join(',');
-              }
-              if (timeStr.length > 0) {
-                contentStr += ' 时间段:' + timeStr.join(',');
               }
               if (placeStr.length > 0) {
                 contentStr += ' 场所:' + placeStr.join(',');

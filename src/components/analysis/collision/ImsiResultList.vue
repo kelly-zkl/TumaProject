@@ -20,10 +20,12 @@
                         :maxlength=20></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
+              <el-button type="primary" size="medium" @click="isSearch = true;getData()"
+                         :loading="listLoading">搜索
+              </el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button size="medium" @click="clearData()">重置</el-button>
+              <el-button size="medium" @click="clearData()" :loading="listLoading">重置</el-button>
             </el-form-item>
           </el-form>
         </el-col>
@@ -88,12 +90,12 @@
     watch: {
       sourceId: function () {
         this.taskId = this.sourceId;
-        this.getData();
+        this.clearData();
       }
     },
     created() {
       this.taskId = this.sourceId;
-      this.getData();
+      this.clearData();
     },
     methods: {
       getButtonVial(msg) {
@@ -254,7 +256,7 @@
       }
     },
     mounted() {
-      this.getData();
+      this.clearData();
     }
   }
 </script>

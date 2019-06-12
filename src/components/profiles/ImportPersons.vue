@@ -22,8 +22,8 @@
               </el-upload>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="人员编号" v-model="query.faceId" :maxlength="18"
-                        style="width: 180px" size="medium"></el-input>
+              <el-input placeholder="人员编号" v-model="query.faceId" :maxlength="32"
+                        style="width: 220px" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="15"

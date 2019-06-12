@@ -27,10 +27,12 @@
               <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
+              <el-button type="primary" size="medium" @click="isSearch = true;getData()"
+                         :loading="listLoading">搜索
+              </el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button size="medium" @click="clearData()">重置</el-button>
+              <el-button size="medium" @click="clearData()" :loading="listLoading">重置</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px" v-show="isMore">
               <el-input v-model="query.deviceId" placeholder="设备ID" style="width: 160px" size="medium"
@@ -89,11 +91,11 @@
   let md5 = require("crypto-js/md5");
 
   export default {
-    props: ['sourceId'],
+    props: ['dataId'],
     data() {
       return {
         isMore: false,
-        taskId: this.sourceId,
+        taskId: this.dataId,
         listLoading: false, qTime: '',
         list: [], list10: [],
         isFirst: true,
@@ -155,15 +157,16 @@
       }
     },
     watch: {
-      sourceId: function () {
-        this.taskId = this.sourceId;
-        this.getData();
+      dataId: function () {
+        this.taskId = this.dataId;
+        this.getPlaces();
+        this.clearData();
       }
     },
     created() {
-      this.taskId = this.sourceId;
+      this.taskId = this.dataId;
       this.getPlaces();
-      this.getData();
+      this.clearData();
     },
     methods: {
       getButtonVial(msg) {
@@ -332,7 +335,7 @@
     },
     mounted() {
       this.getPlaces();
-      this.getData();
+      this.clearData();
     }
   }
 </script>

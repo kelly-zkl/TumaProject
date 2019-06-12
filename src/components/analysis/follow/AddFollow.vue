@@ -57,6 +57,21 @@
               </el-date-picker>
             </el-tooltip>
           </el-form-item>
+          <!--<el-form-item label="时间范围" align="left" required style="margin: 0">-->
+          <!--<el-tooltip class="item" effect="dark" content="开始时间" placement="bottom">-->
+          <!--<el-time-picker v-model="time2[0]" style="width:120px" value-format="HH:mm:ss"-->
+          <!--placeholder="开始时间" size="medium">-->
+          <!--</el-time-picker>-->
+          <!--</el-tooltip>-->
+          <!--<el-tooltip class="item" effect="dark" content="结束时间" placement="bottom">-->
+          <!--<el-time-picker v-model="time2[1]" style="width:120px" value-format="HH:mm:ss"-->
+          <!--placeholder="结束时间" size="medium">-->
+          <!--</el-time-picker>-->
+          <!--</el-tooltip>-->
+          <!--</el-form-item>-->
+          <!--<el-form-item align="left" style="margin: 0">-->
+          <!--<span style="font-size:13px;color: #999">(时段非必选，默认为全天24小时)</span>-->
+          <!--</el-form-item>-->
           <el-form-item label="伴随时间间隔" align="left" prop="interval" style="margin: 0">
             <el-tooltip class="item" effect="dark" placement="bottom">
               <div slot="content">伴随时间间隔是指，在采集IMSI的时间点,<br/>前后n秒内采集的其它IMSI，都可视为伴随IMSI</div>
@@ -242,7 +257,7 @@
 <script>
   import DeviceBmap from '../DeviceBmap';
   import {noSValidator} from "../../../assets/js/api";
-  import {formatDate, getAreaLable, encryData, decryData} from "../../../assets/js/util";
+  import {formatDate, getAreaLable, compareTime, encryData, decryData} from "../../../assets/js/util";
   import PinyinMatch from 'pinyin-match';
 
   export default {
@@ -263,13 +278,10 @@
         followTask: {followType: "IMSI", interval: 120},
         imgPath: require('../../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
-        cases: [],
+        time2: ['00:00:00', '23:59:59'],
         tasks: [{value: "IMSI", label: "IMSI"}],
         qTime: '', deviceList: [], deviceListCopy: [], imgUrl: '', returnData: {},
-        deviceData: '',
-        count: 0,
-        vipList: [],
-        cameras: [],
+        deviceData: '', count: 0, vipList: [], cameras: [], cases: [],
         rules: {
           caseId: [{required: true, message: '请选择案件', trigger: 'blur'}],
           followTarget: [
@@ -284,15 +296,9 @@
         dialogCamera: false,
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
         provinceList: JSON.parse(localStorage.getItem("areas")),
-        areaList: [],
-        device1: [],
-        cameras1: [],
+        areaList: [], device1: [], cameras1: [],
         queryDevice: {page: 1, size: 10},
-        countDevice: 0,
-        deviceTypes: [],
-        places: [],
-        deviceForms: [],
-        sels: [],
+        countDevice: 0, deviceTypes: [], places: [], deviceForms: [], sels: [],
         pickerBeginDate: {
           disabledDate: (time) => {
             let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
@@ -323,6 +329,7 @@
       getTaskDetail() {
         this.$post('/follow/get/' + this.taskId, {}).then((data) => {
           this.qTime = [data.data.startDate * 1000, data.data.endDate * 1000];
+          // this.time2 = [data.data.repeatStartTime, data.data.repeatEndTime];
           this.followTask = data.data;
         }).catch((err) => {
         });
@@ -392,13 +399,25 @@
               this.$message.error('请选择日期');
               return;
             }
-            this.followTask.startDate = Math.round(this.qTime[0] / 1000);
-            this.followTask.endDate = Math.round(this.qTime[1] / 1000);
             let bol = ((this.followTask.endDate - this.followTask.startDate) > 60 * 60 * 24 * 7);
             if (bol) {
               this.$message.error('日期范围不能超过7天');
               return;
             }
+            // if (!this.time2 || this.time2.length == 0) {
+            //   this.$message.error('请选择时段');
+            //   return;
+            // } else if (!this.time2[0] || !this.time2[1]) {
+            //   this.$message.error('请选择时段');
+            //   return;
+            // } else if (!compareTime(this.time2[0], this.time2[1])) {
+            //   this.$message.error('结束时间要大于开始时间');
+            //   return;
+            // }
+            this.followTask.startDate = Math.round(this.qTime[0] / 1000);
+            this.followTask.endDate = Math.round(this.qTime[1] / 1000);
+            // this.followTask.repeatStartTime = this.time2[0];
+            // this.followTask.repeatEndTime = this.time2[1];
 
             this.followTask.caseName = this.getCaseName();
             if (this.taskId.length > 0) {

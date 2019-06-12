@@ -35,6 +35,9 @@
               <el-form-item label="日期范围" align="left" style="margin: 0;text-align: left">
                 {{(task.startStr?task.startStr:'--')+' 至 '+ (task.endStr?task.endStr:'--')}}
               </el-form-item>
+              <!--<el-form-item label="时间范围" align="left" style="margin: 0;text-align: left">-->
+              <!--{{(task.repeatStartTime?task.repeatStartTime:'&#45;&#45;')+' 至 '+ (task.repeatEndTime?task.repeatEndTime:'&#45;&#45;')}}-->
+              <!--</el-form-item>-->
               <el-form-item label="时间间隔" align="left" style="margin: 0;text-align: left">
                 {{task.interval==0?0:task.interval}}
               </el-form-item>
