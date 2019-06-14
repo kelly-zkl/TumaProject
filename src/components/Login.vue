@@ -50,7 +50,7 @@
         </div>
       </div>
       <el-col :span="24" class="main-footer">
-        Copyright © {{dataStr}} 深圳前海中电慧安科技有限公司
+        Copyright © {{dataStr}} 深圳前海中电慧安科技有限公司 系统版本{{version}}
       </el-col>
     </section>
   </div>
@@ -67,8 +67,7 @@
         logining: false,
         savePsw: false,
         account: {loginId: '', password: '', checkcode: ''},
-        imgUrl: '',
-        dataStr: '',
+        imgUrl: '', version: '', dataStr: '',
         systemParam: {sysLogo: '../assets/img/icon_logo.svg'},
         options: []
       }
@@ -264,11 +263,20 @@
         }).catch((err) => {
           this.$message.error(err);
         });
+      },
+      getVersion() {
+        this.$post("version/get/platformVersion", {}).then((data) => {
+          if (data.code === '000000') {
+            this.version = data.data;
+          }
+        }).catch(() => {
+        });
       }
     },
     mounted() {
       this.dataStr = formatDate(new Date(), 'yyyy');
       // this.myBrowser();
+      this.getVersion();
       this.getSystemDetail();
       let bol = JSON.parse(localStorage.getItem("user"));
       if (bol && bol.save === true) {

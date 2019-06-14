@@ -24,7 +24,7 @@
               </el-form-item>
               <el-form-item label="分析状态" align="left" style="margin: 0;text-align: left">
                 <span
-                  v-bind:style="{fontSize:'15px',color:task.status=='running'?'#6799FD':task.status =='finish'?'#00C755':task.status=='waiting'?'#D76F31':task.status =='killed'?'#999':task.status === 'failed' ? '#dd6161' :'#333'}">
+                  v-bind:style="{fontSize:'15px',color:task.status=='running'?'#6799FD':task.status =='finish'?'#00C755':task.status=='waiting'?'#FF9900':task.status =='killed'?'#999':task.status === 'failed' ? '#dd6161' :'#333'}">
                   {{task.status==="running" ? "进行中": task.status === "finish" ? "已完成" :task.status==="waiting" ? "等待中": task.status === "killed" ? "终止" :task.status === "failed" ? "失败" : "--"}}</span>
               </el-form-item>
             </el-col>

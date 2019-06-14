@@ -52,7 +52,7 @@
           <template slot-scope="scope">
             <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已完成</span>
             <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
-            <span style="color:#D76F31" v-show="scope.row.taskStatus == 'WAIT'">等待中</span>
+            <span style="color:#FF9900" v-show="scope.row.taskStatus == 'WAIT'">等待中</span>
             <span style="color:#6799FD" v-show="scope.row.taskStatus == 'EXECUTION'">分析中</span>
             <span style="color:#999" v-show="scope.row.taskStatus == 'STOP'">终止</span>
           </template>

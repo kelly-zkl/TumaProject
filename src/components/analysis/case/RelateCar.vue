@@ -67,7 +67,7 @@
           <template slot-scope="scope">
             <span style="color:#00C755" v-show="scope.row.status == 'finish'">已完成</span>
             <span style="color:#dd6161" v-show="scope.row.status == 'failed'">失败</span>
-            <span style="color:#D76F31" v-show="scope.row.status == 'waiting'">等待中</span>
+            <span style="color:#FF9900" v-show="scope.row.status == 'waiting'">等待中</span>
             <span style="color:#6799FD" v-show="scope.row.status == 'running'">分析中</span>
             <span style="color:#999" v-show="scope.row.status == 'killed'">终止</span>
           </template>

@@ -116,7 +116,7 @@
           }
           this.getChart();
         }).catch((err) => {
-          this.statistics = [{time: '0', imsi: 0, face: 0, car: 0}];
+          this.statistics = [{time: '--', imsi: 0, face: 0, car: 0}];
           this.getChart();
         });
       },
@@ -139,7 +139,7 @@
           title: {text: this.chartTitle, textStyle: {fontSize: 16}},
           grid: {left: 10, right: 10, top: 40, bottom: 50, containLabel: true},
           toolbox: {feature: {magicType: {type: ['line', 'bar']}, saveAsImage: {show: true}}},
-          tooltip: {trigger: 'axis', axisPointer: {type: 'cross'}},
+          tooltip: {trigger: 'axis', axisPointer: {type: 'cross'}, extraCssText: 'width: 170px;text-align:left'},
           legend: {data: ['IMSI', '人脸', '车牌'], right: 100, itemWidth: 30},
           xAxis: {data: this.getMapData('time')},
           yAxis: {
