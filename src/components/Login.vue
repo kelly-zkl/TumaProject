@@ -31,7 +31,7 @@
                           @keyup.13.native="login()"></el-input>
               </el-col>
               <el-col :span="8" :offset="1">
-                <img alt="验证码" style="cursor:pointer" title="看不清可单击图片刷新" v-on:click="refreshImg()" v-bind:src="imgUrl">
+                <img alt="验证码" style="cursor:pointer" title="看不清可单击图片刷新" v-on:click="getUrl()" v-bind:src="imgUrl">
               </el-col>
             </el-row>
           </el-form-item>
@@ -185,9 +185,7 @@
       },
       //获取验证码图片
       getUrl() {
-        setTimeout(() => {
-          this.imgUrl = this.$User_Url + "/manager/verify/getCheckImage?" + Math.random();
-        }, 500);
+        this.imgUrl = this.$User_Url + "/manager/verify/getCheckImage?" + Math.random();
       },
       //是否记住密码
       handleChange(val) {
@@ -197,10 +195,6 @@
           JSON.parse(localStorage.getItem("user")).acc = '';
           JSON.parse(localStorage.getItem("user")).psw = '';
         }
-      },
-      //更新验证码
-      refreshImg() {
-        this.imgUrl = this.$User_Url + "/manager/verify/getCheckImage?" + Math.random();
       },
       //获取用户菜单权限
       getMenuTree() {
@@ -276,8 +270,7 @@
     mounted() {
       this.dataStr = formatDate(new Date(), 'yyyy');
       // this.myBrowser();
-      this.getVersion();
-      this.getSystemDetail();
+
       let bol = JSON.parse(localStorage.getItem("user"));
       if (bol && bol.save === true) {
         this.savePsw = true;
@@ -288,7 +281,11 @@
       } else {
         this.savePsw = false;
       }
-      this.getUrl();
+      setTimeout(() => {
+        this.getUrl();
+        this.getVersion();
+        this.getSystemDetail();
+      }, 500);
     }
   }
 </script>

@@ -877,32 +877,30 @@
       }
     },
     mounted() {
-      this.$nextTick(() => {
-        var conPara = JSON.parse(decryData(sessionStorage.getItem("system")));
-        if (conPara) {
-          this.systemParam = conPara;
-        }
-        this.hotPoint = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
-        this.mapPoint = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
+      var conPara = JSON.parse(decryData(sessionStorage.getItem("system")));
+      if (conPara) {
+        this.systemParam = conPara;
+      }
+      this.hotPoint = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
+      this.mapPoint = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
 
-        let arr = this.set7adyData([]);
-        this.warning = this.getLast7Days(arr);
-        this.catchData = this.getLast7Days(arr);
-        //初始化地图个表格
-        this.getDeviceMap();
-        this.getCamera();
-        this.getDevice();
-        this.getImsiFace();
-        this.getWarning();
-        //获取概览数据
-        this.getMapData();
-        this.getWarningCount();
-        this.getImsiList();
-        this.getLineData();
-        //定时请求数据==>10s请求一次
-        this.statusTask();
-        this.statusMap();//地图数据3分钟请求一次
-      });
+      let arr = this.set7adyData([]);
+      this.warning = this.getLast7Days(arr);
+      this.catchData = this.getLast7Days(arr);
+      //初始化地图个表格
+      this.getDeviceMap();
+      this.getCamera();
+      this.getDevice();
+      this.getImsiFace();
+      this.getWarning();
+      //获取概览数据
+      this.getMapData();
+      this.getWarningCount();
+      this.getImsiList();
+      this.getLineData();
+      //定时请求数据==>10s请求一次
+      this.statusTask();
+      this.statusMap();//地图数据3分钟请求一次
     }
   }
 </script>

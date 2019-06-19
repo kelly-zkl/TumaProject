@@ -667,25 +667,23 @@
       }
     },
     mounted() {
-      this.$nextTick(() => {
-        this.getButton();
-        this.getSystemDetail();
+      this.getButton();
+      this.getSystemDetail();
 
-        this.searchImsis = localStorage.getItem("imsis") ? JSON.parse(localStorage.getItem("imsis")).imsi : [];
-        this.menu = JSON.parse(decryData(sessionStorage.getItem("menu"))) || [];
-        this.audio = document.getElementById('audio');
+      this.searchImsis = localStorage.getItem("imsis") ? JSON.parse(localStorage.getItem("imsis")).imsi : [];
+      this.menu = JSON.parse(decryData(sessionStorage.getItem("menu"))) || [];
+      this.audio = document.getElementById('audio');
 
-        this.getImsiWarning();
-        this.getFaceWarning();
-        this.getWarningCount();
-        this.getTurnCount();
-        this.statusTask();
-        /*账号在15分钟或者30分钟无人使用的情况下应自动退出；*/
-        document.body.addEventListener("click", this.pageEvent);
-        document.body.addEventListener("keydown", this.pageEvent);
-        document.body.addEventListener("mousemove", this.pageEvent);
-        document.body.addEventListener("mousewheel", this.pageEvent);
-      });
+      this.getImsiWarning();
+      this.getFaceWarning();
+      this.getWarningCount();
+      this.getTurnCount();
+      this.statusTask();
+      /*账号在15分钟或者30分钟无人使用的情况下应自动退出；*/
+      document.body.addEventListener("click", this.pageEvent);
+      document.body.addEventListener("keydown", this.pageEvent);
+      document.body.addEventListener("mousemove", this.pageEvent);
+      document.body.addEventListener("mousewheel", this.pageEvent);
     }
   }
 </script>
