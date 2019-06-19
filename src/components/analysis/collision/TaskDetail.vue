@@ -349,6 +349,7 @@
     //页面关闭时停止更新设备在线状态
     beforeDestroy() {
       clearInterval(this.intervalid);
+      this.intervalid = null;
     },
     methods: {
       getButtonVial(msg) {

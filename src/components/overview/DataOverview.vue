@@ -170,27 +170,33 @@
         cameraPieChart: null,//相机设备饼状图
         catchLineChart: null,//采集数据折线图
         warningBarChart: null,//告警数据柱状图
-        intervalid: null,//定时器
+        intervalid: null, intervalidMap: null,//定时器
         icon: require('../../assets/img/icon.png'),
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
-        markers: [],
         markerClusterer: null,
-        multLat: []
+        multLat: [], num: 0
       }
     },
     //页面关闭时停止更新设备在线状态
     beforeDestroy() {
       clearInterval(this.intervalid);
+      clearInterval(this.intervalidMap);
+      this.intervalid = null;
+      this.intervalidMap = null;
+      this.deviceMap.removeEventListener("zoomend", this.map);
+      this.deviceMap.removeEventListener("dragend", this.map);
+      if (this.heatMap) {
+        this.heatMap.removeEventListener("zoomend", this.heatZoom);
+        this.heatMap.removeEventListener("dragend", this.heatZoom);
+      }
     },
     methods: {
       //定时刷新设备的在线状态
       statusTask() {
         if (!this.intervalid) {
           this.intervalid = setInterval(() => {
-            if (this.activeItem === 'device') {
-              this.getMapData();
-            } else {//热力图
+            if (this.activeItem === 'data') {//热力图
               this.getHotSpot();
             }
             this.getWarningCount();
@@ -199,12 +205,23 @@
           }, this.systemParam.refreshTime * 1000);
         }
       },
+      statusMap() {
+        if (!this.intervalidMap) {
+          this.intervalidMap = setInterval(() => {
+            if (this.activeItem === 'device') {
+              this.getMapData();
+            }
+          }, 3 * 60 * 1000);
+        }
+      },
       handleType(val) {
         this.activeItem = val;
         if (val === 'device') {//设备地图
           this.getMapData();
         } else {//热力图
-          // this.getDataHeat();
+          if (!this.heatMap) {
+            this.initHeatMap();
+          }
           this.getHotSpot();
         }
       },
@@ -268,29 +285,10 @@
         });
       },
       getDataHeat() {
-        var _this = this;
-        if (!this.heatMap) {
-          this.heatMap = new BMap.Map("dataheat", {minZoom: 5, maxZoom: 19});// 创建地图实例
+        this.hotPoint = this.heatMap.getCenter();
+        this.hotZoom = this.heatMap.getZoom();
 
-          this.heatMap.enableScrollWheelZoom(true); // 允许滚轮缩放
-          this.heatMap.enableDragging();
-        } else {
-          this.hotPoint = this.heatMap.getCenter();
-          this.hotZoom = this.heatMap.getZoom();
-        }
-
-        this.heatMap.setMinZoom(5);
-        this.heatMap.setMaxZoom(19);
         this.heatMap.centerAndZoom(this.hotPoint, this.hotZoom);
-
-        function zoom() {
-          _this.heatMap.centerAndZoom(_this.heatMap.getCenter(), _this.heatMap.getZoom());
-          _this.hotPoint = _this.heatMap.getCenter();
-          _this.hotZoom = _this.heatMap.getZoom();
-        }
-
-        this.heatMap.addEventListener("zoomend", zoom);
-        this.heatMap.addEventListener("dragend", zoom);
 
         this.heatMap.clearHotspots();//清空地图所有热区,添加新数据
         var colorRange = {};
@@ -397,7 +395,6 @@
                 this.mapData.push(param);
               }
             });
-            // console.log(this.mapData);
             this.getDeviceMap();
             this.getCamera();
             this.getDevice();
@@ -425,8 +422,13 @@
         }
         return a;
       },
+      map() {//地图缩放、移动
+        this.deviceMap.centerAndZoom(this.deviceMap.getCenter(), this.deviceMap.getZoom());
+        this.mapPoint = this.deviceMap.getCenter();
+        this.mapZoom = this.deviceMap.getZoom();
+      },
       getDeviceMap() {
-        var _this = this;
+        this.num = this.num + 1;
         if (this.deviceMap) {
           this.mapPoint = this.deviceMap.getCenter();
           this.mapZoom = this.deviceMap.getZoom();
@@ -475,6 +477,9 @@
             this.deviceMap.setMinZoom(5);
             this.deviceMap.setMaxZoom(19);
             this.deviceMap.setMapStyle({style: 'midnight'});
+
+            this.deviceMap.addEventListener("zoomend", this.map);
+            this.deviceMap.addEventListener("dragend", this.map);
           }
         } else {
           this.deviceChart.setOption({
@@ -549,37 +554,26 @@
           });
         }
         this.deviceMap.centerAndZoom(this.mapPoint, this.mapZoom);
-
-        function map() {
-          _this.deviceMap.centerAndZoom(_this.deviceMap.getCenter(), _this.deviceMap.getZoom());
-          _this.mapPoint = _this.deviceMap.getCenter();
-          _this.mapZoom = _this.deviceMap.getZoom();
+        if (this.num == 2) {//1：初始化，2：第一次请求数据
+          this.getMarkNumber();
         }
-
-        this.getMarkNumber();
-
-        this.deviceMap.addEventListener("zoomend", map);
-        this.deviceMap.addEventListener("dragend", map);
       },
       //点聚合功能
       getMarkNumber() {
         if (!this.markerClusterer) {
+          var markers = [];
+          for (var i = 0; i < this.mapData.length; i++) {
+            var pt = new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]);
+            var myIcon = new BMap.Icon(this.icon, new BMap.Size(1, 1));
+            markers.push(new BMap.Marker(pt, {icon: myIcon}));
+          }
           // var _styles = [{url: this.imgPath, size: new BMap.Size(40, 40)}];, styles: _styles
           this.markerClusterer = new BMapLib.MarkerClusterer(this.deviceMap, {
-            markers: this.markers,
+            markers: markers,
             gridSize: 40,
             maxZoom: 17
           });
         }
-        this.markerClusterer.clearMarkers();
-        this.markers = [];
-        for (var i = 0; i < this.mapData.length; i++) {
-          var pt = new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]);
-          var myIcon = new BMap.Icon(this.icon, new BMap.Size(1, 1));
-          this.markers.push(new BMap.Marker(pt, {icon: myIcon}));
-        }
-        //最简单的用法，生成一个marker数组，然后调用markerClusterer类即可。
-        this.markerClusterer.addMarkers(this.markers);
       },
       //相机--饼状图
       getCamera() {
@@ -846,32 +840,69 @@
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
+      },
+      heatZoom() {//热力图缩放、移动
+        this.heatMap.centerAndZoom(this.heatMap.getCenter(), this.heatMap.getZoom());
+        this.hotPoint = this.heatMap.getCenter();
+        this.hotZoom = this.heatMap.getZoom();
+      },
+      //初始化热力地图
+      initHeatMap() {
+        this.$nextTick(() => {
+          this.heatMap = new BMap.Map("dataheat", {minZoom: 5, maxZoom: 19});// 创建地图实例
+          this.heatMap.centerAndZoom(this.hotPoint, this.hotZoom);
+          this.heatMap.enableScrollWheelZoom(true); // 允许滚轮缩放
+          this.heatMap.enableDragging();
+
+          this.heatMap.addEventListener("zoomend", this.heatZoom);
+          this.heatMap.addEventListener("dragend", this.heatZoom);
+
+          var colorRange = {};
+          var total = this.systemParam.heatRanges[this.systemParam.heatRanges.length - 1].start;
+          this.systemParam.heatRanges.forEach((item) => {
+            if (item.end) {
+              var ketStr = item.end / total;
+              colorRange[ketStr] = item.color;
+            }
+          });
+          if (!this.heatmapOverlay) {
+            this.heatmapOverlay = new BMapLib.HeatmapOverlay({"radius": 20});
+            this.heatMap.addOverlay(this.heatmapOverlay);
+            this.heatmapOverlay.setOptions({gradient: colorRange});
+            this.heatmapOverlay.show();//显示热力图
+          }
+
+          this.heatmapOverlay.setDataSet({data: [], max: total});
+        });
       }
     },
     mounted() {
-      var conPara = JSON.parse(decryData(sessionStorage.getItem("system")));
-      if (conPara) {
-        this.systemParam = conPara;
-      }
-      this.hotPoint = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
-      this.mapPoint = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
+      this.$nextTick(() => {
+        var conPara = JSON.parse(decryData(sessionStorage.getItem("system")));
+        if (conPara) {
+          this.systemParam = conPara;
+        }
+        this.hotPoint = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
+        this.mapPoint = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
 
-      let arr = this.set7adyData([]);
-      this.warning = this.getLast7Days(arr);
-      this.catchData = this.getLast7Days(arr);
-      //初始化地图个表格
-      this.getDeviceMap();
-      this.getCamera();
-      this.getDevice();
-      this.getImsiFace();
-      this.getWarning();
-      //获取概览数据
-      this.getMapData();
-      this.getWarningCount();
-      this.getImsiList();
-      this.getLineData();
-      //定时请求数据==>10s请求一次
-      this.statusTask();
+        let arr = this.set7adyData([]);
+        this.warning = this.getLast7Days(arr);
+        this.catchData = this.getLast7Days(arr);
+        //初始化地图个表格
+        this.getDeviceMap();
+        this.getCamera();
+        this.getDevice();
+        this.getImsiFace();
+        this.getWarning();
+        //获取概览数据
+        this.getMapData();
+        this.getWarningCount();
+        this.getImsiList();
+        this.getLineData();
+        //定时请求数据==>10s请求一次
+        this.statusTask();
+        this.statusMap();//地图数据3分钟请求一次
+      });
     }
   }
 </script>

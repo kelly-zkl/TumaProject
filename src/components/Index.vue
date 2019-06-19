@@ -320,6 +320,12 @@
       this.audio = null;
       clearInterval(this.intervalid);
       clearInterval(this.loginOutIntervalid);
+      this.intervalid = null;
+      this.loginOutIntervalid = null;
+      document.body.removeEventListener("click", this.pageEvent);
+      document.body.removeEventListener("keydown", this.pageEvent);
+      document.body.removeEventListener("mousemove", this.pageEvent);
+      document.body.removeEventListener("mousewheel", this.pageEvent);
     },
     methods: {
       getButtonVial(msg) {
@@ -569,9 +575,11 @@
         if (!this.loginOutIntervalid) {
           this.loginOutIntervalid = setInterval(() => {
             let clickTime = localStorage.getItem("clickTime");
+            let login = localStorage.getItem("login");
             let subTime = new Date().getTime() - clickTime;
-            if (subTime > 30 * 60 * 1000) {//超过30分钟退出
+            if ((subTime > 30 * 60 * 1000 && login) || !login) {//超过30分钟退出
               clearInterval(this.loginOutIntervalid);
+              this.loginOutIntervalid = null;
               this.loginOut();
             }
           }, 10 * 1000);
@@ -659,23 +667,25 @@
       }
     },
     mounted() {
-      this.getButton();
-      this.getSystemDetail();
+      this.$nextTick(() => {
+        this.getButton();
+        this.getSystemDetail();
 
-      this.searchImsis = localStorage.getItem("imsis") ? JSON.parse(localStorage.getItem("imsis")).imsi : [];
-      this.menu = JSON.parse(decryData(sessionStorage.getItem("menu"))) || [];
-      this.audio = document.getElementById('audio');
+        this.searchImsis = localStorage.getItem("imsis") ? JSON.parse(localStorage.getItem("imsis")).imsi : [];
+        this.menu = JSON.parse(decryData(sessionStorage.getItem("menu"))) || [];
+        this.audio = document.getElementById('audio');
 
-      this.getImsiWarning();
-      this.getFaceWarning();
-      this.getWarningCount();
-      this.getTurnCount();
-      this.statusTask();
-      /*账号在15分钟或者30分钟无人使用的情况下应自动退出；*/
-      document.body.addEventListener("click", this.pageEvent);
-      document.body.addEventListener("keydown", this.pageEvent);
-      document.body.addEventListener("mousemove", this.pageEvent);
-      document.body.addEventListener("mousewheel", this.pageEvent);
+        this.getImsiWarning();
+        this.getFaceWarning();
+        this.getWarningCount();
+        this.getTurnCount();
+        this.statusTask();
+        /*账号在15分钟或者30分钟无人使用的情况下应自动退出；*/
+        document.body.addEventListener("click", this.pageEvent);
+        document.body.addEventListener("keydown", this.pageEvent);
+        document.body.addEventListener("mousemove", this.pageEvent);
+        document.body.addEventListener("mousewheel", this.pageEvent);
+      });
     }
   }
 </script>

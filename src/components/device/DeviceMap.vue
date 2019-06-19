@@ -55,7 +55,7 @@
         drawingManager: null,
         deviceMap: null,
         mapPoint: null,
-        mapZoom: 12,
+        mapZoom: 12, num: 0,
         ply: null,//多边形
         styleOptions: {
           strokeColor: "#FF6600",    //边线颜色。
@@ -65,13 +65,16 @@
           fillOpacity: 0.15,      //填充的透明度，取值范围0 - 1。
           strokeStyle: 'solid' //边线的样式，solid或dashed。
         },
-        mapData: [], intervalid: null, markers: [], markerClusterer: null, queryParam: '',
+        mapData: [], intervalid: null, markerClusterer: null, queryParam: '',
         queryType: 'place', results: [], multLat: [], resultCopy: []
       }
     },
     //页面关闭时停止更新设备在线状态
     beforeDestroy() {
       clearInterval(this.intervalid);
+      this.intervalid = null;
+      this.deviceMap.removeEventListener("zoomend", this.map);
+      this.deviceMap.removeEventListener("dragend", this.map);
     },
     methods: {
       getButtonVial(msg) {
@@ -114,12 +117,12 @@
           this.deviceMap.panTo(this.mapPoint);
         }
       },
-      //定时刷新设备的在线状态
+      //定时刷新设备的在线状态--3分钟刷新一次
       statusTask() {
         if (!this.intervalid) {
           this.intervalid = setInterval(() => {
             this.getMapData();
-          }, 20 * 1000);
+          }, 3 * 60 * 1000);
         }
       },
       //侦码设备
@@ -238,6 +241,7 @@
         return a;
       },
       deviceMapData() {
+        this.num = this.num + 1;
         var _this = this;
         if (this.deviceMap) {
           this.mapPoint = this.deviceMap.getCenter();
@@ -286,6 +290,15 @@
             this.deviceMap.enableDragging();
             this.deviceMap.setMinZoom(5);
             this.deviceMap.setMaxZoom(19);
+
+            function map() {
+              _this.deviceMap.centerAndZoom(_this.deviceMap.getCenter(), _this.deviceMap.getZoom());
+              _this.mapPoint = _this.deviceMap.getCenter();
+              _this.mapZoom = _this.deviceMap.getZoom();
+            }
+
+            this.deviceMap.addEventListener("zoomend", this.map);
+            this.deviceMap.addEventListener("dragend", this.map);
             //实例化鼠标绘制工具
             this.drawingManager = new BMapLib.DrawingManager(_this.deviceMap, {
               isOpen: false, //是否开启绘制模式
@@ -408,37 +421,30 @@
         }
         this.deviceMap.centerAndZoom(this.mapPoint, this.mapZoom);
 
-        function map() {
-          _this.deviceMap.centerAndZoom(_this.deviceMap.getCenter(), _this.deviceMap.getZoom());
-          _this.mapPoint = _this.deviceMap.getCenter();
-          _this.mapZoom = _this.deviceMap.getZoom();
+        if (this.num == 2) {//1：初始化，2：第一次请求数据
+          this.getMarkNumber();
         }
-
-        //点聚合
-        this.getMarkNumber();
-
-        this.deviceMap.addEventListener("zoomend", map);
-        this.deviceMap.addEventListener("dragend", map);
       },
       //点聚合功能
       getMarkNumber() {
         if (!this.markerClusterer) {
-          // var _styles = [{url: this.imgPath, size: new BMap.Size(40, 40)}];, styles: _styles
+          var markers = [];
+          for (var i = 0; i < this.mapData.length; i++) {
+            var pt = new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]);
+            var myIcon = new BMap.Icon(this.icon, new BMap.Size(1, 1));
+            markers.push(new BMap.Marker(pt, {icon: myIcon}));
+          }
           this.markerClusterer = new BMapLib.MarkerClusterer(this.deviceMap, {
-            markers: this.markers,
+            markers: markers,
             gridSize: 40,
             maxZoom: 17
           });
         }
-        this.markerClusterer.clearMarkers();
-        this.markers = [];
-        for (var i = 0; i < this.mapData.length; i++) {
-          var pt = new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]);
-          var myIcon = new BMap.Icon(this.icon, new BMap.Size(1, 1));
-          this.markers.push(new BMap.Marker(pt, {icon: myIcon}));
-        }
-        //最简单的用法，生成一个marker数组，然后调用markerClusterer类即可。
-        this.markerClusterer.addMarkers(this.markers);
+      },
+      map() {//缩放、移动
+        this.deviceMap.centerAndZoom(this.deviceMap.getCenter(), this.deviceMap.getZoom());
+        this.mapPoint = this.deviceMap.getCenter();
+        this.mapZoom = this.deviceMap.getZoom();
       },
       //生成多边形
       polygon(path) {
