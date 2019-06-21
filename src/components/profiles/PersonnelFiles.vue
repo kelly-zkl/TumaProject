@@ -326,7 +326,7 @@
         });
       },
       getUserData() {
-        this.$post('archives/detail', {faceId: this.faceId, showFaceTraces: 0, showImsiDetail: 0}).then((data) => {
+        this.$post('archives/detail', {faceId: this.faceId, showFaceTraces: 0, showImsiDetail: 1}).then((data) => {
           if ('000000' === data.code) {
             this.userInfo = data.data;
             let imsis = [], faces = [data.data.faceId];
