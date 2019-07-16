@@ -6,7 +6,7 @@
   </div>
 </template>
 <script>
-  import echarts from "echarts";
+  let echarts = require('echarts');
   import {getAreaLable, encryData, decryData} from "../../assets/js/util";
 
   export default {
@@ -36,6 +36,19 @@
           {value: '8', label: '金融服务场所'}, {value: 'A', label: '购物场所'}, {value: 'B', label: '公共服务场所'},
           {value: 'C', label: '文化服务场所'}, {value: 'D', label: '公共休闲场所'}, {value: '9', label: '其他'}]
       }
+    },
+    //页面关闭时销毁实例
+    beforeDestroy() {
+      this.bMap.removeEventListener("zoomend", this.zoomEvent);
+      this.bMap.removeEventListener("dragend", this.zoomEvent);
+      this.drawingManager.removeEventListener('overlaycomplete', this.overlaycomplete);
+      this.ply = null;
+      this.drawingManager = null;
+      this.bMap = null;
+      this.point = null;
+      this.myChart.clear();
+      echarts.dispose(this.myChart);
+      this.myChart = null;
     },
     methods: {
       //获取场所类型

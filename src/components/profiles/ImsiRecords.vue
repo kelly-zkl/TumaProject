@@ -113,14 +113,9 @@
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         count: 0, places: [], placesCopy: [], list: [], list10: [],
-        isShow: false,
-        isFirst: true,
-        isSearch: false,
-        firstPage: 0,
-        page: 1,
+        isShow: false, isFirst: true, isSearch: false, firstPage: 0, page: 1,
         exportKey: 'archives:get:listImsiToday',
-        listLoading: false,
-        query: {size: 100},
+        listLoading: false, query: {size: 100},
         time1: ['00:00:00', '23:59:59'],
         pickerBeginDate: {
           shortcuts: [{

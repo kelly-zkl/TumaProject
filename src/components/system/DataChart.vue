@@ -40,13 +40,12 @@
   </section>
 </template>
 <script>
-  import echarts from "echarts";
+  let echarts = require('echarts');
   import {formatDate} from "../../assets/js/util";
 
   export default {
     data() {
       return {
-        myChart: {},
         deviceList: [],
         lineHeight: window.innerHeight - 230,
         dateTimes: [{label: '今天', value: formatDate(new Date(), 'yyyy-MM-dd')},
@@ -98,10 +97,21 @@
         statistics: []//统计数据
       }
     },
+    //页面关闭时停止更新设备在线状态
+    beforeDestroy() {
+      let myChart = echarts.getInstanceByDom(document.getElementById('main'));
+      if (myChart) {
+        echarts.dispose(myChart);
+      }
+    },
     methods: {
       //网络获取统计数据
       getData() {
-        this.myChart.showLoading();
+        let myChart = echarts.getInstanceByDom(document.getElementById('main'));
+        if (!myChart) {
+          myChart = echarts.init(document.getElementById('main'));
+        }
+        myChart.showLoading();
         this.$post("/analysis/terminate", this.query).then((data) => {
           this.statistics = data.data;
           if (this.statistics.length <= 100) {
@@ -130,9 +140,11 @@
       },
       /** 折线图表示例*/
       getChart() {
-        this.myChart.clear();
-        // 基于准备好的dom，初始化echarts实例
-        this.myChart = echarts.init(document.getElementById('main'));
+        let myChart = echarts.getInstanceByDom(document.getElementById('main'));
+        if (!myChart) {
+          myChart = echarts.init(document.getElementById('main'));
+        }
+        myChart.clear();
         // 指定图表的配置项和数据
         let option = {//backgroundColor: '#404a59',
           color: ['#2F4554', '#C23531', '#008000', '#FF8000', '#91c7ae', '#749f83'],
@@ -155,8 +167,8 @@
         };
 
         // 使用刚指定的配置项和数据显示图表。
-        this.myChart.setOption(option, true);
-        this.myChart.hideLoading();
+        myChart.setOption(option, true);
+        myChart.hideLoading();
       },
       //选择时间间隔
       handleTime(val) {
@@ -238,8 +250,6 @@
       }
     },
     mounted() {
-      // 基于准备好的dom，初始化echarts实例
-      this.myChart = echarts.init(document.getElementById('main'));
       this.getDeviceList();
       this.getData();
     }

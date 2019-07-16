@@ -39,7 +39,7 @@
   </div>
 </template>
 <script>
-  import echarts from "echarts";
+  let echarts = require('echarts');
   import {buttonValidator, encryData, decryData} from "../../assets/js/util";
   import PinyinMatch from 'pinyin-match';
 
@@ -51,7 +51,6 @@
         icon: require('../../assets/img/icon.png'),
         camera: {},
         systemParam: {},
-        myChart: null,
         drawingManager: null,
         deviceMap: null,
         mapPoint: null,
@@ -72,9 +71,18 @@
     //页面关闭时停止更新设备在线状态
     beforeDestroy() {
       clearInterval(this.intervalid);
-      this.intervalid = null;
       this.deviceMap.removeEventListener("zoomend", this.map);
       this.deviceMap.removeEventListener("dragend", this.map);
+      this.drawingManager.removeEventListener('overlaycomplete', this.overlaycomplete);
+      this.intervalid = null;
+      this.ply = null;
+      this.drawingManager = null;
+      this.deviceMap = null;
+      this.mapPoint = null;
+      let chart = echarts.getInstanceByDom(document.getElementById('view-map'));
+      if (chart) {
+        echarts.dispose(chart);
+      }
     },
     methods: {
       getButtonVial(msg) {
@@ -94,9 +102,9 @@
       },
       querySearch(queryString, cb) {
         if (this.queryParam.length > 0) {
-          var result = [];
+          let result = [];
           this.resultCopy.forEach((item) => {
-            var m = PinyinMatch.match(item.name, this.queryParam);
+            let m = PinyinMatch.match(item.name, this.queryParam);
             if (m) {
               result.push(item);
             }
@@ -242,182 +250,155 @@
       },
       deviceMapData() {
         this.num = this.num + 1;
-        var _this = this;
+        let _this = this;
+        let chart = echarts.getInstanceByDom(document.getElementById('view-map'));
+        if (!chart) {
+          chart = echarts.init(document.getElementById('view-map'));
+        }
+        let option = {
+          animation: false,
+          tooltip: {
+            trigger: 'item',
+            padding: [5, 10],
+            show: true, //不显示提示标签
+            formatter: function (params) {
+              let res = '';
+              res += '设备类型：' + params.data.type + '<br>';
+              res += '设 备 ID ：' + params.data.deviceId + '<br>';
+              res += '在线状态：' + (params.data.onLine ? "在线" : "离线") + '<br>';
+              res += '安装场所：' + (params.data.placeName ? params.data.placeName : '--') + '<br>';
+              res += '设备标识：' + params.data.deviceName + '<br>';
+              return res;
+            }, //提示标签格式
+            backgroundColor: "#070616",//提示标签背景颜色
+            textStyle: {color: "#fff", align: 'left'} //提示标签字体颜色
+          },
+          grid: {left: 0, right: 0, bottom: 0, top: 0, containLabel: true},
+          bmap: {center: [this.mapPoint.lng, this.mapPoint.lat], zoom: this.mapZoom, roam: true},
+          series: [
+            {// 侦码设备不在线
+              name: '数量',
+              type: 'scatter',
+              coordinateSystem: 'bmap',
+              symbol: 'diamond',
+              symbolSize: [24, 24],
+              data: this.mapData.filter(function (item) {
+                return !item.onLine && item.type == '侦码设备';
+              })
+            },
+            {// 相机设备不在线
+              name: '数量',
+              type: 'scatter',
+              coordinateSystem: 'bmap',
+              symbol: 'circle',
+              symbolSize: [24, 24],
+              data: this.mapData.filter(function (item) {
+                return !item.onLine && (item.type == '人脸相机' || item.type == '车牌相机');
+              })
+            },
+            {
+              name: 'Top 5',
+              type: 'effectScatter',
+              coordinateSystem: 'bmap',
+              symbol: 'circle',
+              symbolSize: [24, 24],
+              data: this.mapData.filter(function (item) {
+                return item.onLine && (item.type == '人脸相机' || item.type == '车牌相机');
+              }),
+              showEffectOn: 'render',
+              rippleEffect: {
+                brushType: 'stroke'
+              },
+              hoverAnimation: true,
+              itemStyle: {
+                color: '#24A6FE',
+                shadowBlur: 10,
+                shadowColor: '#333'
+              },
+              zlevel: 1
+            },
+            {
+              name: 'Top 5',
+              type: 'effectScatter',
+              coordinateSystem: 'bmap',
+              symbol: 'diamond',
+              symbolSize: [24, 24],
+              data: this.mapData.filter(function (item) {
+                return item.onLine && item.type == '侦码设备';
+              }),
+              showEffectOn: 'render',
+              rippleEffect: {
+                brushType: 'stroke'
+              },
+              hoverAnimation: true,
+              itemStyle: {
+                color: '#24A6FE',
+                shadowBlur: 10,
+                shadowColor: '#333'
+              },
+              zlevel: 1
+            }
+          ]
+        };
+        chart.setOption(option);
         if (this.deviceMap) {
           this.mapPoint = this.deviceMap.getCenter();
           this.mapZoom = this.deviceMap.getZoom();
-        }
-        if (!this.myChart) {
-          var app = {};
-          this.myChart = echarts.init(document.getElementById('view-map'));
-          let option = {
-            animation: false,
-            tooltip: {
-              trigger: 'item',
-              padding: [5, 10],
-              show: true, //不显示提示标签
-              formatter: function (params) {
-                var res = '';
-                res += '设备类型：' + params.data.type + '<br>';
-                res += '设 备 ID ：' + params.data.deviceId + '<br>';
-                res += '在线状态：' + (params.data.onLine ? "在线" : "离线") + '<br>';
-                res += '安装场所：' + (params.data.placeName ? params.data.placeName : '--') + '<br>';
-                res += '设备标识：' + params.data.deviceName + '<br>';
-                return res;
-              }, //提示标签格式
-              backgroundColor: "#070616",//提示标签背景颜色
-              textStyle: {color: "#fff", align: 'left'} //提示标签字体颜色
-            },
-            grid: {left: 0, right: 0, bottom: 0, top: 0, containLabel: true},
-            bmap: {
-              center: this.systemParam.localPoint,
-              zoom: 12,
-              roam: true
-            },
-            series: [
-              {
-                name: '数量',
-                type: 'scatter',
-                coordinateSystem: 'bmap',
-                data: []
-              }
-            ]
-          };
-          this.myChart.setOption(option);
-          if (!app.inNode) {
-            this.deviceMap = this.myChart.getModel().getComponent('bmap').getBMap();
-            this.deviceMap.enableScrollWheelZoom(true);
-            this.deviceMap.enableDragging();
-            this.deviceMap.setMinZoom(5);
-            this.deviceMap.setMaxZoom(19);
-
-            function map() {
-              _this.deviceMap.centerAndZoom(_this.deviceMap.getCenter(), _this.deviceMap.getZoom());
-              _this.mapPoint = _this.deviceMap.getCenter();
-              _this.mapZoom = _this.deviceMap.getZoom();
-            }
-
-            this.deviceMap.addEventListener("zoomend", this.map);
-            this.deviceMap.addEventListener("dragend", this.map);
-            //实例化鼠标绘制工具
-            this.drawingManager = new BMapLib.DrawingManager(_this.deviceMap, {
-              isOpen: false, //是否开启绘制模式
-              enableDrawingTool: true, //是否显示工具栏
-              drawingToolOptions: {
-                anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
-                offset: new BMap.Size(80, 5), //偏离值
-                drawingModes: [BMAP_DRAWING_CIRCLE, BMAP_DRAWING_POLYGON, BMAP_DRAWING_RECTANGLE]
-              },
-              circleOptions: _this.styleOptions, //圆的样式
-              polygonOptions: _this.styleOptions, //多边形的样式
-              rectangleOptions: _this.styleOptions //矩形的样式
-            });
-            //添加鼠标绘制工具监听事件，用于获取绘制结果
-            this.drawingManager.addEventListener('overlaycomplete', this.overlaycomplete);
-
-            // 定义一个控件类,即function
-            function DeleteControl() {
-              // 默认停靠位置和偏移量
-              this.defaultAnchor = BMAP_ANCHOR_TOP_RIGHT;
-              this.defaultOffset = new BMap.Size(20, 5);
-            }
-
-            // 通过JavaScript的prototype属性继承于BMap.Control
-            DeleteControl.prototype = new BMap.Control();
-
-            // 自定义控件必须实现自己的initialize方法,并且将控件的DOM元素返回
-            // 在本方法中创建个div元素作为控件的容器,并将其添加到地图容器中
-            DeleteControl.prototype.initialize = function (map) {
-              // 创建一个DOM元素
-              var div = document.createElement("div");
-              // 设置样式
-              div.className = "div-delete el-icon-delete";
-              // 绑定事件,点击一次放大两级
-              div.onclick = function (e) {
-                _this.removePoly();
-              };
-              // 添加DOM元素到地图中
-              _this.deviceMap.getContainer().appendChild(div);
-              // 将DOM元素返回
-              return div;
-            };
-            // 创建控件
-            var myZoomCtrl = new DeleteControl();
-            // 添加到地图当中
-            this.deviceMap.addControl(myZoomCtrl);
-          }
         } else {
+          this.deviceMap = chart.getModel().getComponent('bmap').getBMap();
+          this.deviceMap.enableScrollWheelZoom(true);
+          this.deviceMap.enableDragging();
           this.deviceMap.setMinZoom(5);
-          this.myChart.setOption({
-            series: [
-              {// 侦码设备不在线
-                name: '数量',
-                type: 'scatter',
-                coordinateSystem: 'bmap',
-                symbol: 'diamond',
-                // symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAb1BMVEUAAAD2PzD2PzD8VzjwJif8VjnwJijwJyj+XTv5SzXzMSzuHyX2PjD9VznwJSf+Xjz5TTX+XzztHST////9VTfxJSb5RTL2Oi79zsv4Z1/8p6D7dWb+3dr/9PP8m5L+6Ob8ta37jID1Tkf9wrz7gXPpPPFCAAAAE3RSTlMAMCBgYPDw0MDAwMCAUFDQ0ICAt+xDQQAAASZJREFUOMt90gmSgjAQBdAOoiwiLkkaCPty/zNOAz1MJDAPS2Pl59NFAX/EO1SL8C3AdXkqy/Oy2/ZCtRN6YHlcleP6sOrVoct2Xp3gDo/7Xdd1joiWuFzzRzW5JJUpaB3xAKjI+tPXktWGx3htBaSbDzdl2Yy0GJV6AQi05bItsTRmGopKSkQUkCCq7cLeDFO73mDoOgokEOG3QrISZxHgTinrib4rDiDggb6nCHIgc9Fdiu3PGjC5jeav8tz8BnA54lhakBtOAwRiDtTLMzT7QAzJGqiRns+QZd0ukIDghva4QQAEWp/MoLUOAMD/L+ADibU2uWvMtI7XV+6mT9z41U/PAikw/3jfh016O+hPweLd9/t3D775gb0d+OASnzsf/gjY/ABgxEQcBSdUhwAAAABJRU5ErkJggg==',
-                symbolSize: [24, 24],
-                data: this.mapData.filter(function (item) {
-                  return !item.onLine && item.type == '侦码设备';
-                })
-              },
-              {// 相机设备不在线
-                name: '数量',
-                type: 'scatter',
-                coordinateSystem: 'bmap',
-                symbol: 'circle',
-                // symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAaVBMVEUAAAD2PzD2PzD8VznwJif8VjnwJijwJyj+XTv5SzXzMSzuHyX2PjD9VznwJSf+Xjz5TTX+XzztHST////xJif9VTj5SDP1OC79zcv7eWf4amH8oZr/9fP5gHn+3tr5YFD9wr37tLH1TkfWZWL7AAAAE3RSTlMAMCBgYPDw0MDAwMCAUFDQ0ICAt+xDQQAAAPZJREFUOMu902mPgyAQgOEB8T56CDO1Xt3+/x+5dQKuKGa/9WljgvMqxkT4I26ZYdlNwFF0MRuXaDeWmdnJ5HZex+Ygrje3N0HRer05Udv947MglhzkvMDdEJczuX2AufMtU074Ma44D61vQucKIBC7dg9XAio/mLrBBl0/DSNWkPvBz5OD94tXD8wBg1v0rQ3w/4CInoeAXED0jaAIBp0LCqiCAb3H1/B5K1SBCAZsHokEQKqPgXZSAFBa9w/fqIl/Wiv4KPSpAhYyOZsnEljDK3IHcn/dgKV0kIJVE9glabxPr9zPSwk+lW7HqYIjcS/txXcBq1+0B0HMkpEZYwAAAABJRU5ErkJggg==',
-                symbolSize: [24, 24],
-                data: this.mapData.filter(function (item) {
-                  return !item.onLine && (item.type == '人脸相机' || item.type == '车牌相机');
-                })
-              },
-              {
-                name: 'Top 5',
-                type: 'effectScatter',
-                coordinateSystem: 'bmap',
-                symbol: 'circle',
-                // symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAe1BMVEUAAAAxukU1xlUvrjM0xlUvrjM1yVozwE0wtDsuqi4yukQ1xlUvrjI0xVQvrzQ2yVo0wE4xszsvqi42ylwuqS3///8zw1AwsTY1yVkurDAxtT4yu0XN7tBn0Hub3qRlym/z+/VTyGba895+0YXA6sWz5bpy0H9Aw1hLvlXy6H8mAAAAFXRSTlMAIGBg8PDAwMDAgFBQMDDQ0NDQgIDEW0VAAAAA/0lEQVQ4y6XT526DMBSG4Y+9yeTg2oEy0qT3f4UlZhRjo1bK4/yxzkuwEOBXdvGZ5F8y6OwDWznYUFk+2/Ct9TxxmcZNVn8/7ElbzF6uJyJGBsl0f1fu2OY3LHc8R/DamQXyAERtpXrS7HWMI7VNoepIyEV0BDKiqtiiRYZYDbqqmYKq7poHxQjU4KuVwfMudzcKIITQbyHqYgyE+Ffw+V7AOdcDPgec/x2ExuAxByFiY8C/+3szPBUeIzcGUttzngMnUzA7AXDKsr6p+nLmYBCWu8LxlfP25p4FKd0LUkycDyMHi9TTx16qfHrRdh5ZUDnn9fjsQJdfo+nia47FDw4MSkvLJ8uSAAAAAElFTkSuQmCC',
-                symbolSize: [24, 24],
-                data: this.mapData.filter(function (item) {
-                  return item.onLine && (item.type == '人脸相机' || item.type == '车牌相机');
-                }),
-                showEffectOn: 'render',
-                rippleEffect: {
-                  brushType: 'stroke'
-                },
-                hoverAnimation: true,
-                itemStyle: {
-                  color: '#24A6FE',
-                  shadowBlur: 10,
-                  shadowColor: '#333'
-                },
-                zlevel: 1
-              },
-              {
-                name: 'Top 5',
-                type: 'effectScatter',
-                coordinateSystem: 'bmap',
-                symbol: 'diamond',
-                // symbol: 'image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAY1BMVEUAAAA0xVMvrzQxukQxukUwtTw1xlUvrjM0xlUvrjM1xVQwrzQ1xlUvrjI2ylw0xlQxukT///8vrjLM7tBly3La892Z36Wm4a7z+/VWympCw1fm9+iA1o6z5ruN3Zxz04PA6cWJOXpkAAAAD3RSTlMAwMAwIIBgYPDw0NBQUIDlQOsSAAABIUlEQVQ4y42Ti5KDIAxFI2rVWktAFN/2/79yY8l2UXGnZ5ig5BKuCPBH/Izkm+gZw5nbXXrcb7AnieSBKPHzj1yeyB9eeRnk9pkvL+AaSX4lyJ2Pvb9hqRXRtP3m9NcAUnPd1Cmma9mG+36W2G3yYszyooeZ9oP2z2U51Go00rTtOvSNUjQQQ4o+Uzuso1tgsDMNpBBRlNRcQOwVY3AjAuQMBzSqWyk2LEDAANNEErwW0Co9MiywtQ/5b+raegKjQpgvBYIF3fsH2L1Ao4CUOkN5pP0ZEOdDhRRirjCGK8QA5X8eSgDIrgUaMyCE1rY+80KthTtyhb6g4KNfuVf0gqMCJtNBMvhQFYH6FXgk4pgXCezJSj9dZnAmTgVPTr3r/wPtpTZf/MVuJQAAAABJRU5ErkJggg==',
-                symbolSize: [24, 24],
-                data: this.mapData.filter(function (item) {
-                  return item.onLine && item.type == '侦码设备';
-                }),
-                showEffectOn: 'render',
-                rippleEffect: {
-                  brushType: 'stroke'
-                },
-                hoverAnimation: true,
-                itemStyle: {
-                  color: '#24A6FE',
-                  shadowBlur: 10,
-                  shadowColor: '#333'
-                },
-                zlevel: 1
-              }
-            ]
+          this.deviceMap.setMaxZoom(19);
+
+          this.deviceMap.addEventListener("zoomend", this.map);
+          this.deviceMap.addEventListener("dragend", this.map);
+          //实例化鼠标绘制工具
+          this.drawingManager = new BMapLib.DrawingManager(_this.deviceMap, {
+            isOpen: false, //是否开启绘制模式
+            enableDrawingTool: true, //是否显示工具栏
+            drawingToolOptions: {
+              anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+              offset: new BMap.Size(80, 5), //偏离值
+              drawingModes: [BMAP_DRAWING_CIRCLE, BMAP_DRAWING_POLYGON, BMAP_DRAWING_RECTANGLE]
+            },
+            circleOptions: _this.styleOptions, //圆的样式
+            polygonOptions: _this.styleOptions, //多边形的样式
+            rectangleOptions: _this.styleOptions //矩形的样式
           });
+          //添加鼠标绘制工具监听事件，用于获取绘制结果
+          this.drawingManager.addEventListener('overlaycomplete', this.overlaycomplete);
+
+          // 定义一个控件类,即function
+          function DeleteControl() {
+            // 默认停靠位置和偏移量
+            this.defaultAnchor = BMAP_ANCHOR_TOP_RIGHT;
+            this.defaultOffset = new BMap.Size(20, 5);
+          }
+
+          // 通过JavaScript的prototype属性继承于BMap.Control
+          DeleteControl.prototype = new BMap.Control();
+
+          // 自定义控件必须实现自己的initialize方法,并且将控件的DOM元素返回
+          // 在本方法中创建个div元素作为控件的容器,并将其添加到地图容器中
+          DeleteControl.prototype.initialize = function (map) {
+            // 创建一个DOM元素
+            var div = document.createElement("div");
+            // 设置样式
+            div.className = "div-delete el-icon-delete";
+            // 绑定事件,点击一次放大两级
+            div.onclick = function (e) {
+              _this.removePoly();
+            };
+            // 添加DOM元素到地图中
+            _this.deviceMap.getContainer().appendChild(div);
+            // 将DOM元素返回
+            return div;
+          };
+          // 创建控件
+          var myZoomCtrl = new DeleteControl();
+          // 添加到地图当中
+          this.deviceMap.addControl(myZoomCtrl);
         }
         this.deviceMap.centerAndZoom(this.mapPoint, this.mapZoom);
 
@@ -428,10 +409,10 @@
       //点聚合功能
       getMarkNumber() {
         if (!this.markerClusterer) {
-          var markers = [];
+          let markers = [];
           for (var i = 0; i < this.mapData.length; i++) {
-            var pt = new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]);
-            var myIcon = new BMap.Icon(this.icon, new BMap.Size(1, 1));
+            let pt = new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]);
+            let myIcon = new BMap.Icon(this.icon, new BMap.Size(1, 1));
             markers.push(new BMap.Marker(pt, {icon: myIcon}));
           }
           this.markerClusterer = new BMapLib.MarkerClusterer(this.deviceMap, {

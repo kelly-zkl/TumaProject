@@ -67,7 +67,7 @@
         logining: false,
         savePsw: false,
         account: {loginId: '', password: '', checkcode: ''},
-        imgUrl: '', version: '', dataStr: '',
+        imgUrl: '', version: 'v3.0.6', dataStr: '',
         systemParam: {sysLogo: '../assets/img/icon_logo.svg'},
         options: []
       }
@@ -257,14 +257,6 @@
         }).catch((err) => {
           this.$message.error(err);
         });
-      },
-      getVersion() {
-        this.$post("version/get/platformVersion", {}).then((data) => {
-          if (data.code === '000000') {
-            this.version = data.data;
-          }
-        }).catch(() => {
-        });
       }
     },
     mounted() {
@@ -283,7 +275,6 @@
       }
       setTimeout(() => {
         this.getUrl();
-        this.getVersion();
         this.getSystemDetail();
       }, 500);
     }

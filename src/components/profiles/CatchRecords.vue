@@ -106,9 +106,7 @@
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('archives:getFaceRecordById')">
-              查看详情
-            </el-button>
+            <el-button type="text" @click="gotoDetail(scope.row)">查看大图</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -261,9 +259,8 @@
       },
       //查看人脸详情
       gotoDetail(row) {
-        let routeData = this.$router.resolve({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
-        window.open(routeData.href, '_blank');
-        // this.$router.push({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
+        // let routeData = this.$router.resolve({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
+        window.open(row.senceImageUrl ? row.senceImageUrl : row.imageUrl ? row.imageUrl : this.imgPath, '_blank');
       },
       //批量导入设备的文件格式验证
       beforeAvatarUpload(file) {

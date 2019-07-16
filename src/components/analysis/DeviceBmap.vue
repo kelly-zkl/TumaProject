@@ -6,7 +6,7 @@
   </div>
 </template>
 <script>
-  import echarts from "echarts";
+  let echarts = require('echarts');
   import {encryData, decryData} from "../../assets/js/util";
 
   export default {
@@ -34,6 +34,19 @@
         deviceType: '',//设备类型-->相机：FACE 侦码：IMSI
         dataType: ''//数据类型-->条件1：data1  条件2：data2
       }
+    },
+    //页面关闭时销毁实例
+    beforeDestroy() {
+      this.bMap.removeEventListener("zoomend", this.zoomEvent);
+      this.bMap.removeEventListener("dragend", this.zoomEvent);
+      this.drawingManager.removeEventListener('overlaycomplete', this.overlaycomplete);
+      this.ply = null;
+      this.drawingManager = null;
+      this.bMap = null;
+      this.point = null;
+      this.myChart.clear();
+      echarts.dispose(this.myChart);
+      this.myChart = null;
     },
     watch: {
       deviceData: function () {

@@ -48,6 +48,11 @@
       this.point = param.point;
       this.setCenter();
     },
+    beforeDestroy() {
+      this.map.clearOverlays();
+      this.map.removeEventListener("click", this.mapClick);
+      this.map = null;
+    },
     methods: {
       //场所省市县变化
       placeChange(value) {
@@ -195,16 +200,26 @@
           console.log(_this.position);
           _this.$emit('getLocation', _this.position);
         });
+      },
+      mapClick(e) {
+        console.log(e);
+        let pt = e.point;
+        this.position.lng = pt.lng;
+        this.position.lat = pt.lat;
+        this.position.detailAddress = '';
+        this.map.clearOverlays();  // 清除地图覆盖物
+        this.map.addOverlay(new BMap.Marker(pt));
+        this.$emit('getLocation', this.position);
+        // this.setLocation();
       }
     },
     mounted() {
-      let _this = this;
       this.systemParam = JSON.parse(decryData(sessionStorage.getItem("system")));
 
       this.map = new BMap.Map("container", {minZoom: 5, maxZoom: 20});
       this.map.enableScrollWheelZoom(true);
       this.geocoder = new BMap.Geocoder();
-      var point = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
+      let point = new BMap.Point(this.systemParam.localPoint[0], this.systemParam.localPoint[1]);
       this.map.centerAndZoom(point, 12);
 
       // if (this.selectedOptions2.length === 0) {
@@ -228,17 +243,7 @@
       //   }, {enableHighAccuracy: true});
       // }
 
-      this.map.addEventListener("click", function (e) {
-        console.log(e);
-        var pt = e.point;
-        _this.position.lng = pt.lng;
-        _this.position.lat = pt.lat;
-        _this.position.detailAddress = '';
-        _this.map.clearOverlays();  // 清除地图覆盖物
-        _this.map.addOverlay(new BMap.Marker(pt));
-        _this.$emit('getLocation', _this.position);
-        // _this.setLocation();
-      });
+      this.map.addEventListener("click", this.mapClick);
     }
   }
 </script>

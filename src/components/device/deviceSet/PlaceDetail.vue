@@ -214,25 +214,23 @@
         });
       },
       setPlaceMap() {
-        var map = new BMap.Map("placeMap", {minZoom: 5, maxZoom: 20, enableMapClick: false});
+        let map = new BMap.Map("placeMap", {minZoom: 5, maxZoom: 20, enableMapClick: false});
         map.disableScrollWheelZoom();
         map.disableDragging();
         map.disableDoubleClickZoom();
-        var point = new BMap.Point(this.placeDetail.longitude, this.placeDetail.latitude);
+        let point = new BMap.Point(this.placeDetail.longitude, this.placeDetail.latitude);
         map.centerAndZoom(point, 16);
-        var marker = new BMap.Marker(point);
+        let marker = new BMap.Marker(point);
         map.addOverlay(marker);
-        var content = '经度：' + this.placeDetail.longitude + '<br/>纬度：' + this.placeDetail.latitude;
-        var infoWindow = new BMap.InfoWindow(content, {
+        let content = '经度：' + this.placeDetail.longitude + '<br/>纬度：' + this.placeDetail.latitude;
+        let infoWindow = new BMap.InfoWindow(content, {
           width: 220, height: 70, title: "坐标", offset: new BMap.Size(0, -10)
         });  // 创建信息窗口对象
         map.openInfoWindow(infoWindow, point); //开启信息窗口
-        function openInfo(content, e) {
-          map.openInfoWindow(infoWindow, point); //开启信息窗口
-        }
 
         marker.addEventListener("click", function (e) {
-            openInfo(content, e)
+            marker.removeEventListener('click');
+            map.openInfoWindow(infoWindow, point);
           }
         );
       },
