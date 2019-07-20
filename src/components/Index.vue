@@ -738,6 +738,7 @@
     bottom: 0;
     width: 100%;
     min-width: 1366px;
+    min-height: 600px;
     margin-left: -8px;
   }
 

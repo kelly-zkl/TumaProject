@@ -96,8 +96,6 @@
                                  :formatter="formatterAddress"></el-table-column>
                 <el-table-column align="left" prop="regional" label="IMSI归属地" min-width="100"
                                  max-width="150" :formatter="formatterAddress"></el-table-column>
-                <!--<el-table-column align="left" prop="fnIn" label="关联次数" min-width="80" max-width="100"-->
-                <!--:formatter="formatterAddress"></el-table-column>-->
                 <el-table-column align="left" prop="weightDes" label="置信度" min-width="80"
                                  max-width="120" :formatter="formatterAddress"></el-table-column>
                 <el-table-column align="left" label="操作" min-width="60" max-width="100">
