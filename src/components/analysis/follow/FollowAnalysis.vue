@@ -96,7 +96,7 @@
         tasks: [],
         qTime: "",
         query: {page: 1, size: 10},
-        tableHeight: window.innerHeight - 232,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         followTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '人脸'}],//{value: 'MAC', label: 'MAC'}
         taskTypes: [{value: 'EXECUTION', label: '分析中'}, {value: 'FINISH', label: '已完成'},
           {value: 'WAIT', label: '等待中'}, {value: 'FAILE', label: '失败'}, {value: 'STOP', label: '终止'}],

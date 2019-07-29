@@ -130,7 +130,7 @@
         listLoading: false,
         addMenuVisible: false,
         dialogWidth: isPC() ? '35%' : '90%',
-        tableHeight: window.innerHeight - 232,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         menus: [],
         query: {page: 1, size: 10},
         count: 0,

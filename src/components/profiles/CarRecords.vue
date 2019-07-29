@@ -115,7 +115,7 @@
         runBigPic: false,
         bigUrl: '',
         activeItem: 'T',
-        tableHeight: window.innerHeight - 285,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 285,
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         count: 0, places: [], placesCopy: [], list: [], list10: [],

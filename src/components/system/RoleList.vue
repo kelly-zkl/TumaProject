@@ -109,7 +109,7 @@
         isShow: false,
         dialogWidth: isPC() ? '40%' : '90%',
         labelWidth: isPC() ? '120px' : '80px',
-        tableHeight: window.innerHeight - 232,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         user: JSON.parse(decryData(sessionStorage.getItem("user"))),
         query: {
           page: 1, size: 10, roleName: '', roleType: '', lastNode: true,

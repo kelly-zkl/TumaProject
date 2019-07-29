@@ -307,6 +307,12 @@ export default new Router({
       component: resolve => require(['../components/Login'], resolve)
     },
     {
+      path: '/revTool',
+      name: "翻码工具",
+      hidden: true,
+      component: resolve => require(['../components/RevTool'], resolve)
+    },
+    {
       path: '/404',
       name: '404',
       hidden: true,

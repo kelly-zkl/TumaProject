@@ -184,7 +184,7 @@
         listLoading: false,
         isShow: true,
         addAdminVisible: false,
-        tableHeight: window.innerHeight - 232,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         provinceList: JSON.parse(localStorage.getItem("areas")),
         organizations: [],
         addPoliceTitle: '创建派出所',

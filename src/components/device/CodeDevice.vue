@@ -114,7 +114,7 @@
         provinceList: JSON.parse(localStorage.getItem("areas")),
         lineStatus: '',
         areaList: [],
-        tableHeight: window.innerHeight - 232,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         dialogWidth: isPC() ? '40%' : '90%',
         labelWidth: isPC() ? '100px' : '80px',
         listLoading: false,

@@ -140,7 +140,7 @@
       return {
         runBigPic: false,
         isMore: false,
-        tableHeight: window.innerHeight - 280,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 280,
         bigUrl: '',
         activeItem: 'T',
         query: {size: 100},
@@ -226,9 +226,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 330
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 330
         } else {
-          this.tableHeight = window.innerHeight - 280
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 280
         }
       },
       handleChange(val) {

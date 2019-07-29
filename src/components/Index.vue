@@ -427,7 +427,7 @@
       getImsiWarning() {
         if (this.getButtonVial('warning:get:listImsiToday')) {
           this.imsiWarning = JSON.parse(sessionStorage.getItem("imsi"));
-          this.$post("warning/get/listImsiToday", {size: 1}).then((data) => {
+          this.$post("warning/get/listImsiToday", {size: 1}, undefined, null).then((data) => {
             if (data.data && data.data.length > 0) {
               let imsi = data.data[0];
               // console.log(new Date().getTime() - imsi.createTime * 1000);
@@ -453,7 +453,7 @@
       getFaceWarning() {
         if (this.getButtonVial('warning:get:listFaceToday')) {
           this.faceWarning = JSON.parse(sessionStorage.getItem("face"));
-          this.$post("warning/get/listFaceToday", {size: 1}).then((data) => {
+          this.$post("warning/get/listFaceToday", {size: 1}, undefined, null).then((data) => {
             if (data.data && data.data.length > 0) {
               let face = data.data[0];
               // console.log(new Date().getTime() - face.createTime * 1000);
@@ -500,7 +500,7 @@
       //告警数量
       getWarningCount() {
         if (this.getButtonVial('warning:countNoDealWithImsiWarning')) {
-          this.$post('/warning/countNoDealWithImsiWarning', {}).then((data) => {
+          this.$post('/warning/countNoDealWithImsiWarning', {}, undefined, null).then((data) => {
             if ("000000" === data.code) {
               this.imsiCount = data.data;
               this.$nextTick(() => {
@@ -512,7 +512,7 @@
           });
         }
         if (this.getButtonVial('warning:countNoDealWithFaceWarning')) {
-          this.$post('/warning/countNoDealWithFaceWarning', {}).then((data) => {
+          this.$post('/warning/countNoDealWithFaceWarning', {}, undefined, null).then((data) => {
             if ("000000" === data.code) {
               this.faceCount = data.data;
               this.$nextTick(() => {
@@ -528,7 +528,7 @@
       getTurnCount() {
         if (this.getButtonVial('workflow:translation:myapprove')) {
           this.$post('/workflow/translation/myapprove/' + this.userId,
-            {page: 1, size: 10, approveStatus: 1}).then((data) => {
+            {page: 1, size: 10, approveStatus: 1}, undefined, null).then((data) => {
             if ("000000" === data.code) {
               this.turnCount = data.data.count;
             }

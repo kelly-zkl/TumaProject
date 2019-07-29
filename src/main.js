@@ -40,8 +40,8 @@ axios.get("serverconfig.json").then((result) => {
 axios.defaults.baseURL = localStorage.getItem("ApiUrl");
 Vue.prototype.$User_Url = localStorage.getItem("UserUrl");
 
-axios.defaults.baseURL = "http://192.168.31.244:8090/meerkat-web/";
-Vue.prototype.$User_Url = "http://192.168.31.244:8090/manager-api";
+axios.defaults.baseURL = "http://192.168.31.235:8090/meerkat-web/";
+Vue.prototype.$User_Url = "http://192.168.31.235:8090/manager-api";
 
 Vue.prototype.$post = function (path, param, successMsg, failMsg, isLogin) {
   let config;
@@ -57,7 +57,7 @@ Vue.prototype.$post = function (path, param, successMsg, failMsg, isLogin) {
     }
   }
 
-  if (path.indexOf('/manager/') === 0 || path.indexOf('/workflow/') === 0) {
+  if (path.indexOf('/manager/') === 0 || path.indexOf('/workflow/') === 0 || path.indexOf('/phoneSearch/') === 0) {
     path = Vue.prototype.$User_Url + path;
   }
 
@@ -83,7 +83,6 @@ Vue.prototype.$post = function (path, param, successMsg, failMsg, isLogin) {
     if (failMsg !== undefined) {
       return Promise.reject(failMsg);
     }
-
     return Promise.reject(data.msg);
   }).catch((err) => {
     if (err == "Error: Network Error") {
@@ -101,6 +100,10 @@ Vue.use(VueAxios, axios);
 router.beforeEach((to, from, next) => {
   let user = sessionStorage.getItem("user") ? JSON.parse(decryData(sessionStorage.getItem("user"))) : undefined;
   let login = localStorage.getItem('login');
+  if (to.path === '/revTool') {
+    next();
+    return;
+  }
   if (to.path === '/login' && from.path !== '/login' && from.path !== '/' && user && login) {//登录后不能返回到登录页
     next({path: from.path});
     return;
@@ -108,9 +111,6 @@ router.beforeEach((to, from, next) => {
   if ((!login || !user) && to.path !== '/login') {
     next({path: '/login'})
   } else {
-    next()
-  }
-  if (to.path === '/platforms') {
     next()
   }
 });

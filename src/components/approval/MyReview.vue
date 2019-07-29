@@ -98,7 +98,7 @@
         activeItem: 'UNREAD',
         imsiList: [],
         query: {page: 1, size: 10, ccReadStatus: 1},
-        tableHeight: window.innerHeight - 280,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 280,
         qTime: '',
         count: 0,
         sels: [],

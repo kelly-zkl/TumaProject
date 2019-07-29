@@ -105,7 +105,7 @@
         cases: [],
         addTitle: '创建任务',
         runAddTask: false,
-        tableHeight: window.innerHeight - 232,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         query: {page: 1, size: 10},
         qTime: '',
         count: 0,
@@ -222,9 +222,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 282
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 282
         } else {
-          this.tableHeight = window.innerHeight - 232
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 232
         }
       },
       //全选

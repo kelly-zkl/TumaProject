@@ -290,7 +290,7 @@
         runningImports: false,
         runningImportResult: false,
         runningImportNumber: false,
-        tableHeight: window.innerHeight - 232,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         count: 0,
         list: [],
         list10: [],
@@ -360,9 +360,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 282
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 282
         } else {
-          this.tableHeight = window.innerHeight - 232
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 232
         }
       },
       showModify(row) {

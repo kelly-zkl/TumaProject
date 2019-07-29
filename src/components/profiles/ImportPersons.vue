@@ -154,7 +154,7 @@
         query: {size: 100},
         qTime: [new Date((formatDate(new Date((new Date().getTime() - 7 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date((new Date().getTime())), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
-        tableHeight: window.innerHeight - 232,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         statuses: [{label: '全部', value: ''}, {label: '待处理', value: '1'}, {label: '处理中', value: '2'},
@@ -211,9 +211,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 282
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 282
         } else {
-          this.tableHeight = window.innerHeight - 232
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 232
         }
       },
       beforeAvatarUpload(file) {

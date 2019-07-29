@@ -51,7 +51,7 @@
       return {
         listLoading: false,
         query: {page: 1, size: 10},
-        tableHeight: window.innerHeight - 232,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         qTime: '',
         count: 0,
         logs: [],

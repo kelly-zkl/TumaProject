@@ -87,7 +87,7 @@
         activeItem: 'HANDLED',
         imsiList: [],
         query: {page: 1, size: 10, finishStatus: 1},
-        tableHeight: window.innerHeight - 280,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 280,
         qTime: '',
         count: 0,
         timeColumn: [],

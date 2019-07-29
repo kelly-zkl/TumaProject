@@ -109,10 +109,10 @@
                       :height="tableHeight" :row-key="getRowKey" ref="resultTable">
               <el-table-column type="selection" width="45" align="left" :reserve-selection="true"></el-table-column>
               <el-table-column align="left" prop="name" label="名称" :formatter="formatterAddress"
-                               min-width="80" max-width="120"></el-table-column>
+                               min-width="120"></el-table-column>
               <el-table-column align="left" prop="dataSource" label="数据源" :formatter="formatterAddress"
-                               min-width="120" max-width="180"></el-table-column>
-              <el-table-column align="left" prop="operator" label="分析方式" min-width="80" max-width="100">
+                               min-width="220"></el-table-column>
+              <el-table-column align="left" prop="operator" label="分析方式" min-width="130">
                 <template slot-scope="scope">
                   <el-select v-model="scope.row.operator" style="width:80px" size="medium"
                              @change="handleModeChange($event,scope.row)"
@@ -122,7 +122,7 @@
                   </el-select>
                 </template>
               </el-table-column>
-              <el-table-column align="left" prop="status" label="状态" min-width="70" max-width="90">
+              <el-table-column align="left" prop="status" label="状态" min-width="100">
                 <template slot-scope="scope">
                   <span style="color:#00C755" v-show="scope.row.status == 'FINISH'">已完成</span>
                   <span style="color:#dd6161" v-show="scope.row.status == 'FAILE'">失败</span>
@@ -131,7 +131,7 @@
                   <span style="color:#999" v-show="scope.row.status == 'STOP'">终止</span>
                 </template>
               </el-table-column>
-              <el-table-column align="left" label="操作" min-width="90" max-width="100">
+              <el-table-column align="left" label="操作" min-width="110">
                 <template slot-scope="scope">
                   <el-tooltip class="item" effect="dark" content="查看分析结果" placement="bottom">
                     <el-button type="text" class="fa fa-list-alt fa-lg"
@@ -319,7 +319,7 @@
       return {
         dialogWidth: isPC() ? '35%' : '90%',
         taskId: this.$route.query.taskId || '',
-        tableHeight: window.innerHeight - 235,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 235,
         collision: {
           name: '数据源1', dscList: [{
             type: 'qTime', time: ['00:00:00', '23:59:59'],

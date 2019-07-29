@@ -88,7 +88,7 @@
       return {
         activeItem: 'EXECUTION',
         query: {page: 1, size: 10},
-        tableHeight: window.innerHeight - 280,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 280,
         count: 0,
         listLoading: false,
         controlList: [],

@@ -144,7 +144,7 @@
         query: {size: 100},
         listLoading: false,
         isMore: false,
-        tableHeight: window.innerHeight - 280,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 280,
         statuses: [{label: '待处理', value: 0}, {label: '已处理', value: 2}, {label: '误报', value: 3}],
         exportKey: 'warning:get:listImsiToday',
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
@@ -238,14 +238,14 @@
       //计算表格高度
       calcuHeight() {
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 330;
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 330;
           if (this.showTip) {
-            this.tableHeight = window.innerHeight - 380
+            this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 380
           }
         } else {
-          this.tableHeight = window.innerHeight - 280;
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 280;
           if (this.showTip) {
-            this.tableHeight = window.innerHeight - 330
+            this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 330
           }
         }
       },

@@ -47,7 +47,7 @@
     data() {
       return {
         deviceList: [],
-        lineHeight: window.innerHeight - 230,
+        lineHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 230,
         dateTimes: [{label: '今天', value: formatDate(new Date(), 'yyyy-MM-dd')},
           {label: '昨天', value: formatDate(new Date((new Date().getTime() - 24 * 3600 * 1000)), 'yyyy-MM-dd')},
           {

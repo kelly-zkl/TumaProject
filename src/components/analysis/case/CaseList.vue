@@ -183,7 +183,7 @@
         labelWidth: isPC() ? '100px' : '80px',
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
         provinceList: JSON.parse(localStorage.getItem("areas")),
-        tableHeight: window.innerHeight - 280,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 280,
         areaList: [],
         caseTypeAdd: '',
         qTime: '',

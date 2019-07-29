@@ -121,7 +121,7 @@
         cases: [],
         qTime: "",
         query: {page: 1, size: 10},
-        tableHeight: window.innerHeight - 232,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         taskTypes: [{value: 'running', label: '分析中'}, {value: 'finish', label: '已完成'},
           {value: 'waiting', label: '等待中'}, {value: 'failed', label: '失败'}, {value: 'killed', label: '终止'}],
         followTypes: [{value: 'imsi', label: 'IMSI'}, {value: 'car', label: '车牌'}],
@@ -186,9 +186,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 282
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 282
         } else {
-          this.tableHeight = window.innerHeight - 232
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 232
         }
       },
       //终止分析

@@ -1,5 +1,5 @@
 <template>
-  <section style="margin: 0;padding: 0">
+  <section style="margin: 0;padding: 0;min-height: 540px">
     <div style="padding: 10px 15px 0 30px">
       <el-row :gutter="30" style="height: 100%">
         <el-col :span="15" v-bind:style="'background: #08163d;border-radius: 6px;padding: 0;height:'+tableHeight+'px'">
@@ -140,7 +140,7 @@
     data() {
       return {
         activeItem: 'device',
-        tableHeight: window.innerHeight - 100,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 100,
         systemParam: {
           refreshTime: 10, limitTime: 30, similarThreshold: 60,
           localPoint: [116.331398, 39.897445], heatRanges: []
@@ -179,6 +179,8 @@
       clearInterval(this.intervalidMap);
       this.intervalid = null;
       this.intervalidMap = null;
+      this.mapData = null;
+      this.hotSpots = null;
 
       if (this.deviceMap) {
         this.deviceMap.clearOverlays();

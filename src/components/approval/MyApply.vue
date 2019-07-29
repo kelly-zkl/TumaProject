@@ -120,7 +120,7 @@
         activeItem: 'EXECUTION',
         imsiList: [],
         query: {page: 1, size: 10, applyStatus: 1},
-        tableHeight: window.innerHeight - 280,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 280,
         qTime: '',
         count: 0,
         userId: JSON.parse(decryData(sessionStorage.getItem("user"))).userId,
@@ -187,9 +187,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 330
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 330
         } else {
-          this.tableHeight = window.innerHeight - 280
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 280
         }
       },
       handleType(val) {

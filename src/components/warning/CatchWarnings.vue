@@ -201,7 +201,7 @@
         isMore: false,
         bigUrl: '',
         activeItem: 'T',
-        tableHeight: window.innerHeight - 280,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 280,
         imgPath: require('../../assets/img/icon_people.png'),
         imgPath2: require('../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
@@ -309,14 +309,14 @@
       },
       calcuHeight() {
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 330;
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 330;
           if (this.showTip) {
-            this.tableHeight = window.innerHeight - 380
+            this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 380
           }
         } else {
-          this.tableHeight = window.innerHeight - 280;
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 280;
           if (this.showTip) {
-            this.tableHeight = window.innerHeight - 330
+            this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 330
           }
         }
       },

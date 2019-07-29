@@ -150,7 +150,7 @@
     },
     data() {
       return {
-        tableHeight: window.innerHeight - 410,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 410,
         task: {featureList: [], imsiList: []},
         taskId: this.$route.query.taskId || '',
         activeItem: "TASK",

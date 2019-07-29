@@ -314,8 +314,8 @@
         addDepart: '创建部门',
         departObj: {deptName: ''},
         groupName: '', groupMem: 0, depmMem: 0,
-        leftHeight: window.innerHeight - 222,
-        tableHeight: window.innerHeight - 232,
+        leftHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 222,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         dialogWidth: isPC() ? '35%' : '90%',
         user: JSON.parse(decryData(sessionStorage.getItem("user"))),
         admin: {
@@ -447,9 +447,9 @@
       showMore() {
         this.isMore = !this.isMore;
         if (this.isMore) {
-          this.tableHeight = window.innerHeight - 282
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 282
         } else {
-          this.tableHeight = window.innerHeight - 232
+          this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 232
         }
       },
       //是否默认密码

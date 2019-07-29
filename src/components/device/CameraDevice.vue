@@ -111,7 +111,7 @@
       return {
         dialogWidth: isPC() ? '40%' : '90%',
         labelWidth: isPC() ? '100px' : '80px',
-        tableHeight: window.innerHeight - 232,
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         labelPosition: 'right',
         runningSetPlace: false,
         activeItem: 'EXECUTION',
