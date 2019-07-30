@@ -2,23 +2,23 @@
   <div>
     <section class="content">
       <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1120px">
-        <el-form-item style="margin-bottom: 10px">
-          <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag
-                     :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
-                     :auto-upload="true" :show-file-list="false">
-            <div v-if="!query.faceUrl" style="height:34px;vertical-align:middle;text-align: center">
-              <i class="fa fa-photo fa-lg"></i>上传头像
-            </div>
-            <el-row v-if="query.faceUrl" style="height:34px;padding:0;margin:0">
-              <el-col :span="12">
-                <img :src="query.faceUrl" style="height:34px;margin:0;padding:0">
-              </el-col>
-              <el-col :span="12">
-                <el-button type="text" style="margin-left:5px" @click.stop="clearImg()">清除</el-button>
-              </el-col>
-            </el-row>
-          </el-upload>
-        </el-form-item>
+        <!--<el-form-item style="margin-bottom: 10px">-->
+        <!--<el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag-->
+        <!--:on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"-->
+        <!--:auto-upload="true" :show-file-list="false">-->
+        <!--<div v-if="!query.faceUrl" style="height:34px;vertical-align:middle;text-align: center">-->
+        <!--<i class="fa fa-photo fa-lg"></i>上传头像-->
+        <!--</div>-->
+        <!--<el-row v-if="query.faceUrl" style="height:34px;padding:0;margin:0">-->
+        <!--<el-col :span="12">-->
+        <!--<img :src="query.faceUrl" style="height:34px;margin:0;padding:0">-->
+        <!--</el-col>-->
+        <!--<el-col :span="12">-->
+        <!--<el-button type="text" style="margin-left:5px" @click.stop="clearImg()">清除</el-button>-->
+        <!--</el-col>-->
+        <!--</el-row>-->
+        <!--</el-upload>-->
+        <!--</el-form-item>-->
         <el-form-item style="margin-bottom: 10px">
           <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
                           start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
@@ -62,26 +62,28 @@
       </el-form>
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="人脸图像" prop="imageUrl" min-width="120" max-width="150">
+        <el-table-column align="center" label="人脸图像" prop="imageUrl" width="250">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
-              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
-                   @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
-                   style="max-width: 90px;max-height:90px;border-radius: 6px;vertical-align: middle"/>
+              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:scope.row.imageUrl?scope.row.imageUrl:imgPath"
+                   @click="bigUrl=scope.row.faceUrl?scope.row.faceUrl:scope.row.imageUrl;runBigPic=true"
+                   :onerror="img404" style="max-width: 90px;max-height:90px;border-radius: 6px;vertical-align: middle"/>
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="年龄段" prop="age" min-width="80" max-width="120"
+        <el-table-column align="left" label="年龄段" prop="age" width="160"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="性别" prop="sex" min-width="80" max-width="120"
+        <el-table-column align="left" label="性别" prop="sex" width="160"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="采集场所" prop="placeName" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="采集时间" prop="catchTime" min-width="170"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="160" fixed="right">
+        <el-table-column align="left" label="采集场所" prop="placeName" width="250"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="采集时间" prop="catchTime" width="250"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="设备ID" prop="deviceId" width="250"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="创建时间" prop="catchTime" width="250"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="操作" width="200" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)">查看详情</el-button>
           </template>
@@ -343,8 +345,8 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        if (column.property === 'catchTime') {
-          return row.catchTime ? formatDate(new Date(row.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
+        if (column.property === 'catchTime' || column.property === 'createTime') {
+          return row[column.property] ? formatDate(new Date(row[column.property] * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'sex') {
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
         } else if (column.property === 'age') {

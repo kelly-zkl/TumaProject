@@ -42,13 +42,13 @@
       <el-table :data="follows" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="任务名称" prop="taskName" min-width="130"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="任务类型" prop="followType" min-width="100"
-                         max-width="150" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="分析对象" prop="followTarget" min-width="150"
-                         max-width="180" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="任务状态" prop="taskStatus" min-width="100" max-width="120">
+        <el-table-column align="left" label="任务名称" prop="taskName"
+                         width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="任务类型" prop="followType"
+                         width="150" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="分析对象" prop="followTarget"
+                         width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="任务状态" prop="taskStatus" width="150">
           <template slot-scope="scope">
             <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已完成</span>
             <span style="color:#dd6161" v-show="scope.row.taskStatus == 'FAILE'">失败</span>
@@ -57,11 +57,13 @@
             <span style="color:#999" v-show="scope.row.taskStatus == 'STOP'">终止</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="分析结果" prop="followCount" min-width="130"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="创建日期" prop="createTime" min-width="150"
-                         max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="160" fixed="right">
+        <el-table-column align="left" label="分析结果" prop="followCount"
+                         width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="创建日期" prop="createTime"
+                         width="300" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="创建用户" prop="createBy"
+                         width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="操作" width="200" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoFoDetail(scope.row)" v-show="getButtonVial('follow:get')">查看
             </el-button>

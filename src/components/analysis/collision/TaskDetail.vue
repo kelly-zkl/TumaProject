@@ -3,7 +3,7 @@
     <section class="content">
       <div class="add-appdiv" style="padding: 0;margin: 0">
         <el-row style="margin: 0;padding: 0">
-          <el-col :lg="8" :xl="6" align="left" style="text-align: left;padding:15px 20px">
+          <el-col :lg="8" :xl="6" :md="8" :sm="8" :xs="8" align="left" style="text-align: left;padding:15px 20px">
             <el-row>
               <el-col :span="21" align="left" style="text-align: left">
                 <div style="font-size:12px;color:#999;overflow: hidden;white-space: nowrap;text-overflow: ellipsis">
@@ -21,7 +21,7 @@
               {{'案件：'+(task.caseName?task.caseName:'--')}}
             </div>
           </el-col>
-          <el-col :lg="12" :xl="14" align="left" :loading="listLoading"
+          <el-col :lg="12" :xl="14" :md="12" :sm="12" :xs="12" align="left" :loading="listLoading"
                   style="text-align: left;border-left: 1px solid #D7D7D7;padding-left: 80px">
             <el-button type="text" @click="showSetParam(0)" v-show="getButtonVial('collision:addOrUpdateDataSource')"
                        style="border-right: 1px solid #D7D7D7;border-radius: 0;padding:0 20px 0 0">
@@ -59,7 +59,7 @@
               <div style="font-size: 12px;padding: 5px 0 0 0;margin: 0">删除</div>
             </el-button>
           </el-col>
-          <el-col :lg="4" :xl="4" align="right" style="text-align: right;padding: 10px 20px">
+          <el-col :lg="4" :xl="4" :md="4" :sm="4" :xs="4" align="right" style="text-align: right;padding: 10px 20px">
             <el-button type="text" style="color: #999" @click="runHelpDoc=true">
               <i class="fa fa-question-circle" style="margin-right:5px;color:#FFCC00;font-size:20px"></i>使用帮助
             </el-button>

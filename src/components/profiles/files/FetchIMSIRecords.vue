@@ -39,19 +39,21 @@
       </el-form>
       <el-table :data="list10" class="center-block" v-loading="listLoading" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="250"
+        <el-table-column align="left" prop="imsi" label="IMSI" width="220"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="isp" label="运营商" min-width="100"
-                         max-width="120" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="regional" label="IMSI归属地" min-width="150" max-width="250"
+        <el-table-column align="left" prop="isp" label="运营商" width="150"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="uptime" label="采集时间" min-width="170" max-width="250"
+        <el-table-column align="left" prop="netType" label="网络类型" width="150"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="placeName" label="采集场所" min-width="150" max-width="250"
+        <el-table-column align="left" prop="regional" label="IMSI归属地" width="220"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150" max-width="250"
+        <el-table-column align="left" prop="uptime" label="采集时间" width="220"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="250"
+        <el-table-column align="left" prop="placeName" label="采集场所" width="220"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" prop="deviceName" label="设备标识" width="220"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" prop="deviceId" label="设备ID" width="220"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
