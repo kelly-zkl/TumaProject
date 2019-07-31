@@ -52,17 +52,17 @@
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
         <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="IMSI" prop="imsi" min-width="150"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="150"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="告警场所" prop="placeName" min-width="150"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="告警时间" prop="createTime" min-width="170"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="告警状态" prop="status" min-width="100" max-width="150"
+        <el-table-column align="left" label="IMSI" prop="imsi" width="250"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="IMSI归属地" prop="regional" width="250"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="告警场所" prop="placeName" width="250"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="设备标识" prop="deviceName" width="250"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="告警时间" prop="createTime" width="250"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="告警状态" prop="status" width="150"
                          :formatter="formatterAddress">
           <template slot-scope="scope">
             <span style="color:#dd6161" v-show="scope.row.status == 0">待处理</span>

@@ -37,19 +37,19 @@
       </el-row>
       <el-table :data="results" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="目标车牌" prop="carLicense" min-width="150"
-                         max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="牌号种类" prop="carLicenseKind" min-width="125"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="牌号颜色" prop="carLicenseColor" min-width="125"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="命中场所数量" prop="placeCount" min-width="125"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="命中总次数" prop="followCount" min-width="125"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="置信度" prop="degree" min-width="125"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" min-width="130" max-width="180" fixed="right">
+        <el-table-column align="left" label="目标车牌" prop="carLicense" width="300"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="牌号种类" prop="carLicenseKind" width="250"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="牌号颜色" prop="carLicenseColor" width="250"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="命中场所数量" prop="placeCount" width="250"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="命中总次数" prop="followCount" width="250"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="置信度" prop="degree" width="250"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="操作" width="180" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoPath(scope.row)"
                        v-show="getButtonVial('car:task:analyse:query')">查看
@@ -83,11 +83,11 @@
           </el-form>
           <el-table :data="pathLines" v-loading="pathLoading" class="center-block" stripe>
             <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-            <el-table-column align="left" label="场所" prop="placeName" min-width="130"
-                             max-width="200" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="设备标识" prop="deviceName" min-width="130"
-                             max-width="200" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="车辆采集图片" min-width="130" max-width="200">
+            <el-table-column align="left" label="场所" prop="placeName" width="300"
+                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" label="设备标识" prop="deviceName" width="300"
+                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" label="车辆采集图片" width="200">
               <template slot-scope="scope">
                 <div style="height: 90px;line-height:90px">
                   <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath" :onerror="img404"
@@ -96,14 +96,14 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column align="left" label="车辆采集时间" prop="carUptime" min-width="170"
-                             max-width="200" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="IMSI采集时间" prop="imsiUptime" min-width="170"
-                             max-width="200" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="采集间隔" prop="timeDifference" min-width="100"
-                             max-width="150" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="命中次序/次数" prop="number" min-width="130"
-                             max-width="200" :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" label="车辆采集时间" prop="carUptime" width="250"
+                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" label="IMSI采集时间" prop="imsiUptime" width="250"
+                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" label="采集间隔" prop="timeDifference" width="200"
+                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" label="命中次序/次数" prop="number" width="200"
+                             :formatter="formatterAddress"></el-table-column>
           </el-table>
           <div class="block" style="margin: 15px 0" align="right">
             <el-pagination @size-change="pathSizeChange" @current-change="pathPageChange"

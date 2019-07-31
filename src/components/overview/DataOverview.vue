@@ -100,7 +100,7 @@
             </el-row>
             <div class="overview" v-bind:style="'height:'+(tableHeight*0.56-55)+'px'">
               <el-table :data="imgList" :header-cell-style="{background:'#08163d'}" stripe
-                        v-bind:style="'height:'+(tableHeight*0.56-55)+'px'">
+                        v-bind:style="'height:'+(tableHeight*0.56-55)+'px'" @row-click="handleRow">
                 <el-table-column align="left" label="人脸" style="align-content: center" min-width="90" max-width="200">
                   <template slot-scope="scope">
                     <div style="height: 80px;line-height:80px">
@@ -244,6 +244,11 @@
             }
           }, 3 * 60 * 1000);
         }
+      },
+      //碰撞列表点击跳转档案详情页
+      handleRow(row) {
+        let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.faceId}});
+        window.open(routeData.href, '_blank');
       },
       handleType(val) {
         this.activeItem = val;

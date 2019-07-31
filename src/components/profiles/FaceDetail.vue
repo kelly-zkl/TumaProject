@@ -91,7 +91,7 @@
                           {{item.imsiList?item.imsiList[0].fnIn:'--'}}
                         </el-form-item>
                         <el-form-item label="相似度" style="margin:0" align="left">
-                          {{item.similarThreshold.toFixed(1)+'%'}}
+                          {{item.similarThreshold?item.similarThreshold.toFixed(1)+'%':'--%'}}
                         </el-form-item>
                       </el-col>
                     </el-form>
@@ -112,7 +112,7 @@
                           {{item.blackClassPerson.idCard?item.blackClassPerson.idCard:'--'}}
                         </el-form-item>
                         <el-form-item label="相似度" style="margin:0" align="left">
-                          {{item.blackClassPerson.similarThreshold.toFixed(1)+'%'}}
+                          {{item.blackClassPerson.similarThreshold?item.blackClassPerson.similarThreshold.toFixed(1)+'%':'--%'}}
                         </el-form-item>
                       </el-col>
                       <el-col :lg="10" :xl="11" align="right" style="text-align: right">
@@ -134,18 +134,18 @@
       </div>
       <div v-show="activeItem=='imsi'" style="margin-top: 10px;margin-bottom: 20px">
         <el-table :data="imsiList" class="center-block" v-loading="listLoading" stripe>
-          <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="200"
+          <el-table-column align="center" type="index" label="序号" width="100"></el-table-column>
+          <el-table-column align="left" prop="imsi" label="IMSI" width="300"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="ispDes" label="运营商" max-width="150" min-width="100"
+          <el-table-column align="left" prop="ispDes" label="运营商" width="300"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="IMSI归属地" max-width="200" min-width="150" prop="regional"
+          <el-table-column align="left" label="IMSI归属地" width="300" prop="regional"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="fnIn" label="关联次数" min-width="150" max-width="200"
+          <el-table-column align="left" prop="fnIn" label="关联次数" width="300"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="weight" label="置信度" min-width="150" max-width="200"
+          <el-table-column align="left" prop="weight" label="置信度" width="300"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="操作" width="160" fixed="right">
+          <el-table-column align="left" label="操作" width="200" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoIMSI(scope.row)"
                          v-show="getButtonVial('archives:getImsiRecordByImsi')">查看IMSI
@@ -258,7 +258,7 @@
         if (column.property === 'sex') {
           return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '--';
         } else if (column.property === 'weight') {
-          return row.weight < 0 ? '--' : (row.weight / 10).toFixed(1) + '%';
+          return row.weight == undefined ? '--' : (row.weight / 10).toFixed(1) + '%';
         } else if (column.property === 'age' && column.property === 'fnIn') {
           return row[column.property] < 0 ? '--' : row[column.property];
         } else if (column.property === 'ispDes') {

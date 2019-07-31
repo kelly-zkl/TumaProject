@@ -37,38 +37,19 @@
                                :max="200" style="width: 100px" size="medium"></el-input-number>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
+              <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px" clearable>
+                <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value"></el-option>
+              </el-select>
             </el-form-item>
+            <!--<el-form-item style="margin-bottom: 10px">-->
+            <!--<el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>-->
+            <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()">重置</el-button>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px" clearable>
-                <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-input placeholder="手机号" v-model="query.mobilePhone" :maxlength="11"
-                        style="width: 180px" size="medium"></el-input>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-input placeholder="姓名" v-model="query.name" :maxlength="10"
-                        style="width: 180px" size="medium"></el-input>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-input placeholder="身份证号" v-model="query.idCard" :maxlength="18"
-                        style="width: 180px" size="medium"></el-input>
-            </el-form-item>
-            <!--<el-form-item style="margin-bottom: 10px" v-show="isMore">-->
-            <!--<el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"-->
-            <!--start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable-->
-            <!--:default-time="['00:00:00', '23:59:59']" value-format="timestamp"-->
-            <!--:picker-options="pickerBeginDate" style="width: 360px">-->
-            <!--</el-date-picker>-->
-            <!--</el-form-item>-->
           </el-form>
         </el-col>
         <el-col :span="3" align="left" style="text-align: left" v-show="getButtonVial('person:count')">
@@ -163,25 +144,7 @@
         areaList: [], count: 0, personCount: 0, list: [], list10: [], isShow: false, isFirst: true,
         isSearch: false, firstPage: 0, page: 1, listLoading: false,
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
-        runBigPic: false, addPerson: {}, bigUrl: '',
-        rules: {
-          img: [{required: true, message: '请选择头像', trigger: 'blur'}],
-          age: [{required: true, message: '请输入年龄', trigger: 'blur'}],
-          sex: [{required: true, message: '请选择性别', trigger: 'blur'}],
-          name: [{required: true, message: '请输入姓名', trigger: 'blur'}],
-          imsi: [{required: true, message: '请输入imsi', trigger: 'blur'}],
-          phone: [{required: true, message: '请输入手机号', trigger: 'blur'}],
-          idNumber: [{required: true, message: '请输入身份证号', trigger: 'blur'}],
-          pType: [{required: true, message: '请选择所属名单', trigger: 'blur'}]
-        },
-        pickerBeginDate: {
-          disabledDate: (time) => {
-            let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
-            if (beginDateVal) {
-              return beginDateVal < time.getTime();
-            }
-          }
-        }
+        runBigPic: false, addPerson: {}, bigUrl: ''
       }
     },
     methods: {
@@ -265,16 +228,7 @@
             }
           }
         }
-        if (this.query.mobilePhone) {
-          if (!mobileValidator2(this.query.mobilePhone)) {
-            this.$message.error('请输入正确的手机号码');
-            return;
-          }
-        }
-        // if (!!this.qTime) {
-        //   this.query.startUploadTime = Math.round(this.qTime[0] / 1000);
-        //   this.query.endUploadTime = Math.round(this.qTime[1] / 1000);
-        // }
+
         if (this.isSearch) {
           this.list = [];
           this.list10 = [];

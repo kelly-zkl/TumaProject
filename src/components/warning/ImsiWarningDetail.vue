@@ -209,14 +209,14 @@
         </el-row>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="采集时间" prop="uptime" min-width="200"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="采集场所" prop="placeName" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="采集时间" prop="uptime" width="250"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="采集场所" prop="placeName" width="250"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="设备标识" prop="deviceName" width="250"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="设备ID" prop="deviceId" width="250"
+                           :formatter="formatterAddress"></el-table-column>
         </el-table>
         <div class="block" style="margin: 20px 0" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
@@ -255,7 +255,8 @@
         id: this.$route.query.id || '',
         imsi: this.$route.query.imsi || '',
         taskId: this.$route.query.taskId || '',
-        qTime: '',
+        qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 60 * 60 * 24 * 7 * 1000,
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         dealDetail: {},
         imsiDetail: {},
         taskDetail: {},

@@ -1,7 +1,7 @@
 <template>
   <div>
     <section class="content">
-      <el-form :inline="true" :model="queryImsi" align="left" style="text-align: left;width: 1120px">
+      <el-form :inline="true" :model="queryImsi" align="left" style="text-align: left;width: 1200px">
         <el-form-item style="margin-bottom: 10px">
           <el-select v-model="queryImsi.imsi" placeholder="IMSI" size="medium" filterable clearable>
             <el-option v-for="item in imsis" :key="item.imsi" :label="item.imsi+'['+item.weightDes+']'"
@@ -24,17 +24,17 @@
           </el-select>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
-          <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
+          <el-input placeholder="设备ID" v-model="queryImsi.deviceId" :maxlength="30"
+                    style="width: 180px" size="medium"></el-input>
         </el-form-item>
+        <!--<el-form-item style="margin-bottom: 10px">-->
+        <!--<el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>-->
+        <!--</el-form-item>-->
         <el-form-item style="margin-bottom: 10px">
           <el-button type="primary" size="medium" @click="isSearch = true;getImsiData()">搜索</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearImsiData()">重置</el-button>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="isMore">
-          <el-input placeholder="设备ID" v-model="queryImsi.deviceId" :maxlength="30"
-                    style="width: 180px" size="medium"></el-input>
         </el-form-item>
       </el-form>
       <el-table :data="list10" class="center-block" v-loading="listLoading" stripe>

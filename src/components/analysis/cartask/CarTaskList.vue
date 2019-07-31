@@ -65,10 +65,10 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="任务名称" prop="taskName" min-width="130"
                          max-width="180" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="分析类型" prop="followType" min-width="120"
+                         max-width="160" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="分析对象" prop="followTarget" min-width="180"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="分析目标" prop="followType" min-width="80"
-                         max-width="100" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="任务状态" prop="status" min-width="100" max-width="130">
           <template slot-scope="scope">
             <span style="color:#00C755" v-show="scope.row.status == 'finish'">已完成</span>
@@ -124,7 +124,7 @@
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         taskTypes: [{value: 'running', label: '分析中'}, {value: 'finish', label: '已完成'},
           {value: 'waiting', label: '等待中'}, {value: 'failed', label: '失败'}, {value: 'killed', label: '终止'}],
-        followTypes: [{value: 'imsi', label: 'IMSI'}, {value: 'car', label: '车牌'}],
+        followTypes: [{value: 'imsi', label: '以码找车'}, {value: 'car', label: '以车找码'}],
         sels: [],
         count: 0,
         pickerBeginDate: {
@@ -284,7 +284,7 @@
         if (column.property === 'followTarget') {
           return '[' + (row.atype == 'imsi' ? 'IMSI' : '车牌') + ']' + row.followTarget;
         } else if (column.property === 'followType') {
-          return row.atype == 'imsi' ? '车牌' : 'IMSI';
+          return row.atype == 'imsi' ? '以码找车' : row.atype == 'car' ? '以车找码' : '--';
         } else if (column.property === 'resultNumber') {
           return row.resultNumber == undefined ? '--' : row.resultNumber;
         } else if (column.property === 'createTime') {

@@ -37,8 +37,8 @@
                 <img :src="imgUrl?imgUrl:imgPath" :onerror="img404" onclick="javascript:window.open(this.src)"
                      style="max-height:50px;border-radius:4px;cursor:pointer"/>
               </el-form-item>
-              <el-form-item label="分析目标" align="left" style="margin: 0;text-align: left">
-                {{task.atype=='imsi'?'车牌':'IMSI'}}
+              <el-form-item label="分析类型" align="left" style="margin: 0;text-align: left">
+                {{task.atype=='imsi'?'以码找车':task.atype=='car'?'以车找码':'--'}}
               </el-form-item>
             </el-col>
             <el-col :span="6" align="left">

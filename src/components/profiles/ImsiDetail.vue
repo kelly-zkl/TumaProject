@@ -105,7 +105,7 @@
                           {{item.blackClassPerson.idCard?item.blackClassPerson.idCard:'--'}}
                         </el-form-item>
                         <el-form-item label="相似度" style="margin:0" align="left">
-                          {{item.blackClassPerson.similarThreshold.toFixed(1)+'%'}}
+                          {{item.blackClassPerson.similarThreshold?item.blackClassPerson.similarThreshold.toFixed(1)+'%':'--%'}}
                         </el-form-item>
                       </el-col>
                       <el-col :lg="9" :xl="11" align="right" style="text-align: right">
@@ -199,7 +199,8 @@
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         imsi: this.$route.query.imsi || '',
         id: this.$route.query.id || '',
-        qTime: '',
+        qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 60 * 60 * 24 * 7 * 1000,
+          new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
         imsiDetail: {},
         persons: [],
         places: [], placesCopy: [],

@@ -222,7 +222,7 @@
         </el-row>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="人脸图像" prop="fileUrl" min-width="125" max-width="250">
+          <el-table-column align="left" label="人脸图像" prop="fileUrl" width="250">
             <template slot-scope="scope">
               <div style="height: 90px;line-height:90px">
                 <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" :onerror="img404"
@@ -230,18 +230,18 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column align="left" label="年龄段" prop="age" min-width="100"
-                           max-width="150" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="性别" prop="sex" min-width="100"
-                           max-width="150" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="采集时间" prop="createTime" min-width="170"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="采集场所" prop="placeName" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="年龄段" prop="age" width="150"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="性别" prop="sex" width="150"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="采集时间" prop="createTime" width="250"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="采集场所" prop="placeName" width="250"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="设备标识" prop="deviceName" width="250"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="设备ID" prop="deviceId" width="250"
+                           :formatter="formatterAddress"></el-table-column>
           <!--<el-table-column align="left" label="操作" width="160">-->
           <!--<template slot-scope="scope">-->
           <!--<el-button type="text" @click="">查看</el-button>-->
@@ -256,22 +256,21 @@
       <div v-show="activeItem=='imsi'" style="margin-top: 10px;margin-bottom: 20px">
         <el-table :data="imsiList" class="center-block" v-loading="listLoading" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="200"
+          <el-table-column align="left" prop="imsi" label="IMSI" width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="ispDes" label="运营商" max-width="150" min-width="100"
+          <el-table-column align="left" prop="ispDes" label="运营商" width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="IMSI归属地" max-width="200" min-width="150" prop="regional"
+          <el-table-column align="left" prop="regional" label="IMSI归属地" width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="fnIn" label="关联次数" min-width="150" max-width="200"
+          <el-table-column align="left" prop="fnIn" label="关联次数" width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="weight" label="置信度" min-width="150" max-width="200"
+          <el-table-column align="left" prop="weight" label="置信度" width="200"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" width="160" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoIMSI(scope.row)"
                          v-show="getButtonVial('archives:getImsiRecordByImsi')">查看IMSI
               </el-button>
-
             </template>
           </el-table-column>
         </el-table>
@@ -316,7 +315,7 @@
         faceList: [],
         imsiList: [],
         persons: [],
-        places: [],placesCopy: [],
+        places: [], placesCopy: [],
         query: {size: 100},
         count: 0,
         list: [],

@@ -399,6 +399,10 @@
   min-width: 1366px;
 }
 
+.search .el-dialog__body {
+  padding: 0;
+}
+
 .search .el-dialog__headerbtn .el-dialog__close {
   color: #D0CACF;
   font-size: 30px

@@ -121,6 +121,8 @@
             // console.log(data);
             if (data.similarity) {
               this.similarity = data.similarity.toFixed(3);
+            } else {
+              this.similarity = 0;
             }
             if (data.errorcode) {
               this.$message.error(data.errormsg);

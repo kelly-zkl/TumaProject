@@ -1,7 +1,7 @@
 <template>
   <div>
     <section class="content">
-      <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1120px">
+      <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1200px">
         <!--<el-form-item style="margin-bottom: 10px">-->
         <!--<el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag-->
         <!--:on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"-->
@@ -34,6 +34,16 @@
           </el-select>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
+          <el-input placeholder="输入设备ID" v-model="query.deviceId" :maxlength="30"
+                    style="width: 180px" size="medium"></el-input>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
+          <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px">
+            <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
           <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
@@ -42,22 +52,12 @@
         <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="isMore">
-          <el-input placeholder="输入设备ID" v-model="query.deviceId" :maxlength="30"
-                    style="width: 180px" size="medium"></el-input>
-        </el-form-item>
         <el-form-item label="年龄段" style="margin-bottom: 10px" v-show="isMore">
           <el-input-number v-model="query.startAge" controls-position="right" :min="1"
                            :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
           <span>~</span>
           <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
                            :max="200" style="width: 100px" size="medium"></el-input-number>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="isMore">
-          <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px">
-            <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
         </el-form-item>
       </el-form>
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
@@ -85,7 +85,7 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="200" fixed="right">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoDetail(scope.row)">查看详情</el-button>
+            <el-button type="text" @click="gotoDetail(scope.row)">查看大图</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -211,9 +211,9 @@
       },
       //查看人脸详情
       gotoDetail(row) {
-        // this.$router.push({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
-        let routeData = this.$router.resolve({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
-        window.open(routeData.href, '_blank');
+        // let routeData = this.$router.resolve({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
+        // window.open(routeData.href, '_blank');
+        window.open(row.senceImageUrl ? row.senceImageUrl : row.imageUrl ? row.imageUrl : this.imgPath, '_blank');
       },
       //选择图片的文件格式验证
       beforeAvatarUpload(file) {

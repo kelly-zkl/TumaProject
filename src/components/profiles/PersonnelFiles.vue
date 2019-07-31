@@ -161,21 +161,21 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="身份证号">
-            <el-input v-model="person.idCard" auto-complete="off" :maxlength="18" placeholder="输入身份证号"></el-input>
-          </el-form-item>
-          <el-form-item label="手机号">
-            <el-input v-model="person.mobilePhone" auto-complete="off" :maxlength="11" placeholder="输入手机号"></el-input>
-          </el-form-item>
-          <el-form-item label="座机">
-            <el-input v-model="person.telephone" auto-complete="off" :maxlength="13"
-                      placeholder="输入座机号,例：0123-12345678"></el-input>
-          </el-form-item>
-          <el-form-item label="所属辖区">
-            <el-cascader :options="provinceList" :props="props" filterable clearable
-                         v-model="selectedOptions2" placeholder="选择所属辖区">
-            </el-cascader>
-          </el-form-item>
+          <!--<el-form-item label="身份证号">-->
+          <!--<el-input v-model="person.idCard" auto-complete="off" :maxlength="18" placeholder="输入身份证号"></el-input>-->
+          <!--</el-form-item>-->
+          <!--<el-form-item label="手机号">-->
+          <!--<el-input v-model="person.mobilePhone" auto-complete="off" :maxlength="11" placeholder="输入手机号"></el-input>-->
+          <!--</el-form-item>-->
+          <!--<el-form-item label="座机">-->
+          <!--<el-input v-model="person.telephone" auto-complete="off" :maxlength="13"-->
+          <!--placeholder="输入座机号,例：0123-12345678"></el-input>-->
+          <!--</el-form-item>-->
+          <!--<el-form-item label="所属辖区">-->
+          <!--<el-cascader :options="provinceList" :props="props" filterable clearable-->
+          <!--v-model="selectedOptions2" placeholder="选择所属辖区">-->
+          <!--</el-cascader>-->
+          <!--</el-form-item>-->
         </el-form>
         <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">
           <el-button @click="runModifyPerson=false">取消</el-button>

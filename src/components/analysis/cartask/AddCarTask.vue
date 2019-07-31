@@ -20,28 +20,23 @@
           <div style="font-size:15px;padding:0 20px 10px 20px;text-align:left;border-bottom:1px #D7D7D7 solid">
             碰撞条件
           </div>
-          <el-form-item label="分析对象" align="left" prop="followTarget" style="margin-top:20px">
-            <el-row type="flex" class="row-bg">
-              <el-col :lg="7" :xl="5" align="left" style="text-align: left" class="inline-input">
-                <el-input placeholder="输入分析对象" v-model="carTask.followTarget" style="width:300px;margin-top: 0"
-                          :maxlength=15>
-                  <el-select v-model="carTask.atype" slot="prepend" placeholder="请选择">
-                    <el-option v-for="item in followTypes" :key="item.value" :label="item.label" :value="item.value">
-                    </el-option>
-                  </el-select>
-                </el-input>
-              </el-col>
-              <el-col :span="7" align="left" style="text-align: left;margin-left: 10px">
-                <el-select v-model="carTask.carLicenseKind" placeholder="牌号种类" v-show="carTask.atype=='car'"
-                           filterable clearable style="margin-left: 10px">
-                  <el-option v-for="item in carTypes" :key="item.label" :label="item.label" :value="item.label">
-                  </el-option>
-                </el-select>
-              </el-col>
-            </el-row>
+          <el-form-item label="分析类型" align="left" prop="atype" style="text-align: left;margin-top:20px">
+            <el-radio-group v-model="carTask.atype">
+              <el-radio label="imsi">以码找车</el-radio>
+              <el-radio label="car">以车找码</el-radio>
+            </el-radio-group>
           </el-form-item>
-          <el-form-item label="分析目标" align="left" style="text-align: left">
-            {{'默认分析目标为'+(carTask.atype=='imsi'?'车牌':'IMSI')}}
+          <el-form-item label="分析对象" align="left" prop="followTarget" style="text-align: left">
+            <el-input placeholder="输入分析对象" v-model="carTask.followTarget" style="width:300px;margin-top: 0"
+                      :maxlength=15>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="牌号种类" align="left" style="text-align: left" required
+                        v-show="carTask.atype=='car'">
+            <el-select v-model="carTask.carLicenseKind" placeholder="牌号种类" filterable clearable>
+              <el-option v-for="item in carTypes" :key="item.label" :label="item.label" :value="item.label">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="分析场所" align="left">
             <el-select v-model="carTask.placeList" placeholder="分析场所" filterable multiple clearable
@@ -174,7 +169,6 @@
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
         provinceList: JSON.parse(localStorage.getItem("areas")),
         areaList: [], places: [], placesCopy: [], placeList: [], placeList1: [], sels: [],
-        followTypes: [{value: 'imsi', label: 'IMSI'}, {value: 'car', label: '车牌'}],
         carTypes: [{value: 'small', label: '小型汽车'}, {value: 'veh', label: '大型汽车'}, {value: 'fe', label: '涉外车辆'},
           {value: 'police', label: '警用汽车'}, {value: 'sol', label: '军用汽车'}, {value: 'soach', label: '教练汽车'},
           {value: 'gov', label: '政法部门车辆'}],
@@ -184,6 +178,7 @@
           {value: '8', label: '金融服务场所'}, {value: 'A', label: '购物场所'}, {value: 'B', label: '公共服务场所'},
           {value: 'C', label: '文化服务场所'}, {value: 'D', label: '公共休闲场所'}, {value: '9', label: '其他'}],
         rules: {
+          atype: [{required: true, message: '请选择类型', trigger: 'blur'}],
           caseId: [{required: true, message: '请选择案件', trigger: 'blur'}],
           followTarget: [{required: true, message: '请输入分析对象', trigger: 'blur'}],
           interval: [{required: true, message: '请输入时间间隔', trigger: 'blur'}],
