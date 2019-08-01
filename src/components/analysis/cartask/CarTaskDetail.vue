@@ -120,8 +120,7 @@
         this.$confirm('确认要删除该任务吗?', '提示', {type: 'info'}).then(() => {
           this.$post('/car/task/del', {taskNoList: [this.taskNo]}, '删除成功').then((data) => {
             if ("000000" === data.code) {
-              if ("000000" === data.code)
-                this.$router.go(-1);
+              this.$router.replace("/carTaskList");
             }
           }).catch((err) => {
           });

@@ -36,7 +36,7 @@
         </el-col>
       </el-row>
       <el-table :data="results" v-loading="listLoading" class="center-block" stripe>
-        <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
+        <el-table-column align="center" type="index" label="序号" width="100"></el-table-column>
         <el-table-column align="left" label="目标车牌" prop="carLicense" width="300"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="牌号种类" prop="carLicenseKind" width="250"
@@ -49,7 +49,7 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="置信度" prop="degree" width="250"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="180" fixed="right">
+        <el-table-column align="left" label="操作" width="200" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoPath(scope.row)"
                        v-show="getButtonVial('car:task:analyse:query')">查看

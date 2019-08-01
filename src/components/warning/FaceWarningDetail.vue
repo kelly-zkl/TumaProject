@@ -221,12 +221,12 @@
           <!--</el-col>-->
         </el-row>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
-          <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
+          <el-table-column align="center" type="index" label="序号" width="100"></el-table-column>
           <el-table-column align="left" label="人脸图像" prop="fileUrl" width="250">
             <template slot-scope="scope">
               <div style="height: 90px;line-height:90px">
-                <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath" :onerror="img404"
-                     style="max-width:90px;max-height:90px;border-radius:6px;vertical-align: middle"/>
+                <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:scope.row.imageUrl?scope.row.imageUrl:imgPath"
+                     :onerror="img404" style="max-width:90px;max-height:90px;border-radius:6px;vertical-align: middle"/>
               </div>
             </template>
           </el-table-column>
@@ -242,11 +242,11 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备ID" prop="deviceId" width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <!--<el-table-column align="left" label="操作" width="160">-->
-          <!--<template slot-scope="scope">-->
-          <!--<el-button type="text" @click="">查看</el-button>-->
-          <!--</template>-->
-          <!--</el-table-column>-->
+          <el-table-column align="left" label="操作" width="200" fixed="right">
+            <template slot-scope="scope">
+              <el-button type="text" @click="gotoDetail(scope.row)">查看大图</el-button>
+            </template>
+          </el-table-column>
         </el-table>
         <div class="block" style="margin: 20px 0" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
@@ -255,18 +255,18 @@
       </div>
       <div v-show="activeItem=='imsi'" style="margin-top: 10px;margin-bottom: 20px">
         <el-table :data="imsiList" class="center-block" v-loading="listLoading" stripe>
-          <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" prop="imsi" label="IMSI" width="200"
+          <el-table-column align="center" type="index" label="序号" width="100"></el-table-column>
+          <el-table-column align="left" prop="imsi" label="IMSI" width="300"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="ispDes" label="运营商" width="200"
+          <el-table-column align="left" prop="ispDes" label="运营商" width="300"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="regional" label="IMSI归属地" width="250"
+          <el-table-column align="left" prop="regional" label="IMSI归属地" width="300"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="fnIn" label="关联次数" width="200"
+          <el-table-column align="left" prop="fnIn" label="关联次数" width="300"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="weight" label="置信度" width="200"
+          <el-table-column align="left" prop="weight" label="置信度" width="300"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="操作" width="160" fixed="right">
+          <el-table-column align="left" label="操作" width="200" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoIMSI(scope.row)"
                          v-show="getButtonVial('archives:getImsiRecordByImsi')">查看IMSI
@@ -396,6 +396,12 @@
         } else {
           this.places = this.placesCopy;
         }
+      },
+      //查看人脸详情
+      gotoDetail(row) {
+        // let routeData = this.$router.resolve({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
+        // window.open(routeData.href, '_blank');
+        window.open(row.senceImageUrl ? row.senceImageUrl : row.imageUrl ? row.imageUrl ? row.faceUrl : row.faceUrl : this.imgPath, '_blank');
       },
       //跳转布控详情页
       gotoControl() {

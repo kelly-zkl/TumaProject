@@ -148,6 +148,7 @@
       confirmModify() {
         this.$refs['person'].validate((valid) => {
           if (valid) {
+            this.person.name = this.person.name.replace(/\s+/g, "");
             if (!nameValidator(this.person.name)) {
               this.$message.error('请输入由汉字、英文组成的姓名');
               return;
@@ -230,7 +231,7 @@
         this.$confirm('确认要删除该人员吗?', '提示', {type: 'info'}).then(() => {
           this.$post('person/delKeyPerson', {faceIds: [this.faceId]}, '删除成功').then((data) => {
             if ("000000" === data.code) {
-              this.$router.go(-1);
+              this.$router.replace("/listManage")
             }
           }).catch((err) => {
           });

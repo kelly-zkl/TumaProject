@@ -79,9 +79,9 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="采集时间" prop="catchTime" width="250"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备ID" prop="deviceId" width="250"
+        <el-table-column align="left" label="设备标识" prop="deviceName" width="250"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="创建时间" prop="catchTime" width="250"
+        <el-table-column align="left" label="设备ID" prop="deviceId" width="250"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="200" fixed="right">
           <template slot-scope="scope">
@@ -213,7 +213,7 @@
       gotoDetail(row) {
         // let routeData = this.$router.resolve({path: '/faceDetail', query: {id: row.id, imageId: row.imageId}});
         // window.open(routeData.href, '_blank');
-        window.open(row.senceImageUrl ? row.senceImageUrl : row.imageUrl ? row.imageUrl : this.imgPath, '_blank');
+        window.open(row.senceImageUrl ? row.senceImageUrl : row.imageUrl ? row.imageUrl ? row.faceUrl : row.faceUrl : this.imgPath, '_blank');
       },
       //选择图片的文件格式验证
       beforeAvatarUpload(file) {

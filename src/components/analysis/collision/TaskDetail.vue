@@ -427,7 +427,7 @@
               {type: 'imsi', imsi: ''}]
           };
         } else {//数据源列表里的条件展示
-          var param = {name: data.name, id: data.id};
+          var param = {name: data.name, id: data.id, hiveView: data.hiveView};
           var arr = [];
           data.dscList.forEach((item) => {
             if (item.type == 'qTime') {
@@ -639,7 +639,8 @@
           param.dscList = arr;
           if (this.collision.id) {
             param.id = this.collision.id;
-            this.$confirm('当前数据集正在参与交并分析任务，确认即按照本次筛选结果重新进行数据统计、交并分析等。确定按照新的筛选结果进行数据分析？',
+            param.hiveView = this.collision.hiveView;
+            this.$confirm('确认即按照本次筛选结果重新进行数据统计/交并分析',
               '提示', {type: 'info'}).then(() => {
               this.listLoading = true;
               this.$post('/collision/addOrUpdateDataSource', param, "修改成功").then((data) => {

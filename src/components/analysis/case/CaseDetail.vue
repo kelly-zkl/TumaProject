@@ -109,7 +109,7 @@
         this.$confirm('确认要删除该案件吗?', '提示', {type: 'info'}).then(() => {
           this.$post('/case/delete', [this.caseId], '删除成功').then((data) => {
             if ("000000" === data.code) {
-              this.$router.go(-1);
+              this.$router.replace("/caseList");
             }
           }).catch((err) => {
           });

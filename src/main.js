@@ -40,8 +40,8 @@ axios.get("serverconfig.json").then((result) => {
 axios.defaults.baseURL = localStorage.getItem("ApiUrl");
 Vue.prototype.$User_Url = localStorage.getItem("UserUrl");
 
-// axios.defaults.baseURL = "http://192.168.31.235:8090/meerkat-web/";
-// Vue.prototype.$User_Url = "http://192.168.31.235:8090/manager-api";
+axios.defaults.baseURL = "http://192.168.31.235:8090/meerkat-web/";
+Vue.prototype.$User_Url = "http://192.168.31.235:8090/manager-api";
 
 Vue.prototype.$post = function (path, param, successMsg, failMsg, isLogin) {
   let config;

@@ -504,6 +504,7 @@
       //修改人员信息
       confirmModify() {
         if (this.modifyPerson.name) {
+          this.modifyPerson.name = this.modifyPerson.name.replace(/\s+/g, "");
           if (!nameValidator(this.modifyPerson.name)) {
             this.$message.error('请输入由汉字、英文组成的姓名');
             return;

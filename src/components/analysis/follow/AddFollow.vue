@@ -399,11 +399,15 @@
               this.$message.error('请选择日期');
               return;
             }
+            this.followTask.startDate = Math.round(this.qTime[0] / 1000);
+            this.followTask.endDate = Math.round(this.qTime[1] / 1000);
             let bol = ((this.followTask.endDate - this.followTask.startDate) > 60 * 60 * 24 * 7);
             if (bol) {
               this.$message.error('日期范围不能超过7天');
               return;
             }
+            // this.followTask.repeatStartTime = this.time2[0];
+            // this.followTask.repeatEndTime = this.time2[1];
             // if (!this.time2 || this.time2.length == 0) {
             //   this.$message.error('请选择时段');
             //   return;
@@ -414,10 +418,6 @@
             //   this.$message.error('结束时间要大于开始时间');
             //   return;
             // }
-            this.followTask.startDate = Math.round(this.qTime[0] / 1000);
-            this.followTask.endDate = Math.round(this.qTime[1] / 1000);
-            // this.followTask.repeatStartTime = this.time2[0];
-            // this.followTask.repeatEndTime = this.time2[1];
 
             this.followTask.caseName = this.getCaseName();
             if (this.taskId.length > 0) {

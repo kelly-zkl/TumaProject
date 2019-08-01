@@ -93,7 +93,7 @@
                          width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警时间" prop="createTime"
                          width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="告警状态" prop="status" width="120"
+        <el-table-column align="left" label="告警状态" prop="status" width="150"
                          :formatter="formatterAddress">
           <template slot-scope="scope">
             <span style="color:#dd6161" v-show="scope.row.status == 0">待处理</span>

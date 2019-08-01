@@ -54,6 +54,8 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="IMSI" prop="imsi" width="250"
                          :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" prop="isp" label="运营商" width="200"
+                         :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="IMSI归属地" prop="regional" width="250"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警场所" prop="placeName" width="250"
@@ -315,6 +317,8 @@
           return row.catchTime ? formatDate(new Date(row.catchTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'age') {
           return row.age <= 0 ? '--' : (row.age - 3) + "~" + (row.age + 3);
+        } else if (column.property === 'isp') {
+          return row.isp == 0 ? '移动' : row.isp == 1 ? '联通' : row.isp == 2 ? '电信' : '--';
         } else if (column.property === 'similarThreshold') {
           return row[column.property] <= 0 ? '--' : row[column.property];
         } else {

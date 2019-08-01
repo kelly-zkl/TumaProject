@@ -39,13 +39,13 @@
       <el-table :data="results" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="目标IMSI" prop="imsi" width="250"
+        <el-table-column align="left" label="目标IMSI" prop="imsi" width="300"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="运营商" prop="isp" width="200"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="网络类型" prop="netType" width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="IMSI归属地" prop="regional" width="200"
+        <el-table-column align="left" label="IMSI归属地" prop="regional" width="250"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="命中场所数量" prop="placeCount" width="200"
                          :formatter="formatterAddress"></el-table-column>

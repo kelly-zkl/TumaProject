@@ -19,8 +19,8 @@
         <div class="add-appdiv" style="padding: 20px 0">
           <el-form-item label="管控对象类型" align="left" style="text-align: left">
             <el-radio-group v-model="controlTask.dispositionType" size="medium">
-              <el-radio-button label="0">重点人员名单</el-radio-button>
-              <el-radio-button label="1">人脸|IMSI特征</el-radio-button>
+              <el-radio-button :label="0">重点人员名单</el-radio-button>
+              <el-radio-button :label="1">人脸|IMSI特征</el-radio-button>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="添加名单" align="left" style="margin:0 0 20px 0" prop="blackClassList"
@@ -448,18 +448,19 @@
             this.controlTask.placeList = places;
             this.controlTask.caseName = this.getCaseName();
             this.controlTask.taskStatus = 'EXECUTION';
-            delete this.controlTask['startDate'];
-            delete this.controlTask['timerange'];
-            delete this.controlTask['week'];
+            let param = Object.assign({}, this.controlTask);
+            delete param['startDate'];
+            delete param['timerange'];
+            delete param['week'];
             if (this.taskId.length > 0) {
-              this.$post("disposition/add", this.controlTask, "修改成功").then((data) => {
+              this.$post("disposition/add", param, "修改成功").then((data) => {
                 if ("000000" === data.code)
                   this.$router.go(-1);
               }).catch((err) => {
               });
             } else {
-              this.controlTask.createBy = JSON.parse(decryData(sessionStorage.getItem("user"))).realName;
-              this.$post("disposition/add", this.controlTask, "创建成功").then((data) => {
+              param.createBy = JSON.parse(decryData(sessionStorage.getItem("user"))).realName;
+              this.$post("disposition/add", param, "创建成功").then((data) => {
                 if ("000000" === data.code)
                   this.$router.go(-1);
               }).catch((err) => {

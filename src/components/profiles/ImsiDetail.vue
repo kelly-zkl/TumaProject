@@ -163,6 +163,8 @@
         </el-row>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
+          <el-table-column align="left" prop="imsi" label="IMSI" width="250"
+                           :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="采集时间" prop="uptime" width="250"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="采集场所" prop="placeName" width="250"
@@ -171,11 +173,11 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="设备ID" prop="deviceId" width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="isp" label="运营商" width="250"
+          <el-table-column align="left" prop="isp" label="运营商" width="150"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="netType" label="网络类型" width="250"
+          <el-table-column align="left" prop="netType" label="网络类型" width="160"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="IMSI归属地" width="300" prop="regional"
+          <el-table-column align="left" label="IMSI归属地" width="250" prop="regional"
                            :formatter="formatterAddress"></el-table-column>
         </el-table>
         <div class="block" style="margin: 20px 0" align="right">

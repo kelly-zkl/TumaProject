@@ -252,8 +252,7 @@
         this.$confirm('确认要删除该预警模型吗?', '提示', {type: 'info'}).then(() => {
           this.$post('disposition/delete', [this.taskId], '删除成功').then((data) => {
             if ("000000" === data.code) {
-              if ("000000" === data.code)
-                this.$router.go(-1);
+              this.$router.replace("/personControl")
             }
           }).catch((err) => {
           });
@@ -263,11 +262,10 @@
       //结束布控
       finishTask() {
         this.$confirm('确认关闭预警?', '提示', {type: 'info'}).then(() => {
-          this.$post('disposition/batchUpdateStatus', [this.taskId], '操作成功').then((data) => {
-            if ("000000" === data.code) {
-              if ("000000" === data.code)
-                this.handleType();
-            }
+          let param = [{id: this.taskId, taskStatus: 'FINISH'}];
+          this.$post('disposition/batchUpdateStatus', param, '操作成功').then((data) => {
+            if ("000000" === data.code)
+              this.handleType();
           }).catch((err) => {
           });
         }).catch(() => {

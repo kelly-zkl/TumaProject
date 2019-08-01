@@ -209,6 +209,14 @@
         </el-row>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
+          <el-table-column align="left" prop="imsi" label="IMSI" width="210"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="isp" label="运营商" width="150"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" prop="netType" label="网络类型" width="200"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="IMSI归属地" prop="regional" width="250"
+                           :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="采集时间" prop="uptime" width="250"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="采集场所" prop="placeName" width="250"
@@ -537,6 +545,8 @@
           return row.status === 0 ? '待处理' : row.taskStatus === 1 ? '处理中' : row.taskStatus === 2 ? '已处理' : row.taskStatus === 3 ? '误报' : '--';
         } else if (column.property === 'uptime') {
           return row.uptime ? formatDate(new Date(row.uptime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
+        } else if (column.property === 'isp') {
+          return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '--';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
