@@ -381,10 +381,10 @@
       },
       //进入重点人员档案
       gotoVipPerson(row) {
-        if (row.blackClassPerson.faceId && row.blackClassPerson.resourceId) {
+        if (row.blackClassPerson.faceId) {
           let routeData = this.$router.resolve({
             path: '/vipDetail',
-            query: {faceId: row.blackClassPerson.faceId, resourceId: row.blackClassPerson.resourceId}
+            query: {faceId: row.blackClassPerson.faceId, resourceId: row.blackClassPerson.faceId}
           });
           window.open(routeData.href, '_blank');
         }

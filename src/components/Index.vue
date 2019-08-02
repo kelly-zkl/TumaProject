@@ -427,52 +427,58 @@
       getImsiWarning() {
         if (this.getButtonVial('warning:get:listImsiToday')) {
           this.imsiWarning = JSON.parse(sessionStorage.getItem("imsi"));
-          this.$post("warning/get/listImsiToday", {size: 1}, undefined, null).then((data) => {
-            if (data.data && data.data.length > 0) {
-              let imsi = data.data[0];
-              // console.log(new Date().getTime() - imsi.createTime * 1000);
-              if ((new Date().getTime() - imsi.createTime * 1000) >= -60 * 3 * 1000 && (new Date().getTime() - imsi.createTime * 1000) <= 60 * 3 * 1000) {//30s内的数据
-                // console.log(this.imsiWarning.id);
-                if (this.imsiWarning.id !== imsi.id) {
-                  // console.log(imsi.id);
-                  sessionStorage.setItem("imsi", JSON.stringify(imsi));
-                  this.audio.play();
-                  this.imsiWarning = imsi;
-                  this.imsiWarning.timeStr = formatDate(new Date(this.imsiWarning.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-                  this.runFaceWarning = false;
-                  this.runImsiWarning = true;
-                  setTimeout(() => {
-                    this.runImsiWarning = false;
-                  }, 5000);
+          this.$post("warning/get/listImsiToday", {size: 1}, undefined, undefined, 'hide').then((data) => {
+            if ("000000" === data.code) {
+              if (data.data && data.data.length > 0) {
+                let imsi = data.data[0];
+                // console.log(new Date().getTime() - imsi.createTime * 1000);
+                if ((new Date().getTime() - imsi.createTime * 1000) >= -60 * 3 * 1000 && (new Date().getTime() - imsi.createTime * 1000) <= 60 * 3 * 1000) {//30s内的数据
+                  // console.log(this.imsiWarning.id);
+                  if (this.imsiWarning.id !== imsi.id) {
+                    // console.log(imsi.id);
+                    sessionStorage.setItem("imsi", JSON.stringify(imsi));
+                    this.audio.play();
+                    this.imsiWarning = imsi;
+                    this.imsiWarning.timeStr = formatDate(new Date(this.imsiWarning.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+                    this.runFaceWarning = false;
+                    this.runImsiWarning = true;
+                    setTimeout(() => {
+                      this.runImsiWarning = false;
+                    }, 5000);
+                  }
                 }
               }
             }
+          }).catch((err) => {
           });
         }
       },
       getFaceWarning() {
         if (this.getButtonVial('warning:get:listFaceToday')) {
           this.faceWarning = JSON.parse(sessionStorage.getItem("face"));
-          this.$post("warning/get/listFaceToday", {size: 1}, undefined, null).then((data) => {
-            if (data.data && data.data.length > 0) {
-              let face = data.data[0];
-              // console.log(new Date().getTime() - face.createTime * 1000);
-              if ((new Date().getTime() - face.createTime * 1000) >= -60 * 3 * 1000 && (new Date().getTime() - face.createTime * 1000) <= 60 * 3 * 1000) {//30s内的数据
-                // console.log(this.faceWarning.id);
-                if (this.faceWarning.id !== face.id) {
-                  // console.log(face.id);
-                  sessionStorage.setItem("face", JSON.stringify(face));
-                  this.audio.play();
-                  this.faceWarning = face;
-                  this.faceWarning.timeStr = formatDate(new Date(this.faceWarning.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-                  this.runImsiWarning = false;
-                  this.runFaceWarning = true;
-                  setTimeout(() => {
-                    this.runFaceWarning = false;
-                  }, 5000);
+          this.$post("warning/get/listFaceToday", {size: 1}, undefined, undefined, 'hide').then((data) => {
+            if ("000000" === data.code) {
+              if (data.data && data.data.length > 0) {
+                let face = data.data[0];
+                // console.log(new Date().getTime() - face.createTime * 1000);
+                if ((new Date().getTime() - face.createTime * 1000) >= -60 * 3 * 1000 && (new Date().getTime() - face.createTime * 1000) <= 60 * 3 * 1000) {//30s内的数据
+                  // console.log(this.faceWarning.id);
+                  if (this.faceWarning.id !== face.id) {
+                    // console.log(face.id);
+                    sessionStorage.setItem("face", JSON.stringify(face));
+                    this.audio.play();
+                    this.faceWarning = face;
+                    this.faceWarning.timeStr = formatDate(new Date(this.faceWarning.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+                    this.runImsiWarning = false;
+                    this.runFaceWarning = true;
+                    setTimeout(() => {
+                      this.runFaceWarning = false;
+                    }, 5000);
+                  }
                 }
               }
             }
+          }).catch((err) => {
           });
         }
       },
@@ -500,7 +506,7 @@
       //告警数量
       getWarningCount() {
         if (this.getButtonVial('warning:countNoDealWithImsiWarning')) {
-          this.$post('/warning/countNoDealWithImsiWarning', {}, undefined, null).then((data) => {
+          this.$post('/warning/countNoDealWithImsiWarning', {}, undefined, undefined, 'hide').then((data) => {
             if ("000000" === data.code) {
               this.imsiCount = data.data;
               this.$nextTick(() => {
@@ -512,7 +518,7 @@
           });
         }
         if (this.getButtonVial('warning:countNoDealWithFaceWarning')) {
-          this.$post('/warning/countNoDealWithFaceWarning', {}, undefined, null).then((data) => {
+          this.$post('/warning/countNoDealWithFaceWarning', {}, undefined, undefined, 'hide').then((data) => {
             if ("000000" === data.code) {
               this.faceCount = data.data;
               this.$nextTick(() => {
@@ -528,7 +534,7 @@
       getTurnCount() {
         if (this.getButtonVial('workflow:translation:myapprove')) {
           this.$post('/workflow/translation/myapprove/' + this.userId,
-            {page: 1, size: 10, approveStatus: 1}, undefined, null).then((data) => {
+            {page: 1, size: 10, approveStatus: 1}, undefined, undefined, 'hide').then((data) => {
             if ("000000" === data.code) {
               this.turnCount = data.data.count;
             }

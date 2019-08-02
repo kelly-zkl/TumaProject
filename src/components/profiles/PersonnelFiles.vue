@@ -220,10 +220,10 @@
       },
       //进入重点人员档案
       gotoVipPerson(row) {
-        if (row.faceId && row.resourceId) {
+        if (row.faceId) {
           let routeData = this.$router.resolve({
             path: '/vipDetail',
-            query: {faceId: row.faceId, resourceId: row.resourceId}
+            query: {faceId: row.faceId, resourceId: row.faceId}
           });
           window.open(routeData.href, '_blank');
         }
@@ -354,7 +354,7 @@
       },
       getPersons() {
         this.$post('person/listDoubtfulKeyPerson', {faceId: this.faceId},
-          undefined, undefined, "login").then((data) => {
+          undefined, undefined, "multi").then((data) => {
           if ("000000" === data.code) {
             if (data.data) {
               this.persons = data.data ? data.data : [];

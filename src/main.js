@@ -43,6 +43,7 @@ Vue.prototype.$User_Url = localStorage.getItem("UserUrl");
 axios.defaults.baseURL = "http://192.168.31.235:8090/meerkat-web/";
 Vue.prototype.$User_Url = "http://192.168.31.235:8090/manager-api";
 
+//isLogin:"login"--登录弹框时长缩短  "multi"--图片查询中多次请求  "hide"--隐藏错误提示
 Vue.prototype.$post = function (path, param, successMsg, failMsg, isLogin) {
   let config;
   if (sessionStorage.getItem("user")) {
@@ -65,7 +66,7 @@ Vue.prototype.$post = function (path, param, successMsg, failMsg, isLogin) {
     let data = res.data;
     if ("000000" === data.code) {
       if (successMsg !== undefined) {
-        if (isLogin !== undefined) {
+        if (isLogin == "login") {
           this.$message({message: successMsg, type: 'success', duration: 1000});
         } else {
           this.$message({message: successMsg, type: 'success'});
@@ -76,7 +77,7 @@ Vue.prototype.$post = function (path, param, successMsg, failMsg, isLogin) {
       }
       return data;
     } else {
-      if (isLogin !== undefined) {
+      if (isLogin == "multi") {
         return data;
       }
     }
@@ -85,6 +86,7 @@ Vue.prototype.$post = function (path, param, successMsg, failMsg, isLogin) {
     }
     return Promise.reject(data.msg);
   }).catch((err) => {
+    if (isLogin == "hide") return;
     if (err == "Error: Network Error") {
       this.$message.error("服务器开小差了，请重试");
     } else if (err == "Check Code incorret.") {

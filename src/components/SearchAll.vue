@@ -163,7 +163,7 @@
         } else {
           paramData = {size: this.num, url: this.param.value + '?t=' + this.timeStamp}
         }
-        this.$post('home/allSearch', paramData, undefined, undefined, "login").then((data) => {
+        this.$post('home/allSearch', paramData, undefined, undefined, "multi").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
             this.searchResults = data.data ? data.data : [];

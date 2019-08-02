@@ -10,7 +10,9 @@
           <el-button type="text" size="medium" @click="deletePerson()" v-show="getButtonVial('person:delKeyPerson')">
             删除
           </el-button>
-          <el-button type="text" size="medium" @click="confirmModify()">修改</el-button>
+          <el-button type="text" size="medium" @click="confirmModify()"
+                     v-show="getButtonVial('keyPerson:update')">修改
+          </el-button>
         </el-col>
       </el-row>
       <div class="add-appdiv dialog"
@@ -172,7 +174,7 @@
                 return;
               }
             }
-            this.$post("archives/updateDetails", this.person, '修改成功').then(() => {
+            this.$post("keyPerson/update", this.person, '修改成功').then(() => {
               this.getPersonDetail();
             });
           }
@@ -182,10 +184,9 @@
       getPersons() {
         this.listLoading = true;
         this.$post('person/listSimilarityPerson', {
-            size: 10000, faceUrl: this.person.faceUrl,
-            resourceId: this.resourceId
-          },
-          undefined, undefined, "login").then((data) => {
+          size: 10000, faceUrl: this.person.faceUrl,
+          resourceId: this.resourceId
+        }, undefined, undefined, "multi").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
             if (data.data) {
@@ -213,7 +214,7 @@
       },
       //获取详情
       getPersonDetail() {
-        this.$post('archives/detail', {faceId: this.faceId}).then((data) => {
+        this.$post('keyPerson/detail', {faceId: this.faceId}).then((data) => {
           let row = data.data;
           this.person = row;
           var age = !isNull(row.age) ? row.age : 0;
@@ -258,8 +259,8 @@
 </script>
 <style scoped>
   .avatar {
-    max-width: 180px;
-    max-height: 180px;
+    max-width: 178px;
+    max-height: 178px;
     border: 1px dashed #ccc;
     border-radius: 6px;
   }

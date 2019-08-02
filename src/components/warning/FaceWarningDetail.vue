@@ -69,7 +69,7 @@
               <el-form-item label="人脸特征" align="left" style="margin: 0;text-align: left">
                 <img :src="faceDetail.dispositionImageUrl?faceDetail.dispositionImageUrl:imgPath" :onerror="img404"
                      style="max-height: 110px;max-width: 110px;border-radius: 6px;margin-top: 10px"
-                     @click="taskDetail.dispositionType==0?gotoVipPerson(faceDetail.blackPersonFaceId,faceDetail.blackPersonResourceId):''"/>
+                     @click="taskDetail.dispositionType==0?gotoVipPerson(faceDetail.blackPersonFaceId):''"/>
               </el-form-item>
             </el-col>
             <el-col :span="8">
@@ -120,7 +120,7 @@
                   <el-col :span="12" align="center" style="text-align: left;padding-left: 15px">
                     <span>疑似重点人员</span>
                     <el-button type="text" style="padding: 0;margin-left: 20px" v-if="item.blackClassPerson"
-                               @click="gotoVipPerson(item.blackClassPerson.faceId,item.blackClassPerson.resourceId)">
+                               @click="gotoVipPerson(item.blackClassPerson.faceId)">
                       查看重点人员
                     </el-button>
                   </el-col>
@@ -433,9 +433,9 @@
         }
       },
       //进入重点人员档案
-      gotoVipPerson(faceId, resourceId) {
-        if (faceId && resourceId) {
-          let routeData = this.$router.resolve({path: '/vipDetail', query: {faceId: faceId, resourceId: resourceId}});
+      gotoVipPerson(faceId) {
+        if (faceId) {
+          let routeData = this.$router.resolve({path: '/vipDetail', query: {faceId: faceId, resourceId: faceId}});
           window.open(routeData.href, '_blank');
         }
       },
@@ -511,7 +511,7 @@
         this.imsiList = [];
         this.$post('common/listPersonByUrl', {
           type: "faceWarning", url: this.faceDetail.faceUrl + '?t=' + this.timeStamp, id: this.id
-        }, undefined, undefined, "login").then((data) => {
+        }, undefined, undefined, "multi").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
             if (data.data) {

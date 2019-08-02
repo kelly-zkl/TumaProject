@@ -120,14 +120,14 @@
                 v-bind:style="query.imsi&&query.imsi.length>0&&item.imsi.indexOf(query.imsi)>-1?'color:#ff0000':'color:#000'">{{item.imsi}}<span
                 style="font-weight: bold">[{{(item.weight/10).toFixed(1)}}%]</span></span>
             </div>
-            <span v-show="!scope.row.imsiWeightList">{{'--'}}</span>
+            <span v-show="!scope.row.imsiWeightList||scope.row.imsiWeightList.length==0">{{'--'}}</span>
           </template>
         </el-table-column>
         <el-table-column align="left" label="操作" min-width="150" max-width="200" fixed="right">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('archives:detail')">查看
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('keyPerson:detail')">查看
             </el-button>
-            <el-button type="text" @click="showModify(scope.row)" v-show="getButtonVial('archives:updateDetails')">修改
+            <el-button type="text" @click="showModify(scope.row)" v-show="getButtonVial('keyPerson:update')">修改
             </el-button>
             <el-button type="text" @click="sels = [];sels.push(scope.row);deletePerson()"
                        v-show="getButtonVial('person:delKeyPerson')">删除
@@ -428,7 +428,7 @@
         }
       },
       importPush() {
-        this.$post('person/flushToListCrond', {}, undefined, undefined, "login").then((data) => {
+        this.$post('person/flushToListCrond', {}, undefined, undefined, "multi").then((data) => {
           if ("000000" === data.code) {
             this.getData();
             this.getBlackTypes();
@@ -450,7 +450,7 @@
       gotoDetail(row) {
         let routeData = this.$router.resolve({
           path: '/vipDetail',
-          query: {faceId: row.faceId, resourceId: row.resourceId}
+          query: {faceId: row.faceId, resourceId: row.faceId}
         });
         window.open(routeData.href, '_blank');
         // this.$router.push({path: '/vipDetail', query: {faceId: row.faceId}});
@@ -532,7 +532,7 @@
           }
         }
         this.runningModifyPerson = false;
-        this.$post("archives/updateDetails", this.modifyPerson, '修改成功').then(() => {
+        this.$post("keyPerson/update", this.modifyPerson, '修改成功').then(() => {
           this.getData();
           this.runningModifyPerson = false;
         });
@@ -631,7 +631,7 @@
           this.isSearch = false;
         }
         this.listLoading = true;
-        this.$post('person/queryWithCommonPerson', this.query, undefined, undefined, "login").then((data) => {
+        this.$post('person/queryWithCommonPerson', this.query, undefined, undefined, "multi").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
             if (this.query.pageTime && !this.isSearch) {
@@ -735,8 +735,8 @@
 </script>
 <style scoped>
   .avatar {
-    max-width: 150px;
-    max-height: 150px;
+    max-width: 148px;
+    max-height: 148px;
     border: 1px dashed #ccc;
     border-radius: 6px;
   }

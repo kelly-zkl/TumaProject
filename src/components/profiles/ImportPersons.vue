@@ -236,7 +236,7 @@
           this.isSearch = false;
         }
         this.listLoading = true;
-        this.$post('person/query', this.query, undefined, undefined, "login").then((data) => {
+        this.$post('person/query', this.query, undefined, undefined, "multi").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
             if (this.query.pageTime && !this.isSearch) {
