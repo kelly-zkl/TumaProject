@@ -79,10 +79,10 @@
               <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
               <el-form :model="item" align="left" label-width="110px" label-position="right"
                        style="text-align: left" size="mini">
-                <el-form-item label="人脸相似度" style="margin:0">
-                  <span>{{item.similarThreshold?item.similarThreshold.toFixed(1)+'%':'--'}}</span>
+                <el-form-item label="档案ID" style="margin:0">
+                  <span>{{item.faceId?item.faceId:'--'}}</span>
                   <el-button type="text" @click="gotoPerson(item)" v-if="item.faceId"
-                             style="margin-left: 20px">档案详情
+                             style="margin-left: 20px">查看详情
                   </el-button>
                 </el-form-item>
                 <el-form-item label="IMSI[置信度]" style="margin:0">
