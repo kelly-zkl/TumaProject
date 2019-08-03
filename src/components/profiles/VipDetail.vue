@@ -81,12 +81,12 @@
                        style="text-align: left" size="mini">
                 <el-form-item label="人脸相似度" style="margin:0">
                   <span>{{item.similarThreshold?item.similarThreshold.toFixed(1)+'%':'--'}}</span>
-                  <el-button type="text" @click="gotoPerson(item)" v-if="item.personId"
+                  <el-button type="text" @click="gotoPerson(item)" v-if="item.faceId"
                              style="margin-left: 20px">档案详情
                   </el-button>
                 </el-form-item>
                 <el-form-item label="IMSI[置信度]" style="margin:0">
-                  <div v-for="imsi in item.imsiWeightList" style="height: 20px;line-height: 20px;margin:0">
+                  <div v-for="imsi in item.imsiList" style="height: 20px;line-height: 20px;margin:0">
                     <span style="font-size: 14px;margin:0">{{imsi.imsi+'['+(imsi.weight/10).toFixed(1)+'%]'}}</span>
                   </div>
                 </el-form-item>
@@ -207,8 +207,8 @@
       },
       //进入人员档案
       gotoPerson(row) {
-        if (row.personId) {
-          let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.personId}});
+        if (row.faceId) {
+          let routeData = this.$router.resolve({path: '/personnelFiles', query: {faceId: row.faceId}});
           window.open(routeData.href, '_blank');
         }
       },

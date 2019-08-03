@@ -30,9 +30,9 @@
                         style="width: 180px" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.blackClass" placeholder="所属名单" size="medium"
+              <el-select v-model="query.blackClassId" placeholder="所属名单" size="medium"
                          style="width: 180px" clearable filterable>
-                <el-option v-for="item in listTypes" :key="item.id" :label="item.name" :value="item.name"></el-option>
+                <el-option v-for="item in listTypes" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
@@ -557,7 +557,7 @@
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
             let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
-            this.query.similarThreshold = param ? param : 60;
+            this.query.similarThreshold = param ? parseInt(param) : 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.getData();
           }
@@ -714,22 +714,17 @@
         this.$post('archives/listBlackPersonType', {page: 1, size: 9999}).then((data) => {
           if ("000000" === data.code) {
             this.listTypes = data.data.list;
-            var blacId = this.$route.query.id || '';
-            if (!!blacId) {
-              data.data.list.forEach((item) => {
-                if (item.id == blacId) {
-                  this.query.blackClass = item.name;
-                }
-              });
-            }
-            this.getData();
           }
         }).catch((err) => {
         });
       }
     },
     mounted() {
+      if (this.$route.query.id) {
+        this.query.blackClassId = this.$route.query.id || '';
+      }
       this.getBlackTypes();
+      this.getData();
     }
   }
 </script>

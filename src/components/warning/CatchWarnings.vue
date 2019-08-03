@@ -413,7 +413,7 @@
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
             let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
-            this.query.similarThreshold = param ? param : 60;
+            this.query.similarThreshold = param ? parseInt(param) : 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.isSearch = true;
             this.getData();
