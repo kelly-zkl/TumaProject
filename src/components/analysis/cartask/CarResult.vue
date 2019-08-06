@@ -49,7 +49,7 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="置信度" prop="degree" width="250"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="200" fixed="right">
+        <el-table-column align="left" label="操作" width="180" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoPath(scope.row)"
                        v-show="getButtonVial('car:task:analyse:query')">查看
@@ -83,11 +83,11 @@
           </el-form>
           <el-table :data="pathLines" v-loading="pathLoading" class="center-block" stripe>
             <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-            <el-table-column align="left" label="场所" prop="placeName" width="300"
+            <el-table-column align="left" label="场所" prop="placeName" width="270"
                              :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="设备标识" prop="deviceName" width="300"
+            <el-table-column align="left" label="设备标识" prop="deviceName" width="280"
                              :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="车辆采集图片" width="200">
+            <el-table-column align="left" label="车辆采集图片" width="250">
               <template slot-scope="scope">
                 <div style="height: 90px;line-height:90px">
                   <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath" :onerror="img404"

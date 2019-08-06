@@ -261,7 +261,6 @@
     },
     mounted() {
       this.dataStr = formatDate(new Date(), 'yyyy');
-      // this.myBrowser();
 
       let bol = JSON.parse(localStorage.getItem("user"));
       if (bol && bol.save === true) {

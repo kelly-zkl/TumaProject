@@ -61,13 +61,6 @@
               <el-input placeholder="手机号" v-model="query.mobilePhone" :maxlength="11"
                         style="width: 150px" size="medium"></el-input>
             </el-form-item>
-            <!--<el-form-item style="margin-bottom: 10px" v-show="isMore">-->
-            <!--<el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleTimeChange"-->
-            <!--start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable-->
-            <!--:default-time="['00:00:00', '23:59:59']" value-format="timestamp"-->
-            <!--:picker-options="pickerBeginDate" style="width: 360px">-->
-            <!--</el-date-picker>-->
-            <!--</el-form-item>-->
           </el-form>
         </el-col>
         <el-col :span="4" align="right" style="text-align: right">
@@ -284,78 +277,31 @@
   export default {
     data() {
       return {
-        bigUrl: '',
-        isMore: false,
-        runBigPic: false,
-        runningImports: false,
-        runningImportResult: false,
-        runningImportNumber: false,
+        bigUrl: '', isMore: false, runBigPic: false, runningImports: false,
+        runningImportResult: false, runningImportNumber: false,
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
-        count: 0,
-        list: [],
-        list10: [],
-        isShow: false,
-        isFirst: true,
-        isSearch: false,
-        firstPage: 0,
-        page: 1,
-        listLoading: false,
-        query: {size: 100, type: 1},
-        addList: '',
-        qTime: [new Date((formatDate(new Date((new Date().getTime() - 7 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-          new Date((formatDate(new Date((new Date().getTime())), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
+        count: 0, list: [], list10: [], firstPage: 0, page: 1,
+        isShow: false, isFirst: true, isSearch: false, listLoading: false,
+        query: {size: 100, type: 1}, addList: '', listTypes: [],
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
-        runAddList: false,
-        runningModifyPerson: false,
+        runAddList: false, runningModifyPerson: false,
         uploadFileUrl: this.axios.defaults.baseURL + 'person/importKeyPerson',
         uploadImgUrl: this.axios.defaults.baseURL + 'file/upload',
-        modifyPerson: {},
-        importFile: '',
-        importList: [],
-        totalNum: 0,
-        successNum: 0,
-        failNum: 0,
-        sels: [],
+        modifyPerson: {}, importFile: '', importList: [],
+        totalNum: 0, successNum: 0, failNum: 0, sels: [],
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
-        listTypes: [],
         rules: {
           faceUrl: [{required: true, message: '请选择头像', trigger: 'blur'}],
           name: [{required: true, message: '请输入姓名', trigger: 'blur'}],
-          idCard: [{required: true, message: '请输入身份证号', trigger: 'blur'}],
-          // pType: [{required: true, message: '请选择所属名单', trigger: 'blur'}]
+          idCard: [{required: true, message: '请输入身份证号', trigger: 'blur'}]
         },
-        fileFlag: false,
-        fileUploadPercent: 0,
-        fileChoose: null,
-        isUpload: false,
-        pickerBeginDate: {
-          disabledDate: (time) => {
-            let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime();
-            if (beginDateVal) {
-              return beginDateVal < time.getTime();
-            }
-          }
-        }
+        fileFlag: false, fileUploadPercent: 0, fileChoose: null, isUpload: false
       }
     },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
-      },
-      handleTimeChange(val) {
-        if (!val || val.length == 0) {
-          this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 7 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-            new Date((formatDate(new Date((new Date().getTime())), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
-        }
-        // if (val && val.length == 2) {
-        //   let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 7 * 1000);
-        //   if (bol) {
-        //     this.$message.error('日期范围不能超过7天');
-        //     return;
-        //   }
-        // }
-        this.getData();
       },
       showMore() {
         this.isMore = !this.isMore;
@@ -366,7 +312,7 @@
         }
       },
       showModify(row) {
-        var age = !isNull(row.age) ? row.age : 0;
+        let age = !isNull(row.age) ? row.age : 0;
         this.modifyPerson = {
           faceUrl: row.faceUrl, name: row.name, idCard: row.idCard, faceId: row.faceId, age: age,
           sex: row.sex, mobilePhone: row.mobilePhone, remark: row.remark
@@ -620,10 +566,6 @@
             return;
           }
         }
-        // if (!!this.qTime) {
-        //   this.query.startUploadTime = Math.round(this.qTime[0] / 1000);
-        //   this.query.endUploadTime = Math.round(this.qTime[1] / 1000);
-        // }
         if (this.isSearch) {
           this.list = [];
           this.list10 = [];
@@ -690,8 +632,6 @@
       clearData() {
         this.list10 = [];
         this.query = {size: 100, type: 1};
-        this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 7 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-          new Date((formatDate(new Date((new Date().getTime())), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         this.isSearch = true;
         delete this.query['faceUrl'];
         this.getData();
