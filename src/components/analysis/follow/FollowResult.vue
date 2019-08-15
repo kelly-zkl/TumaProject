@@ -35,16 +35,16 @@
               <el-form-item label="日期范围" align="left" style="margin: 0;text-align: left">
                 {{(task.startStr?task.startStr:'--')+' 至 '+ (task.endStr?task.endStr:'--')}}
               </el-form-item>
-              <!--<el-form-item label="时间范围" align="left" style="margin: 0;text-align: left">-->
-              <!--{{(task.repeatStartTime?task.repeatStartTime:'&#45;&#45;')+' 至 '+ (task.repeatEndTime?task.repeatEndTime:'&#45;&#45;')}}-->
-              <!--</el-form-item>-->
+              <el-form-item label="时间范围" align="left" style="margin: 0;text-align: left">
+                {{(task.repeatStartTime?task.repeatStartTime:'--')+' 至 '+ (task.repeatEndTime?task.repeatEndTime:'--')}}
+              </el-form-item>
               <el-form-item label="时间间隔" align="left" style="margin: 0;text-align: left">
                 {{task.interval==0?0:task.interval}}
               </el-form-item>
             </el-col>
             <el-col :span="6" align="left">
-              <el-form-item label="设备ID" align="left" style="margin: 0;text-align: left">
-                {{task.device?task.device:'--'}}
+              <el-form-item label="分析场所" align="left" style="margin: 0;text-align: left">
+                {{task.place?task.place:'--'}}
               </el-form-item>
             </el-col>
             <el-col :span="6" align="right">
@@ -633,9 +633,13 @@
       getTaskDetail() {
         this.$post('/follow/get/' + this.taskId, {}).then((data) => {
           this.task = data.data;
-          this.task.device = '--';
-          if (this.task.deviceId && this.task.deviceId.length > 0) {
-            this.task.device = this.task.deviceId.join("，");
+          this.task.place = '--';
+          if (!!this.task.placeList) {
+            let places = [];
+            this.task.placeList.forEach((item) => {
+              places.push(item.placeName);
+            });
+            this.task.place = places.join("，");
           }
           this.task.timeStr = formatDate(new Date(this.task.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
           this.task.startStr = formatDate(new Date(this.task.startDate * 1000), 'yyyy-MM-dd');

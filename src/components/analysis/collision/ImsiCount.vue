@@ -101,7 +101,7 @@
     watch: {
       sourceData: function () {
         let param = JSON.parse(this.sourceData);
-        this.taskId = param.sourceId;
+        this.taskId = param.sourceId.split('?')[0];
         this.targetType = param.dataType;
         this.activeItem = 'regional';
         this.clearData();
@@ -109,7 +109,7 @@
     },
     created() {
       let param = JSON.parse(this.sourceData);
-      this.taskId = param.sourceId;
+      this.taskId = param.sourceId.split('?')[0];
       this.targetType = param.dataType;
       this.activeItem = 'regional';
       this.clearData();
@@ -268,7 +268,6 @@
       }
     },
     mounted() {
-      this.clearData();
     }
   }
 </script>

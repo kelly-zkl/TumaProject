@@ -94,17 +94,10 @@
     props: ['dataId'],
     data() {
       return {
-        isMore: false,
-        taskId: this.dataId,
-        listLoading: false, qTime: '',
-        list: [], list10: [],
-        isFirst: true,
-        isSearch: false,
-        firstPage: 0,
-        places: [], placesCopy: [],
-        page: 1,
-        query: {size: 100},
-        count: 0,
+        isMore: false, taskId: '', listLoading: false, qTime: '',
+        list: [], list10: [], isFirst: true, isSearch: false,
+        firstPage: 0, places: [], placesCopy: [], page: 1,
+        query: {size: 100}, count: 0,
         pickerBeginDate: {
           shortcuts: [{
             text: '最近6小时',
@@ -158,13 +151,13 @@
     },
     watch: {
       dataId: function () {
-        this.taskId = this.dataId;
+        this.taskId = this.dataId.split('?')[0];
         this.getPlaces();
         this.clearData();
       }
     },
     created() {
-      this.taskId = this.dataId;
+      this.taskId = this.dataId.split('?')[0];
       this.getPlaces();
       this.clearData();
     },
@@ -175,9 +168,9 @@
       //首字母搜索
       pinyinMatch(val) {
         if (val) {
-          var result = [];
+          let result = [];
           this.placesCopy.forEach((item) => {
-            var m = PinyinMatch.match(item.placeName, val);
+            let m = PinyinMatch.match(item.placeName, val);
             if (m) {
               result.push(item);
             }
@@ -194,7 +187,7 @@
       },
       //交并记录导出
       exportData() {
-        var param = Object.assign({}, this.query);
+        let param = Object.assign({}, this.query);
         param.size = 100000;
         delete param['pageTime'];
         let config;
@@ -334,8 +327,6 @@
       }
     },
     mounted() {
-      this.getPlaces();
-      this.clearData();
     }
   }
 </script>

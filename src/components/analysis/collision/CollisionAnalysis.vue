@@ -82,7 +82,8 @@
               </el-select>
             </el-form-item>
             <el-form-item align="left" style="margin:0">
-              <el-button type="primary" style="margin-top:30px" @click="createTask()" :loading="listLoading">确认并开始分析
+              <el-button type="primary" style="margin-top:30px" @click="createTask()" :loading="listLoading">
+                {{confirmText}}
               </el-button>
             </el-form-item>
           </el-form>
@@ -98,18 +99,11 @@
   export default {
     data() {
       return {
-        records: [],
-        listLoading: false,
-        isMore: false,
-        addTask: {taskName: '', caseId: ''},
-        cases: [],
-        addTitle: '创建任务',
-        runAddTask: false,
+        records: [], listLoading: false, isMore: false,
+        addTask: {taskName: '', caseId: ''}, cases: [],
+        addTitle: '创建任务', confirmText: '确认创建并开始分析', runAddTask: false,
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
-        query: {page: 1, size: 10},
-        qTime: '',
-        count: 0,
-        sels: [],
+        query: {page: 1, size: 10}, qTime: '', count: 0, sels: [],
         pickerBeginDate: {
           shortcuts: [{
             text: '最近6小时',
@@ -168,9 +162,11 @@
       showCreate(val, item) {
         if (val == 0) {
           this.addTitle = '创建任务';
+          this.confirmText = '确认创建并开始分析';
           this.addTask = {taskName: '', caseId: ''};
         } else {
           this.addTitle = '修改任务';
+          this.confirmText = '确认修改并开始分析';
           this.addTask = item;
         }
         this.runAddTask = true

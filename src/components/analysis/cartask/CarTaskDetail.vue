@@ -133,7 +133,7 @@
           this.task = data.data;
           this.task.place = '--';
           if (!!this.task.placeList) {
-            var places = [];
+            let places = [];
             this.task.placeList.forEach((item) => {
               places.push(item.placeName);
             });

@@ -86,14 +86,13 @@
                       </el-tooltip>
                       <el-tooltip class="item" effect="dark" content="查看IMSI" placement="bottom">
                         <el-button type="text" class="fa fa-file-text-o fa-lg" style="margin: 0;padding: 0 10px"
-                                   @click="dataId=scope.row.id;runImsiList = true"
-                                   v-show="getButtonVial('collision:queryRecord')">
+                                   @click="showImsi(scope.row.id)" v-show="getButtonVial('collision:queryRecord')">
                         </el-button>
                       </el-tooltip>
                       <el-tooltip class="item" effect="dark" content="查看统计" placement="bottom">
                         <el-button type="text" class="fa fa-bar-chart fa-lg"
                                    :loading="scope.row.dataStatus=='WAIT'||scope.row.dataStatus=='EXECUTION'"
-                                   style="margin: 0;padding: 0" @click="showImsi(scope.row.id,'source')"
+                                   style="margin: 0;padding: 0" @click="showStatic(scope.row.id,'source')"
                                    v-show="getButtonVial('collision:imsiRecord:statistics')"></el-button>
                       </el-tooltip>
                     </el-col>
@@ -134,12 +133,11 @@
               <el-table-column align="left" label="操作" min-width="110">
                 <template slot-scope="scope">
                   <el-tooltip class="item" effect="dark" content="查看分析结果" placement="bottom">
-                    <el-button type="text" class="fa fa-list-alt fa-lg"
-                               @click="sourceId=scope.row.id;runImsiResult = true"
+                    <el-button type="text" class="fa fa-list-alt fa-lg" @click="showResult(scope.row.id)"
                                v-show="getButtonVial('collision:getAnalyseResultList')&&scope.row.status=='FINISH'"></el-button>
                   </el-tooltip>
                   <el-tooltip class="item" effect="dark" content="查看统计结果" placement="bottom">
-                    <el-button type="text" class="fa fa-bar-chart fa-lg" @click="showImsi(scope.row.id,'result')"
+                    <el-button type="text" class="fa fa-bar-chart fa-lg" @click="showStatic(scope.row.id,'result')"
                                v-show="getButtonVial('collision:imsiRecord:statistics')&&scope.row.status=='FINISH'"></el-button>
                   </el-tooltip>
                   <el-tooltip class="item" effect="dark" content="终止分析" placement="bottom">
@@ -358,9 +356,9 @@
       //首字母搜索
       pinyinMatch(val) {
         if (val) {
-          var result = [];
+          let result = [];
           this.placesCopy.forEach((item) => {
-            var m = PinyinMatch.match(item.placeName, val);
+            let m = PinyinMatch.match(item.placeName, val);
             if (m) {
               result.push(item);
             }
@@ -402,7 +400,7 @@
       },
       //切换交并分析的分析方式
       handleModeChange(val, row) {
-        var str = (val == 'intersect' ? '交集' : val == 'union' ? '并集' : val == 'subtract' ? '差集' : '--');
+        let str = (val == 'intersect' ? '交集' : val == 'union' ? '并集' : val == 'subtract' ? '差集' : '--');
         this.$confirm('确定即按照' + str + '的分析方式重新分析当前任务?', '提示', {type: 'info'}).then(() => {
           this.$post('/collision/addOrUpdateAnalyseTask', row, "修改成功").then((data) => {
             if ("000000" === data.code) {
@@ -463,15 +461,25 @@
       getPlaceList(pos) {
         this.placeList = pos;
       },
+      //查看IMSI列表
+      showImsi(id) {
+        this.dataId = id + '?' + new Date().getTime();
+        this.runImsiList = true;
+      },
+      //查看分析结果
+      showResult(id) {
+        this.sourceId = id + '?' + new Date().getTime();
+        this.runImsiResult = true;
+      },
       //数据源/交并分析的统计页面展示
-      showImsi(id, type) {
-        let param = {sourceId: id, dataType: type};
+      showStatic(id, type) {
+        let param = {sourceId: id + '?' + new Date().getTime(), dataType: type};
         this.sourceData = JSON.stringify(param);
         this.runResult = true;
       },
       //添加条件参数
       addParam() {
-        var param = {
+        let param = {
           type: 'qTime', time: ['00:00:00', '23:59:59'],
           qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
             new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()]

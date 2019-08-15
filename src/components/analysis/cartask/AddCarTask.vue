@@ -27,7 +27,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="分析对象" align="left" prop="followTarget" style="text-align: left">
-            <el-input placeholder="输入分析对象" v-model="carTask.followTarget" style="width:300px;margin-top: 0"
+            <el-input placeholder="输入分析对象" v-model="carTask.followTarget" style="width:350px;margin-top: 0"
                       :maxlength=15>
             </el-input>
           </el-form-item>
@@ -40,7 +40,7 @@
           </el-form-item>
           <el-form-item label="分析场所" align="left">
             <el-select v-model="carTask.placeList" placeholder="分析场所" filterable multiple clearable
-                       collapse-tags style="width: 300px" :filter-method="pinyinMatch">
+                       collapse-tags style="width: 350px" :filter-method="pinyinMatch">
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
@@ -156,15 +156,10 @@
   export default {
     data() {
       return {
-        listLoading: false,
-        mapVisible: false,
-        dialogPlace: false,
-        query: {page: 1, size: 10},
+        listLoading: false, mapVisible: false, dialogPlace: false,
+        query: {page: 1, size: 10}, count: 0, cases: [],
         carTask: {atype: 'imsi', interval: 120},
-        cases: [],
-        qTime: '',
-        time2: ['00:00:00', '23:59:59'],
-        count: 0,
+        qTime: '', time2: ['00:00:00', '23:59:59'],
         taskNo: this.$route.query.no || '',
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
         provinceList: JSON.parse(localStorage.getItem("areas")),
@@ -198,9 +193,9 @@
       //首字母搜索
       pinyinMatch(val) {
         if (val) {
-          var result = [];
+          let result = [];
           this.placesCopy.forEach((item) => {
-            var m = PinyinMatch.match(item.placeName, val);
+            let m = PinyinMatch.match(item.placeName, val);
             if (m) {
               result.push(item);
             }
@@ -214,7 +209,7 @@
         this.$post('car/task/detail', {taskNo: this.taskNo}).then((data) => {
           this.carTask = data.data;
           if (!!this.carTask.placeList) {
-            var places = [];
+            let places = [];
             this.carTask.placeList.forEach((item) => {
               places.push(item.placeId);
             });
@@ -294,7 +289,7 @@
             this.carTask.caseName = this.getCaseName();
 
             if (!!this.carTask.placeList) {
-              var places = [];
+              let places = [];
               this.carTask.placeList.forEach((item) => {
                 this.places.forEach((list) => {
                   if (item == list.id) {
@@ -406,17 +401,18 @@
       //省市县变化
       areaChange(value) {
         this.areaList = value;
-        this.queryDevice.provinceCode = '';
-        this.queryDevice.cityCode = '';
-        this.queryDevice.areaCode = '';
+        delete this.query['provinceCode'];
+        delete this.query['cityCode'];
+        delete this.query['areaCode'];
         if (value.length === 1) {
-          this.queryDevice.provinceCode = value[0];
+          this.query.provinceCode = value[0];
         } else if (value.length === 2) {
-          this.queryDevice.cityCode = value[1];
+          this.query.provinceCode = value[0];
+          this.query.cityCode = value[1];
         } else if (value.length === 3) {
-          this.queryDevice.areaCode = value[2];
-        } else if (value.length === 4) {
-          this.queryDevice.areaCode = value[2];
+          this.query.provinceCode = value[0];
+          this.query.cityCode = value[1];
+          this.query.areaCode = value[2];
         }
       },
       getPlaces() {

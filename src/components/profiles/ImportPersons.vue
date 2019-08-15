@@ -3,7 +3,7 @@
     <section class="content">
       <el-row>
         <el-col :span="21" align="left" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1100px">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1150px">
             <el-form-item style="margin-bottom: 10px">
               <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag
                          :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"

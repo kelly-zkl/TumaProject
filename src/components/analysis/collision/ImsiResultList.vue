@@ -20,7 +20,7 @@
                         :maxlength=20></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-button type="primary" size="medium" @click="isSearch = true;getData()"
+              <el-button type="primary" size="medium" @click="isSearch = true;getResult()"
                          :loading="listLoading">搜索
               </el-button>
             </el-form-item>
@@ -74,14 +74,9 @@
     props: ['sourceId'],
     data() {
       return {
-        listLoading: false,
-        taskId: this.sourceId,
-        isFirst: true,
-        isSearch: false,
-        firstPage: 0,
-        page: 1,
-        query: {size: 100},
-        count: 0,
+        listLoading: false, taskId: '',
+        isFirst: true, isSearch: false, firstPage: 0,
+        page: 1, query: {size: 100}, count: 0,
         list: [], list10: [], sels: [],
         uLogin: localStorage.getItem('login'),
         operators: [{value: 0, label: '移动'}, {value: 1, label: '联通'}, {value: 2, label: '电信'}]
@@ -89,12 +84,12 @@
     },
     watch: {
       sourceId: function () {
-        this.taskId = this.sourceId;
+        this.taskId = this.sourceId.split('?')[0];
         this.clearData();
       }
     },
     created() {
-      this.taskId = this.sourceId;
+      this.taskId = this.sourceId.split('?')[0];
       this.clearData();
     },
     methods: {
@@ -107,13 +102,13 @@
           this.$message.error('翻码最多支持10个IMSI');
           return;
         }
-        var arr = [];
+        let arr = [];
         this.sels.forEach((item) => {
           if (this.isSingle(item.imsi, arr)) {//翻码的IMSI不能重复
             arr.push(item.imsi);
           }
         });
-        var param = {
+        let param = {
           caseId: this.$parent.$parent.task.caseId,
           task: ['coll', this.$parent.$parent.task.id], imsi: arr
         };
@@ -135,7 +130,7 @@
       },
       //交并结果导出
       exportData() {
-        var param = Object.assign({}, this.query);
+        let param = Object.assign({}, this.query);
         param.size = 100000;
         delete param['pageImsi'];
         let config;
@@ -167,10 +162,10 @@
         this.list10 = [];
         this.isSearch = true;
         this.query = {size: 100};
-        this.getData();
+        this.getResult();
       },
       //获取记录
-      getData() {
+      getResult() {
         if (this.isSearch) {
           this.list = [];
           this.list10 = [];
@@ -216,7 +211,7 @@
         if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst && (this.list.length % 100 === 0)) {
           this.firstPage = this.list.length;
           this.query.pageImsi = this.list[this.list.length - 1].imsi;
-          this.getData();
+          this.getResult();
         }
         this.list10 = this.list;
         if ((this.list.length - (index * 10)) >= 0) {
@@ -256,7 +251,6 @@
       }
     },
     mounted() {
-      this.clearData();
     }
   }
 </script>
