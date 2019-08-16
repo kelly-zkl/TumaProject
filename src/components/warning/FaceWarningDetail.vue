@@ -142,7 +142,7 @@
                           {{item.imsiList?item.imsiList[0].fnIn:'--'}}
                         </el-form-item>
                         <el-form-item label="相似度" style="margin:0" align="left">
-                          {{item.similarThreshold.toFixed(1)+'%'}}
+                          {{item.similarThreshold?item.similarThreshold.toFixed(1)+'%':'--%'}}
                         </el-form-item>
                       </el-col>
                     </el-form>
@@ -163,7 +163,7 @@
                           {{item.blackClassPerson.idCard?item.blackClassPerson.idCard:'--'}}
                         </el-form-item>
                         <el-form-item label="相似度" style="margin:0" align="left">
-                          {{item.blackClassPerson.similarThreshold.toFixed(1)+'%'}}
+                          {{item.blackClassPerson.similarThreshold?item.blackClassPerson.similarThreshold.toFixed(1)+'%':'--%'}}
                         </el-form-item>
                       </el-col>
                       <el-col :lg="10" :xl="11" align="right" style="text-align: right">

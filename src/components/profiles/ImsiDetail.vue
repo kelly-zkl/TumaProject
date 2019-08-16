@@ -82,7 +82,8 @@
                     </el-col>
                     <el-form :model="item" align="left" label-width="140px" label-position="right">
                       <el-col :lg="19" :xl="21" align="left" style="text-align: left">
-                        <el-form-item label="IMSI伴随次数" style="margin:0;" align="left">{{item.fnIn}}</el-form-item>
+                        <el-form-item label="IMSI伴随次数" style="margin:0;" align="left">{{item.fnIn?item.fnIn:'--'}}
+                        </el-form-item>
                         <el-form-item label="IMSI置信度" style="margin:0" align="left">
                           {{item.weight?(item.weight/10).toFixed(1)+'%':'--'}}
                         </el-form-item>

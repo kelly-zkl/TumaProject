@@ -80,11 +80,12 @@
         </el-table-column>
         <el-table-column align="left" label="关联IMSI[置信度]" prop="imsiList" min-width="180" max-width="240">
           <template slot-scope="scope">
-            <div v-for="item in scope.row.imsiList">
+            <div v-for="item in scope.row.imsiList" v-show="scope.row.imsiList.length>0">
               <span
                 v-bind:style="query.imsi&&query.imsi.length>0&&item.imsi.indexOf(query.imsi)>-1?'color:#ff0000':'color:#000'">{{item.imsi}}<span
                 style="font-weight: bold">[{{(item.weight/10).toFixed(1)}}%]</span></span>
             </div>
+            <span v-show="!scope.row.imsiList||scope.row.imsiList.length==0">{{'--'}}</span>
           </template>
         </el-table-column>
         <el-table-column align="left" label="年龄段" prop="startAge" min-width="60" max-width="150"

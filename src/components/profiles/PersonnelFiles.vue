@@ -116,18 +116,13 @@
                     <el-col :span="3" align="left" style="text-align: left">
                       <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
                     </el-col>
-                    <el-col :span="11" align="left" style="text-align: left">
+                    <el-col :span="21" align="left" style="text-align: left">
                       <el-form-item label="姓名" style="margin:0;" align="left">
                         {{item.name?item.name:'--'}}
                       </el-form-item>
                       <el-form-item label="身份证" style="margin:0" align="left">
                         {{item.idCard?item.idCard:'--'}}
                       </el-form-item>
-                      <el-form-item label="相似度" style="margin:0" align="left">
-                        {{item.similarThreshold.toFixed(1)+'%'}}
-                      </el-form-item>
-                    </el-col>
-                    <el-col :span="10" align="right" style="text-align: right">
                       <el-form-item label="所属名单" style="margin:0" align="left">
                         <span>{{item.blackClass?item.blackClass:'--'}}</span>
                       </el-form-item>
