@@ -32,9 +32,6 @@
                 {{userInfo.startAge>=0?userInfo.startAge==userInfo.endAge?(userInfo.startAge - 3)+
                 '~'+(userInfo.startAge + 3):userInfo.startAge+'~'+userInfo.endAge:'--'}}
               </el-form-item>
-              <!--<el-form-item label="身份证" align="left" style="margin: 0">-->
-              <!--<span style="font-size: 15px;color:#000">{{userInfo.idCard ? userInfo.idCard : '&#45;&#45;'}}</span>-->
-              <!--</el-form-item>-->
             </el-col>
             <el-col :span="6" align="left" style="text-align: left">
               <el-form-item label="ID" align="left" style="margin: 0">
@@ -43,9 +40,6 @@
               <el-form-item label="入库时间" align="left" style="margin: 0">
                 {{userInfo.timeStr ? userInfo.timeStr : '--'}}
               </el-form-item>
-              <!--<el-form-item label="是否优质" align="left" style="margin: 0">-->
-              <!--<span style="font-size: 15px;color:#000">{{userInfo.quality==1 ? '是' : '否'}}</span>-->
-              <!--</el-form-item>-->
               <el-form-item label="备注" align="left" style="margin: 0">
                 {{userInfo.remark ? userInfo.remark : '--'}}
               </el-form-item>
@@ -156,21 +150,10 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <!--<el-form-item label="身份证号">-->
-          <!--<el-input v-model="person.idCard" auto-complete="off" :maxlength="18" placeholder="输入身份证号"></el-input>-->
-          <!--</el-form-item>-->
-          <!--<el-form-item label="手机号">-->
-          <!--<el-input v-model="person.mobilePhone" auto-complete="off" :maxlength="11" placeholder="输入手机号"></el-input>-->
-          <!--</el-form-item>-->
-          <!--<el-form-item label="座机">-->
-          <!--<el-input v-model="person.telephone" auto-complete="off" :maxlength="13"-->
-          <!--placeholder="输入座机号,例：0123-12345678"></el-input>-->
-          <!--</el-form-item>-->
-          <!--<el-form-item label="所属辖区">-->
-          <!--<el-cascader :options="provinceList" :props="props" filterable clearable-->
-          <!--v-model="selectedOptions2" placeholder="选择所属辖区">-->
-          <!--</el-cascader>-->
-          <!--</el-form-item>-->
+          <el-form-item label="备注">
+            <el-input placeholder="备注" v-model="person.remark" :maxlength="200" type="textarea"
+                      :autosize="{minRows:3,maxRows:5}"></el-input>
+          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">
           <el-button @click="runModifyPerson=false">取消</el-button>

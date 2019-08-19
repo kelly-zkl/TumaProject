@@ -117,7 +117,7 @@
   </div>
 </template>
 <script>
-  import {formatDate, buttonValidator} from "../assets/js/util";
+  import {decryData, buttonValidator} from "../assets/js/util";
 
   export default {
     props: ['searchParam'],
@@ -161,7 +161,9 @@
         if (this.param.type == 'imsi') {
           paramData = {size: this.num, imsi: this.param.value}
         } else {
-          paramData = {size: this.num, url: this.param.value + '?t=' + this.timeStamp}
+          let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
+          paramData = {size: this.num, url: this.param.value + '?t=' + this.timeStamp};
+          paramData.similarThreshold = param ? parseInt(param) : 60;
         }
         this.$post('home/allSearch', paramData, undefined, undefined, "multi").then((data) => {
           if ("000000" === data.code) {

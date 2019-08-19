@@ -4,8 +4,8 @@
       <el-form :inline="true" :model="queryImsi" align="left" style="text-align: left;width: 1200px">
         <el-form-item style="margin-bottom: 10px">
           <el-select v-model="queryImsi.imsi" placeholder="IMSI" size="medium" filterable clearable>
-            <el-option v-for="item in imsis" :key="item.imsi" :label="item.imsi+'['+item.weightDes+']'"
-                       :value="item.imsi">
+            <el-option v-for="item in imsis" :key="item.imsi" :value="item.imsi"
+                       :label="item.imsi+'['+(item.weightDes?item.weightDes:'--')+']'">
             </el-option>
           </el-select>
         </el-form-item>

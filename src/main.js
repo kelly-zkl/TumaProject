@@ -77,7 +77,7 @@ Vue.prototype.$post = function (path, param, successMsg, failMsg, isLogin) {
       }
       return data;
     } else {
-      if (isLogin == "multi") {
+      if (isLogin == "multi" || isLogin == "login") {
         return data;
       }
     }
