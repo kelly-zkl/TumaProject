@@ -134,23 +134,23 @@
     <el-dialog title="修改基本信息" :visible.sync="runModifyPerson" width="650px" center>
       <div class="block">
         <el-form :model="person" label-position="right" label-width="100px">
-          <el-form-item label="姓名">
+          <el-form-item label="姓名" style="text-align: left">
             <el-input v-model="person.name" auto-complete="off" :maxlength="10" placeholder="输入姓名"></el-input>
           </el-form-item>
-          <el-form-item label="年龄段">
+          <el-form-item label="年龄段" style="text-align: left">
             <el-input-number v-model="person.startAge" controls-position="right" :min="1"
                              :max="person.endAge-1" style="width: 100px"></el-input-number>
             <span>~</span>
             <el-input-number v-model="person.endAge" controls-position="right" :min="person.startAge+1"
                              :max="200" style="width: 100px"></el-input-number>
           </el-form-item>
-          <el-form-item label="性别">
+          <el-form-item label="性别" style="text-align: left">
             <el-select v-model="person.sex" placeholder="选择性别" size="medium">
               <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="备注">
+          <el-form-item label="备注" style="text-align: left">
             <el-input placeholder="备注" v-model="person.remark" :maxlength="200" type="textarea"
                       :autosize="{minRows:3,maxRows:5}"></el-input>
           </el-form-item>

@@ -28,6 +28,7 @@
     height: 100%;
     margin: 0;
     padding: 0;
+    -webkit-text-size-adjust: 100%;
     -webkit-overflow-scrolling: touch; /*流畅滚动,ios7下会有滑一下滑不动的情况，所以需要写上*/
   }
 

@@ -78,30 +78,30 @@
       <!--新建/修改菜单-->
       <el-dialog :title="addMenuTitle" :visible.sync="addMenuVisible" :width="dialogWidth">
         <el-form ref="menu" :model="menu" label-width="100px" :rules="rules" labelPosition="right">
-          <el-form-item label="类型" align="left" required>
+          <el-form-item label="类型" align="left" required style="text-align: left">
             <el-radio-group v-model="menu.type">
               <el-radio :label="1">目录</el-radio>
               <el-radio :label="2">菜单</el-radio>
               <el-radio :label="3">按钮</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="菜单名称" prop="name">
+          <el-form-item label="菜单名称" prop="name" style="text-align: left">
             <el-input v-model="menu.name" placeholder="请输入菜单名称" :maxlength="20"></el-input>
           </el-form-item>
-          <el-form-item label="父级菜单" v-show="menu.type != '1'" required align="left">
+          <el-form-item label="父级菜单" v-show="menu.type != '1'" required align="left" style="text-align: left">
             <el-cascader :options="menuTree" change-on-select :props="defaultProps" :show-all-levels="false" clearable
                          placeholder="请选择父级菜单" @change="handleChange" v-model="menu.pidArray"></el-cascader>
           </el-form-item>
-          <el-form-item label="菜单图标">
+          <el-form-item label="菜单图标" style="text-align: left">
             <el-input v-model="menu.icon" placeholder="请输入菜单图标" :maxlength="30"></el-input>
           </el-form-item>
-          <el-form-item label="菜单URL" v-show="menu.type != '3'" prop="permissionUrl">
+          <el-form-item label="菜单URL" v-show="menu.type != '3'" prop="permissionUrl" style="text-align: left">
             <el-input v-model="menu.permissionUrl" placeholder="请输入菜单URL" :maxlength="20"></el-input>
           </el-form-item>
-          <el-form-item label="授权标识" prop="permissionValue">
+          <el-form-item label="授权标识" prop="permissionValue" style="text-align: left">
             <el-input v-model="menu.permissionValue" placeholder="请输入授权标识" :maxlength="60"></el-input>
           </el-form-item>
-          <el-form-item label="排序" v-show="menu.type != '3'" :maxlength="2">
+          <el-form-item label="排序" v-show="menu.type != '3'" :maxlength="2" style="text-align: left">
             <el-input v-model="menu.orders"></el-input>
           </el-form-item>
         </el-form>

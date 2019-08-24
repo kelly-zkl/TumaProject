@@ -82,35 +82,35 @@
       <!--创建/修改公安机关-->
       <el-dialog :title="addOrganizationTitle" :visible.sync="addOrganizationVisible" :width="dialogWidth">
         <el-form ref="group" :model="group" label-width="120px" labelPosition="right" :rules="rules">
-          <el-form-item label="公安机关名称" prop="groupName" align="left">
+          <el-form-item label="公安机关名称" prop="groupName" align="left" style="text-align: left">
             <el-input v-model="group.groupName" placeholder="请输入公安机关名称" :maxlength="20" :minlength="2"></el-input>
           </el-form-item>
-          <el-form-item label="管辖区域" align="left" prop="areaCodes">
+          <el-form-item label="管辖区域" align="left" prop="areaCodes" style="text-align: left">
             <el-select v-model="group.areaCodes" multiple placeholder="请选择" collapse-tags filterable>
               <el-option v-for="item in provinceList" :key="item.areaCode" :label="item.areaName"
                          :value="item.areaCode">
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="组织管理员" align="left" required>
+          <el-form-item label="组织管理员" align="left" required style="text-align: left">
             <el-radio-group v-model="group.isCreateAdmin" v-show="isShow">
               <el-radio :label="1">注册新用户</el-radio>
               <el-radio :label="0">选择已注册的用户</el-radio>
             </el-radio-group>
             <span v-show="!isShow">{{group.account?group.account:'--'}}</span>
           </el-form-item>
-          <el-form-item label="选择用户" align="left" v-show="group.isCreateAdmin==0&&isShow">
+          <el-form-item label="选择用户" align="left" v-show="group.isCreateAdmin==0&&isShow" style="text-align: left">
             <el-select v-model="group.adminId" placeholder="请选择用户" filterable>
               <el-option v-for="item in users" :key="item.userId" :label="item.account" :value="item.userId"
                          v-show="item.groupAdmin != true">
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="账号" align="left" v-show="group.isCreateAdmin==1&&isShow">
+          <el-form-item label="账号" align="left" v-show="group.isCreateAdmin==1&&isShow" style="text-align: left">
             <el-input v-model="group.adminAccount" placeholder="6-16位英文字母、数字、下划线" :maxlength="16"
                       :minlength="6"></el-input>
           </el-form-item>
-          <el-form-item label="密码" align="left" v-show="group.isCreateAdmin==1&&isShow">
+          <el-form-item label="密码" align="left" v-show="group.isCreateAdmin==1&&isShow" style="text-align: left">
             <el-input v-model="group.adminPsw" placeholder="6-16位英文字母、数字、下划线"
                       :maxlength="16" :minlength="6" type="password"></el-input>
           </el-form-item>
@@ -125,31 +125,31 @@
       <!--创建/修改派出所-->
       <el-dialog :title="addPoliceTitle" :visible.sync="addPoliceVisible" :width="dialogWidth">
         <el-form ref="police" :model="police" label-width="100px" labelPosition="right" :rules="rules1">
-          <el-form-item label="派出所名称" prop="groupName" align="left">
+          <el-form-item label="派出所名称" prop="groupName" align="left" style="text-align: left">
             <el-input v-model="police.groupName" placeholder="请输入派出所名称" :maxlength="20" :minlength="2"></el-input>
           </el-form-item>
-          <el-form-item label="所属组织" align="left">
+          <el-form-item label="所属组织" align="left" style="text-align: left">
             <span>{{police.pgroupName?police.pgroupName:groupName}}</span>
           </el-form-item>
-          <el-form-item label="组织管理员" align="left" required>
+          <el-form-item label="组织管理员" align="left" required style="text-align: left">
             <el-radio-group v-model="police.isCreateAdmin" v-show="isShow">
               <el-radio :label="1">注册新用户</el-radio>
               <el-radio :label="0">选择已注册的用户</el-radio>
             </el-radio-group>
             <span v-show="!isShow">{{police.account?police.account:'--'}}</span>
           </el-form-item>
-          <el-form-item label="选择用户" align="left" v-show="police.isCreateAdmin==0&&isShow">
+          <el-form-item label="选择用户" align="left" v-show="police.isCreateAdmin==0&&isShow" style="text-align: left">
             <el-select v-model="police.adminId" placeholder="请选择用户" filterable>
               <el-option v-for="item in users" :key="item.userId" :label="item.account" :value="item.userId"
                          v-show="item.groupAdmin != true">
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="账号" align="left" v-show="police.isCreateAdmin==1&&isShow">
+          <el-form-item label="账号" align="left" v-show="police.isCreateAdmin==1&&isShow" style="text-align: left">
             <el-input v-model="police.adminAccount" placeholder="6-16位英文字母、数字、下划线" :maxlength="16"
                       :minlength="6"></el-input>
           </el-form-item>
-          <el-form-item label="密码" align="left" v-show="police.isCreateAdmin==1&&isShow">
+          <el-form-item label="密码" align="left" v-show="police.isCreateAdmin==1&&isShow" style="text-align: left">
             <el-input v-model="police.adminPsw" placeholder="6-16位英文字母、数字、下划线" :maxlength="16"
                       :minlength="6" type="password"></el-input>
           </el-form-item>

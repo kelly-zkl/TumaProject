@@ -167,36 +167,36 @@
       <el-dialog title="修改人员信息" :visible.sync="runningModifyPerson" width="600px" center class="dialog">
         <el-form :model="modifyPerson" align="left" label-width="120px" label-position="right" :rules="rules"
                  ref="modifyPerson">
-          <el-form-item label="对应头像" prop="faceUrl" style="margin: 0" class="vip-150">
+          <el-form-item label="对应头像" prop="faceUrl" style="margin: 0;text-align: left" class="vip-150">
             <el-upload :action="uploadImgUrl" :show-file-list="false" drag
                        :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
               <img :src="modifyPerson.faceUrl?modifyPerson.faceUrl:imgPath" class="avatar" :onerror="img404">
             </el-upload>
           </el-form-item>
-          <div style="color:#999;margin-left: 120px;margin-bottom: 20px">
+          <div style="color:#999;margin-left: 120px;margin-bottom: 20px;text-align: left">
             请选择有人脸且五官较清晰的图片。<br/>
             支持jpeg/jpg/png格式的图片，且不超过2M
           </div>
-          <el-form-item label="姓名" prop="name">
+          <el-form-item label="姓名" prop="name" style="text-align: left">
             <el-input placeholder="输入姓名" v-model="modifyPerson.name" :maxlength="20"></el-input>
           </el-form-item>
-          <el-form-item label="身份证号" prop="idCard">
+          <el-form-item label="身份证号" prop="idCard" style="text-align: left">
             <el-input placeholder="输入身份证号" v-model="modifyPerson.idCard" :maxlength="18"></el-input>
           </el-form-item>
-          <el-form-item label="年龄">
+          <el-form-item label="年龄" style="text-align: left">
             <el-input-number v-model="modifyPerson.age" controls-position="right" :min="1"
                              :max="150"></el-input-number>
           </el-form-item>
-          <el-form-item label="性别">
+          <el-form-item label="性别" style="text-align: left">
             <el-select v-model="modifyPerson.sex" placeholder="选择性别">
               <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="手机号">
+          <el-form-item label="手机号" style="text-align: left">
             <el-input placeholder="输入手机号" v-model="modifyPerson.mobilePhone" :maxlength="11"></el-input>
           </el-form-item>
-          <el-form-item label="备注">
+          <el-form-item label="备注" style="text-align: left">
             <el-input placeholder="备注" v-model="modifyPerson.remark" :maxlength="200" type="textarea"></el-input>
           </el-form-item>
         </el-form>

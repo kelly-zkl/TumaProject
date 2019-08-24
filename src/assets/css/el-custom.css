@@ -75,6 +75,10 @@
   border-color: #6699FF;
 }
 
+.el-checkbox__inner {
+  border: 1px solid #ccc;
+}
+
 /*左侧导航栏二级菜单的popu框*/
 .content-aside-close .el-menu, .content-aside .el-menu {
   border-right: none;

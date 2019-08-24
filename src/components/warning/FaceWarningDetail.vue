@@ -133,13 +133,13 @@
                     <el-form :model="item" align="left" label-width="120px" label-position="right" size="small">
                       <el-col :lg="20" :xl="21" align="left" style="text-align: left">
                         <el-form-item label="IMSI" style="margin:0;" align="left">
-                          {{item.imsiList?item.imsiList[0].imsi:'--'}}
+                          {{item.imsiList&&item.imsiList.length>0?item.imsiList[0].imsi:'--'}}
                         </el-form-item>
                         <el-form-item label="置信度" style="margin:0" align="left">
-                          {{item.imsiList?(item.imsiList[0].weight/10)+'%':'--'}}
+                          {{item.imsiList&&item.imsiList.length>0?(item.imsiList[0].weight/10)+'%':'--'}}
                         </el-form-item>
                         <el-form-item label="关联次数" style="margin:0" align="left">
-                          {{item.imsiList?item.imsiList[0].fnIn:'--'}}
+                          {{item.imsiList&&item.imsiList.length>0?item.imsiList[0].fnIn:'--'}}
                         </el-form-item>
                         <el-form-item label="相似度" style="margin:0" align="left">
                           {{item.similarThreshold?item.similarThreshold.toFixed(1)+'%':'--%'}}

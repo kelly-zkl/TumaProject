@@ -4,10 +4,10 @@
       <el-form ref="followTask" :model="followTask" label-position="right" label-width="120px" :rules="rules">
         <h5 class="add-label" style="margin:10px 0">任务基本信息</h5>
         <div class="add-appdiv" style="padding: 20px 0">
-          <el-form-item label="任务名称" align="left" prop="taskName">
+          <el-form-item label="任务名称" align="left" prop="taskName" style="text-align: left">
             <el-input v-model="followTask.taskName" placeholder="请输入任务名称" style="width: 400px" :maxlength=30></el-input>
           </el-form-item>
-          <el-form-item label="关联案件" align="left" style="margin:0" prop="caseId">
+          <el-form-item label="关联案件" align="left" style="margin:0;text-align: left" prop="caseId">
             <el-select v-model="followTask.caseId" placeholder="选择案件" filterable clearable>
               <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
               </el-option>
@@ -16,11 +16,11 @@
         </div>
         <h5 class="add-label" style="margin:10px 0">设置伴随条件</h5>
         <div class="add-appdiv" style="padding: 20px 0">
-          <el-form-item label="分析对象" align="left" prop="followTarget">
+          <el-form-item label="分析对象" align="left" prop="followTarget" style="text-align: left">
             <el-input v-model="followTask.followTarget" placeholder="输入IMSI"
                       style="width: 400px" :maxlength=15></el-input>
           </el-form-item>
-          <el-form-item label="分析场所" align="left">
+          <el-form-item label="分析场所" align="left" style="text-align: left">
             <el-select v-model="followTask.placeList" placeholder="分析场所" filterable multiple clearable
                        collapse-tags style="width: 350px" :filter-method="pinyinMatch">
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
@@ -29,7 +29,7 @@
             <el-button type="primary" size="medium" style="margin-left: 5px" @click="showDialog()">选择</el-button>
             <el-button type="primary" size="medium" @click="showMap()" style="margin-left: 5px">地图选择</el-button>
           </el-form-item>
-          <el-form-item label="日期范围" align="left" required>
+          <el-form-item label="日期范围" align="left" required style="text-align: left">
             <el-tooltip effect="dark" content="日期范围不能超过7天" placement="bottom">
               <el-date-picker v-model="qTime" type="daterange" range-separator="至"
                               start-placeholder="开始日期" end-placeholder="结束日期" clearable
@@ -38,7 +38,7 @@
               </el-date-picker>
             </el-tooltip>
           </el-form-item>
-          <el-form-item label="时间范围" align="left" required style="margin: 0">
+          <el-form-item label="时间范围" align="left" required style="margin: 0;text-align: left">
             <el-tooltip class="item" effect="dark" content="开始时间" placement="bottom">
               <el-time-picker v-model="time2[0]" style="width:120px" value-format="HH:mm:ss"
                               placeholder="开始时间" size="medium">
@@ -50,10 +50,10 @@
               </el-time-picker>
             </el-tooltip>
           </el-form-item>
-          <el-form-item align="left" style="margin: 0">
+          <el-form-item align="left" style="margin: 0;text-align: left">
             <span style="font-size:13px;color: #999">(时段非必选，默认为全天24小时)</span>
           </el-form-item>
-          <el-form-item label="伴随时间间隔" align="left" prop="interval" style="margin: 0">
+          <el-form-item label="伴随时间间隔" align="left" prop="interval" style="margin: 0;text-align: left">
             <el-tooltip class="item" effect="dark" placement="bottom">
               <div slot="content">伴随时间间隔是指，在采集IMSI的时间点,<br/>前后n秒内采集的其它IMSI，都可视为伴随IMSI</div>
               <el-input v-model.number="followTask.interval" placeholder="请输入时间间隔" type="number"

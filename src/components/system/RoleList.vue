@@ -69,15 +69,15 @@
       <!--添加/修改角色-->
       <el-dialog :title="addroleTitle" :visible.sync="addroleVisible" :width="dialogWidth">
         <el-form ref="role" :model="role" :label-width="labelWidth" :rules="rules" labelPosition="right">
-          <el-form-item label="角色名称" prop="roleName" align="left">
+          <el-form-item label="角色名称" prop="roleName" align="left" style="text-align: left">
             <el-input v-model="role.roleName" placeholder="请输入角色名称" v-if="isShow" :maxlength="16"></el-input>
             <span v-else>{{role.roleName}}</span>
           </el-form-item>
-          <el-form-item label="备注" align="left">
+          <el-form-item label="备注" align="left" style="text-align: left">
             <el-input v-model="role.remark" placeholder="备注信息" type="textarea" v-if="isShow" :maxlength="50"></el-input>
             <span v-else>{{role.remark}}</span>
           </el-form-item>
-          <el-form-item label="功能权限" align="left" required>
+          <el-form-item label="功能权限" align="left" required style="text-align: left">
             <el-tree :data="permissions" show-checkbox node-key="permissionId" :props="defaultProps" ref="tree"
                      :default-expand-all="false" :default-checked-keys="role.permissions"></el-tree>
           </el-form-item>

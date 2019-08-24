@@ -10,6 +10,13 @@
   <meta charset="utf-8" name="viewport"
         content="width=device-width, initial-scale=1.0, minimum-scale=1, maximum-scale=1, user-scalable=no"/>
   <title>图码联侦实战布控平台</title>
+  <script>
+    if (!!window.ActiveXObject || "ActiveXObject" in window) {
+      document.write('<object classid="clsid:707C7D52-85A8-4584-8954-573EFCE77488" id="JITDSignOcx" style="float:left" width="0" height="0" codebase="./JITDSign.cab#version=2,0,24,19"></object>');
+    } else {
+      document.writeln('<embed id="JITDSignOcx" type="application/x-jit-sign-vctk-s-plugin-boc" style="float:left" width="0" height="0">');
+    }
+  </script>
 </head>
 <script type="text/javascript" src="./static/baidumapv2/baidumap_offline_v2_load.js"></script>
 <link rel="stylesheet" type="text/css" href="./static/baidumapv2/css/baidu_map_v2.css"/>

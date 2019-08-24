@@ -253,7 +253,7 @@
       handleType(val) {
         this.activeItem = val;
         if (val === 'device') {//设备地图
-          this.getDeviceMap();
+          // this.getDeviceMap();
         } else {//热力图
           if (!this.heatMap) {
             this.initHeatMap();
@@ -488,7 +488,7 @@
             textStyle: {color: "#fff", align: 'left'} //提示标签字体颜色
           },
           grid: {left: 0, right: 0, bottom: 0, top: 0, containLabel: true},
-          bmap: {center: [this.mapPoint.lng, this.mapPoint.lat], zoom: this.mapZoom, roam: true},
+          bmap: {roam: true},
           series: [
             {// 侦码设备不在线
               name: '数量',

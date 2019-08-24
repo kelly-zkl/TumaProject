@@ -108,13 +108,13 @@
       <!--创建用户-->
       <el-dialog :title="addUserTitle" :visible.sync="addUserVisible" :width="dialogWidth">
         <el-form ref="admin" :model="admin" label-width="100px" :rules="rules" labelPosition="right">
-          <el-form-item label="用户名" prop="realName">
+          <el-form-item label="用户名" prop="realName" style="text-align: left">
             <el-input v-model="admin.realName" placeholder="请输入用户名" :maxlength="16" :minlength="2"></el-input>
           </el-form-item>
-          <el-form-item label="账号" prop="account">
+          <el-form-item label="账号" prop="account" style="text-align: left">
             <el-input v-model="admin.account" placeholder="请输入账号" :maxlength="16" :minlength="6"></el-input>
           </el-form-item>
-          <el-form-item label="密码" align="left" required>
+          <el-form-item label="密码" align="left" required style="text-align: left">
             <el-radio-group v-model="setPsw" @change="changePsw">
               <el-radio :label="'defaultPsw'">使用默认密码12345678</el-radio>
               <el-radio :label="'newPsw'">自定义</el-radio>
@@ -125,7 +125,7 @@
           <el-form-item label="PKI登录" align="left" style="text-align:left">
             <el-checkbox v-model="admin.uLogin">开启PKI登录</el-checkbox>
           </el-form-item>
-          <el-form-item label="身份证号" v-show="admin.uLogin">
+          <el-form-item label="身份证号" v-show="admin.uLogin" align="left" style="text-align: left">
             <el-input v-model="admin.policeNum" placeholder="登记身份证号，即可使用警员PKI登录" :maxlength="18"></el-input>
           </el-form-item>
           <!--<el-form-item label="所属组织" align="left" prop="groupId">-->
@@ -135,14 +135,14 @@
           <!--</el-option>-->
           <!--</el-select>-->
           <!--</el-form-item>-->
-          <el-form-item label="所属部门" align="left" prop="deptId">
+          <el-form-item label="所属部门" align="left" prop="deptId" style="text-align: left">
             <el-select v-model="admin.deptId" placeholder="请选择部门" filterable>
               <el-option v-for="item in departments" :key="item.deptId" :label="item.deptName"
                          :value="item.deptId">
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="设置角色" align="left" required>
+          <el-form-item label="设置角色" align="left" required style="text-align: left">
             <el-select v-model="role" placeholder="请选择角色" filterable>
               <el-option v-for="item in roles" :key="item.roleId" :label="item.roleName" :value="item.roleId"
                          v-show="item.roleId.length != 1">
@@ -160,13 +160,13 @@
       <!--修改账号-->
       <el-dialog :title="addUserTitle" :visible.sync="modifyUserVisible" :width="dialogWidth">
         <el-form ref="admin" :model="admin" label-width="100px" :rules="rules" labelPosition="right">
-          <el-form-item label="用户名" prop="realName">
+          <el-form-item label="用户名" prop="realName" style="text-align: left">
             <el-input v-model="admin.realName" placeholder="请输入用户名" :maxlength="10" :minlength="2"></el-input>
           </el-form-item>
-          <el-form-item label="账号" prop="loginId" align="left">
+          <el-form-item label="账号" prop="loginId" align="left" style="text-align: left">
             <span>{{admin.account}}</span>
           </el-form-item>
-          <el-form-item label="密码">
+          <el-form-item label="密码" style="text-align: left" align="left">
             <el-row>
               <el-col :span="8" align="left">**********</el-col>
               <el-col :span="16" align="right" v-show="getButtonVial('manager:user:updatePwdByAdmin')">
@@ -182,7 +182,7 @@
           <el-form-item label="PKI登录" align="left" style="text-align:left">
             <el-checkbox v-model="admin.uLogin">开启PKI登录</el-checkbox>
           </el-form-item>
-          <el-form-item label="身份证号" v-show="admin.uLogin">
+          <el-form-item label="身份证号" v-show="admin.uLogin" align="left" style="text-align: left">
             <el-input v-model="admin.policeNum" placeholder="登记身份证号，即可使用警员PKI登录" :maxlength="18"></el-input>
           </el-form-item>
           <!--<el-form-item label="所属组织" align="left" prop="groupId">-->
@@ -193,7 +193,7 @@
           <!--</el-select>-->
           <!--<span v-else>{{admin.groupName}}</span>-->
           <!--</el-form-item>-->
-          <el-form-item label="所属部门" align="left" prop="deptId">
+          <el-form-item label="所属部门" align="left" prop="deptId" style="text-align: left">
             <el-select v-model="admin.deptId" placeholder="请选择部门" filterable v-if="admin.groupId==query.myGroupId">
               <el-option v-for="item in departments" :key="item.deptId" :label="item.deptName"
                          :value="item.deptId">
@@ -201,7 +201,7 @@
             </el-select>
             <span v-else>{{admin.deptName}}</span>
           </el-form-item>
-          <el-form-item label="设置角色" align="left" required>
+          <el-form-item label="设置角色" align="left" required style="text-align: left">
             <el-select v-model="role" placeholder="请选择角色" v-if="admin.groupAdmin != true" filterable>
               <el-option v-for="item in roles" :key="item.roleId" :label="item.roleName" :value="item.roleId"
                          v-show="item.roleId.length != 1">
@@ -220,14 +220,14 @@
       <!--修改密码-->
       <el-dialog title="修改密码" :visible.sync="modifyPswVisible" :width="dialogWidth">
         <el-form ref="modify" :model="modify" label-width="100px" :rules="rules1" labelPosition="right">
-          <el-form-item label="管理员密码" required>
+          <el-form-item label="管理员密码" required align="left" style="text-align: left">
             <el-input v-model="modify.adminPsw" placeholder="请输入管理员密码" type="password"></el-input>
           </el-form-item>
-          <el-form-item label="新密码" prop="newPsw">
+          <el-form-item label="新密码" prop="newPsw" align="left" style="text-align: left">
             <el-input v-model="modify.newPsw" placeholder="6-16位英文字母、数字、下划线"
                       :maxlength="16" :minlength="6" type="password"></el-input>
           </el-form-item>
-          <el-form-item label="密码确认" prop="newPsw1">
+          <el-form-item label="密码确认" prop="newPsw1" align="left" style="text-align: left">
             <el-input v-model="modify.newPsw1" placeholder="请再次输入新密码"
                       :maxlength="16" :minlength="6" type="password"></el-input>
           </el-form-item>
@@ -240,7 +240,7 @@
       <!--重置密码-->
       <el-dialog title="重置密码" :visible.sync="resetPswVisible" :width="dialogWidth">
         <el-form ref="modify" :model="reset" label-width="100px" labelPosition="right">
-          <el-form-item label="管理员密码" required>
+          <el-form-item label="管理员密码" required align="left" style="text-align: left">
             <el-input v-model="reset.adminPsw" placeholder="请输入管理员密码" type="password"></el-input>
           </el-form-item>
         </el-form>
@@ -252,7 +252,7 @@
       <!--添加/修改部门-->
       <el-dialog :title="addDepart" :visible.sync="addDepartVisible" :width="dialogWidth">
         <el-form label-width="100px" labelPosition="right">
-          <el-form-item label="部门名称">
+          <el-form-item label="部门名称" align="left" style="text-align: left">
             <el-input v-model="departObj.deptName" placeholder="请输入部门名称" :maxlength="10"></el-input>
           </el-form-item>
         </el-form>

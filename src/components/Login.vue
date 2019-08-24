@@ -1,8 +1,6 @@
 <template>
   <div class="login-bg">
     <section class="content" style="margin: 0;padding: 0">
-      <object classid="clsid:707C7D52-85A8-4584-8954-573EFCE77488" height="0"
-              id="JITDSignOcx" width="0" codebase="./JITDSign.cab#version=2,0,24,19"></object>
       <el-col :span="24" class="main-header" align="left">
         <div style="display:-webkit-box;display:-ms-flexbox;display:flex;height: 50px;align-items: center">
           <img src="../assets/img/icon_logo.svg"
@@ -43,9 +41,11 @@
           </el-form-item>
         </el-form>
         <div v-show="activeItem=='u'" style="margin:40px">
-          <div style="color:#C7CCD0;font-size:16px;height:165px;padding-top:60px;text-align:left;line-height: 30px">
+          <div class="div_u">
             如果您的PKI已在图码平台登记，请插入PKI，然后点击“PKI登录”按钮
           </div>
+          <div class="div_download" @click="downloadFile()" v-if="isShow">下载数字证书插件</div>
+          <div class="div_download" v-else style="cursor:auto"></div>
           <el-button type="primary" @click="uLogin()" :loading="logining" style="width:100%">PKI登录</el-button>
         </div>
       </div>
@@ -63,9 +63,7 @@
   export default {
     data() {
       return {
-        activeItem: 'u',
-        logining: false,
-        savePsw: false,
+        activeItem: 'u', logining: false, savePsw: false, isShow: true,
         account: {loginId: '', password: '', checkcode: ''},
         imgUrl: '', version: 'v3.0.6', dataStr: '',
         systemParam: {sysLogo: '../assets/img/icon_logo.svg'},
@@ -75,12 +73,28 @@
     methods: {
       //U盾登录
       uLogin() {
+        if (!JITDSignOcx) {
+          this.$message("请安装插件/更换浏览器...");
+          return false;
+        }
+        if (!(!!window.ActiveXObject || "ActiveXObject" in window)) {
+          let InitParam = "<?xml version=\"1.0\" encoding=\"gb2312\"?><authinfo><liblist><lib type=\"CSP\" version=\"1.0\" dllname=\"\" ><algid val=\"SHA1\" sm2_hashalg=\"sm3\"/></lib><lib type=\"SKF\" version=\"1.1\" dllname=\"SERfR01DQUlTLmRsbA==\" ><algid val=\"SHA1\" sm2_hashalg=\"sm3\"/></lib><lib type=\"SKF\" version=\"1.1\" dllname=\"U2h1dHRsZUNzcDExXzMwMDBHTS5kbGw=\" ><algid val=\"SHA1\" sm2_hashalg=\"sm3\"/></lib><lib type=\"SKF\" version=\"1.1\" dllname=\"U0tGQVBJLmRsbA==\" ><algid val=\"SHA1\" sm2_hashalg=\"sm3\"/></lib></liblist></authinfo>";
+          if (!JITDSignOcx.Initialize) {
+            this.$message("请安装插件/更换浏览器/检查插件是否被插件拦截...");
+            return false;
+          }
+          JITDSignOcx.Initialize(InitParam);
+          if (JITDSignOcx.GetErrorCode() != 0) {
+            this.$message.error("初始化失败，错误码：" + JITDSignOcx.GetErrorCode() + " 错误信息：" + JITDSignOcx.GetErrorMessage(JITDSignOcx.GetErrorCode()));
+            JITDSignOcx.Finalize();
+            return false;
+          }
+        }
         var Auth_Content = this.generateRandomNum();
         var temp_DSign_Result = '';
-        var DSign_Subject = '';
         //控制证书为一个时，不弹出证书选择框
         JITDSignOcx.SetCertChooseType(1);
-        JITDSignOcx.SetCert("SC", "", "", "", DSign_Subject, "");
+        JITDSignOcx.SetCert("SC", "", "", "", "", "");
         if (JITDSignOcx.GetErrorCode() != 0) {
           this.$message.error("错误码：" + JITDSignOcx.GetErrorCode() + "　错误信息：" + JITDSignOcx.GetErrorMessage(JITDSignOcx.GetErrorCode()));
           return false;
@@ -257,9 +271,19 @@
         }).catch((err) => {
           this.$message.error(err);
         });
+      },
+      downloadFile() {
+        let a = document.createElement('a');
+        a.download = '数字证书插件.rar';
+        a.href = '../../static/chormePlugin.rar';
+        a.click();
       }
     },
     mounted() {
+      if (!!window.ActiveXObject || "ActiveXObject" in window) {
+        //if ie
+        this.isShow = false;
+      }
       this.dataStr = formatDate(new Date(), 'yyyy');
 
       let bol = JSON.parse(localStorage.getItem("user"));
@@ -280,6 +304,23 @@
   }
 </script>
 <style scoped>
+  .div_download {
+    height: 40px;
+    line-height: 40px;
+    color: #6699FF;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .div_u {
+    color: #C7CCD0;
+    font-size: 16px;
+    height: 117px;
+    padding-top: 60px;
+    text-align: left;
+    line-height: 30px;
+  }
+
   .login-bg {
     position: absolute;
     top: 0;
@@ -288,12 +329,11 @@
     min-width: 1366px;
     min-height: 600px;
     margin-left: -8px;
-    background: url("../assets/img/bg_login.svg") no-repeat;
+    background: url("../assets/img/bg_login.svg") no-repeat #08163d;
     background-size: cover;
     -moz-background-size: cover;
     -webkit-background-size: cover;
     -o-background-size: cover;
-    background-color: #08163d;
   }
 
   .main-header {
