@@ -63,30 +63,32 @@
             </el-col>
           </el-row>
           <el-table :data="users" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
-            <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-            <el-table-column align="left" prop="account" label="账号" min-width="150"
-                             max-width="200" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" prop="realName" label="用户名" min-width="150"
-                             max-width="200" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" prop="policeNum" label="身份证号" min-width="160"
-                             max-width="200" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" prop="deptName" label="所属部门" min-width="150"
-                             max-width="200" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" prop="groupName" label="所属组织" min-width="150"
-                             max-width="200" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" prop="roleNameList" label="角色" min-width="120"
-                             max-width="200" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" prop="groupAdmin" label="用户类型" min-width="100"
-                             max-width="120" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" prop="createTime" label="创建时间" min-width="170"
-                             max-width="200" :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" prop="locked" label="状态" min-width="80" max-width="100">
+            <el-table-column align="center" type="index" label="序号" width="80"></el-table-column>
+            <el-table-column align="left" prop="account" label="账号" width="150"
+                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="realName" label="用户名" width="150"
+                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="policeNum" label="身份证号"
+                             width="170" :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="deptName" label="所属部门" width="150"
+                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="groupName" label="所属组织" width="150"
+                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="roleNameList" label="角色" width="150"
+                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="loginTime" label="过期时间" width="170"
+                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="groupAdmin" label="用户类型" width="100"
+                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="createTime" label="创建时间" width="180"
+                             :formatter="formatterAddress"></el-table-column>
+            <el-table-column align="left" prop="locked" label="状态" width="80">
               <template slot-scope="scope">
                 <span style="color:#00C755" v-show="scope.row.locked == 0">正常</span>
                 <span style="color:#999" v-show="scope.row.locked == 1">禁用</span>
               </template>
             </el-table-column>
-            <el-table-column align="left" label="操作" min-width="100" max-width="130" fixed="right">
+            <el-table-column align="left" label="操作" width="120" fixed="right">
               <template slot-scope="scope">
                 <el-button type="text" style="margin-right: 10px" @click.stop="updateInfo(scope.row)"
                            v-show="getButtonVial('manager:user:update')&&user.userId!=scope.row.userId">修改
@@ -122,10 +124,15 @@
             <el-input v-show="setPsw =='newPsw'" type="password" v-model="admin.password"
                       placeholder="请输入6-16位密码" :maxlength="16" :minlength="6"></el-input>
           </el-form-item>
+          <el-form-item label="过期时间" align="left" style="text-align:left">
+            <el-date-picker v-model="admin.loginTime" type="datetime" placeholder="选择过期时间"
+                            value-format="timestamp" :picker-options="pickerBeginDate" default-time="23:59:59">
+            </el-date-picker>
+          </el-form-item>
           <el-form-item label="PKI登录" align="left" style="text-align:left">
             <el-checkbox v-model="admin.uLogin">开启PKI登录</el-checkbox>
           </el-form-item>
-          <el-form-item label="身份证号" v-show="admin.uLogin" align="left" style="text-align: left">
+          <el-form-item label="身份证号" v-show="admin.uLogin==true" align="left" style="text-align: left">
             <el-input v-model="admin.policeNum" placeholder="登记身份证号，即可使用警员PKI登录" :maxlength="18"></el-input>
           </el-form-item>
           <!--<el-form-item label="所属组织" align="left" prop="groupId">-->
@@ -179,10 +186,15 @@
               </el-col>
             </el-row>
           </el-form-item>
+          <el-form-item label="过期时间" align="left" style="text-align:left">
+            <el-date-picker v-model="admin.loginTime" type="datetime" placeholder="选择过期时间"
+                            value-format="timestamp" :picker-options="pickerBeginDate" default-time="23:59:59">
+            </el-date-picker>
+          </el-form-item>
           <el-form-item label="PKI登录" align="left" style="text-align:left">
             <el-checkbox v-model="admin.uLogin">开启PKI登录</el-checkbox>
           </el-form-item>
-          <el-form-item label="身份证号" v-show="admin.uLogin" align="left" style="text-align: left">
+          <el-form-item label="身份证号" v-show="admin.uLogin==true" align="left" style="text-align: left">
             <el-input v-model="admin.policeNum" placeholder="登记身份证号，即可使用警员PKI登录" :maxlength="18"></el-input>
           </el-form-item>
           <!--<el-form-item label="所属组织" align="left" prop="groupId">-->
@@ -270,7 +282,7 @@
 <script>
   import md5 from 'js-md5';
   import {pswValidator, nameValidator, userCardValid} from '../../assets/js/api';
-  import {isPC, buttonValidator, encryData, decryData} from "../../assets/js/util";
+  import {isPC, buttonValidator, formatDate, decryData} from "../../assets/js/util";
 
   export default {
     data() {
@@ -316,7 +328,7 @@
         groupName: '', groupMem: 0, depmMem: 0,
         leftHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 222,
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
-        dialogWidth: isPC() ? '35%' : '90%',
+        dialogWidth: '580px',
         user: JSON.parse(decryData(sessionStorage.getItem("user"))),
         admin: {
           account: '', realName: '', password: '12345678', roleList: [], uLogin: false,
@@ -348,15 +360,39 @@
         },
         count: 0,
         query: {page: 1, size: 10, myGroupId: JSON.parse(decryData(sessionStorage.getItem("user"))).groupId},
-        users: [],
-        departments: [],
-        setPsw: 'defaultPsw',
-        role: '',
-        roles: [],
-        organizations: [],
+        users: [], departments: [], setPsw: 'defaultPsw', role: '', roles: [], organizations: [],
         modify: {adminPsw: '', newPsw: '', newPsw1: ''},
-        reset: {adminPsw: ''},
-        currentIdx: -1
+        reset: {adminPsw: ''}, currentIdx: -1,
+        pickerBeginDate: {
+          shortcuts: [{
+            text: '一周',
+            onClick(picker) {
+              const date = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              date.setTime(date.getTime() + 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', date);
+            }
+          }, {
+            text: '一个月',
+            onClick(picker) {
+              const date = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              date.setTime(date.getTime() + 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', date);
+            }
+          }, {
+            text: '三个月',
+            onClick(picker) {
+              const date = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/'));
+              date.setTime(date.getTime() + 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', date);
+            }
+          }],
+          disabledDate: (time) => {
+            let beginDateVal = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 10;
+            if (beginDateVal) {
+              return beginDateVal > time.getTime();
+            }
+          }
+        }
       }
     },
     methods: {
@@ -401,7 +437,7 @@
         this.$confirm('确定要删除该部门吗？', '提示', {type: 'warning'}).then(() => {
           this.$post('/manager/dept/delete', {deptId: item.deptId}, '操作成功').then((data) => {
             this.currentIdx = -1;
-            this.getDepartments();
+            this.getDepartments(this.query.myGroupId);
           });
         }).catch((err) => {
         });
@@ -420,7 +456,7 @@
           msg = '修改成功';
           param = {deptId: this.departObj.deptId, deptName: this.departObj.deptName};
         } else {
-          let groupId = this.user.groupId;
+          let groupId = this.query.myGroupId;
           let groupName = this.getGroupName(groupId);
           let creatorId = this.user.userId;
           param = {
@@ -432,7 +468,7 @@
         this.$post(url, param, msg).then((data) => {
           this.listLoading = false;
           this.addDepartVisible = false;
-          this.getDepartments();
+          this.getDepartments(this.query.myGroupId);
         });
       },
       handleClick(idx) {
@@ -463,8 +499,8 @@
       addInfo() {
         this.clearData();
         this.admin = {
-          account: '', realName: '', password: '12345678', roleList: [], uLogin: false,
-          groupId: this.user.groupId
+          account: '', realName: '', password: '12345678', roleList: [], uLogin: false, groupId: this.user.groupId,
+          loginTime: new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime() + 60 * 60 * 24 * 30 * 1000
         };
         this.setPsw = 'defaultPsw';
         this.role = '';
@@ -492,6 +528,8 @@
           return row[column.property] ? row[column.property][0] : '--';
         } else if (column.property == 'groupAdmin') {
           return row[column.property] == true ? '管理员' : '普通';
+        } else if (column.property == 'loginTime') {
+          return row[column.property] == undefined ? '--' : formatDate(new Date(row.loginTime), 'yyyy-MM-dd hh:mm:ss');
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
@@ -505,6 +543,7 @@
           msg = '确定要停用该用户？'
         } else {
           param.locked = 0;
+          param.loginTime = new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime() + 60 * 60 * 24 * 30 * 1000;
         }
         this.$confirm(msg, '提示', {type: 'warning'}).then(() => {
           this.$post('/manager/user/update', param, '操作成功').then((data) => {
@@ -578,11 +617,15 @@
         this.currentIdx = -1;
         this.groupName = this.getGroupName(this.user.groupId);
         this.getUserList();
-        this.getDepartments(this.user.groupId);
+        this.getDepartments(this.query.myGroupId);
       },
       onSubmit(formName, title) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
+            if (this.admin.loginTime == null || this.admin.loginTime.length == 0) {
+              this.$message.error('请选择过期时间');
+              return;
+            }
             if (this.admin.uLogin && (!this.admin.policeNum || this.admin.policeNum.length == 0)) {
               this.$message.error('请输入身份证号');
               return;

@@ -147,7 +147,7 @@
         dialogPlace: false, listLoading: false, mapVisible: false,
         query: {page: 1, size: 10},
         taskId: this.$route.query.id || '',
-        followTask: {followType: "IMSI", interval: 120},
+        followTask: {followType: "IMSI", interval: 120, placeList: []},
         imgPath: require('../../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
         time2: ['00:00:00', '23:59:59'], qTime: '', count: 0, cases: [],
@@ -198,16 +198,18 @@
       //获取伴随详情
       getTaskDetail() {
         this.$post('/follow/get/' + this.taskId, {}).then((data) => {
-          this.followTask = data.data;
-          if (!!this.followTask.placeList) {
+          if (data.data) {
+            this.qTime = [data.data.startDate * 1000, data.data.endDate * 1000];
+            this.time2 = [data.data.repeatStartTime, data.data.repeatEndTime];
             let places = [];
-            this.followTask.placeList.forEach((item) => {
-              places.push(item.placeId);
-            });
+            if (data.data.placeList != null && data.data.placeList.length > 0) {
+              data.data.placeList.forEach((item) => {
+                places.push(item.placeId);
+              });
+            }
+            data.data.placeList = places;
+            this.followTask = data.data;
           }
-          this.followTask.placeList = places;
-          this.qTime = [this.followTask.startDate * 1000, this.followTask.endDate * 1000];
-          this.time2 = [this.followTask.repeatStartTime, this.followTask.repeatEndTime];
         }).catch((err) => {
         });
       },

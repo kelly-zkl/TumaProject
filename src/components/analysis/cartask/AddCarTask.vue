@@ -158,7 +158,7 @@
       return {
         listLoading: false, mapVisible: false, dialogPlace: false,
         query: {page: 1, size: 10}, count: 0, cases: [],
-        carTask: {atype: 'imsi', interval: 120},
+        carTask: {atype: 'imsi', interval: 120,placeList:[]},
         qTime: '', time2: ['00:00:00', '23:59:59'],
         taskNo: this.$route.query.no || '',
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
@@ -207,16 +207,18 @@
       },
       getTaskDetail() {
         this.$post('car/task/detail', {taskNo: this.taskNo}).then((data) => {
-          this.carTask = data.data;
-          if (!!this.carTask.placeList) {
+          if (data.data) {
+            this.qTime = [data.data.startDate * 1000, data.data.endDate * 1000];
+            this.time2 = [data.data.repeatStartTime, data.data.repeatEndTime];
             let places = [];
-            this.carTask.placeList.forEach((item) => {
-              places.push(item.placeId);
-            });
+            if (data.data.placeList != null && data.data.placeList.length > 0) {
+              data.data.placeList.forEach((item) => {
+                places.push(item.placeId);
+              });
+            }
+            data.data.placeList = places;
+            this.carTask = data.data;
           }
-          this.carTask.placeList = places;
-          this.qTime = [this.carTask.startDate * 1000, this.carTask.endDate * 1000];
-          this.time2 = [this.carTask.repeatStartTime, this.carTask.repeatEndTime];
         }).catch((err) => {
         });
       },

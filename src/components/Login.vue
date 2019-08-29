@@ -273,10 +273,7 @@
         });
       },
       downloadFile() {
-        let a = document.createElement('a');
-        a.download = '数字证书插件.rar';
-        a.href = '../../static/chormePlugin.rar';
-        a.click();
+        window.open('../../meerkat-h5/static/loginHelp/loginhelp.htm', '_blank');
       }
     },
     mounted() {
@@ -315,7 +312,7 @@
   .div_u {
     color: #C7CCD0;
     font-size: 16px;
-    height: 117px;
+    height: 127px;
     padding-top: 60px;
     text-align: left;
     line-height: 30px;

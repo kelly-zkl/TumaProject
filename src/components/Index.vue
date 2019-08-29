@@ -14,7 +14,7 @@
             <el-menu :default-active="$route.path" background-color="#08163d" text-color="#B3B3B3" router
                      active-text-color="#3FA8F3" mode="horizontal" @select="handleSelectItem">
               <template v-for="item in menu">
-                <el-submenu :index="item.permissionUrl" v-if="item.permissionUrl!='/searchAll'&&item.childs">
+                <el-submenu :index="item.childs[0].permissionUrl" v-if="item.permissionUrl!='/searchAll'&&item.childs">
                   <template slot="title">
                     <i :class="item.icon" v-bind:style="item.orders>5?'font-size: 1.6em':'font-size: 1.3em'"></i>
                     <span>{{item.name}}</span>
@@ -570,9 +570,10 @@
         if (!this.loginOutIntervalid) {
           this.loginOutIntervalid = setInterval(() => {
             let clickTime = localStorage.getItem("clickTime");
+            let loginTime = JSON.parse(decryData(sessionStorage.getItem("user"))).loginTime || 0;
             let login = localStorage.getItem("login");
             let subTime = new Date().getTime() - clickTime;
-            if ((subTime > 30 * 60 * 1000 && login) || !login) {//超过30分钟退出
+            if ((loginTime !== 0 && new Date().getTime() > loginTime) || (subTime > 30 * 60 * 1000 && login) || !login) {//超过30分钟退出
               clearInterval(this.loginOutIntervalid);
               this.loginOutIntervalid = null;
               this.loginOut();
