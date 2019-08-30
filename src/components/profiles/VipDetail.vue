@@ -217,7 +217,7 @@
         this.$post('keyPerson/detail', {faceId: this.faceId}).then((data) => {
           let row = data.data;
           this.person = row;
-          var age = !isNull(row.age) ? row.age : 0;
+          let age = !isNull(row.age) ? row.age : 0;
           this.person.age = age;
           if (isNull(row.age)) {
             delete this.person['age'];

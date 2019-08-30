@@ -223,8 +223,8 @@
       },
       clickModify() {
         let data = this.userInfo;
-        var startAge = !isNull(data.startAge) ? data.startAge : 0;
-        var endAge = !isNull(data.endAge) ? data.endAge : 0;
+        let startAge = !isNull(data.startAge) ? data.startAge : 0;
+        let endAge = !isNull(data.endAge) ? data.endAge : 0;
         if (!isNull(data.startAge) && !isNull(data.endAge)) {
           if (startAge == endAge) {
             endAge = startAge + 3;
@@ -232,10 +232,8 @@
           }
         }
         this.person = {
-          faceId: data.faceId, telephone: data.telephone ? data.telephone : '',
-          sex: !isNull(data.sex) ? data.sex : '', name: data.name ? data.name : '',
-          mobilePhone: data.mobilePhone ? data.mobilePhone : '', startAge: startAge,
-          idCard: data.idCard ? data.idCard : '', endAge: endAge
+          faceId: data.faceId, sex: !isNull(data.sex) ? data.sex : '', startAge: startAge,
+          name: data.name ? data.name : '', remark: data.remark ? data.remark : '', endAge: endAge
         };
         this.selectedOptions2 = data.areaCode ? this.getCode(data.areaCode) : [];
         if (isNull(data.sex)) {
@@ -244,18 +242,9 @@
         if (!data.name) {
           delete this.person['name'];
         }
-        if (!data.mobilePhone) {
-          delete this.person['mobilePhone'];
-        }
-        if (!data.idCard) {
-          delete this.person['idCard'];
-        }
         if (isNull(data.startAge)) {
           delete this.person['startAge'];
           delete this.person['endAge'];
-        }
-        if (!data.telephone) {
-          delete this.person['telephone'];
         }
 
         this.runModifyPerson = true;
@@ -274,24 +263,6 @@
             return;
           } else if (this.person.startAge < 1 && this.person.startAge > 150) {
             this.$message.error('请输入正确的年龄');
-            return;
-          }
-        }
-        if (this.person.idCard) {
-          if (!userCardValid(this.person.idCard)) {
-            this.$message.error('请输入正确的身份证号');
-            return;
-          }
-        }
-        if (this.person.mobilePhone) {
-          if (!mobileValidator(this.person.mobilePhone)) {
-            this.$message.error('请输入正确的手机号码');
-            return;
-          }
-        }
-        if (this.person.telephone) {
-          if (!telphoneValidator(this.person.telephone)) {
-            this.$message.error('请输入正确的座机号');
             return;
           }
         }
@@ -323,7 +294,7 @@
             this.userInfo.area = data.data.areaCode ? getAreaLable(data.data.areaCode) : '--';
             this.userInfo.lastTimeStr = formatDate(new Date(data.data.lastAppearTime * 1000), 'yyyy-MM-dd hh:mm:ss');
             this.userInfo.lastPlaceName = data.data.lastAppearPlace.placeName;
-            var detail = data.data.lastAppearPlace.areaCode ? getAreaLable(data.data.lastAppearPlace.areaCode) : '--';
+            let detail = data.data.lastAppearPlace.areaCode ? getAreaLable(data.data.lastAppearPlace.areaCode) : '--';
             this.userInfo.lastArea = data.data.lastAppearPlace.detailAddress ? detail + data.data.lastAppearPlace.detailAddress : detail;
           }
         }).catch((err) => {
