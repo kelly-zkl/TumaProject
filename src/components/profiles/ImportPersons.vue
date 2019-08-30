@@ -279,7 +279,8 @@
         }
         if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst && (this.list.length % 100 === 0)) {
           this.firstPage = this.list.length;
-          this.query.pageTime = this.list[this.list.length - 1].uptime;
+          let item = this.list[this.list.length - 1];
+          this.query.pageTime = (item.pageTime ? item.pageTime : item.uptime);
           this.getData();
           this.getPersonNum();
         }
