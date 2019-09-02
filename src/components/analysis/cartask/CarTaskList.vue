@@ -115,18 +115,13 @@
   export default {
     data() {
       return {
-        isMore: false,
-        listLoading: false,
-        tasks: [],
-        cases: [],
-        qTime: "",
-        query: {page: 1, size: 10},
+        isMore: false, listLoading: false, intervalid: null,
+        tasks: [], cases: [], qTime: "", query: {page: 1, size: 10},
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         taskTypes: [{value: 'running', label: '分析中'}, {value: 'finish', label: '已完成'},
           {value: 'waiting', label: '等待中'}, {value: 'failed', label: '失败'}, {value: 'killed', label: '终止'}],
         followTypes: [{value: 'imsi', label: '以码找车'}, {value: 'car', label: '以车找码'}],
-        sels: [],
-        count: 0,
+        sels: [], count: 0,
         pickerBeginDate: {
           shortcuts: [{
             text: '最近6小时',
@@ -178,6 +173,11 @@
         }
       }
     },
+    //页面关闭时停止更新
+    beforeDestroy() {
+      clearInterval(this.intervalid);
+      this.intervalid = null;
+    },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
@@ -189,6 +189,13 @@
           this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 282
         } else {
           this.tableHeight = (window.innerHeight < 600 ? 600 : window.innerHeight) - 232
+        }
+      },
+      statusTask() {
+        if (!this.intervalid) {
+          this.intervalid = setInterval(() => {
+            this.getData('task');
+          }, 10 * 1000);
         }
       },
       //终止分析
@@ -253,12 +260,14 @@
         this.query.size = val;
         this.getData();
       },
-      getData() {
+      getData(val) {
         if (!!this.qTime) {
           this.query.createStartTime = Math.round(this.qTime[0] / 1000);
           this.query.createEndTime = Math.round(this.qTime[1] / 1000);
         }
-        this.listLoading = true;
+        if (!val) {
+          this.listLoading = true;
+        }
         this.$post('/car/task/query', this.query).then((data) => {
           this.tasks = data.data.list;
           this.count = data.data.count;
@@ -301,6 +310,7 @@
       }
       this.getCases();
       this.getData();
+      this.statusTask();
     }
   }
 </script>

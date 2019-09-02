@@ -92,16 +92,12 @@
   export default {
     data() {
       return {
-        listLoading: false,
-        tasks: [],
-        qTime: "",
-        query: {page: 1, size: 10},
+        listLoading: false, tasks: [], intervalid: null, qTime: "",
+        query: {page: 1, size: 10}, sels: [], count: 0,
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         followTypes: [{value: 'IMSI', label: 'IMSI'}, {value: 'FACE', label: '人脸'}],//{value: 'MAC', label: 'MAC'}
         taskTypes: [{value: 'EXECUTION', label: '分析中'}, {value: 'FINISH', label: '已完成'},
           {value: 'WAIT', label: '等待中'}, {value: 'FAILE', label: '失败'}, {value: 'STOP', label: '终止'}],
-        sels: [],
-        count: 0,
         pickerBeginDate: {
           shortcuts: [{
             text: '最近6小时',
@@ -153,9 +149,21 @@
         }
       }
     },
+    //页面关闭时停止更新
+    beforeDestroy() {
+      clearInterval(this.intervalid);
+      this.intervalid = null;
+    },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      statusTask() {
+        if (!this.intervalid) {
+          this.intervalid = setInterval(() => {
+            this.getData('task');
+          }, 10 * 1000);
+        }
       },
       //终止分析
       stopAnalysis(id) {
@@ -232,12 +240,14 @@
         this.query.size = val;
         this.getData();
       },
-      getData() {
+      getData(val) {
         if (!!this.qTime) {
           this.query.startTime = Math.round(this.qTime[0] / 1000);
           this.query.endTime = Math.round(this.qTime[1] / 1000);
         }
-        this.listLoading = true;
+        if (!val) {
+          this.listLoading = true;
+        }
         this.$post('/follow/query', this.query).then((data) => {
           this.tasks = data.data.list;
           this.count = data.data.count;
@@ -264,6 +274,7 @@
         this.query = JSON.parse(sessionStorage.getItem("query"));
       }
       this.getData();
+      this.statusTask();
     }
   }
 </script>

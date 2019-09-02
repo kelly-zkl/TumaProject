@@ -190,8 +190,8 @@
           </el-form-item>
           <hr style="background-color: #D7D7D7;border: none;height: 1px;margin: 20px"/>
           <el-form-item align="left" v-for="(item,idx) in collision.dscList" :key="idx+''" style="margin: 10px 0"
-                        :label="item.type=='places'?'IMSI采集场所':item.type=='isps'?'IMSI运营商':item.type=='imsi'?'指定IMSI':'IMSI归属地'"
-                        v-if="item.type!=='qTime'">
+                        :label="item.type=='places'?'IMSI采集场所':item.type=='imsi'?'指定IMSI':'IMSI归属地'"
+                        v-if="item.type!=='qTime'&&item.type!=='isps'">
             <el-select v-model="item.places" size="medium" filterable multiple collapse-tags style="width:430px"
                        clearable v-if="item.type=='places'" placeholder="选择场所" :filter-method="pinyinMatch">
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
@@ -199,11 +199,11 @@
             </el-select>
             <el-button type="primary" size="medium" @click="showMap(idx)" v-if="item.type=='places'">地图
             </el-button>
-            <el-select v-model="item.isps" style="width:500px" size="medium" multiple collapse-tags
-                       v-if="item.type=='isps'" placeholder="选择运营商">
-              <el-option :label="param.label" :value="param.value" v-for="param in operators"
-                         :key="param.value"></el-option>
-            </el-select>
+            <!--<el-select v-model="item.isps" style="width:500px" size="medium" multiple collapse-tags-->
+            <!--v-if="item.type=='isps'" placeholder="选择运营商">-->
+            <!--<el-option :label="param.label" :value="param.value" v-for="param in operators"-->
+            <!--:key="param.value"></el-option>-->
+            <!--</el-select>-->
             <el-tooltip class="item" effect="dark" content="归属地格式应为XX省XX市，例：广东省深圳市" placement="bottom">
               <el-input v-model="item.regional" placeholder="可输入多个归属地，用逗号隔开" size="medium"
                         style="width: 500px" v-if="item.type=='regional'"></el-input>
