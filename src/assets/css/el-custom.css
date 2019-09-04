@@ -109,6 +109,7 @@
 
 /** 表格样式开始*/
 .el-table {
+  width: 99.9% !important;
   font-size: 14px;
   overflow: auto;
   color: #666
@@ -138,6 +139,7 @@
 .overview .el-table {
   overflow-y: scroll;
   box-sizing: content-box;
+  width: 99.9% !important;
   padding-right: 17px;
   font-size: 14px;
   color: #fff;

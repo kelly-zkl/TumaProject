@@ -58,12 +58,12 @@
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="任务名称" prop="taskName"
-                         width="200" :formatter="formatterAddress"></el-table-column>
+                         min-width="150" max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="分析对象" prop="followTarget"
-                         width="300" :formatter="formatterAddress"></el-table-column>
+                         min-width="180" max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="分析目标" prop="followType"
-                         width="150" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="任务状态" prop="status" width="150">
+                         min-width="120" max-width="160" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="任务状态" prop="status" min-width="120" max-width="160">
           <template slot-scope="scope">
             <span style="color:#00C755" v-show="scope.row.status == 'finish'">已完成</span>
             <span style="color:#dd6161" v-show="scope.row.status == 'failed'">失败</span>
@@ -73,12 +73,12 @@
           </template>
         </el-table-column>
         <el-table-column align="left" label="分析结果" prop="resultNumber"
-                         width="150" :formatter="formatterAddress"></el-table-column>
+                         min-width="120" max-width="160" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="创建日期" prop="createTime"
-                         width="300" :formatter="formatterAddress"></el-table-column>
+                         min-width="180" max-width="220" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="创建用户" prop="creatorName"
-                         width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="200" fixed="right">
+                         min-width="150" max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="操作" min-width="120" max-width="180" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoCoDetail(scope.row)" v-show="getButtonVial('car:task:detail')">查看
             </el-button>
@@ -231,6 +231,9 @@
         if (!!this.qTime) {
           this.query.createStartTime = Math.round(this.qTime[0] / 1000);
           this.query.createEndTime = Math.round(this.qTime[1] / 1000);
+        } else {
+          delete this.query['createStartTime'];
+          delete this.query['createEndTime'];
         }
         this.query.caseId = this.caseId;
 

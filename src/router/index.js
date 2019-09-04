@@ -225,6 +225,9 @@ export default new Router({
           path: '/imsiConver', name: 'IMSI翻码（翻码返回）',
           component: resolve => require(['../components/approval/ImsiConver'], resolve)
         }, {
+          path: '/codeResult', name: '翻码结果',
+          component: resolve => require(['../components/approval/FailImsi'], resolve)
+        }, {
           path: '/myApply', component: Home, name: 'IMSI翻码',
           children: [
             {

@@ -210,21 +210,21 @@
         </el-row>
         <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" prop="imsi" label="IMSI" width="210"
+          <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="isp" label="运营商" width="150"
+          <el-table-column align="left" prop="isp" label="运营商" min-width="100" max-width="160"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" prop="netType" label="网络类型" width="200"
+          <el-table-column align="left" prop="netType" label="网络类型" min-width="100" max-width="160"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="IMSI归属地" prop="regional" width="250"
+          <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="采集时间" prop="uptime" width="250"
+          <el-table-column align="left" label="采集时间" prop="uptime" min-width="180" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="采集场所" prop="placeName" width="250"
+          <el-table-column align="left" label="采集场所" prop="placeName" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备标识" prop="deviceName" width="250"
+          <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备ID" prop="deviceId" width="250"
+          <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
         </el-table>
         <div class="block" style="margin: 20px 0" align="right">
@@ -475,6 +475,9 @@
         if (!!this.qTime) {
           this.query.startTime = Math.round(this.qTime[0] / 1000);
           this.query.endTime = Math.round(this.qTime[1] / 1000);
+        } else {
+          delete this.query['startTime'];
+          delete this.query['endTime'];
         }
         if (this.isSearch) {
           this.list = [];

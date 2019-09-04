@@ -52,19 +52,19 @@
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
         <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="IMSI" prop="imsi" width="250"
+        <el-table-column align="left" label="IMSI" prop="imsi" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="isp" label="运营商" width="200"
+        <el-table-column align="left" prop="isp" label="运营商" min-width="100" max-width="150"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="IMSI归属地" prop="regional" width="250"
+        <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="告警场所" prop="placeName" width="250"
+        <el-table-column align="left" label="告警场所" prop="placeName" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备标识" prop="deviceName" width="250"
+        <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="告警时间" prop="createTime" width="250"
+        <el-table-column align="left" label="告警时间" prop="createTime" min-width="180" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="告警状态" prop="status" width="150"
+        <el-table-column align="left" label="告警状态" prop="status" min-width="120" max-width="160"
                          :formatter="formatterAddress">
           <template slot-scope="scope">
             <span style="color:#dd6161" v-show="scope.row.status == 0">待处理</span>
@@ -72,7 +72,7 @@
             <span style="color:#999" v-show="scope.row.status == 3">误报</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="操作" width="160" fixed="right">
+        <el-table-column align="left" label="操作" min-width="150" max-width="180" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)"
                        v-show="getButtonVial('warning:getImsiWarning')">查看告警
@@ -239,6 +239,9 @@
         if (!!this.qTime) {
           this.query.startTime = Math.round(this.qTime[0] / 1000);
           this.query.endTime = Math.round(this.qTime[1] / 1000);
+        } else {
+          delete this.query['startTime'];
+          delete this.query['endTime'];
         }
 
         if (this.isSearch) {

@@ -62,7 +62,7 @@
       </el-form>
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="center" label="人脸图像" prop="imageUrl" width="250">
+        <el-table-column align="center" label="人脸图像" prop="imageUrl" min-width="150" max-width="220">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
               <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:scope.row.imageUrl?scope.row.imageUrl:imgPath"
@@ -71,19 +71,19 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="年龄段" prop="age" width="160"
+        <el-table-column align="left" label="年龄段" prop="age" min-width="80" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="性别" prop="sex" width="160"
+        <el-table-column align="left" label="性别" prop="sex" min-width="80" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="采集场所" prop="placeName" width="250"
+        <el-table-column align="left" label="采集场所" prop="placeName" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="采集时间" prop="catchTime" width="250"
+        <el-table-column align="left" label="采集时间" prop="catchTime" min-width="180" max-width="220"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备标识" prop="deviceName" width="250"
+        <el-table-column align="left" label="设备标识" prop="deviceName" min-width="180" max-width="220"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备ID" prop="deviceId" width="250"
+        <el-table-column align="left" label="设备ID" prop="deviceId" min-width="180" max-width="220"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="200" fixed="right">
+        <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)">查看大图</el-button>
           </template>

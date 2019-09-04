@@ -108,18 +108,19 @@
         <el-table :data="results" v-loading="listLoading1" class="center-block" stripe @selection-change="selsChange">
           <el-table-column type="selection" width="60" align="center"></el-table-column>
           <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
-          <el-table-column align="left" label="IMSI" prop="imsi" width="250"
+          <el-table-column align="left" label="IMSI" prop="imsi" min-width="180" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="运营商" prop="isp" width="250"
+          <el-table-column align="left" label="运营商" prop="isp" min-width="120" max-width="180"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="网络类型" prop="netType" width="250"
+          <el-table-column align="left" label="网络类型" prop="netType" min-width="120" max-width="180"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="IMSI归属地" prop="regional" width="250"
+          <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="150" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="伴随次数" prop="followCount" width="250"></el-table-column>
-          <el-table-column align="left" label="置信度" prop="confidenceLevel" width="250"
+          <el-table-column align="left" label="伴随次数" prop="followCount" min-width="120"
+                           max-width="180"></el-table-column>
+          <el-table-column align="left" label="置信度" prop="confidenceLevel" min-width="120" max-width="180"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="操作" width="150" fixed="right">
+          <el-table-column align="left" label="操作" min-width="120" max-width="200" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoImsi(scope.row)"
                          v-show="getButtonVial('archives:getImsiRecordByImsi')">查看IMSI
@@ -167,25 +168,25 @@
         </el-form>
         <el-table :data="records" v-loading="listLoading2" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-          <el-table-column align="left" label="源IMSI" prop="originalImsi" width="170"
+          <el-table-column align="left" label="源IMSI" prop="originalImsi" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="源时间" prop="originalUpTime" width="200"
+          <el-table-column align="left" label="源时间" prop="originalUpTime" min-width="180" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="伴随IMSI" prop="imsi" width="170"
+          <el-table-column align="left" label="伴随IMSI" prop="imsi" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="伴随时间" prop="upTime" width="200"
+          <el-table-column align="left" label="伴随时间" prop="upTime" min-width="180" max-width="250"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="运营商" prop="isp" width="120"
+          <el-table-column align="left" label="运营商" prop="isp" min-width="120" max-width="180"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="网络类型" prop="netType" width="120"
+          <el-table-column align="left" label="网络类型" prop="netType" min-width="120" max-width="180"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="IMSI归属地" prop="regional" width="200"
+          <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备ID" prop="deviceId" width="200"
+          <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="采集地点" prop="deviceName" width="200"
+          <el-table-column align="left" label="采集地点" prop="deviceName" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="操作" width="150" fixed="right">
+          <el-table-column align="left" label="操作" min-width="120" max-width="180" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoImsi(scope.row)"
                          v-show="getButtonVial('archives:getImsiRecordByImsi')">查看IMSI
@@ -578,6 +579,8 @@
           this.queryRecord.endTime = Math.round(this.qTime[1] / 1000);
         } else {
           delete this.queryRecord['qTime'];
+          delete this.queryRecord['startTime'];
+          delete this.queryRecord['endTime'];
         }
 
         this.queryRecord.followTaskId = this.taskId;

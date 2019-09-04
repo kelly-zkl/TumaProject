@@ -39,21 +39,21 @@
       <el-table :data="results" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="目标IMSI" prop="imsi" width="300"
+        <el-table-column align="left" label="目标IMSI" prop="imsi" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="运营商" prop="isp" width="200"
+        <el-table-column align="left" label="运营商" prop="isp" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="网络类型" prop="netType" width="200"
+        <el-table-column align="left" label="网络类型" prop="netType" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="IMSI归属地" prop="regional" width="250"
+        <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="命中场所数量" prop="placeCount" width="200"
+        <el-table-column align="left" label="命中场所数量" prop="placeCount" min-width="120" max-width="180"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="命中总次数" prop="followCount" width="200"
+        <el-table-column align="left" label="命中总次数" prop="followCount" min-width="120" max-width="180"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="置信度" prop="degree" width="200"
+        <el-table-column align="left" label="置信度" prop="degree" min-width="120" max-width="180"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="180" fixed="right">
+        <el-table-column align="left" label="操作" min-width="120" max-width="180" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoPath(scope.row)"
                        v-show="getButtonVial('car:task:analyse:query')">查看
@@ -87,11 +87,11 @@
           </el-form>
           <el-table :data="pathLines" v-loading="pathLoading" class="center-block" stripe>
             <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-            <el-table-column align="left" label="场所" prop="placeName" width="270"
+            <el-table-column align="left" label="场所" prop="placeName" min-width="150" max-width="200"
                              :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="设备标识" prop="deviceName" width="280"
+            <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150" max-width="200"
                              :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="车辆采集图片" width="250">
+            <el-table-column align="left" label="车辆采集图片" min-width="150" max-width="200">
               <template slot-scope="scope">
                 <div style="height: 90px;line-height:90px">
                   <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath" :onerror="img404"
@@ -100,13 +100,13 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column align="left" label="车辆采集时间" prop="carUptime" width="250"
+            <el-table-column align="left" label="车辆采集时间" prop="carUptime" min-width="180" max-width="250"
                              :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="IMSI采集时间" prop="imsiUptime" width="250"
+            <el-table-column align="left" label="IMSI采集时间" prop="imsiUptime" min-width="180" max-width="250"
                              :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="采集间隔" prop="timeDifference" width="200"
+            <el-table-column align="left" label="采集间隔" prop="timeDifference" min-width="120" max-width="180"
                              :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" label="命中次序/次数" prop="number" width="200"
+            <el-table-column align="left" label="命中次序/次数" prop="number" min-width="150" max-width="180"
                              :formatter="formatterAddress"></el-table-column>
           </el-table>
           <div class="block" style="margin: 15px 0" align="right">

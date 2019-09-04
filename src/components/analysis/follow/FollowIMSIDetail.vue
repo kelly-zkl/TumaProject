@@ -296,6 +296,8 @@
           this.query.endTime = Math.round(this.qTime[1] / 1000);
         } else {
           delete this.query['qTime'];
+          delete this.query['startTime'];
+          delete this.query['endTime'];
         }
 
         this.query.followTaskId = this.taskId;

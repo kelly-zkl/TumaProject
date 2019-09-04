@@ -303,6 +303,9 @@
         if (!!this.qTime) {
           this.query.startTime = Math.round(this.qTime[0] / 1000);
           this.query.endTime = Math.round(this.qTime[1] / 1000);
+        } else {
+          delete this.query['startTime'];
+          delete this.query['endTime'];
         }
         this.listLoading = true;
         this.$post('/collision/query', this.query).then((data) => {
