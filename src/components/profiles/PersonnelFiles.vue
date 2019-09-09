@@ -74,24 +74,22 @@
       <div v-show="activeItem=='first'">
         <el-row style="background: #F2F2F2">
           <el-col :span="12">
-            <div style="font-size:14px;padding:10px 20px">当前关联的IMSI信息</div>
+            <div style="font-size:14px;padding:10px 20px;text-align: left">当前关联的IMSI信息</div>
           </el-col>
           <el-col :span="12">
-            <div style="font-size:14px;padding:10px 20px">疑似重点人员</div>
+            <div style="font-size:14px;padding:10px 20px;text-align: left">疑似重点人员</div>
           </el-col>
         </el-row>
         <div class="add-appdiv" style="border-top: none;border-radius: 0 0 4px 4px;padding:0;margin-bottom:0">
           <el-row>
             <el-col :span="12" style="border-right:1px solid #D7D7D7">
-              <el-table :data="imsiList" class="center-block" :height="tableHeight">
+              <el-table :data="imsiList" class="center-block">
                 <el-table-column align="left" prop="imsi" label="IMSI" min-width="120" max-width="150"
                                  :formatter="formatterAddress"></el-table-column>
                 <el-table-column align="left" prop="ispDes" label="运营商" min-width="80" max-width="120"
                                  :formatter="formatterAddress"></el-table-column>
                 <el-table-column align="left" prop="regional" label="IMSI归属地" min-width="100"
                                  max-width="150" :formatter="formatterAddress"></el-table-column>
-                <!--<el-table-column align="left" prop="fnIn" label="关联次数" min-width="80" max-width="100"-->
-                <!--:formatter="formatterAddress"></el-table-column>-->
                 <el-table-column align="left" prop="weightDes" label="置信度" min-width="80"
                                  max-width="120" :formatter="formatterAddress"></el-table-column>
                 <el-table-column align="left" label="操作" min-width="60" max-width="100">
@@ -101,8 +99,21 @@
                   </template>
                 </el-table-column>
               </el-table>
+              <div style="font-size:14px;padding:10px 20px;background: #F2F2F2;text-align: left">当前关联的车辆信息</div>
+              <el-table :data="imsiList" class="center-block">
+                <el-table-column align="left" prop="imsi" label="车辆图" min-width="120" max-width="150"
+                                 :formatter="formatterAddress"></el-table-column>
+                <el-table-column align="left" prop="ispDes" label="车牌号" min-width="80" max-width="120"
+                                 :formatter="formatterAddress"></el-table-column>
+                <el-table-column align="left" prop="regional" label="牌号种类" min-width="100"
+                                 max-width="150" :formatter="formatterAddress"></el-table-column>
+                <el-table-column align="left" prop="weightDes" label="牌号颜色" min-width="80"
+                                 max-width="120" :formatter="formatterAddress"></el-table-column>
+                <el-table-column align="left" prop="weightDes" label="置信度" min-width="80"
+                                 max-width="120" :formatter="formatterAddress"></el-table-column>
+              </el-table>
             </el-col>
-            <el-col :span="12" v-bind:style="{padding:'0 10px',height:tableHeight+'px',overflowY: 'auto'}">
+            <el-col :span="12" v-bind:style="{padding:'0 10px',overflowY: 'auto'}">
               <div class="person-item gray-form" v-if="persons.length>0">
                 <el-row v-for="(item) in persons" :key="item.imsi" v-show="persons.length >0" class="bo-line"
                         @click.native="gotoVipPerson(item)" style="cursor: pointer">
@@ -167,10 +178,7 @@
   import FetchImgRecords from './files/FetchImgRecords.vue';
   import FetchIMSIRecords from './files/FetchIMSIRecords.vue';
   import {formatDate, buttonValidator, getAreaLable} from "../../assets/js/util";
-  import {
-    nameValidator, numValid, mobileValidator, userCardValid,
-    telphoneValidator, isNull
-  } from "../../assets/js/api";
+  import {nameValidator, numValid, isNull} from "../../assets/js/api";
 
   export default {
     components: {FetchIMSIRecords, FetchImgRecords},
