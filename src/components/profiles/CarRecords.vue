@@ -58,7 +58,7 @@
             <div style="height: 90px;line-height:90px">
               <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath"
                    @click="bigUrl=scope.row.sceneUrl;runBigPic=true" :onerror="img404"
-                   style="height:70px;border-radius: 6px;vertical-align:middle"/>
+                   style="max-height:70px;border-radius: 4px;vertical-align:middle"/>
             </div>
           </template>
         </el-table-column>

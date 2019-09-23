@@ -72,18 +72,10 @@
         </el-col>
       </el-row>
       <div v-show="activeItem=='first'">
-        <el-row style="background: #F2F2F2">
+        <el-row :gutter="10">
           <el-col :span="12">
-            <div style="font-size:14px;padding:10px 20px;text-align: left">当前关联的IMSI信息</div>
-          </el-col>
-          <el-col :span="12">
-            <div style="font-size:14px;padding:10px 20px;text-align: left">疑似重点人员</div>
-          </el-col>
-        </el-row>
-        <div class="add-appdiv" style="border-top: none;border-radius: 0 0 4px 4px;padding:0;margin-bottom:0">
-          <el-row>
-            <el-col :span="12" style="border-right:1px solid #D7D7D7">
-              <el-table :data="imsiList" class="center-block">
+            <el-table :data="imsiList" class="center-block" :height="424">
+              <el-table-column label="当前关联的IMSI信息">
                 <el-table-column align="left" prop="imsi" label="IMSI" min-width="120" max-width="150"
                                  :formatter="formatterAddress"></el-table-column>
                 <el-table-column align="left" prop="ispDes" label="运营商" min-width="80" max-width="120"
@@ -98,47 +90,54 @@
                     </el-button>
                   </template>
                 </el-table-column>
-              </el-table>
-              <div style="font-size:14px;padding:10px 20px;background: #F2F2F2;text-align: left">当前关联的车辆信息</div>
-              <el-table :data="imsiList" class="center-block">
-                <el-table-column align="left" prop="imsi" label="车辆图" min-width="120" max-width="150"
-                                 :formatter="formatterAddress"></el-table-column>
-                <el-table-column align="left" prop="ispDes" label="车牌号" min-width="80" max-width="120"
-                                 :formatter="formatterAddress"></el-table-column>
-                <el-table-column align="left" prop="regional" label="牌号种类" min-width="100"
+              </el-table-column>
+            </el-table>
+          </el-col>
+          <el-col :span="12">
+            <el-table :data="carList" class="center-block" :height="424">
+              <el-table-column label="当前关联的车辆信息">
+                <el-table-column align="left" prop="sceneUrl" label="车辆图" min-width="120" max-width="150">
+                  <template slot-scope="scope">
+                    <div style="height: 84px;line-height:84px">
+                      <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath" :onerror="img404"
+                           @click="bigUrl=scope.row.sceneUrl?scope.row.sceneUrl:imgPath;runBigPic=true"
+                           style="max-height:70px;border-radius: 4px;vertical-align:middle"/>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column align="left" prop="carLicense" label="车牌号" min-width="100"
                                  max-width="150" :formatter="formatterAddress"></el-table-column>
-                <el-table-column align="left" prop="weightDes" label="牌号颜色" min-width="80"
+                <el-table-column align="left" prop="carLicenseKind" label="牌号种类" min-width="80"
                                  max-width="120" :formatter="formatterAddress"></el-table-column>
-                <el-table-column align="left" prop="weightDes" label="置信度" min-width="80"
+                <el-table-column align="left" prop="carLicenseColor" label="牌号颜色" min-width="80"
                                  max-width="120" :formatter="formatterAddress"></el-table-column>
-              </el-table>
-            </el-col>
-            <el-col :span="12" v-bind:style="{padding:'0 10px',overflowY: 'auto'}">
-              <div class="person-item gray-form" v-if="persons.length>0">
-                <el-row v-for="(item) in persons" :key="item.imsi" v-show="persons.length >0" class="bo-line"
-                        @click.native="gotoVipPerson(item)" style="cursor: pointer">
-                  <el-form :model="item" align="left" label-width="120px" label-position="right">
-                    <el-col :span="3" align="left" style="text-align: left">
-                      <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
-                    </el-col>
-                    <el-col :span="21" align="left" style="text-align: left">
-                      <el-form-item label="姓名" style="margin:0;" align="left">
-                        {{item.name?item.name:'--'}}
-                      </el-form-item>
-                      <el-form-item label="身份证" style="margin:0" align="left">
-                        {{item.idCard?item.idCard:'--'}}
-                      </el-form-item>
-                      <el-form-item label="所属名单" style="margin:0" align="left">
-                        <span>{{item.blackClass?item.blackClass:'--'}}</span>
-                      </el-form-item>
-                    </el-col>
-                  </el-form>
-                </el-row>
-              </div>
-              <div v-else style="width:100%;color:#909399;font-size:14px;text-align:center;margin-top:15px">暂无数据</div>
-            </el-col>
-          </el-row>
+                <el-table-column align="left" prop="relevancy" label="置信度" min-width="80"
+                                 max-width="120" :formatter="formatterAddress"></el-table-column>
+              </el-table-column>
+            </el-table>
+          </el-col>
+        </el-row>
+        <div class="add-label" style="margin: 15px 0;color: #000;font-weight: bold" @click="getPersons()">疑似重点人员</div>
+        <div class="person-main" v-if="persons.length>0">
+          <div class="person-item" v-for="(item) in persons" :key="item.imsi" v-show="persons.length >0"
+               @click.native="gotoVipPerson(item)" style="cursor: pointer">
+            <div class="person-img gray-form">
+              <img :src="item.faceUrl?item.faceUrl:imgPath" :onerror="img404"/>
+              <el-form :model="item" align="left" label-width="120px" label-position="right">
+                <el-form-item label="姓名" style="margin:0;" align="left">
+                  {{item.name?item.name:'--'}}
+                </el-form-item>
+                <el-form-item label="身份证" style="margin:0" align="left">
+                  {{item.idCard?item.idCard:'--'}}
+                </el-form-item>
+                <el-form-item label="所属名单" style="margin:0" align="left">
+                  <span>{{item.blackClass?item.blackClass:'--'}}</span>
+                </el-form-item>
+              </el-form>
+            </div>
+          </div>
         </div>
+        <div v-else style="width:100%;color:#909399;font-size:14px;text-align:center;margin-top:15px">暂无数据</div>
       </div>
     </section>
     <!--修改基本信息-->
@@ -172,6 +171,19 @@
         </div>
       </div>
     </el-dialog>
+    <!--查看大图-->
+    <el-dialog title="查看大图" :visible.sync="runBigPic" width="500px" center>
+      <div class="block">
+        <el-row>
+          <el-col :span="24" style="text-align: center" align="center">
+            <img :src="bigUrl" style="max-width: 400px;max-height:400px;border-radius:8px;vertical-align:middle"/>
+          </el-col>
+        </el-row>
+        <div slot="footer" class="dialog-footer" align="center" style="margin-top: 20px">
+          <el-button type="primary" @click="runBigPic=false" size="medium">关闭</el-button>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -185,9 +197,8 @@
     data() {
       return {
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 425,
-        activeItem: 'first',
-        runModifyPerson: false,
-        person: {},
+        activeItem: 'first', bigUrl: '',
+        runModifyPerson: false, runBigPic: false, person: {},
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
         provinceList: JSON.parse(localStorage.getItem("areas")),
         selectedOptions2: [],
@@ -195,9 +206,7 @@
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
-        userInfo: {},
-        imsiList: [],
-        persons: []
+        userInfo: {}, imsiList: [], persons: [], carList: []
       }
     },
     methods: {
@@ -287,6 +296,7 @@
           if ('000000' === data.code) {
             this.userInfo = data.data;
             let imsis = [], faces = [data.data.faceId];
+            this.carList = data.data.carList ? data.data.carList : [];
 
             if (data.data.imsiList && data.data.imsiList.length > 0) {
               this.imsiList = data.data.imsiList;
@@ -367,6 +377,8 @@
           return row.fnIn === 0 ? 0 : row.fnIn;
         } else if (column.property === 'isp') {
           return row.isp === 0 ? '移动' : row.isp === 1 ? '联通' : row.isp === 2 ? '电信' : '--';
+        } else if (column.property === 'relevancy') {
+          return row.relevancy === 0 ? 0 + '%' : row.relevancy + '%';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
@@ -378,15 +390,41 @@
   }
 </script>
 <style scoped>
-  .person-item {
+  .person-main {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 
-  .person-item img {
+  .person-item {
+    width: -moz-calc((100% - 126px) / 3);
+    width: -webkit-calc((100% - 126px) / 3);
+    width: calc((100% - 126px) / 3);
+    border: 1px #D7D7D7 solid;
+    border-radius: 6px;
+    background: #fff;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .person-img {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .person-item .person-img img {
     max-width: 100px;
     max-height: 100px;
     border-radius: 5px;
@@ -394,11 +432,11 @@
     margin-top: 12px;
   }
 
-  .bo-line {
-    border-bottom: 1px solid #ebeef5
+  .person-item:nth-child(3n+1), .person-item:nth-child(3n+2) {
+    margin-right: 15px;
   }
 
-  .bo-line:last-child {
-    border-bottom: none;
+  .person-item:nth-child(3n) {
+    margin-right: 0;
   }
 </style>

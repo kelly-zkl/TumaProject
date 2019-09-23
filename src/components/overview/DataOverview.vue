@@ -1,5 +1,5 @@
 <template>
-  <section style="margin: 0;padding: 0;min-height: 540px">
+  <section style="margin: 0;padding: 0;min-height: 568px">
     <div style="padding: 10px 15px 0 30px">
       <el-row :gutter="30" style="height: 100%">
         <el-col :span="15" v-bind:style="'background: #08163d;border-radius: 6px;padding: 0;height:'+tableHeight+'px'">
@@ -13,16 +13,16 @@
           </el-row>
           <div v-show="activeItem== 'device'">
             <div id="devicemap"
-                 v-bind:style="'width:100%;display: block;height:'+((tableHeight-40)*0.30>200?(tableHeight-240):(tableHeight-40)*0.70)+'px'"></div>
+                 v-bind:style="'width:100%;display: block;height:'+((tableHeight-40)*0.30>240?(tableHeight-300):(tableHeight-40)*0.70-20)+'px'"></div>
             <div style="padding: 10px 20px">
               <el-row style="margin: 0;padding: 0">
                 <el-col :span="12" style="text-align: center">
                   <div id="camera"
-                       v-bind:style="'width: 300px;max-height:200px;height:'+(tableHeight-40)*0.30+'px'"></div>
+                       v-bind:style="'width: 300px;max-height:240px;height:'+(tableHeight-40)*0.30+'px'"></div>
                 </el-col>
                 <el-col :span="12" style="text-align: center">
                   <div id="device"
-                       v-bind:style="'width: 300px;max-height:200px;height:'+(tableHeight-40)*0.30+'px'"></div>
+                       v-bind:style="'width: 300px;max-height:240px;height:'+(tableHeight-40)*0.30+'px'"></div>
                 </el-col>
               </el-row>
             </div>
@@ -47,17 +47,16 @@
             </div>
             <div style="display: block;padding: 10px 20px">
               <el-row style="padding: 0;margin: 0">
-                <el-col :span="8" align="center" v-bind:style="'height:'+(tableHeight-40)*0.30+'px'">
-                  <div
-                    v-bind:style="'display:-webkit-box;display:-ms-flexbox;display:flex;align-items: center;justify-content: center;background: rgba(0,0,0,.3);border-radius: 6px;text-align: center;width: 160px;padding: 10px 20px;height:'+(((tableHeight-180)*0.30-20)/2)+'px'">
+                <el-col :span="8" align="center"
+                        v-bind:style="'display:-webkit-box;display:-ms-flexbox;display:flex;align-items: center;flex-direction:column;justify-content:center;height:'+((tableHeight-40)*0.30-20)+'px'">
+                  <div class="num-text-tip">
                     <div style="display: block">
                       <div style="color: #fff;font-size: 14px">今日采集IMSI</div>
                       <div style="color: #fff;font-size: 20px;margin-top: 10px">{{addImsiCount}}<span
                         style="color: #fff;font-size: 14px">条</span></div>
                     </div>
                   </div>
-                  <div
-                    v-bind:style="'display:-webkit-box;display:-ms-flexbox;display:flex;align-items: center;justify-content: center;background: rgba(0,0,0,.3);border-radius: 6px;width: 160px; margin-top: 10px;padding: 10px 20px;height:'+(((tableHeight-180)*0.30-20)/2)+'px'">
+                  <div class="num-text-tip" style="margin-top: 10px">
                     <div style="display: block">
                       <div style="color: #fff;font-size: 14px">今日采集人脸</div>
                       <div style="color: #fff;font-size: 20px;margin-top: 10px">{{addFaceCount}}<span
@@ -66,7 +65,7 @@
                   </div>
                 </el-col>
                 <el-col :span="16" align="center">
-                  <div id="imsi" v-bind:style="'width: 500px;height:'+((tableHeight-40)*0.30-10)+'px'"></div>
+                  <div id="imsi" v-bind:style="'width: 500px;height:'+((tableHeight-40)*0.30-20)+'px'"></div>
                 </el-col>
               </el-row>
             </div>
@@ -140,7 +139,7 @@
     data() {
       return {
         activeItem: 'device',
-        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 100,
+        tableHeight: (window.innerHeight < 628 ? 628 : window.innerHeight) - 80,
         systemParam: {
           refreshTime: 10, limitTime: 30, similarThreshold: 60,
           localPoint: [116.331398, 39.897445], heatRanges: []
@@ -938,5 +937,18 @@
     width: 10px;
     border-radius: 5px;
     display: inline-block;
+  }
+
+  .num-text-tip {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, .3);
+    border-radius: 6px;
+    text-align: center;
+    width: 160px;
+    padding: 15px 20px
   }
 </style>

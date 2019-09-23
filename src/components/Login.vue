@@ -22,7 +22,7 @@
             <el-input type="password" placeholder="密码" v-model="account.password" :maxlength="18"
                       prefix-icon="fa fa-lock"></el-input>
           </el-form-item>
-          <el-form-item class="lan-margin">
+          <el-form-item class="lan-margin" style="margin-bottom: 18px">
             <el-row>
               <el-col :span="14" class="login-box">
                 <el-input placeholder="验证码" v-model="account.checkcode" :maxlength="4"
@@ -312,7 +312,7 @@
   .div_u {
     color: #C7CCD0;
     font-size: 16px;
-    height: 127px;
+    height: 128px;
     padding-top: 60px;
     text-align: left;
     line-height: 30px;
