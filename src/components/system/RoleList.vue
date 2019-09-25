@@ -147,6 +147,7 @@
       //修改角色
       modifyrole(row) {
         this.role = Object.assign({}, row);
+        this.role.permissions = Object.assign([], this.role.permissions);
         this.getRolePermissions();
         this.addroleTitle = '修改角色';
         this.isShow = true;
@@ -159,6 +160,7 @@
       //查看角色
       roleInfo(row) {
         this.role = Object.assign({}, row);
+        this.role.permissions = Object.assign([], this.role.permissions);
         this.getRolePermissions();
         this.addroleTitle = '角色信息';
         this.isShow = false;
@@ -266,10 +268,10 @@
                   }
                   if (!isSelect) {//角色不包含该权限，则删除父节点id
                     var mIdx = this.role.permissions.indexOf(menu.permissionId);
-                    var bIdx = this.role.permissions.indexOf(tree.permissionId);
                     if (mIdx >= 0) {//删除菜单id
                       this.role.permissions.splice(mIdx, 1);
                     }
+                    var bIdx = this.role.permissions.indexOf(tree.permissionId);
                     if (bIdx >= 0) {//删除目录id
                       this.role.permissions.splice(bIdx, 1);
                     }
