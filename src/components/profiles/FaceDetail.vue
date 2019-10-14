@@ -231,7 +231,7 @@
         this.listLoading = true;
         this.persons = [];
         this.imsiList = [];
-        this.$post('common/listPersonByUrl', {type: "face", url: this.faceDetail.imageUrl + '?t=' + this.timeStamp},
+        this.$post('common/listPersonByUrl', {url: this.faceDetail.imageUrl + '?t=' + this.timeStamp},
           undefined, undefined, "multi").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;

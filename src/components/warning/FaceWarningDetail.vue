@@ -509,9 +509,7 @@
         this.listLoading = true;
         this.persons = [];
         this.imsiList = [];
-        this.$post('common/listPersonByUrl', {
-          type: "faceWarning", url: this.faceDetail.faceUrl + '?t=' + this.timeStamp, id: this.id
-        }, undefined, undefined, "multi").then((data) => {
+        this.$post('common/listPersonByUrl', {url: this.faceDetail.faceUrl + '?t=' + this.timeStamp}, undefined, undefined, "multi").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
             if (data.data) {
