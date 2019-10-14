@@ -380,7 +380,7 @@
         } else if (column.property === 'age') {
           return row.age <= 0 ? '--' : (row.age - 3) + "~" + (row.age + 3);
         } else if (column.property === 'similarThreshold') {
-          return row[column.property] < 0 ? '--' : row[column.property] + '%';
+          return row[column.property] < 0 ? '--' : row[column.property].toFixed(1) + '%';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

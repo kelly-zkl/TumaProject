@@ -548,7 +548,7 @@
         } else if (column.property === 'age') {
           return row.age <= 0 ? '--' : (row.age - 3) + "~" + (row.age + 3);
         } else if (column.property === 'similarThreshold') {
-          return row[column.property] < 0 ? '--' : row[column.property] + '%';
+          return row[column.property] < 0 ? '--' : row[column.property].toFixed(1) + '%';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'catchTime') {
