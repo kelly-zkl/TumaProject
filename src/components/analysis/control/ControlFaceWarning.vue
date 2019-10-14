@@ -4,23 +4,6 @@
       <el-row>
         <el-col :span="20" align="left" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1100px">
-            <!--<el-form-item style="margin-bottom: 10px">-->
-            <!--<el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag-->
-            <!--:on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"-->
-            <!--:auto-upload="true" :show-file-list="false">-->
-            <!--<div v-if="!query.faceUrl" style="height:34px;vertical-align:middle;text-align: center">-->
-            <!--<i class="fa fa-photo fa-lg"></i>上传头像-->
-            <!--</div>-->
-            <!--<el-row v-if="query.faceUrl" style="height:34px;padding:0;margin:0">-->
-            <!--<el-col :span="12">-->
-            <!--<img :src="query.faceUrl" style="height:34px;margin:0;padding:0">-->
-            <!--</el-col>-->
-            <!--<el-col :span="12">-->
-            <!--<el-button type="text" style="margin-left:5px" @click.stop="clearImg()">清除</el-button>-->
-            <!--</el-col>-->
-            <!--</el-row>-->
-            <!--</el-upload>-->
-            <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px">
               <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
                               start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
@@ -36,10 +19,16 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 130px">
+              <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 120px">
                 <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-tooltip class="item" effect="dark" content="相似度" placement="bottom">
+                <el-input-number v-model="query.similarThreshold" controls-position="right" :min="65" placeholder="相似度"
+                                 :max="100" size="medium" style="width:100px" :precision="0"></el-input-number>
+              </el-tooltip>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>
@@ -74,7 +63,7 @@
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe @selection-change="selsChange">
         <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="现场人脸图像" prop="sceneUrl" min-width="150" max-width="200">
+        <el-table-column align="left" label="现场人脸图像" prop="sceneUrl" min-width="120" max-width="200">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
               <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath2"
@@ -104,7 +93,7 @@
         <el-table-column align="left" label="采集时间" prop="catchTime"
                          min-width="180" max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="管控对象" prop="faceUrl"
-                         min-width="150" max-width="200" :formatter="formatterAddress">
+                         min-width="120" max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
               <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
@@ -113,7 +102,9 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="操作" width="160" fixed="right">
+        <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="80"
+                         max-width="120" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)"
                        v-show="getButtonVial('warning:getFaceWarning')">查看告警
@@ -283,61 +274,8 @@
         }).catch(() => {
         });
       },
-      /**
-       * 人脸告警
-       */
-      //批量导入设备的文件格式验证
-      beforeAvatarUpload(file) {
-        if (globalValidImg(file, this.$message)) {
-        }
-        return globalValidImg(file, this.$message);
-      },
-      //批量导入设备的文件格式验证
-      handleSuccess(res, file) {
-        if (res.code === '000000') {
-          if (res.data) {
-            this.query.faceUrl = res.data.fileUrl;
-            let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
-            this.query.similarThreshold = param ? parseInt(param) : 60;
-            this.$message({message: '头像上传成功', type: 'success'});
-            this.isSearch = true;
-            this.getImgData();
-          }
-        } else {
-          this.$message.error(res.msg);
-        }
-      },
-      clearImg() {
-        delete this.query['faceUrl'];
-        delete this.query['similarThreshold'];
-        this.isSearch = true;
-        this.getImgData()
-      },
       //获取图像告警列表
       getImgData() {
-        if (this.query.faceUrl) {
-          if (!this.query.similarThreshold) {
-            this.$message.error('请输入相似度');
-            return;
-          }
-        }
-        if (this.query.similarThreshold) {
-          if (!this.query.faceUrl) {
-            this.$message.error('请上传头像');
-            return;
-          }
-        }
-        if (this.query.similarThreshold) {
-          if (!doubleValid(this.query.similarThreshold)) {
-            this.$message.error('相似度为0.1-99的数字');
-            return;
-          } else {
-            if (this.query.similarThreshold < 0.1 || this.query.similarThreshold > 99) {
-              this.$message.error('相似度为0.1-99的数字');
-              return;
-            }
-          }
-        }
         if (!!this.qTime) {
           this.query.startTime = Math.round(this.qTime[0] / 1000);
           this.query.endTime = Math.round(this.qTime[1] / 1000);
@@ -395,7 +333,8 @@
         this.isSearch = true;
         this.qTime = '';
         this.query = {size: 100};
-        delete this.query['faceUrl'];
+        let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
+        this.query.similarThreshold = param ? parseInt(param) : 65;
 
         this.getImgData();
       },
@@ -441,7 +380,7 @@
         } else if (column.property === 'age') {
           return row.age <= 0 ? '--' : (row.age - 3) + "~" + (row.age + 3);
         } else if (column.property === 'similarThreshold') {
-          return row[column.property] <= 0 ? '--' : row[column.property];
+          return row[column.property] < 0 ? '--' : row[column.property] + '%';
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

@@ -262,7 +262,10 @@
                   this.systemParam.heatRanges = item.value;
                 }
                 if (item.code == 'image_search_threshold') {
-                  this.systemParam.similarThreshold = item.value;
+                  this.systemParam.similarThreshold = parseInt(item.value);
+                }
+                if (item.code == 'image_warning_threshold') {
+                  this.systemParam.warningThreshold = parseInt(item.value);
                 }
               });
               sessionStorage.setItem("system", encryData(JSON.stringify(this.systemParam)));

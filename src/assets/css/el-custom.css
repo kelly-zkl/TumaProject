@@ -260,8 +260,17 @@
 }
 
 .el-popover {
-  max-height: 250px;
+  max-height: 280px;
   overflow-y: auto;
+}
+
+/*垂直排列的多选框*/
+.intersect .el-checkbox + .el-checkbox {
+  margin-left: 0;
+}
+
+.intersect .el-checkbox {
+  margin-bottom: 8px;
 }
 
 /*系统参数配置*/

@@ -14,12 +14,12 @@
               <el-input v-model="query.imsi" placeholder="IMSI" style="width: 180px" size="medium"
                         :maxlength=15></el-input>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px" v-show="activeItem=='regional'">
-              <el-select v-model="query.isp" size="medium" placeholder="运营商" style="width: 120px">
-                <el-option :label="param.label" :value="param.value" v-for="param in operators"
-                           :key="param.value"></el-option>
-              </el-select>
-            </el-form-item>
+            <!--<el-form-item style="margin-bottom: 10px" v-show="activeItem=='regional'">-->
+            <!--<el-select v-model="query.isp" size="medium" placeholder="运营商" style="width: 120px">-->
+            <!--<el-option :label="param.label" :value="param.value" v-for="param in operators"-->
+            <!--:key="param.value"></el-option>-->
+            <!--</el-select>-->
+            <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px" v-show="activeItem=='regional'">
               <el-input v-model="query.regional" placeholder="IMSI归属地" style="width: 180px" size="medium"
                         :maxlength=30></el-input>

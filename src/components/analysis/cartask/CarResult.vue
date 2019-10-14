@@ -11,7 +11,7 @@
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-select v-model="queryResult.carLicenseKind" placeholder="牌号种类" size="medium" clearable filterable>
-                <el-option v-for="item in carTypes" :key="item.value" :label="item.label" :value="item.label">
+                <el-option v-for="item in carTypes" :key="item.label" :label="item.label" :value="item.label">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -140,9 +140,9 @@
         places: [], placesCopy: [],
         imgPath: require('../../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_img.svg') + "'",
-        carTypes: [{value: 'small', label: '小型汽车'}, {value: 'veh', label: '大型汽车'}, {value: 'fe', label: '涉外车辆'},
-          {value: 'police', label: '警用汽车'}, {value: 'sol', label: '军用汽车'}, {value: 'soach', label: '教练汽车'},
-          {value: 'gov', label: '政法部门车辆'}],
+        carTypes: [{value: 'small', label: '小型汽车'}, {value: 'veh', label: '大型汽车'},
+          {value: 'fe', label: '使馆汽车'}, {value: 'police', label: '境外汽车'}, {value: 'sol', label: '外籍摩托车'},
+          {value: 'soach', label: '外籍汽车'}, {value: 'other', label: '其他'}],
         carColors: [{value: 'blue', label: '蓝色'}, {value: 'yellow', label: '黄色'}, {value: 'green', label: '绿色'},
           {value: 'black', label: '黑色'}, {value: 'white', label: '白色'}]
       }

@@ -22,7 +22,7 @@
         <el-button type="text" style="margin: 0;padding: 0;position: absolute;right: 10px"
                    icon="el-icon-close" @click="showTip=false;calcuHeight()"></el-button>
       </div>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1200px">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1300px">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag
                      :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -39,6 +39,12 @@
               </el-col>
             </el-row>
           </el-upload>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
+          <el-tooltip class="item" effect="dark" content="相似度" placement="bottom">
+            <el-input-number v-model="query.similarThreshold" controls-position="right" :min="65" placeholder="相似度"
+                             :max="100" size="medium" style="width:120px" :precision="0"></el-input-number>
+          </el-tooltip>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'">
           <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
@@ -118,7 +124,7 @@
                 @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="现场人脸图像" prop="sceneUrl" min-width="150">
+        <el-table-column align="left" label="现场人脸图像" prop="sceneUrl" min-width="120" max-width="200">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
               <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath2"
@@ -161,6 +167,8 @@
             </div>
           </template>
         </el-table-column>
+        <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="80"
+                         max-width="120" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)"
@@ -299,7 +307,6 @@
       },
       clearImg() {
         delete this.query['faceUrl'];
-        delete this.query['similarThreshold'];
         this.isSearch = true;
         this.getData()
       },
@@ -412,8 +419,6 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
-            let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
-            this.query.similarThreshold = param ? parseInt(param) : 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.isSearch = true;
             this.getData();
@@ -442,12 +447,6 @@
             return;
           }
         }
-        if (this.query.similarThreshold) {
-          if (!this.query.faceUrl) {
-            this.$message.error('请上传头像');
-            return;
-          }
-        }
         if (this.qTime) {
           if (this.qTime.length < 2) {
             this.$message.error('请选择日期时间段');
@@ -459,19 +458,6 @@
           }
           this.query.startTime = Math.round(this.qTime[0] / 1000);
           this.query.endTime = Math.round(this.qTime[1] / 1000);
-        }
-        if (this.query.similarThreshold) {
-          if (!doubleValid(this.query.similarThreshold)) {
-            console.log('doubleValid');
-            this.$message.error('相似度为0.1-99的数字');
-            return;
-          } else {
-            if (this.query.similarThreshold < 0.1 || this.query.similarThreshold > 99) {
-              console.log('< 0.1 || >99');
-              this.$message.error('相似度为0.1-99的数字');
-              return;
-            }
-          }
         }
 
         if (this.isSearch) {
@@ -540,6 +526,8 @@
         this.query = {size: 100};
         this.isSearch = true;
         delete this.query['faceUrl'];
+        let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
+        this.query.similarThreshold = param ? parseInt(param) : 65;
         if (this.activeItem === 'H') {
           this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 60 * 60 * 24 * 7 * 1000,
             new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
@@ -560,7 +548,7 @@
         } else if (column.property === 'age') {
           return row.age <= 0 ? '--' : (row.age - 3) + "~" + (row.age + 3);
         } else if (column.property === 'similarThreshold') {
-          return row[column.property] <= 0 ? '--' : row[column.property];
+          return row[column.property] < 0 ? '--' : row[column.property] + '%';
         } else if (column.property === 'createTime') {
           return row.createTime ? formatDate(new Date(row.createTime * 1000), 'yyyy-MM-dd hh:mm:ss') : '--';
         } else if (column.property === 'catchTime') {
@@ -603,6 +591,8 @@
       }
     },
     mounted() {
+      let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
+      this.query.similarThreshold = param ? parseInt(param) : 65;
       this.getTask();
       this.getControl();
       this.getCases();

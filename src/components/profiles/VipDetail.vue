@@ -22,15 +22,15 @@
           <el-row style="margin: 0;padding: 0">
             <el-col :span="6" align="left" style="text-align: left">
               <el-form-item prop="faceUrl" style="margin: 0;text-align: left" class="vip-180">
-                <el-upload :action="uploadUrl" :show-file-list="false" drag
-                           :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-                  <img :src="person.faceUrl?person.faceUrl:imgPath" class="avatar" :onerror="img404">
-                </el-upload>
+                <!--<el-upload :action="uploadUrl" :show-file-list="false" drag-->
+                <!--:on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">-->
+                <img :src="person.faceUrl?person.faceUrl:imgPath" class="avatar" :onerror="img404">
+                <!--</el-upload>-->
               </el-form-item>
-              <div style="color:#999;margin-left: 100px;margin-bottom: 20px;text-align: left">
-                请选择有人脸且五官较清晰的图片。<br/>
-                支持jpeg/jpg/png格式的图片，且不超过2M
-              </div>
+              <!--<div style="color:#999;margin-left: 100px;margin-bottom: 20px;text-align: left">-->
+              <!--请选择有人脸且五官较清晰的图片。<br/>-->
+              <!--支持jpeg/jpg/png格式的图片，且不超过2M-->
+              <!--</div>-->
             </el-col>
             <el-col :span="8" align="left" style="text-align: left" :offset="1">
               <el-form-item label="姓名" prop="name">

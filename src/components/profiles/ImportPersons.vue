@@ -2,8 +2,8 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="21" align="left" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1150px">
+        <el-col :span="22" align="left" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1190px">
             <el-form-item style="margin-bottom: 10px">
               <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag
                          :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -22,19 +22,25 @@
               </el-upload>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
+              <el-tooltip class="item" effect="dark" content="相似度" placement="bottom">
+                <el-input-number v-model="query.similarThreshold" controls-position="right" :min="65" placeholder="相似度"
+                                 :max="100" size="medium" style="width:100px" :precision="0"></el-input-number>
+              </el-tooltip>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="人员编号" v-model="query.faceId" :maxlength="32"
-                        style="width: 220px" size="medium"></el-input>
+                        style="width: 200px" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="15"
                         style="width: 180px" size="medium"></el-input>
             </el-form-item>
             <el-form-item label="年龄段" style="margin-bottom: 10px">
-              <el-input-number v-model="query.startAge" controls-position="right" :min="1"
-                               :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
+              <el-input-number v-model="query.startAge" controls-position="right" :min="1" :precision="0"
+                               :max="query.endAge-1" style="width: 90px" size="medium"></el-input-number>
               <span>~</span>
               <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
-                               :max="200" style="width: 100px" size="medium"></el-input-number>
+                               :max="200" style="width: 90px" size="medium" :precision="0"></el-input-number>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px" clearable>
@@ -52,7 +58,7 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="3" align="left" style="text-align: left" v-show="getButtonVial('person:count')">
+        <el-col :span="2" align="left" style="text-align: left" v-show="getButtonVial('person:count')">
           <label class="el-form-item__label" style="font-size:16px"><span
             style="font-size:12px;color:#999">档案总数 </span>{{personCount}}<span
             style="font-size:12px;color:#999"> 个</span></label>
@@ -154,7 +160,6 @@
       },
       clearImg() {
         delete this.query['faceUrl'];
-        delete this.query['similarThreshold'];
         this.isSearch = true;
         this.getData()
       },
@@ -190,9 +195,8 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
-            let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
-            this.query.similarThreshold = param ? parseInt(param) : 60;
             this.$message({message: '头像上传成功', type: 'success'});
+            this.isSearch = true;
             this.getData();
           }
         } else {
@@ -212,35 +216,18 @@
             return;
           }
         }
-        if (this.query.similarThreshold) {
-          if (!this.query.faceUrl) {
-            this.$message.error('请上传头像');
-            return;
-          }
-        }
-        if (this.query.similarThreshold) {
-          if (!doubleValid(this.query.similarThreshold)) {
-            this.$message.error('相似度为0.1-99的数字');
-            return;
-          } else {
-            if (this.query.similarThreshold < 0.1 || this.query.similarThreshold > 99) {
-              this.$message.error('相似度为0.1-99的数字');
-              return;
-            }
-          }
-        }
 
         if (this.isSearch) {
           this.list = [];
           this.list10 = [];
-          delete this.query['pageTime'];
+          delete this.query['pageId'];
           this.isSearch = false;
         }
         this.listLoading = true;
         this.$post('person/query', this.query, undefined, undefined, "multi").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
-            if (this.query.pageTime && !this.isSearch) {
+            if (this.query.pageId && !this.isSearch) {
               this.list = this.list.concat(data.data);
             } else {
               this.list = data.data;
@@ -280,7 +267,7 @@
         if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst && (this.list.length % 100 === 0)) {
           this.firstPage = this.list.length;
           let item = this.list[this.list.length - 1];
-          this.query.pageTime = (item.pageTime ? item.pageTime : item.uptime);
+          this.query.pageId = item.faceId;
           this.getData();
           this.getPersonNum();
         }
@@ -297,6 +284,8 @@
       clearData() {
         this.list10 = [];
         this.query = {size: 100};
+        let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
+        this.query.similarThreshold = param ? parseInt(param) : 65;
         this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 7 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date((new Date().getTime())), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         this.isSearch = true;
@@ -326,6 +315,8 @@
       }
     },
     mounted() {
+      let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
+      this.query.similarThreshold = param ? parseInt(param) : 65;
       this.getData();
       this.getPersonNum();
     }

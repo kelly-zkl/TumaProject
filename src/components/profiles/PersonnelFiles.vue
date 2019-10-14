@@ -225,7 +225,8 @@
       },
       handleType(val) {
         if (this.activeItem == 'first') {
-          this.getUserData();
+          this.getImsiList();
+          this.getCarList();
           this.getPersons();
         } else if (this.activeItem == 'second') {
           this.$nextTick(() => {
@@ -291,29 +292,56 @@
           this.runModifyPerson = false;
         });
       },
-      getUserData() {
-        this.$post('archives/detail', {faceId: this.faceId, showFaceTraces: 0, showImsiDetail: 1}).then((data) => {
-          if ('000000' === data.code) {
-            this.userInfo = data.data;
-            let imsis = [], faces = [data.data.faceId];
-            this.carList = data.data.carList ? data.data.carList : [];
+      //获取关联IMSI
+      getImsiList() {
+        this.$post('person/imsiList', {faceId: this.faceId}).then((data) => {
+          if ("000000" === data.code) {
+            let imsis = [];
+            this.imsiList = data.data ? data.data : [];
 
-            if (data.data.imsiList && data.data.imsiList.length > 0) {
-              this.imsiList = data.data.imsiList;
+            if (data.data && data.data.length > 0) {
               this.imsiList.forEach((item) => {
                 imsis.push(item.imsi);
               });
             }
-            localStorage.setItem("pathUrl", JSON.stringify(this.userInfo.faceUrl));
             localStorage.setItem("pathImsi", JSON.stringify(imsis));
-            localStorage.setItem("pathFace", JSON.stringify(faces));
+          }
+        }).catch((err) => {
+          this.imsiList = [];
+          this.$message.error(err);
+        });
+      },
+      //获取关联车辆
+      getCarList() {
+        this.$post('person/carList', {faceId: this.faceId}).then((data) => {
+          if ("000000" === data.code) {
+            let car = [];
+            this.carList = data.data ? data.data : [];
 
-            this.userInfo.timeStr = formatDate(new Date(data.data.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-            this.userInfo.area = data.data.areaCode ? getAreaLable(data.data.areaCode) : '--';
-            this.userInfo.lastTimeStr = formatDate(new Date(data.data.lastAppearTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-            this.userInfo.lastPlaceName = data.data.lastAppearPlace.placeName;
-            let detail = data.data.lastAppearPlace.areaCode ? getAreaLable(data.data.lastAppearPlace.areaCode) : '--';
-            this.userInfo.lastArea = data.data.lastAppearPlace.detailAddress ? detail + data.data.lastAppearPlace.detailAddress : detail;
+            if (data.data && data.data.length > 0) {
+              this.carList.forEach((item) => {
+                car.push(item.carLicense);
+              });
+            }
+            localStorage.setItem("pathCar", JSON.stringify(car));
+          }
+        }).catch((err) => {
+          this.carList = [];
+          this.$message.error(err);
+        });
+      },
+      getUserData() {
+        this.$post('archives/detail', {faceId: this.faceId}).then((data) => {
+          if ('000000' === data.code) {
+            this.userInfo = data.data.person;
+            localStorage.setItem("pathUrl", JSON.stringify(this.userInfo.faceUrl));
+
+            this.userInfo.timeStr = formatDate(new Date(this.userInfo.createTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+            this.userInfo.area = this.userInfo.areaCode ? getAreaLable(this.userInfo.areaCode) : '--';
+            this.userInfo.lastTimeStr = formatDate(new Date(this.userInfo.lastAppearTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+            this.userInfo.lastPlaceName = this.userInfo.lastAppearPlace.placeName;
+            let detail = this.userInfo.lastAppearPlace.areaCode ? getAreaLable(this.userInfo.lastAppearPlace.areaCode) : '--';
+            this.userInfo.lastArea = this.userInfo.lastAppearPlace.detailAddress ? detail + this.userInfo.lastAppearPlace.detailAddress : detail;
           }
         }).catch((err) => {
           this.$message.error(err);
@@ -385,6 +413,7 @@
       }
     },
     mounted() {
+      this.getUserData();
       this.handleType();
     }
   }

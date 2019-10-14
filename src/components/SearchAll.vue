@@ -161,9 +161,8 @@
         if (this.param.type == 'imsi') {
           paramData = {size: this.num, imsi: this.param.value}
         } else {
-          let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
           paramData = {size: this.num, url: this.param.value + '?t=' + this.timeStamp};
-          paramData.similarThreshold = param ? parseInt(param) : 60;
+          paramData.similarThreshold = this.param.similarThreshold;
         }
         this.$post('home/allSearch', paramData, undefined, undefined, "multi").then((data) => {
           if ("000000" === data.code) {

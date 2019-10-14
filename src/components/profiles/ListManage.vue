@@ -3,7 +3,7 @@
     <section class="content">
       <el-row>
         <el-col :span="20" align="left" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1020px">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1080px">
             <el-form-item style="margin-bottom: 10px">
               <el-upload ref="upload" class="upload img" :action="uploadImgUrl" name="file" drag
                          :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -22,7 +22,13 @@
               </el-upload>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="姓名" v-model="query.name" :maxlength="20" style="width: 180px"
+              <el-tooltip class="item" effect="dark" content="相似度" placement="bottom">
+                <el-input-number v-model="query.similarThreshold" controls-position="right" :min="65" placeholder="相似度"
+                                 :max="100" size="medium" style="width:100px" :precision="0"></el-input-number>
+              </el-tooltip>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px">
+              <el-input placeholder="姓名" v-model="query.name" :maxlength="20" style="width: 150px"
                         size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
@@ -31,7 +37,7 @@
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-select v-model="query.blackClassId" placeholder="所属名单" size="medium"
-                         style="width: 180px" clearable filterable>
+                         style="width: 150px" clearable filterable>
                 <el-option v-for="item in listTypes" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
@@ -168,15 +174,15 @@
         <el-form :model="modifyPerson" align="left" label-width="120px" label-position="right" :rules="rules"
                  ref="modifyPerson">
           <el-form-item label="对应头像" prop="faceUrl" style="margin: 0;text-align: left" class="vip-150">
-            <el-upload :action="uploadImgUrl" :show-file-list="false" drag
-                       :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-              <img :src="modifyPerson.faceUrl?modifyPerson.faceUrl:imgPath" class="avatar" :onerror="img404">
-            </el-upload>
+            <!--<el-upload :action="uploadImgUrl" :show-file-list="false" drag-->
+            <!--:on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">-->
+            <img :src="modifyPerson.faceUrl?modifyPerson.faceUrl:imgPath" class="avatar" :onerror="img404">
+            <!--</el-upload>-->
           </el-form-item>
-          <div style="color:#999;margin-left: 120px;margin-bottom: 20px;text-align: left">
-            请选择有人脸且五官较清晰的图片。<br/>
-            支持jpeg/jpg/png格式的图片，且不超过2M
-          </div>
+          <!--<div style="color:#999;margin-left: 120px;margin-bottom: 20px;text-align: left">-->
+          <!--请选择有人脸且五官较清晰的图片。<br/>-->
+          <!--支持jpeg/jpg/png格式的图片，且不超过2M-->
+          <!--</div>-->
           <el-form-item label="姓名" prop="name" style="text-align: left">
             <el-input placeholder="输入姓名" v-model="modifyPerson.name" :maxlength="20"></el-input>
           </el-form-item>
@@ -502,9 +508,8 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
-            let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
-            this.query.similarThreshold = param ? parseInt(param) : 60;
             this.$message({message: '头像上传成功', type: 'success'});
+            this.isSearch = true;
             this.getData();
           }
         } else {
@@ -513,7 +518,6 @@
       },
       clearImg() {
         delete this.query['faceUrl'];
-        delete this.query['similarThreshold'];
         this.isSearch = true;
         this.getData()
       },
@@ -541,23 +545,6 @@
           if (!this.query.similarThreshold) {
             this.$message.error('请输入相似度');
             return;
-          }
-        }
-        if (this.query.similarThreshold) {
-          if (!this.query.faceUrl) {
-            this.$message.error('请上传头像');
-            return;
-          }
-        }
-        if (this.query.similarThreshold) {
-          if (!doubleValid(this.query.similarThreshold)) {
-            this.$message.error('相似度为0.1-99的数字');
-            return;
-          } else {
-            if (this.query.similarThreshold < 0.1 || this.query.similarThreshold > 99) {
-              this.$message.error('相似度为0.1-99的数字');
-              return;
-            }
           }
         }
         if (this.query.mobilePhone) {
@@ -634,6 +621,8 @@
         this.query = {size: 100, type: 1};
         this.isSearch = true;
         delete this.query['faceUrl'];
+        let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
+        this.query.similarThreshold = param ? parseInt(param) : 65;
         this.getData();
       },
       //格式化内容   有数据就展示，没有数据就显示--
@@ -663,6 +652,8 @@
       if (this.$route.query.id) {
         this.query.blackClassId = this.$route.query.id || '';
       }
+      let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
+      this.query.similarThreshold = param ? parseInt(param) : 65;
       this.getBlackTypes();
       this.getData();
     }

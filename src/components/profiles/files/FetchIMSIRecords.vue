@@ -3,7 +3,8 @@
     <section class="content">
       <el-form :inline="true" :model="queryImsi" align="left" style="text-align: left;width: 1200px">
         <el-form-item style="margin-bottom: 10px">
-          <el-select v-model="queryImsi.imsi" placeholder="IMSI" size="medium" filterable clearable>
+          <el-select v-model="queryImsi.imsi" placeholder="IMSI" size="medium" filterable clearable
+                     @change="changeImsi">
             <el-option v-for="item in imsis" :key="item.imsi" :value="item.imsi"
                        :label="item.imsi+'['+(item.weightDes?item.weightDes:'--')+']'">
             </el-option>
@@ -41,8 +42,8 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" prop="imsi" label="IMSI" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="isp" label="运营商" min-width="100"
-                         max-width="150" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" prop="isp" label="运营商" min-width="80"
+                         max-width="120" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="netType" label="网络类型" min-width="120"
                          max-width="160" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="regional" label="IMSI归属地" min-width="150"
@@ -55,7 +56,7 @@
                          max-width="220" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150"
                          max-width="220" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" width="160" fixed="right">
+        <el-table-column align="left" label="操作" min-width="120" max-width="160" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoImsiDetail(scope.row)">查看详情</el-button>
           </template>
@@ -165,6 +166,10 @@
         }
       },
       /**imsi*/
+      changeImsi(val) {
+        this.isSearch = true;
+        this.getImsiData();
+      },
       //获取imsi列表
       getImsiData() {
         if (!!this.qTime) {
@@ -254,10 +259,10 @@
       },
       //告警场所
       getPlaces() {
-        this.$post('archives/detail', {faceId: this.faceId, showFaceTraces: 1, showImsiDetail: 1}).then((data) => {
+        this.$post('person/imsiList', {faceId: this.faceId}).then((data) => {
           if ('000000' === data.code) {
-            if (data.data.imsiList && data.data.imsiList.length > 0) {
-              this.imsis = data.data.imsiList;
+            if (data.data && data.data.length > 0) {
+              this.imsis = data.data;
               this.queryImsi = {size: 100, imsi: this.imsis.length > 0 ? this.imsis[0].imsi : ''};
             }
             this.clearImsiData();

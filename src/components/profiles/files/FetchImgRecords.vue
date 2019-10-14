@@ -2,23 +2,6 @@
   <div>
     <section class="content">
       <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1200px">
-        <!--<el-form-item style="margin-bottom: 10px">-->
-        <!--<el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag-->
-        <!--:on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"-->
-        <!--:auto-upload="true" :show-file-list="false">-->
-        <!--<div v-if="!query.faceUrl" style="height:34px;vertical-align:middle;text-align: center">-->
-        <!--<i class="fa fa-photo fa-lg"></i>上传头像-->
-        <!--</div>-->
-        <!--<el-row v-if="query.faceUrl" style="height:34px;padding:0;margin:0">-->
-        <!--<el-col :span="12">-->
-        <!--<img :src="query.faceUrl" style="height:34px;margin:0;padding:0">-->
-        <!--</el-col>-->
-        <!--<el-col :span="12">-->
-        <!--<el-button type="text" style="margin-left:5px" @click.stop="clearImg()">清除</el-button>-->
-        <!--</el-col>-->
-        <!--</el-row>-->
-        <!--</el-upload>-->
-        <!--</el-form-item>-->
         <el-form-item style="margin-bottom: 10px">
           <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
                           start-placeholder="开始日期" size="medium" end-placeholder="结束日期" clearable
@@ -117,10 +100,7 @@
   export default {
     data() {
       return {
-        runBigPic: false,
-        isMore: false,
-        bigUrl: '',
-        faceId: this.$route.query.faceId || '',
+        runBigPic: false, isMore: false, bigUrl: '', faceId: this.$route.query.faceId || '',
         imgPath: require('../../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
         query: {size: 100},
@@ -129,9 +109,7 @@
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         places: [], placesCopy: [], count: 0, listLoading: false,
         list: [], list10: [], isShow: false, isFirst: true,
-        isSearch: false,
-        firstPage: 0,
-        page: 1,
+        isSearch: false, firstPage: 0, page: 1,
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         pickerBeginDate: {
           shortcuts: [{
@@ -215,57 +193,8 @@
         // window.open(routeData.href, '_blank');
         window.open(row.senceImageUrl ? row.senceImageUrl : row.imageUrl ? row.imageUrl ? row.faceUrl : row.faceUrl : this.imgPath, '_blank');
       },
-      //选择图片的文件格式验证
-      beforeAvatarUpload(file) {
-        if (globalValidImg(file, this.$message)) {
-        }
-        return globalValidImg(file, this.$message);
-      },
-      handleSuccess(res, file) {
-        if (res.code === '000000') {
-          if (res.data) {
-            this.query.faceUrl = res.data.fileUrl;
-            let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
-            this.query.similarThreshold = param ? parseInt(param) : 60;
-            this.$message({message: '头像上传成功', type: 'success'});
-            this.isSearch = true;
-            this.getData();
-          }
-        } else {
-          this.$message.error(res.msg);
-        }
-      },
-      clearImg() {
-        delete this.query['faceUrl'];
-        delete this.query['similarThreshold'];
-        this.isSearch = true;
-        this.getData()
-      },
       //获取人脸告警列表
       getData() {
-        if (this.query.faceUrl) {
-          if (!this.query.similarThreshold) {
-            this.$message.error('请输入相似度');
-            return;
-          }
-        }
-        if (this.query.similarThreshold) {
-          if (!this.query.faceUrl) {
-            this.$message.error('请上传头像');
-            return;
-          }
-        }
-        if (this.query.similarThreshold) {
-          if (!doubleValid(this.query.similarThreshold)) {
-            this.$message.error('相似度为0.1-99的数字');
-            return;
-          } else {
-            if (this.query.similarThreshold < 0.1 || this.query.similarThreshold > 99) {
-              this.$message.error('相似度为0.1-99的数字');
-              return;
-            }
-          }
-        }
         if (!!this.qTime) {
           this.query.startTime = Math.round(this.qTime[0] / 1000);
           this.query.endTime = Math.round(this.qTime[1] / 1000);

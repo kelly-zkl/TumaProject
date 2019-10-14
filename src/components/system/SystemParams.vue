@@ -68,12 +68,22 @@
             </el-tooltip>
           </el-form-item>
         </div>
-        <h5 class="add-label" style="margin: 0 0 10px 0">人脸搜索阈值</h5>
+        <h5 class="add-label" style="margin: 0 0 10px 0">人脸比对阈值</h5>
         <div class="add-appdiv">
-          <el-form-item label="相似度阈值" align="left" style="margin: 0;text-align: left">
+          <el-form-item label="搜索比对阈值" align="left" style="text-align: left">
             <el-tooltip effect="dark" content="默认的人脸搜索的相似度阈值" placement="bottom">
-              <el-input v-model="systemParam.similarThreshold" placeholder="相似度阈值" style="width: 300px"></el-input>
+              <el-slider v-model="systemParam.similarThreshold" style="width: 300px" :min="65" :max="100"></el-slider>
             </el-tooltip>
+          </el-form-item>
+          <el-form-item label="告警比对阈值" align="left" style="margin: 0;text-align: left">
+            <el-tooltip effect="dark" placement="bottom">
+              <div slot="content">布控人脸图与现场采集人脸图进行比对的阈值，会影响人脸告警记录产生；<br/>阈值低有误报风险，阈值高有漏报风险，请谨慎设置</div>
+              <el-slider v-model="systemParam.warningThreshold" style="width: 300px" :min="65" :max="100"></el-slider>
+            </el-tooltip>
+            <el-row style="width: 300px;margin: 0;padding: 0">
+              <el-col :span="12" style="text-align: left;color: red" align="left">有误报风险</el-col>
+              <el-col :span="12" style="text-align: right;color: red" align="right">有漏报风险</el-col>
+            </el-row>
           </el-form-item>
         </div>
         <el-form-item align="left" style="margin: 0;text-align: left" v-show="getButtonVial('sysparam:update')">
@@ -93,8 +103,8 @@
       return {
         listLoading: false,
         systemParam: {
-          sysName: '', sysLogo: '', refreshTime: 10, limitTime: 30, similarThreshold: 60, codes: [],
-          heatRanges: [{start: 0, end: 500, color: '#0000FF'}, {start: 501, color: '#ff0000'}]
+          sysName: '', sysLogo: '', refreshTime: 10, limitTime: 30, similarThreshold: 65, codes: [],
+          warningThreshold: 83, heatRanges: [{start: 0, end: 500, color: '#0000FF'}, {start: 501, color: '#ff0000'}]
         },
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         imgPath: require('../../assets/img/icon_people.png'),
@@ -193,18 +203,15 @@
           return;
         }
         if (this.systemParam.similarThreshold > 0) {//图片搜索阈值
-          if (!doubleValid(this.systemParam.similarThreshold)) {
-            this.$message.error('相似度为0.1-99的数字');
-            return;
-          } else {
-            if (this.systemParam.similarThreshold < 0.1 || this.systemParam.similarThreshold > 99) {
-              this.$message.error('相似度为0.1-99的数字');
-              return;
-            }
-          }
           param.push({code: 'image_search_threshold', name: '图片搜索阈值', value: this.systemParam.similarThreshold});
         } else {
-          this.$message.error('请输入正确的图片搜索阈值');
+          this.$message.error('请选择搜索比对阈值');
+          return;
+        }
+        if (this.systemParam.warningThreshold > 0) {//图片搜索阈值
+          param.push({code: 'image_warning_threshold', name: '告警比对阈值', value: this.systemParam.warningThreshold});
+        } else {
+          this.$message.error('请选择告警比对阈值');
           return;
         }
 
@@ -248,7 +255,10 @@
                   this.systemParam.heatRanges = item.value;
                 }
                 if (item.code == 'image_search_threshold') {
-                  this.systemParam.similarThreshold = item.value;
+                  this.systemParam.similarThreshold = parseInt(item.value);
+                }
+                if (item.code == 'image_warning_threshold') {
+                  this.systemParam.warningThreshold = parseInt(item.value);
                 }
               });
               sessionStorage.setItem("system", encryData(JSON.stringify(this.systemParam)));

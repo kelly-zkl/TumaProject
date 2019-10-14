@@ -9,7 +9,7 @@
           </el-tabs>
         </el-col>
       </el-row>
-      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1100px">
+      <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1300px">
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
           <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag
                      :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
@@ -26,6 +26,12 @@
               </el-col>
             </el-row>
           </el-upload>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
+          <el-tooltip class="item" effect="dark" content="相似度" placement="bottom">
+            <el-input-number v-model="query.similarThreshold" controls-position="right" :min="65" placeholder="相似度"
+                             :max="100" size="medium" style="width:120px" :precision="0"></el-input-number>
+          </el-tooltip>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem == 'H'">
           <el-date-picker v-model="qTime" type="datetimerange" range-separator="至" @change="handleChange"
@@ -46,16 +52,16 @@
             </el-time-picker>
           </el-tooltip>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
-                    style="width: 170px"></el-input>
-        </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
           <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable
                      style="width: 170px" :filter-method="pinyinMatch">
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
+          <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
+                    style="width: 170px"></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
@@ -219,7 +225,6 @@
       },
       clearImg() {
         delete this.query['faceUrl'];
-        delete this.query['similarThreshold'];
         this.isSearch = true;
         this.getData()
       },
@@ -273,8 +278,6 @@
         if (res.code === '000000') {
           if (res.data) {
             this.query.faceUrl = res.data.fileUrl;
-            let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
-            this.query.similarThreshold = param ? parseInt(param) : 60;
             this.$message({message: '头像上传成功', type: 'success'});
             this.isSearch = true;
             this.getData();
@@ -293,23 +296,6 @@
           if (!this.query.similarThreshold) {
             this.$message.error('请输入相似度');
             return;
-          }
-        }
-        if (this.query.similarThreshold) {
-          if (!this.query.faceUrl) {
-            this.$message.error('请上传头像');
-            return;
-          }
-        }
-        if (this.query.similarThreshold) {
-          if (!doubleValid(this.query.similarThreshold)) {
-            this.$message.error('相似度为0.1-99的数字');
-            return;
-          } else {
-            if (this.query.similarThreshold < 0.1 || this.query.similarThreshold > 99) {
-              this.$message.error('相似度为0.1-99的数字');
-              return;
-            }
           }
         }
         if (this.qTime) {
@@ -391,6 +377,8 @@
         this.query = {size: 100};
         this.isSearch = true;
         delete this.query['faceUrl'];
+        let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
+        this.query.similarThreshold = param ? parseInt(param) : 65;
         if (this.activeItem === 'H') {
           this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 60 * 60 * 24 * 7 * 1000,
             new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
@@ -445,6 +433,8 @@
       }
     },
     mounted() {
+      let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
+      this.query.similarThreshold = param ? parseInt(param) : 65;
       this.getPlaces();
       this.getData();
     }

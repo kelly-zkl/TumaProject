@@ -23,10 +23,29 @@
           </el-col>
           <el-col :lg="12" :xl="14" :md="12" :sm="12" :xs="12" align="left" :loading="listLoading"
                   style="text-align: left;border-left: 1px solid #D7D7D7;padding-left: 80px">
+            <el-popover ref="intersect" placement="bottom-start" width="120" trigger="click" v-model="isPover">
+              <div style="padding:10px" class="intersect">
+                <el-checkbox-group v-model="checkList">
+                  <el-checkbox :label="5" :disabled="selResults.length+selResources.length<5">5个数据源相交</el-checkbox>
+                  <el-checkbox :label="4" :disabled="selResults.length+selResources.length<4">4个数据源相交</el-checkbox>
+                  <el-checkbox :label="3" :disabled="selResults.length+selResources.length<3">3个数据源相交</el-checkbox>
+                </el-checkbox-group>
+                <el-col align="center" style="text-align: center;padding: 10px 0">
+                  <el-button type="primary" size="mini" :disabled="checkList.length==0" @click="multIntersect()">开始分析
+                  </el-button>
+                </el-col>
+              </div>
+            </el-popover>
             <el-button type="text" @click="showSetParam(0)" v-show="getButtonVial('collision:addOrUpdateDataSource')"
                        style="border-right: 1px solid #D7D7D7;border-radius: 0;padding:0 20px 0 0">
               <img src="../../../assets/img/icon_data.svg" style="height: 28px;width: 28px">
               <div style="font-size: 12px;padding: 5px 0 0 0;margin: 0">数据源</div>
+            </el-button>
+            <el-button type="text" style="padding: 0" v-popover:intersect
+                       :disabled="selResults.length+selResources.length<4||selResults.length+selResources.length>5"
+                       v-show="getButtonVial('collision:analyses:batch')">
+              <img src="../../../assets/img/icon_intersect.svg" style="height: 28px;width: 28px">
+              <div style="font-size: 12px;padding: 5px 0 0 0;margin: 0">组合交集</div>
             </el-button>
             <el-button type="text" @click="addRelany('intersect')" style="padding: 0"
                        :disabled="selResults.length+selResources.length<2"
@@ -107,11 +126,11 @@
             <el-table :data="results" class="center-block" @selection-change="selResultChange" stripe
                       :height="tableHeight" :row-key="getRowKey" ref="resultTable">
               <el-table-column type="selection" width="45" align="left" :reserve-selection="true"></el-table-column>
-              <el-table-column align="left" prop="name" label="名称" :formatter="formatterAddress"
-                               min-width="120"></el-table-column>
+              <el-table-column align="left" prop="name" label="名称" :formatter="formatterAddress" max-width="120"
+                               min-width="80"></el-table-column>
               <el-table-column align="left" prop="dataSource" label="数据源" :formatter="formatterAddress"
-                               min-width="220"></el-table-column>
-              <el-table-column align="left" prop="operator" label="分析方式" min-width="130">
+                               max-width="220" min-width="180"></el-table-column>
+              <el-table-column align="left" prop="operator" label="分析方式" min-width="120" max-width="150">
                 <template slot-scope="scope">
                   <el-select v-model="scope.row.operator" style="width:80px" size="medium"
                              @change="handleModeChange($event,scope.row)"
@@ -121,7 +140,7 @@
                   </el-select>
                 </template>
               </el-table-column>
-              <el-table-column align="left" prop="status" label="状态" min-width="100">
+              <el-table-column align="left" prop="status" label="状态" min-width="80" max-width="120">
                 <template slot-scope="scope">
                   <span style="color:#00C755" v-show="scope.row.status == 'FINISH'">已完成</span>
                   <span style="color:#dd6161" v-show="scope.row.status == 'FAILE'">失败</span>
@@ -130,7 +149,9 @@
                   <span style="color:#999" v-show="scope.row.status == 'STOP'">终止</span>
                 </template>
               </el-table-column>
-              <el-table-column align="left" label="操作" min-width="110">
+              <el-table-column align="left" prop="analysesCount" label="分析结果" min-width="80" max-width="120"
+                               :formatter="formatterAddress"></el-table-column>
+              <el-table-column align="left" label="操作" min-width="100" max-width="150">
                 <template slot-scope="scope">
                   <el-tooltip class="item" effect="dark" content="查看分析结果" placement="bottom">
                     <el-button type="text" class="fa fa-list-alt fa-lg" @click="showResult(scope.row.id)"
@@ -315,8 +336,8 @@
   export default {
     data() {
       return {
-        dialogWidth: isPC() ? '35%' : '90%',
-        taskId: this.$route.query.taskId || '',
+        dialogWidth: isPC() ? '35%' : '90%', isPover: false,
+        taskId: this.$route.query.taskId || '', checkList: [],
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 235,
         collision: {
           name: '数据源1', dscList: [{
@@ -518,9 +539,54 @@
       },
       selDataChange(sels) {
         this.selResources = sels;
+        this.checkChange();
       },
       selResultChange(sels) {
         this.selResults = sels;
+        this.checkChange();
+      },
+      //当选择的数据源/交并任务不是4~5个时，弹框消失
+      checkChange() {
+        if (this.selResults.length + this.selResources.length < 4 || this.selResults.length + this.selResources.length > 5) {
+          this.isPover = false;
+        }
+      },
+      //智能交集
+      multIntersect() {
+        if (this.judgeState()) return;
+        let arr = [], str = [];
+        this.selResources.forEach((item) => {
+          arr.push(item.id + '_source');
+          str.push(item.name);
+        });
+        this.selResults.forEach((item) => {
+          arr.push(item.id + '_result');
+          str.push(item.name);
+        });
+        if (arr.length == 4) {
+          let idx = this.checkList.indexOf(5);
+          if (idx >= 0) {
+            this.checkList.splice(idx, 1);
+          }
+        }
+        let param = {
+          analysesType: 1, dataSourceIds: arr, collisionTaskId: this.taskId, operator: 'intersect',
+          analysesNums: this.checkList, dataSourceNames: str
+        };
+        this.listLoading = true;
+        this.$post('/collision/analyses/batch', param, '创建成功').then((data) => {
+          this.listLoading = false;
+          this.isPover = false;
+          if ("000000" === data.code) {
+            this.checkList = [];
+            this.$refs.recordTable.clearSelection();
+            this.$refs.resultTable.clearSelection();
+            this.getData();
+          }
+        }).catch((err) => {
+          this.isPover = false;
+          this.listLoading = false;
+        });
       },
       //并集的时候需要选择第一个并的数据
       showSubtract() {
@@ -674,7 +740,11 @@
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
-        return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
+        if (column.property === 'analysesCount') {
+          return row.analysesCount == undefined ? '--' : row.analysesCount;
+        } else {
+          return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
+        }
       },
       //删除、复制数据源/交并分析
       deleteTask() {

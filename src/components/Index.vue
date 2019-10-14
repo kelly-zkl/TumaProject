@@ -80,6 +80,10 @@
                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                     <span style="display:inline-block;font-size:12px;color:#5F6165;margin:5px 0">请选择人脸照片。支持：JPG、JPEG、PNG格式，且文件大小不超过2M。</span>
                   </el-upload>
+                  <el-tooltip effect="dark" content="相似度阈值" placement="bottom">
+                    <el-slider v-model="similarThreshold" :min="65" :max="100"
+                               style="width:200px;margin-left: 5px"></el-slider>
+                  </el-tooltip>
                   <el-button type="primary" size="medium" @click="searchImage()" style="width: 100%">搜索</el-button>
                 </div>
               </el-popover>
@@ -278,7 +282,7 @@
       };
       return {
         imsiCount: 0, faceCount: 0, turnCount: 0, runSearch: false, imageUrl: '', imsi: '',
-        searchImsis: [], searchParam: {},
+        searchImsis: [], searchParam: {}, similarThreshold: 65,
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         systemParam: {sysLogo: '../assets/img/icon_logo.svg'},
         runMsg: false, runImsiWarning: false, runFaceWarning: false, runModifyPsw: false,
@@ -326,7 +330,10 @@
           this.$message.error("请上传头像");
           return;
         }
-        this.searchParam = JSON.stringify({type: 'img', value: this.imageUrl, time: new Date().getTime()});
+        this.searchParam = JSON.stringify({
+          type: 'img', value: this.imageUrl, time: new Date().getTime(),
+          similarThreshold: this.similarThreshold
+        });
         this.runSearch = true;
       },
       //以码搜图
@@ -409,7 +416,7 @@
         sessionStorage.removeItem("secItem");
         localStorage.removeItem("pathTime");//轨迹
         localStorage.removeItem("pathImsi");
-        localStorage.removeItem("pathFace");
+        localStorage.removeItem("pathCar");
         localStorage.removeItem("pathUrl");
         sessionStorage.removeItem('apply');
       },
@@ -648,7 +655,11 @@
                   this.systemParam.heatRanges = item.value;
                 }
                 if (item.code == 'image_search_threshold') {
-                  this.systemParam.similarThreshold = item.value;
+                  this.systemParam.similarThreshold = parseInt(item.value);
+                  this.similarThreshold = this.systemParam.similarThreshold ? this.systemParam.similarThreshold : 65;
+                }
+                if (item.code == 'image_warning_threshold') {
+                  this.systemParam.warningThreshold = parseInt(item.value);
                 }
               });
               this.$nextTick(() => {
