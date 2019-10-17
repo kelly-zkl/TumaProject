@@ -72,13 +72,15 @@
         <div class="add-appdiv">
           <el-form-item label="搜索比对阈值" align="left" style="text-align: left">
             <el-tooltip effect="dark" content="默认的人脸搜索的相似度阈值" placement="bottom">
-              <el-slider v-model="systemParam.similarThreshold" style="width: 300px" :min="65" :max="100"></el-slider>
+              <el-slider v-model="systemParam.similarThreshold" style="width: 400px" :min="65" :max="100"
+                         show-input></el-slider>
             </el-tooltip>
           </el-form-item>
           <el-form-item label="告警比对阈值" align="left" style="margin: 0;text-align: left">
             <el-tooltip effect="dark" placement="bottom">
               <div slot="content">布控人脸图与现场采集人脸图进行比对的阈值，会影响人脸告警记录产生；<br/>阈值低有误报风险，阈值高有漏报风险，请谨慎设置</div>
-              <el-slider v-model="systemParam.warningThreshold" style="width: 300px" :min="65" :max="100"></el-slider>
+              <el-slider v-model="systemParam.warningThreshold" style="width: 400px" :min="65" :max="100"
+                         show-input></el-slider>
             </el-tooltip>
             <el-row style="width: 300px;margin: 0;padding: 0">
               <el-col :span="12" style="text-align: left;color: red" align="left">有误报风险</el-col>
