@@ -1,7 +1,7 @@
 <template>
   <div>
     <section class="content">
-      <div class="help-title">设置数据集</div>
+      <div class="help-title">设置数据源</div>
       <el-row :gutter="10">
         <el-col :span="12">
           <img style="max-width:100%" src="../../../assets/img/data1.png" onclick="javascript:window.open(this.src)">
@@ -11,7 +11,7 @@
           <div class="div-content">在工具栏中，点击“添加数据源”图标，即添加了一个数据源； 同时会弹出“设定条件”面板。
           </div>
           <div class="div-title">2.设定筛选条件</div>
-          <div class="div-content">在弹出的“设定条件”面板中，根据侦查需要，设立筛选条件； 设置完毕后，点击“保存”按钮，即可完成数据集添加。 (注：重复以上步骤，创建多个数据集）</div>
+          <div class="div-content">在弹出的“设定条件”面板中，根据侦查需要，设立筛选条件； 设置完毕后，点击“保存”按钮，即可完成数据源添加。 (注：重复以上步骤，创建多个数据源）</div>
         </el-col>
       </el-row>
       <el-row :gutter="10">
@@ -19,9 +19,9 @@
           <img style="max-width:100%" src="../../../assets/img/data2.png">
         </el-col>
         <el-col :span="12">
-          <div class="div-title">3.管理数据集</div>
+          <div class="div-title">3.管理数据源</div>
           <div class="div-content"><i class="fa fa-filter btn-icon"></i><span>修改条件</span></div>
-          <div class="div-content"><i class="fa fa-file-text-o btn-icon"></i><span>查看数据集</span></div>
+          <div class="div-content"><i class="fa fa-file-text-o btn-icon"></i><span>查看数据源</span></div>
           <div class="div-content"><i class="fa fa-bar-chart btn-icon"></i><span>查看统计</span></div>
         </el-col>
       </el-row>
@@ -31,13 +31,14 @@
           <img style="max-width:100%" src="../../../assets/img/result1.png" onclick="javascript:window.open(this.src)">
         </el-col>
         <el-col :span="12">
-          <div class="div-title">1.选择两组数据</div>
-          <div class="div-content">在数据源板块与交兵分析结果板块，任意勾选两组（或以上）的数据；</div>
-          <div class="div-title">2.设定交、并、差分析规则</div>
-          <div class="div-content">选择两组数据集后，在工具栏中设定分析规则，即自动生成一条新的交并分析任务；</div>
-          <div class="div-content">交集：在已选的N组数据集中，都出现了的IMSI；</div>
-          <div class="div-content">并集：在已选的N组数据集中，分别出现了的IMSI；</div>
-          <div class="div-content">差集：在已选的N组数据集中，仅在第一组出现了的IMSI；</div>
+          <div class="div-title">1.选择数据</div>
+          <div class="div-content">在数据源板块与交兵分析结果板块，任意勾选n组数据；</div>
+          <div class="div-title">2.设定计算方式</div>
+          <div class="div-content">选择两组数据源后，在工具栏中设定分析规则，即自动生成一条新的交并分析任务；</div>
+          <div class="div-content">交集：在已选的n组数据源中，都出现了的IMSI；</div>
+          <div class="div-content">并集：在已选的n组数据源中，分别出现了的IMSI；</div>
+          <div class="div-content">差集：在已选的n组数据源中，仅在第一组出现了的IMSI；</div>
+          <div class="div-content">组合交集：在已选的4~5组数据源中，根据不同的组合策略进行交集计算；</div>
         </el-col>
       </el-row>
       <el-row :gutter="10">

@@ -166,19 +166,19 @@
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="采集时间" prop="uptime" min-width="180" max-width="220"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="采集场所" prop="placeName" min-width="150" max-width="200"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150" max-width="200"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150" max-width="200"
-                           :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="isp" label="运营商" min-width="100" max-width="150"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" prop="netType" label="网络类型" min-width="100" max-width="150"
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="IMSI归属地" min-width="150" max-width="200" prop="regional"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="采集场所" prop="placeName" min-width="150" max-width="200"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="采集时间" prop="uptime" min-width="180" max-width="220"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150" max-width="200"
+                           :formatter="formatterAddress"></el-table-column>
+          <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
         </el-table>
         <div class="block" style="margin: 20px 0" align="right">

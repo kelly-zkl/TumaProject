@@ -48,9 +48,9 @@
                          max-width="160" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="regional" label="IMSI归属地" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="uptime" label="采集时间" min-width="180"
-                         max-width="220" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="placeName" label="采集场所" min-width="150"
+                         max-width="220" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" prop="uptime" label="采集时间" min-width="180"
                          max-width="220" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150"
                          max-width="220" :formatter="formatterAddress"></el-table-column>

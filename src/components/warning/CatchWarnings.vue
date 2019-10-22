@@ -23,27 +23,29 @@
                    icon="el-icon-close" @click="showTip=false;calcuHeight()"></el-button>
       </div>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1300px">
-        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
+        <el-form-item style="margin-bottom: 10px;margin-right: 0" v-show="getButtonVial(exportKey)">
           <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag
                      :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
                      :auto-upload="true" :show-file-list="false">
-            <div v-if="!query.faceUrl" style="height:34px;vertical-align:middle;text-align: center">
-              <i class="fa fa-photo fa-lg"></i>上传头像
+            <div v-if="!query.faceUrl"
+                 style="height:34px;vertical-align:middle;text-align: center;font-size: 12px;line-height: 34px">
+              <i class="fa fa-photo fa-lg" style="margin-right: 4px;font-size: 18px"></i>上传头像
             </div>
             <el-row v-if="query.faceUrl" style="height:34px;padding:0;margin:0">
               <el-col :span="12">
                 <img :src="query.faceUrl" style="height:34px;margin:0;padding:0">
               </el-col>
               <el-col :span="12">
-                <el-button type="text" style="margin-left:5px" @click.stop="clearImg()">清除</el-button>
+                <el-button type="text" style="height:34px;margin-left:5px" size="small" @click.stop="clearImg()">清除
+                </el-button>
               </el-col>
             </el-row>
           </el-upload>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
+        <el-form-item style="margin-bottom: 10px;margin-left: -5px" class="upload">
           <el-tooltip class="item" effect="dark" content="相似度" placement="bottom">
             <el-input-number v-model="query.similarThreshold" controls-position="right" :min="65" placeholder="相似度"
-                             :max="100" size="medium" style="width:120px" :precision="0"></el-input-number>
+                             :max="100" size="medium" style="width:86px" :precision="0"></el-input-number>
           </el-tooltip>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'">
@@ -85,6 +87,12 @@
           </el-select>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
+          <el-tooltip class="item" effect="dark" content="告警比对相似度" placement="bottom">
+            <el-input-number v-model="query.similar" controls-position="right" :min="65" placeholder="相似度"
+                             :max="100" size="medium" style="width:100px" :precision="0"></el-input-number>
+          </el-tooltip>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 10px">
           <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
@@ -124,7 +132,7 @@
                 @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="现场人脸图像" prop="sceneUrl" min-width="120" max-width="200">
+        <el-table-column align="left" label="现场人脸图像" prop="sceneUrl" min-width="120" max-width="180">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
               <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath2"
@@ -139,8 +147,8 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警场所" prop="placeName" min-width="140"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备标识" prop="deviceName" min-width="140"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <!--<el-table-column align="left" label="设备标识" prop="deviceName" min-width="140"-->
+        <!--max-width="200" :formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" label="告警时间" prop="createTime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警状态" prop="status" min-width="80" max-width="120"
@@ -151,14 +159,14 @@
             <span style="color:#999" v-show="scope.row.status == 3">误报</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="采集时间" prop="catchTime" min-width="170"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <!--<el-table-column align="left" label="采集时间" prop="catchTime" min-width="170"-->
+        <!--max-width="200" :formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" label="预警模型名称" prop="taskName" min-width="140"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="关联案件" prop="caseName" min-width="140"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="管控对象" prop="faceUrl" min-width="120"
-                         max-width="200" :formatter="formatterAddress">
+                         max-width="180" :formatter="formatterAddress">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
               <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"

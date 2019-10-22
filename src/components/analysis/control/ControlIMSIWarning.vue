@@ -54,15 +54,15 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="IMSI" prop="imsi" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="isp" label="运营商" min-width="100" max-width="150"
-                         :formatter="formatterAddress"></el-table-column>
+        <!--<el-table-column align="left" prop="isp" label="运营商" min-width="100" max-width="150"-->
+        <!--:formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警场所" prop="placeName" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150" max-width="200"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="告警时间" prop="createTime" min-width="180" max-width="200"
+        <!--<el-table-column align="left" label="设备标识" prop="deviceName" min-width="150" max-width="200"-->
+        <!--:formatter="formatterAddress"></el-table-column>-->
+        <el-table-column align="left" label="告警时间" prop="createTime" min-width="180" max-width="250"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警状态" prop="status" min-width="120" max-width="160"
                          :formatter="formatterAddress">
@@ -96,19 +96,11 @@
       return {
         places: [], placesCopy: [], isMore: false,
         taskId: this.$route.query.taskId || '',
-        query: {size: 100},
-        qTime: '',
+        query: {size: 100}, qTime: '',
         statuses: [{label: '待处理', value: 0}, {label: '已处理', value: 2}, {label: '误报', value: 3}],
-        count: 0,
-        list: [],
-        list10: [],
-        sels: [],
-        isShow: false,
-        isFirst: true,
-        isSearch: false,
-        firstPage: 0,
-        page: 1,
-        listLoading: false,
+        count: 0, list: [], list10: [], sels: [],
+        isShow: false, isFirst: true, isSearch: false,
+        firstPage: 0, page: 1, listLoading: false,
         pickerBeginDate: {
           shortcuts: [{
             text: '最近6小时',

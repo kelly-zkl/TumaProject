@@ -187,13 +187,13 @@
         <el-row style="margin-top: 10px">
           <el-col :span="24" align="left" style="text-align: left" v-show="getButtonVial('common:face:listFaceTrace')">
             <el-form :inline="true" :model="query" align="left" style="text-align: left">
-              <el-form-item label="相似度" style="margin-bottom: 10px">
-                <el-input-number v-model="query.startSimilar" controls-position="right" :min="0.1" :step="0.1"
-                                 :max="query.endSimilar-1" style="width: 100px" size="medium"></el-input-number>
-                <span>~</span>
-                <el-input-number v-model="query.endSimilar" controls-position="right" :min="query.startSimilar+1"
-                                 :max="99" style="width: 100px" size="medium" :step="0.1"></el-input-number>
-              </el-form-item>
+              <!--<el-form-item label="相似度" style="margin-bottom: 10px">-->
+              <!--<el-input-number v-model="query.startSimilar" controls-position="right" :min="0.1" :step="0.1"-->
+              <!--:max="query.endSimilar-1" style="width: 100px" size="medium"></el-input-number>-->
+              <!--<span>~</span>-->
+              <!--<el-input-number v-model="query.endSimilar" controls-position="right" :min="query.startSimilar+1"-->
+              <!--:max="99" style="width: 100px" size="medium" :step="0.1"></el-input-number>-->
+              <!--</el-form-item>-->
               <el-form-item style="margin-bottom: 10px">
                 <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable
                            :filter-method="pinyinMatch">

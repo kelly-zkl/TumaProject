@@ -38,10 +38,10 @@
               <el-form-item label="采集场所" align="left" style="margin: 0">
                 {{carDetail.placeName ? carDetail.placeName : '--'}}
               </el-form-item>
-              <el-form-item label="设备标识" align="left" style="margin: 0">
+              <el-form-item label="设备标识" align="left" style="margin: 0" v-show="carDetail.cameraName">
                 {{carDetail.cameraName ? carDetail.cameraName : '--'}}
               </el-form-item>
-              <el-form-item label="设备ID" align="left" style="margin: 0">
+              <el-form-item label="设备ID" align="left" style="margin: 0" v-show="carDetail.cameraId">
                 {{carDetail.cameraId ? carDetail.cameraId : '--'}}
               </el-form-item>
             </el-col>

@@ -10,27 +10,29 @@
         </el-col>
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 10px;text-align: left;width: 1300px">
-        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial(exportKey)">
+        <el-form-item style="margin-bottom: 10px;margin-right: 0" v-show="getButtonVial(exportKey)">
           <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag
                      :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
                      :auto-upload="true" :show-file-list="false">
-            <div v-if="!query.faceUrl" style="height:34px;vertical-align:middle;text-align: center">
-              <i class="fa fa-photo fa-lg"></i>上传头像
+            <div v-if="!query.faceUrl"
+                 style="height:34px;vertical-align:middle;text-align: center;font-size: 12px;line-height: 34px">
+              <i class="fa fa-photo fa-lg" style="margin-right: 4px;font-size: 18px"></i>上传头像
             </div>
             <el-row v-if="query.faceUrl" style="height:34px;padding:0;margin:0">
               <el-col :span="12">
                 <img :src="query.faceUrl" style="height:34px;margin:0;padding:0">
               </el-col>
               <el-col :span="12">
-                <el-button type="text" style="margin-left:5px" @click.stop="clearImg()">清除</el-button>
+                <el-button type="text" style="height:34px;margin-left:5px" size="small" @click.stop="clearImg()">清除
+                </el-button>
               </el-col>
             </el-row>
           </el-upload>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
+        <el-form-item style="margin-bottom: 10px;margin-left: -5px" class="upload">
           <el-tooltip class="item" effect="dark" content="相似度" placement="bottom">
             <el-input-number v-model="query.similarThreshold" controls-position="right" :min="65" placeholder="相似度"
-                             :max="100" size="medium" style="width:120px" :precision="0"></el-input-number>
+                             :max="100" size="medium" style="width:88px" :precision="0"></el-input-number>
           </el-tooltip>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem == 'H'">
@@ -59,11 +61,24 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
-                    style="width: 170px"></el-input>
+        <el-form-item label="年龄段" style="margin-bottom: 10px">
+          <el-input-number v-model="query.startAge" controls-position="right" :min="1"
+                           :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
+          <span>~</span>
+          <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
+                           :max="200" style="width: 100px" size="medium"></el-input-number>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'">
+          <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px" clearable>
+            <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <!--<el-form-item style="margin-bottom: 10px">-->
+        <!--<el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"-->
+        <!--style="width: 170px"></el-input>-->
+        <!--</el-form-item>-->
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'">
           <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
@@ -73,14 +88,7 @@
         <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
-        <el-form-item label="年龄段" style="margin-bottom: 10px" v-show="isMore">
-          <el-input-number v-model="query.startAge" controls-position="right" :min="1"
-                           :max="query.endAge-1" style="width: 100px" size="medium"></el-input-number>
-          <span>~</span>
-          <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
-                           :max="200" style="width: 100px" size="medium"></el-input-number>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="isMore">
+        <el-form-item style="margin-bottom: 10px" v-show="isMore&&activeItem == 'H'">
           <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px" clearable>
             <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
@@ -89,7 +97,16 @@
       </el-form>
       <el-table :data="list10" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="人脸图像" prop="imageUrl" min-width="125" max-width="250">
+        <el-table-column align="left" label="现场大图" prop="senceImageUrl" min-width="150" max-width="250">
+          <template slot-scope="scope">
+            <div style="height: 90px;line-height:90px">
+              <img v-bind:src="scope.row.senceImageUrl?scope.row.senceImageUrl:imgPath2"
+                   @click="gotoDetail(scope.row)" :onerror="img2404"
+                   style="max-height:70px;border-radius: 4px;vertical-align: middle"/>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="人脸图像" prop="imageUrl" min-width="150" max-width="250">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
               <img v-bind:src="scope.row.imageUrl?scope.row.imageUrl:imgPath"
@@ -98,23 +115,18 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="年龄段" prop="age" min-width="80" max-width="120"
+        <el-table-column align="left" label="年龄段" prop="age" min-width="100" max-width="180"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="120"
+        <el-table-column align="left" label="性别" prop="sex" min-width="100" max-width="180"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="采集场所" prop="placeName" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="采集时间" prop="catchTime" min-width="170"
+        <el-table-column align="left" label="采集时间" prop="catchTime" min-width="180"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
-          <template slot-scope="scope">
-            <el-button type="text" @click="gotoDetail(scope.row)">查看大图</el-button>
-          </template>
-        </el-table-column>
+        <!--<el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"-->
+        <!--max-width="250" :formatter="formatterAddress"></el-table-column>-->
+        <!--<el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"-->
+        <!--max-width="250" :formatter="formatterAddress"></el-table-column>-->
       </el-table>
       <div class="block" style="margin-top: 10px" align="right">
         <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"
@@ -151,7 +163,9 @@
         activeItem: 'T',
         query: {size: 100},
         imgPath: require('../../assets/img/icon_people.png'),
+        imgPath2: require('../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
+        img2404: "this.onerror='';this.src='" + require('../../assets/img/icon_img.svg') + "'",
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],

@@ -4,27 +4,30 @@
       <el-row>
         <el-col :span="20" align="left" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1080px">
-            <el-form-item style="margin-bottom: 10px">
+            <el-form-item style="margin-bottom: 10px;margin-right: 0">
               <el-upload ref="upload" class="upload img" :action="uploadImgUrl" name="file" drag
                          :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
                          :auto-upload="true" :show-file-list="false">
-                <div v-if="!query.faceUrl" style="height:34px;vertical-align:middle;text-align: center">
-                  <i class="fa fa-photo fa-lg"></i>上传头像
+                <div v-if="!query.faceUrl"
+                     style="height:34px;vertical-align:middle;text-align: center;font-size: 12px;line-height: 34px">
+                  <i class="fa fa-photo fa-lg" style="margin-right: 4px;font-size: 18px"></i>上传头像
                 </div>
                 <el-row v-if="query.faceUrl" style="height:34px;padding:0;margin:0">
                   <el-col :span="12">
                     <img :src="query.faceUrl" style="height:34px;margin:0;padding:0">
                   </el-col>
                   <el-col :span="12">
-                    <el-button type="text" style="margin-left:5px" @click.stop="clearImg()">清除</el-button>
+                    <el-button type="text" style="height:34px;margin-left:5px" size="small" @click.stop="clearImg()">
+                      清除
+                    </el-button>
                   </el-col>
                 </el-row>
               </el-upload>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
+            <el-form-item style="margin-bottom: 10px;margin-left: -5px" class="upload">
               <el-tooltip class="item" effect="dark" content="相似度" placement="bottom">
                 <el-input-number v-model="query.similarThreshold" controls-position="right" :min="65" placeholder="相似度"
-                                 :max="100" size="medium" style="width:100px" :precision="0"></el-input-number>
+                                 :max="100" size="medium" style="width:88px" :precision="0"></el-input-number>
               </el-tooltip>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">

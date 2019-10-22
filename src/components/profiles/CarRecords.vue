@@ -39,10 +39,10 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="设备ID" v-model="query.cameraId" :maxlength="30" size="medium"
-                    style="width: 160px"></el-input>
-        </el-form-item>
+        <!--<el-form-item style="margin-bottom: 10px">-->
+        <!--<el-input placeholder="设备ID" v-model="query.cameraId" :maxlength="30" size="medium"-->
+        <!--style="width: 160px"></el-input>-->
+        <!--</el-form-item>-->
         <el-form-item style="margin-bottom: 10px">
           <el-button type="primary" @click="isSearch = true;getData()" size="medium">搜索
           </el-button>
@@ -62,21 +62,21 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="left" prop="carLicense" label="车牌号码" min-width="100" max-width="150"
+        <el-table-column align="left" prop="carLicense" label="车牌号码" min-width="120" max-width="180"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="carLicenseKind" label="牌号种类" min-width="100" max-width="120"
+        <el-table-column align="left" prop="carLicenseKind" label="牌号种类" min-width="120" max-width="180"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="carLicenseColor" label="牌号颜色" max-width="100" min-width="120"
+        <el-table-column align="left" prop="carLicenseColor" label="牌号颜色" min-width="120" max-width="180"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="placeName" label="采集场所" min-width="130" max-width="180"
+        <el-table-column align="left" prop="placeName" label="采集场所" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="catchTime" label="采集时间" min-width="170" max-width="200"
+        <el-table-column align="left" prop="catchTime" label="采集时间" min-width="180" max-width="250"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="cameraName" label="设备标识" max-width="180" min-width="130"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备ID" max-width="180" min-width="130" prop="cameraId"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
+        <!--<el-table-column align="left" prop="cameraName" label="设备标识" max-width="180" min-width="130"-->
+        <!--:formatter="formatterAddress"></el-table-column>-->
+        <!--<el-table-column align="left" label="设备ID" max-width="180" min-width="130" prop="cameraId"-->
+        <!--:formatter="formatterAddress"></el-table-column>-->
+        <el-table-column align="left" label="操作" min-width="130" max-width="180" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('car:record:detail')">查看详情
             </el-button>

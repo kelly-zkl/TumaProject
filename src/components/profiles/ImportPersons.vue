@@ -2,35 +2,37 @@
   <div>
     <section class="content">
       <el-row>
-        <el-col :span="22" align="left" style="text-align: left">
-          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1190px">
-            <el-form-item style="margin-bottom: 10px">
+        <el-col :span="20" align="left" style="text-align: left">
+          <el-form :inline="true" :model="query" align="left" style="text-align: left;width: 1080px">
+            <el-form-item style="margin-bottom: 10px;margin-right: 0">
               <el-upload ref="upload" class="upload img" :action="uploadUrl" name="file" drag
                          :on-success="handleSuccess" :before-upload="beforeAvatarUpload" size="medium"
                          :auto-upload="true" :show-file-list="false">
-                <div v-if="!query.faceUrl" style="height:34px;vertical-align:middle;text-align: center">
-                  <i class="fa fa-photo fa-lg"></i>上传头像
+                <div v-if="!query.faceUrl"
+                     style="height:34px;vertical-align:middle;text-align: center;font-size: 12px;line-height: 34px">
+                  <i class="fa fa-photo fa-lg" style="margin-right: 4px;font-size: 18px"></i>上传头像
                 </div>
-                <el-row v-if="query.faceUrl" style="height:34px;padding:0;margin:0">
+                <el-row v-if="query.faceUrl" style="height:34px;padding:0;margin:0;line-height: 34px">
                   <el-col :span="12">
                     <img :src="query.faceUrl" style="height:34px;margin:0;padding:0">
                   </el-col>
                   <el-col :span="12">
-                    <el-button type="text" style="margin-left:5px" @click.stop="clearImg()">清除</el-button>
+                    <el-button type="text" style="height:34px;margin-left:5px" size="small" @click.stop="clearImg()">清除
+                    </el-button>
                   </el-col>
                 </el-row>
               </el-upload>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-tooltip class="item" effect="dark" content="相似度" placement="bottom">
+            <el-form-item style="margin-bottom: 10px;margin-left: -5px" class="upload">
+              <el-tooltip effect="dark" content="相似度" placement="bottom">
                 <el-input-number v-model="query.similarThreshold" controls-position="right" :min="50" placeholder="相似度"
-                                 :max="100" size="medium" style="width:100px" :precision="0"></el-input-number>
+                                 :max="100" size="medium" style="width:88px" :precision="0"></el-input-number>
               </el-tooltip>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="人员编号" v-model="query.faceId" :maxlength="32"
-                        style="width: 200px" size="medium"></el-input>
-            </el-form-item>
+            <!--<el-form-item style="margin-bottom: 10px">-->
+            <!--<el-input placeholder="人员编号" v-model="query.faceId" :maxlength="32"-->
+            <!--style="width: 180px" size="medium"></el-input>-->
+            <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="15"
                         style="width: 180px" size="medium"></el-input>
@@ -58,7 +60,7 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="2" align="left" style="text-align: left" v-show="getButtonVial('person:count')">
+        <el-col :span="4" align="right" style="text-align: right" v-show="getButtonVial('person:count')">
           <label class="el-form-item__label" style="font-size:16px"><span
             style="font-size:12px;color:#999">档案总数 </span>{{personCount}}<span
             style="font-size:12px;color:#999"> 个</span></label>
@@ -67,8 +69,8 @@
       <el-table ref="table" :data="list10" v-loading="listLoading" class="center-block" stripe
                 :height="tableHeight" :max-height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="人员编号" prop="faceId" min-width="160"
-                         max-width="220" :formatter="formatterAddress"></el-table-column>
+        <!--<el-table-column align="left" label="人员编号" prop="faceId" min-width="160"-->
+        <!--max-width="220" :formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="110"
                          max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
@@ -94,17 +96,17 @@
             <span v-show="!scope.row.imsiList||scope.row.imsiList.length==0">{{'--'}}</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="年龄段" prop="startAge" min-width="60" max-width="150"
+        <el-table-column align="left" label="年龄段" prop="startAge" min-width="100" max-width="180"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="150"
+        <el-table-column align="left" label="性别" prop="sex" min-width="100" max-width="180"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="最近采集时间" prop="lastAppearTime" min-width="170"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="最近采集时间" prop="lastAppearTime" min-width="180"
+                         max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="最近采集场所" prop="lastPlaceName" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="碰撞时间" prop="uptime" min-width="170"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
+        <!--<el-table-column align="left" label="碰撞时间" prop="uptime" min-width="170"-->
+        <!--max-width="200" :formatter="formatterAddress"></el-table-column>-->
+        <el-table-column align="left" label="操作" min-width="130" max-width="180" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('archives:detail')">查看人员档案
             </el-button>

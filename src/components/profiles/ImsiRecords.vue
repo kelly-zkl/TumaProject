@@ -46,10 +46,10 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"
-                    style="width: 160px"></el-input>
-        </el-form-item>
+        <!--<el-form-item style="margin-bottom: 10px">-->
+        <!--<el-input placeholder="设备ID" v-model="query.deviceId" :maxlength="30" size="medium"-->
+        <!--style="width: 160px"></el-input>-->
+        <!--</el-form-item>-->
         <el-form-item style="margin-bottom: 10px">
           <el-input v-model="query.regional" placeholder="IMSI归属地" size="medium" style="width: 160px"
                     :maxlength=20></el-input>
@@ -66,19 +66,19 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" prop="imsi" label="IMSI" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150" max-width="200"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="200"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="placeName" label="采集场所" min-width="150" max-width="200"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="uptime" label="采集时间" min-width="170" max-width="200"
-                         :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="isp" label="运营商" max-width="150" min-width="100"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="netType" label="网络类型" max-width="150" min-width="100"
-                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" prop="netType" label="网络类型" min-width="100"
+                         max-width="150" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="IMSI归属地" max-width="200" min-width="150" prop="regional"
+                         :formatter="formatterAddress"></el-table-column>
+        <!--<el-table-column align="left" prop="deviceName" label="设备标识" min-width="150" max-width="200"-->
+        <!--:formatter="formatterAddress"></el-table-column>-->
+        <!--<el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="200"-->
+        <!--:formatter="formatterAddress"></el-table-column>-->
+        <el-table-column align="left" prop="placeName" label="采集场所" min-width="150" max-width="200"
+                         :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" prop="uptime" label="采集时间" min-width="180" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
           <template slot-scope="scope">

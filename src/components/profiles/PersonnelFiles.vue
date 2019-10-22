@@ -65,28 +65,31 @@
             <el-tab-pane label="IMSI记录" name="second" style="padding-top: 10px">
               <FetchIMSIRecords ref="imsi"></FetchIMSIRecords>
             </el-tab-pane>
-            <el-tab-pane label="人脸记录" name="three" style="padding-top: 10px">
-              <FetchImgRecords ref="img"></FetchImgRecords>
-            </el-tab-pane>
+            <!--<el-tab-pane label="人脸记录" name="three" style="padding-top: 10px">-->
+            <!--<FetchImgRecords ref="img"></FetchImgRecords>-->
+            <!--</el-tab-pane>-->
           </el-tabs>
         </el-col>
       </el-row>
       <div v-show="activeItem=='first'">
         <el-row :gutter="10">
           <el-col :span="12">
-            <el-table :data="imsiList" class="center-block" :height="424">
+            <el-table :data="imsiList" class="center-block" :height="424" :row-style="tableImsiClass">
               <el-table-column label="当前关联的IMSI信息">
                 <el-table-column align="left" prop="imsi" label="IMSI" min-width="120" max-width="150"
                                  :formatter="formatterAddress"></el-table-column>
-                <el-table-column align="left" prop="ispDes" label="运营商" min-width="80" max-width="120"
+                <el-table-column align="left" prop="ispDes" label="运营商" min-width="60" max-width="100"
                                  :formatter="formatterAddress"></el-table-column>
                 <el-table-column align="left" prop="regional" label="IMSI归属地" min-width="100"
                                  max-width="150" :formatter="formatterAddress"></el-table-column>
                 <el-table-column align="left" prop="weightDes" label="置信度" min-width="80"
-                                 max-width="120" :formatter="formatterAddress"></el-table-column>
-                <el-table-column align="left" label="操作" min-width="60" max-width="100">
+                                 max-width="100" :formatter="formatterAddress"></el-table-column>
+                <el-table-column align="left" label="操作" min-width="100" max-width="120">
                   <template slot-scope="scope">
-                    <el-button type="text" @click="gotoPathLine(scope)" v-show="getButtonVial('route:query')">轨迹
+                    <el-button type="text" @click="gotoPathLine(scope,0)" v-show="getButtonVial('route:query')">轨迹
+                    </el-button>
+                    <el-button type="text" @click="gotoCarList(scope.$index)">关联车牌
+                      <i class="el-icon-caret-right" v-show="scope.$index==clickIndx"></i>
                     </el-button>
                   </template>
                 </el-table-column>
@@ -94,8 +97,8 @@
             </el-table>
           </el-col>
           <el-col :span="12">
-            <el-table :data="carList" class="center-block" :height="424">
-              <el-table-column label="当前关联的车辆信息">
+            <el-table :data="carList" class="center-block" :height="424" v-loading="listLoading">
+              <el-table-column label="IMSI关联的车牌信息">
                 <el-table-column align="left" prop="sceneUrl" label="车辆图" min-width="120" max-width="150">
                   <template slot-scope="scope">
                     <div style="height: 84px;line-height:84px">
@@ -113,6 +116,12 @@
                                  max-width="120" :formatter="formatterAddress"></el-table-column>
                 <el-table-column align="left" prop="relevancy" label="置信度" min-width="80"
                                  max-width="120" :formatter="formatterAddress"></el-table-column>
+                <el-table-column align="left" label="操作" min-width="80" max-width="100">
+                  <template slot-scope="scope">
+                    <el-button type="text" @click="gotoPathLine(scope,1)" v-show="getButtonVial('route:query')">车辆轨迹
+                    </el-button>
+                  </template>
+                </el-table-column>
               </el-table-column>
             </el-table>
           </el-col>
@@ -197,11 +206,11 @@
     data() {
       return {
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 425,
-        activeItem: 'first', bigUrl: '',
+        activeItem: 'first', bigUrl: '', listLoading: false,
         runModifyPerson: false, runBigPic: false, person: {},
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
         provinceList: JSON.parse(localStorage.getItem("areas")),
-        selectedOptions2: [],
+        selectedOptions2: [], clickIndx: 0,
         faceId: this.$route.query.faceId || '',
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
@@ -212,6 +221,15 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      gotoCarList(idx) {
+        this.clickIndx = idx;
+        this.getCarList();
+      },
+      tableImsiClass(row) {
+        if (row.rowIndex === this.clickIndx) {
+          return 'background-color: #EBFAFF'
+        }
       },
       //进入重点人员档案
       gotoVipPerson(row) {
@@ -226,7 +244,6 @@
       handleType(val) {
         if (this.activeItem == 'first') {
           this.getImsiList();
-          this.getCarList();
           this.getPersons();
         } else if (this.activeItem == 'second') {
           this.$nextTick(() => {
@@ -305,6 +322,7 @@
               });
             }
             localStorage.setItem("pathImsi", JSON.stringify(imsis));
+            this.getCarList();
           }
         }).catch((err) => {
           this.imsiList = [];
@@ -313,7 +331,9 @@
       },
       //获取关联车辆
       getCarList() {
-        this.$post('person/carList', {faceId: this.faceId}).then((data) => {
+        this.listLoading = true;
+        this.$post('person/carList', {faceId: this.faceId, imsi: this.imsiList[this.clickIndx].imsi}).then((data) => {
+          this.listLoading = false;
           if ("000000" === data.code) {
             let car = [];
             this.carList = data.data ? data.data : [];
@@ -327,6 +347,7 @@
           }
         }).catch((err) => {
           this.carList = [];
+          this.listLoading = false;
           this.$message.error(err);
         });
       },
@@ -366,11 +387,15 @@
           this.$message.error(err);
         });
       },
-      gotoPathLine(scope) {
-        var qTime = [new Date((formatDate(new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
+      gotoPathLine(scope, val) {
+        let qTime = [new Date((formatDate(new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         localStorage.setItem("pathTime", JSON.stringify(qTime));
-        let routeData = this.$router.resolve({path: '/pathLine', query: {imsi: 1, face: 0, idx: scope.$index}});
+        let query = {imsi: 1, car: 0, idx: scope.$index};
+        if (val == 1) {
+          query = {imsi: 0, car: 1, idx: scope.$index};
+        }
+        let routeData = this.$router.resolve({path: '/pathLine', query: query});
         window.open(routeData.href, '_blank');
       },
       //根据区域码找到对应的省市县编码

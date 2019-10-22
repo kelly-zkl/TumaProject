@@ -25,8 +25,8 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-tooltip class="item" effect="dark" content="相似度" placement="bottom">
-                <el-input-number v-model="query.similarThreshold" controls-position="right" :min="65" placeholder="相似度"
+              <el-tooltip class="item" effect="dark" content="告警比对相似度" placement="bottom">
+                <el-input-number v-model="query.similar" controls-position="right" :min="65" placeholder="相似度"
                                  :max="100" size="medium" style="width:100px" :precision="0"></el-input-number>
               </el-tooltip>
             </el-form-item>
@@ -78,8 +78,8 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警场所" prop="placeName"
                          min-width="150" max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备标识" prop="deviceName"
-                         min-width="150" max-width="200" :formatter="formatterAddress"></el-table-column>
+        <!--<el-table-column align="left" label="设备标识" prop="deviceName"-->
+        <!--min-width="150" max-width="200" :formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" label="告警时间" prop="createTime"
                          min-width="180" max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警状态" prop="status" min-width="120" max-width="160"
@@ -90,8 +90,8 @@
             <span style="color:#999" v-show="scope.row.status == 3">误报</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="采集时间" prop="catchTime"
-                         min-width="180" max-width="200" :formatter="formatterAddress"></el-table-column>
+        <!--<el-table-column align="left" label="采集时间" prop="catchTime"-->
+        <!--min-width="180" max-width="200" :formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" label="管控对象" prop="faceUrl"
                          min-width="120" max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
@@ -333,8 +333,6 @@
         this.isSearch = true;
         this.qTime = '';
         this.query = {size: 100};
-        let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
-        this.query.similarThreshold = param ? parseInt(param) : 65;
 
         this.getImgData();
       },
