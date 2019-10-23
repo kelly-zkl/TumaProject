@@ -18,13 +18,7 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 120px">
-                <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
+            <el-form-item style="margin-bottom: 10px" label="告警比对相似度">
               <el-tooltip class="item" effect="dark" content="告警比对相似度" placement="bottom">
                 <el-input-number v-model="query.similar" controls-position="right" :min="65" placeholder="相似度"
                                  :max="100" size="medium" style="width:100px" :precision="0"></el-input-number>
@@ -38,6 +32,12 @@
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearImgData()">重置</el-button>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-select v-model="query.status" placeholder="告警状态" size="medium" style="width: 120px">
+                <el-option v-for="item in statuses" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="年龄段" style="margin-bottom: 10px" v-show="isMore">
               <el-input-number v-model="query.startAge" controls-position="right" :min="1"
@@ -72,6 +72,18 @@
             </div>
           </template>
         </el-table-column>
+        <el-table-column align="left" label="管控对象" prop="faceUrl"
+                         min-width="120" max-width="200" :formatter="formatterAddress">
+          <template slot-scope="scope">
+            <div style="height: 90px;line-height:90px">
+              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
+                   @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
+                   style="max-width: 90px;max-height:90px;border-radius: 6px;vertical-align: middle"/>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="比对相似度" prop="similarThreshold" min-width="90"
+                         max-width="120" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="年龄段" prop="age" min-width="80" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" min-width="80" max-width="120"
@@ -92,18 +104,6 @@
         </el-table-column>
         <!--<el-table-column align="left" label="采集时间" prop="catchTime"-->
         <!--min-width="180" max-width="200" :formatter="formatterAddress"></el-table-column>-->
-        <el-table-column align="left" label="管控对象" prop="faceUrl"
-                         min-width="120" max-width="200" :formatter="formatterAddress">
-          <template slot-scope="scope">
-            <div style="height: 90px;line-height:90px">
-              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
-                   @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
-                   style="max-width: 90px;max-height:90px;border-radius: 6px;vertical-align: middle"/>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="80"
-                         max-width="120" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)"
@@ -333,6 +333,8 @@
         this.isSearch = true;
         this.qTime = '';
         this.query = {size: 100};
+        let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
+        this.query.similar = param ? parseInt(param) : 65;
 
         this.getImgData();
       },

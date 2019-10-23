@@ -74,19 +74,13 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('disposition:query')">
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'&&getButtonVial('disposition:query')">
           <el-select v-model="query.dispositionTaskId" placeholder="预警模型" size="medium" style="width: 150px" clearable>
             <el-option v-for="item in controlList" :key="item.id" :label="item.taskName" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='T'&&getButtonVial('case:query')">
-          <el-select v-model="query.caseId" placeholder="关联案件" size="medium" style="width: 150px" clearable>
-            <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
+        <el-form-item style="margin-bottom: 10px" label="告警比对相似度">
           <el-tooltip class="item" effect="dark" content="告警比对相似度" placement="bottom">
             <el-input-number v-model="query.similar" controls-position="right" :min="65" placeholder="相似度"
                              :max="100" size="medium" style="width:100px" :precision="0"></el-input-number>
@@ -102,9 +96,9 @@
         <el-form-item style="margin-bottom: 10px">
           <el-button size="medium" @click="clearData()">重置</el-button>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'&&isMore&&getButtonVial('case:query')">
-          <el-select v-model="query.caseId" placeholder="关联案件" size="medium" style="width: 150px" clearable>
-            <el-option v-for="item in cases" :key="item.id" :label="item.caseName" :value="item.id">
+        <el-form-item style="margin-bottom: 10px" v-show="activeItem=='H'&&isMore&&getButtonVial('disposition:query')">
+          <el-select v-model="query.dispositionTaskId" placeholder="预警模型" size="medium" style="width: 150px" clearable>
+            <el-option v-for="item in controlList" :key="item.id" :label="item.taskName" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
@@ -141,6 +135,18 @@
             </div>
           </template>
         </el-table-column>
+        <el-table-column align="left" label="管控对象" prop="faceUrl" min-width="120"
+                         max-width="180" :formatter="formatterAddress">
+          <template slot-scope="scope">
+            <div style="height: 90px;line-height:90px">
+              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
+                   @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
+                   style="max-width: 90px;max-height:90px;border-radius:6px;vertical-align:middle"/>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="比对相似度" prop="similarThreshold" min-width="90"
+                         max-width="120" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="年龄段" prop="age" min-width="60" max-width="120"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="性别" prop="sex" min-width="60" max-width="120"
@@ -165,18 +171,6 @@
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="关联案件" prop="caseName" min-width="140"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="管控对象" prop="faceUrl" min-width="120"
-                         max-width="180" :formatter="formatterAddress">
-          <template slot-scope="scope">
-            <div style="height: 90px;line-height:90px">
-              <img v-bind:src="scope.row.faceUrl?scope.row.faceUrl:imgPath"
-                   @click="bigUrl=scope.row.faceUrl;runBigPic=true" :onerror="img404"
-                   style="max-width: 90px;max-height:90px;border-radius:6px;vertical-align:middle"/>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column align="left" label="相似度" prop="similarThreshold" min-width="80"
-                         max-width="120" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="110" max-width="150" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)"
@@ -536,6 +530,7 @@
         delete this.query['faceUrl'];
         let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
         this.query.similarThreshold = param ? parseInt(param) : 65;
+        this.query.similar = param ? parseInt(param) : 65;
         if (this.activeItem === 'H') {
           this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 60 * 60 * 24 * 7 * 1000,
             new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
@@ -601,6 +596,7 @@
     mounted() {
       let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
       this.query.similarThreshold = param ? parseInt(param) : 65;
+      this.query.similar = param ? parseInt(param) : 65;
       this.getTask();
       this.getControl();
       this.getCases();

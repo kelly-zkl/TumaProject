@@ -222,10 +222,6 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="采集场所" prop="placeName" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150" max-width="200"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150" max-width="200"
-                           :formatter="formatterAddress"></el-table-column>
         </el-table>
         <div class="block" style="margin: 20px 0" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="page"

@@ -70,7 +70,7 @@
                 :height="tableHeight" :max-height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <!--<el-table-column align="left" label="人员编号" prop="faceId" min-width="160"-->
-        <!--max-width="220" :formatter="formatterAddress"></el-table-column>-->
+                         <!--max-width="220" :formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="110"
                          max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">

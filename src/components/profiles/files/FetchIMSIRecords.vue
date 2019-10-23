@@ -52,10 +52,6 @@
                          max-width="220" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="uptime" label="采集时间" min-width="180"
                          max-width="220" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150"
-                         max-width="220" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150"
-                         max-width="220" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="120" max-width="160" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoImsiDetail(scope.row)">查看详情</el-button>
