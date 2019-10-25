@@ -20,7 +20,7 @@
             </el-form-item>
             <el-form-item style="margin-bottom: 10px" label="告警比对相似度">
               <el-tooltip class="item" effect="dark" content="告警比对相似度" placement="bottom">
-                <el-input-number v-model="query.similar" controls-position="right" :min="65" placeholder="相似度"
+                <el-input-number v-model="query.similar" controls-position="right" :min="50" placeholder="相似度"
                                  :max="100" size="medium" style="width:100px" :precision="0"></el-input-number>
               </el-tooltip>
             </el-form-item>

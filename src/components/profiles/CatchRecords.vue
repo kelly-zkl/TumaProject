@@ -31,7 +31,7 @@
         </el-form-item>
         <el-form-item style="margin-bottom: 10px;margin-left: -5px" class="upload">
           <el-tooltip class="item" effect="dark" content="相似度" placement="bottom">
-            <el-input-number v-model="query.similarThreshold" controls-position="right" :min="65" placeholder="相似度"
+            <el-input-number v-model="query.similarThreshold" controls-position="right" :min="50" placeholder="相似度"
                              :max="100" size="medium" style="width:88px" :precision="0"></el-input-number>
           </el-tooltip>
         </el-form-item>
