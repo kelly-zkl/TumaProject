@@ -182,10 +182,10 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150" max-width="200"
-                           :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="采集地点" prop="deviceName" min-width="150" max-width="200"
-                           :formatter="formatterAddress"></el-table-column>
+          <!--<el-table-column align="left" label="设备ID" prop="deviceId" min-width="150" max-width="200"-->
+          <!--:formatter="formatterAddress"></el-table-column>-->
+          <!--<el-table-column align="left" label="采集地点" prop="deviceName" min-width="150" max-width="200"-->
+          <!--:formatter="formatterAddress"></el-table-column>-->
           <el-table-column align="left" label="操作" min-width="120" max-width="180" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoImsi(scope.row)"
@@ -312,8 +312,8 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="采集场所" prop="deviceName" min-width="125"
                            max-width="250" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+          <!--<el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"-->
+          <!--max-width="250" :formatter="formatterAddress"></el-table-column>-->
           <!--<el-table-column align="left" label="操作" min-width="125" max-width="250">-->
           <!--<template slot-scope="scope">-->
           <!--<el-button type="text" @click="gotoImsi(scope.row)" v-show="getButtonVial('follow:queryRecord')">查看IMSI-->

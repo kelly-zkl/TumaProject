@@ -34,10 +34,10 @@
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()" :loading="listLoading">重置</el-button>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px" v-show="isMore">
-              <el-input v-model="query.deviceId" placeholder="设备ID" style="width: 160px" size="medium"
-                        :maxlength=30></el-input>
-            </el-form-item>
+            <!--<el-form-item style="margin-bottom: 10px" v-show="isMore">-->
+            <!--<el-input v-model="query.deviceId" placeholder="设备ID" style="width: 160px" size="medium"-->
+            <!--:maxlength=30></el-input>-->
+            <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px" v-show="isMore">
               <el-input v-model="query.regional" placeholder="IMSI归属地" style="width: 160px" size="medium"
                         :maxlength=20></el-input>
@@ -64,10 +64,10 @@
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="采集时间" prop="uptime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
+        <!--<el-table-column align="left" label="设备标识" prop="deviceName" min-width="150"-->
+        <!--max-width="200" :formatter="formatterAddress"></el-table-column>-->
+        <!--<el-table-column align="left" label="设备ID" prop="deviceId" min-width="150"-->
+        <!--max-width="200" :formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" label="操作" min-width="110" max-width="130" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoImsi(scope.row.imsi)"

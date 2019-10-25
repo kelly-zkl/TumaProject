@@ -24,10 +24,6 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="设备ID" v-model="queryImsi.deviceId" :maxlength="30"
-                    style="width: 180px" size="medium"></el-input>
-        </el-form-item>
         <!--<el-form-item style="margin-bottom: 10px">-->
         <!--<el-button type="text" size="medium" @click="isMore=!isMore">{{isMore?'收起条件':'更多条件'}}</el-button>-->
         <!--</el-form-item>-->

@@ -16,10 +16,10 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="输入设备ID" v-model="query.deviceId" :maxlength="30"
-                    style="width: 180px" size="medium"></el-input>
-        </el-form-item>
+        <!--<el-form-item style="margin-bottom: 10px">-->
+        <!--<el-input placeholder="输入设备ID" v-model="query.deviceId" :maxlength="30"-->
+        <!--style="width: 180px" size="medium"></el-input>-->
+        <!--</el-form-item>-->
         <el-form-item style="margin-bottom: 10px">
           <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px">
             <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
@@ -61,10 +61,6 @@
         <el-table-column align="left" label="采集场所" prop="placeName" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="采集时间" prop="catchTime" min-width="180" max-width="220"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备标识" prop="deviceName" min-width="180" max-width="220"
-                         :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备ID" prop="deviceId" min-width="180" max-width="220"
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">

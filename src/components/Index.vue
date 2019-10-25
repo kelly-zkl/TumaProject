@@ -80,7 +80,7 @@
                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                     <span style="display:inline-block;font-size:12px;color:#5F6165;margin:5px 0">请选择人脸照片。支持：JPG、JPEG、PNG格式，且文件大小不超过2M。</span>
                   </el-upload>
-                  <el-tooltip effect="dark" content="相似度阈值" placement="bottom">
+                  <el-tooltip effect="dark" content="相似度阈值" placement="right-start">
                     <el-slider v-model="similarThreshold" :min="50" :max="100"
                                style="width:200px;margin-left: 5px"></el-slider>
                   </el-tooltip>

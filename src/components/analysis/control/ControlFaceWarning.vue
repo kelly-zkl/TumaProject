@@ -90,8 +90,6 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警场所" prop="placeName"
                          min-width="150" max-width="200" :formatter="formatterAddress"></el-table-column>
-        <!--<el-table-column align="left" label="设备标识" prop="deviceName"-->
-        <!--min-width="150" max-width="200" :formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" label="告警时间" prop="createTime"
                          min-width="180" max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警状态" prop="status" min-width="120" max-width="160"

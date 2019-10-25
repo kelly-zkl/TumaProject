@@ -153,8 +153,6 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警场所" prop="placeName" min-width="140"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <!--<el-table-column align="left" label="设备标识" prop="deviceName" min-width="140"-->
-        <!--max-width="200" :formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" label="告警时间" prop="createTime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="告警状态" prop="status" min-width="80" max-width="120"

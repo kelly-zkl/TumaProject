@@ -62,10 +62,10 @@
                            max-width="120" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="IMSI归属地" prop="regional" min-width="125"
                            max-width="200" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"
-                           max-width="200" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="采集地点" prop="deviceName" min-width="125"
-                           max-width="200" :formatter="formatterAddress"></el-table-column>
+          <!--<el-table-column align="left" label="设备ID" prop="deviceId" min-width="125"-->
+          <!--max-width="200" :formatter="formatterAddress"></el-table-column>-->
+          <!--<el-table-column align="left" label="采集地点" prop="deviceName" min-width="125"-->
+          <!--max-width="200" :formatter="formatterAddress"></el-table-column>-->
         </el-table>
         <div class="block" style="margin: 20px 0" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
