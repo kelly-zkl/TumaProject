@@ -560,13 +560,14 @@
           this.list = [];
           this.list10 = [];
           delete this.query['pageTime'];
+          delete this.query['pageFaceId'];
           this.isSearch = false;
         }
         this.listLoading = true;
         this.$post('person/queryWithCommonPerson', this.query, undefined, undefined, "multi").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
-            if (this.query.pageTime && !this.isSearch) {
+            if (this.query.pageTime && this.query.pageFaceId && !this.isSearch) {
               this.list = this.list.concat(data.data);
             } else {
               this.list = data.data;
