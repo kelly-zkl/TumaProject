@@ -527,8 +527,7 @@
         this.isSearch = true;
         delete this.query['faceUrl'];
         let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
-        this.query.similarThreshold = param ? parseInt(param) : 65;
-        this.query.similar = param ? parseInt(param) : 65;
+
         if (this.activeItem === 'H') {
           this.qTime = [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 60 * 60 * 24 * 7 * 1000,
             new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
@@ -538,7 +537,11 @@
             new Date((formatDate(new Date(), 'yyyy-MM-dd') + " " + this.time1[1]).replace(/-/g, '/')).getTime()];
         }
 
-        this.getData();
+        this.$nextTick(() => {
+          this.query.similarThreshold = param ? parseInt(param) : 65;
+          this.query.similar = param ? parseInt(param) : 65;
+          this.getData();
+        });
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
@@ -593,8 +596,10 @@
     },
     mounted() {
       let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
-      this.query.similarThreshold = param ? parseInt(param) : 65;
-      this.query.similar = param ? parseInt(param) : 65;
+      this.$nextTick(() => {
+        this.query.similarThreshold = param ? parseInt(param) : 65;
+        this.query.similar = param ? parseInt(param) : 65;
+      });
       this.getTask();
       this.getControl();
       this.getCases();

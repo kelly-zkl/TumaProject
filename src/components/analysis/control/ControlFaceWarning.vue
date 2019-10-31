@@ -332,9 +332,10 @@
         this.qTime = '';
         this.query = {size: 100};
         let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
-        this.query.similar = param ? parseInt(param) : 65;
-
-        this.getImgData();
+        this.$nextTick(() => {
+          this.query.similar = param ? parseInt(param) : 65;
+          this.getImgData();
+        });
       },
       pageImgChange(index) {
         this.page = index;
@@ -399,6 +400,10 @@
       }
     },
     mounted() {
+      let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
+      this.$nextTick(() => {
+        this.query.similar = param ? parseInt(param) : 65;
+      });
     }
   }
 </script>

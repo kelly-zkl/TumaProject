@@ -11,7 +11,7 @@
       </el-row>
       <el-form :inline="true" :model="query" align="left" style="margin-top:15px;text-align:left;width:1300px">
         <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="车牌号" v-model="query.carLicense" :maxlength="7" size="medium"
+          <el-input placeholder="车牌号" v-model="query.carLicense" :maxlength=10 size="medium"
                     style="width: 160px"></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="activeItem == 'H'">

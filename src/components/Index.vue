@@ -656,7 +656,9 @@
                 }
                 if (item.code == 'image_search_threshold') {
                   this.systemParam.similarThreshold = parseInt(item.value);
-                  this.similarThreshold = this.systemParam.similarThreshold ? this.systemParam.similarThreshold : 65;
+                  this.$nextTick(() => {
+                    this.similarThreshold = this.systemParam.similarThreshold ? this.systemParam.similarThreshold : 65;
+                  });
                 }
                 if (item.code == 'image_warning_threshold') {
                   this.systemParam.warningThreshold = parseInt(item.value);

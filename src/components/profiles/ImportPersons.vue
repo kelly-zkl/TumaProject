@@ -140,20 +140,15 @@
   export default {
     data() {
       return {
-        isMore: false,
-        query: {size: 100},
-        qTime: [new Date((formatDate(new Date((new Date().getTime() - 7 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-          new Date((formatDate(new Date((new Date().getTime())), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
+        isMore: false, query: {size: 100},
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
-        statuses: [{label: '全部', value: ''}, {label: '待处理', value: '1'}, {label: '处理中', value: '2'},
-          {label: '已处理', value: '3'}, {label: '误报', value: '4'}],
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
-        areaList: [], count: 0, personCount: 0, list: [], list10: [], isShow: false, isFirst: true,
+        count: 0, personCount: 0, list: [], list10: [], isFirst: true,
         isSearch: false, firstPage: 0, page: 1, listLoading: false,
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
-        runBigPic: false, addPerson: {}, bigUrl: ''
+        runBigPic: false, bigUrl: ''
       }
     },
     methods: {
@@ -164,20 +159,6 @@
         delete this.query['faceUrl'];
         this.isSearch = true;
         this.getData()
-      },
-      handleChange(val) {
-        if (!val || val.length == 0) {
-          this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 7 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-            new Date((formatDate(new Date((new Date().getTime())), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
-        }
-        // if (val && val.length == 2) {
-        //   let bol = ((val[1] - val[0]) > 60 * 60 * 24 * 7 * 1000);
-        //   if (bol) {
-        //     this.$message.error('日期范围不能超过7天');
-        //     return;
-        //   }
-        // }
-        this.getData();
       },
       showMore() {
         this.isMore = !this.isMore;
@@ -286,13 +267,14 @@
       clearData() {
         this.list10 = [];
         this.query = {size: 100};
-        let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
-        this.query.similarThreshold = param ? parseInt(param) : 65;
-        this.qTime = [new Date((formatDate(new Date((new Date().getTime() - 7 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
-          new Date((formatDate(new Date((new Date().getTime())), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()];
         this.isSearch = true;
         delete this.query['faceUrl'];
-        this.getData();
+        let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
+
+        this.$nextTick(() => {
+          this.query.similarThreshold = param ? parseInt(param) : 65;
+          this.getData();
+        });
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
@@ -318,7 +300,9 @@
     },
     mounted() {
       let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
-      this.query.similarThreshold = param ? parseInt(param) : 65;
+      this.$nextTick(() => {
+        this.query.similarThreshold = param ? parseInt(param) : 65;
+      });
       this.getData();
       this.getPersonNum();
     }

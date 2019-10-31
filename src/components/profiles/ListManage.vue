@@ -626,8 +626,10 @@
         this.isSearch = true;
         delete this.query['faceUrl'];
         let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
-        this.query.similarThreshold = param ? parseInt(param) : 65;
-        this.getData();
+        this.$nextTick(() => {
+          this.query.similarThreshold = param ? parseInt(param) : 65;
+          this.getData();
+        });
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
@@ -657,7 +659,9 @@
         this.query.blackClassId = this.$route.query.id || '';
       }
       let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;
-      this.query.similarThreshold = param ? parseInt(param) : 65;
+      this.$nextTick(() => {
+        this.query.similarThreshold = param ? parseInt(param) : 65;
+      });
       this.getBlackTypes();
       this.getData();
     }
