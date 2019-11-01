@@ -29,13 +29,13 @@
                                  :max="100" size="medium" style="width:88px" :precision="0"></el-input-number>
               </el-tooltip>
             </el-form-item>
-            <!--<el-form-item style="margin-bottom: 10px">-->
-            <!--<el-input placeholder="人员编号" v-model="query.faceId" :maxlength="32"-->
-            <!--style="width: 180px" size="medium"></el-input>-->
-            <!--</el-form-item>-->
+            <el-form-item style="margin-bottom: 10px" v-if="isShow">
+              <el-input placeholder="人员编号" v-model="query.faceId" :maxlength="32"
+                        style="width: 170px" size="medium"></el-input>
+            </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="15"
-                        style="width: 180px" size="medium"></el-input>
+                        style="width: 170px" size="medium"></el-input>
             </el-form-item>
             <el-form-item label="年龄段" style="margin-bottom: 10px">
               <el-input-number v-model="query.startAge" controls-position="right" :min="1" :precision="0"
@@ -45,7 +45,7 @@
                                :max="200" style="width: 90px" size="medium" :precision="0"></el-input-number>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 100px" clearable>
+              <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 70px" clearable>
                 <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
             </el-form-item>
@@ -69,8 +69,8 @@
       <el-table ref="table" :data="list10" v-loading="listLoading" class="center-block" stripe
                 :height="tableHeight" :max-height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <!--<el-table-column align="left" label="人员编号" prop="faceId" min-width="160"-->
-        <!--max-width="220" :formatter="formatterAddress"></el-table-column>-->
+        <el-table-column align="left" label="人员编号" prop="faceId" min-width="160" v-if="isShow"
+                         max-width="220" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="人员图像" prop="faceUrl" min-width="110"
                          max-width="200" :formatter="formatterAddress">
           <template slot-scope="scope">
@@ -134,15 +134,15 @@
   </div>
 </template>
 <script>
-  import {globalValidImg, doubleValid, mobileValidator, mobileValidator2} from "../../assets/js/api";
-  import {formatDate, encryData, decryData, buttonValidator} from "../../assets/js/util";
+  import {globalValidImg} from "../../assets/js/api";
+  import {formatDate, decryData, buttonValidator} from "../../assets/js/util";
 
   export default {
     data() {
       return {
         isMore: false, query: {size: 100},
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
-        imgPath: require('../../assets/img/icon_people.png'),
+        imgPath: require('../../assets/img/icon_people.png'), isShow: false,
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         count: 0, personCount: 0, list: [], list10: [], isFirst: true,
@@ -303,6 +303,8 @@
       this.$nextTick(() => {
         this.query.similarThreshold = param ? parseInt(param) : 65;
       });
+      let acc = JSON.parse(decryData(sessionStorage.getItem("user"))).account;
+      this.isShow = (acc == 'superAdmin' ? true : false);
       this.getData();
       this.getPersonNum();
     }

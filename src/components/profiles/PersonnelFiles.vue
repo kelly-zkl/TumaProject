@@ -65,9 +65,9 @@
             <el-tab-pane label="IMSI记录" name="second" style="padding-top: 10px">
               <FetchIMSIRecords ref="imsi"></FetchIMSIRecords>
             </el-tab-pane>
-            <!--<el-tab-pane label="人脸记录" name="three" style="padding-top: 10px">-->
-            <!--<FetchImgRecords ref="img"></FetchImgRecords>-->
-            <!--</el-tab-pane>-->
+            <el-tab-pane label="人脸记录" name="three" style="padding-top: 10px" v-if="isShow">
+              <FetchImgRecords ref="img"></FetchImgRecords>
+            </el-tab-pane>
           </el-tabs>
         </el-col>
       </el-row>
@@ -198,7 +198,7 @@
 <script>
   import FetchImgRecords from './files/FetchImgRecords.vue';
   import FetchIMSIRecords from './files/FetchIMSIRecords.vue';
-  import {formatDate, buttonValidator, getAreaLable} from "../../assets/js/util";
+  import {formatDate, buttonValidator, getAreaLable, decryData} from "../../assets/js/util";
   import {nameValidator, numValid, isNull} from "../../assets/js/api";
 
   export default {
@@ -210,7 +210,7 @@
         runModifyPerson: false, runBigPic: false, person: {},
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
         provinceList: JSON.parse(localStorage.getItem("areas")),
-        selectedOptions2: [], clickIndx: 0,
+        selectedOptions2: [], clickIndx: 0, isShow: false,
         faceId: this.$route.query.faceId || '',
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
@@ -438,6 +438,8 @@
       }
     },
     mounted() {
+      let acc = JSON.parse(decryData(sessionStorage.getItem("user"))).account;
+      this.isShow = (acc == 'superAdmin' ? true : false);
       this.getUserData();
       this.handleType();
     }
