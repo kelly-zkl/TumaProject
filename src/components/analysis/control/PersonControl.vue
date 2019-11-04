@@ -194,14 +194,12 @@
       formatterAddress(row, column) {
         if (column.property === 'dispositionType') {
           return row.dispositionType == 0 ? '重点人员名单' : row.dispositionType == 1 ? '人脸|IMSI特征' : '--';
-        } else if (column.property === 'followType') {
-          return row.followType === "IMSI" ? 'IMSI' : row.followType === "FACE" ? '人脸' : row.followType === "MAC" ? 'MAC' : '--';
         } else if (column.property === 'startTime') {
           let start = row.startTime ? formatDate(new Date(row.startTime * 1000), 'yyyy-MM-dd') : '--';
           let end = row.endTime ? formatDate(new Date(row.endTime * 1000), 'yyyy-MM-dd') : '--';
           return start + " 至 " + end;
-        } else if (column.property === 'followCount') {
-          return row.followCount === 0 ? 0 : row.followCount;
+        } else if (column.property === 'warningCounts') {
+          return row[column.property] == undefined ? 0 : row[column.property];
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }
