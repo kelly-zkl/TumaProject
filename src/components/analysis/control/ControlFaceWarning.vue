@@ -13,7 +13,7 @@
             </el-form-item>
             <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
               <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable
-                         :filter-method="pinyinMatch" style="width: 180px">
+                         :filter-method="pinyinMatch" @focus="pinyinChange" style="width: 180px">
                 <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                 </el-option>
               </el-select>
@@ -144,19 +144,10 @@
         imgPath2: require('../../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
         img2404: "this.onerror='';this.src='" + require('../../../assets/img/icon_img.svg') + "'",
-        query: {size: 100},
-        qTime: '',
+        query: {size: 100}, qTime: '',
         statuses: [{label: '待处理', value: 0}, {label: '已处理', value: 2}, {label: '误报', value: 3}],
-        count: 0,
-        list: [],
-        list10: [],
-        isShow: false,
-        isFirst: true,
-        isSearch: false,
-        firstPage: 0,
-        page: 1,
-        sels: [],
-        listLoading: false,
+        count: 0, list: [], list10: [], isShow: false, isFirst: true, isSearch: false,
+        firstPage: 0, page: 1, sels: [], listLoading: false,
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         pickerBeginDate: {
@@ -214,12 +205,15 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      pinyinChange() {
+        this.places = this.placesCopy;
+      },
       //首字母搜索
       pinyinMatch(val) {
         if (val) {
-          var result = [];
+          let result = [];
           this.placesCopy.forEach((item) => {
-            var m = PinyinMatch.match(item.placeName, val);
+            let m = PinyinMatch.match(item.placeName, val);
             if (m) {
               result.push(item);
             }

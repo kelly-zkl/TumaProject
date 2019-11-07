@@ -183,7 +183,7 @@
                      v-show="getButtonVial('common:imsi:listImsiRecordBySpecialImsi')">
               <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
                 <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable
-                           :filter-method="pinyinMatch">
+                           :filter-method="pinyinMatch" @focus="pinyinChange">
                   <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                   </el-option>
                 </el-select>
@@ -252,32 +252,15 @@
   export default {
     data() {
       return {
-        listLoading: false,
-        runDealDetail: false,
-        activeItem: 'person',
+        listLoading: false, runDealDetail: false, activeItem: 'person',
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
-        id: this.$route.query.id || '',
-        imsi: this.$route.query.imsi || '',
-        taskId: this.$route.query.taskId || '',
+        id: this.$route.query.id || '', imsi: this.$route.query.imsi || '', taskId: this.$route.query.taskId || '',
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 60 * 60 * 24 * 7 * 1000,
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
-        dealDetail: {},
-        imsiDetail: {},
-        taskDetail: {},
-        imsiList: [],
-        persons: [],
-        places: [], placesCopy: [],
-        query: {size: 100},
-        count: 0,
-        list: [],
-        list10: [],
-        isShow: false,
-        isFirst: true,
-        isSearch: false,
-        firstPage: 0,
-        page: 1,
-        num: 5,
+        dealDetail: {}, imsiDetail: {}, taskDetail: {}, imsiList: [], persons: [], places: [], placesCopy: [],
+        query: {size: 100}, count: 0, list: [], list10: [], isShow: false, isFirst: true, isSearch: false,
+        firstPage: 0, page: 1, num: 5,
         pickerBeginDate: {
           shortcuts: [{
             text: '最近6小时',
@@ -333,12 +316,15 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      pinyinChange() {
+        this.places = this.placesCopy;
+      },
       //首字母搜索
       pinyinMatch(val) {
         if (val) {
-          var result = [];
+          let result = [];
           this.placesCopy.forEach((item) => {
-            var m = PinyinMatch.match(item.placeName, val);
+            let m = PinyinMatch.match(item.placeName, val);
             if (m) {
               result.push(item);
             }

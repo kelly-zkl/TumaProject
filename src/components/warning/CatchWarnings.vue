@@ -69,7 +69,7 @@
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
           <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable
-                     style="width: 160px" :filter-method="pinyinMatch">
+                     style="width: 160px" :filter-method="pinyinMatch" @focus="pinyinChange">
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
           </el-select>
@@ -205,10 +205,7 @@
   export default {
     data() {
       return {
-        runBigPic: false,
-        isMore: false,
-        bigUrl: '',
-        activeItem: 'T',
+        runBigPic: false, isMore: false, bigUrl: '', activeItem: 'T',
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 280,
         imgPath: require('../../assets/img/icon_people.png'),
         imgPath2: require('../../assets/img/icon_img.svg'),
@@ -219,22 +216,11 @@
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
         qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
-        count: 0,
-        list: [],
-        list10: [],
-        isShow: false,
-        isFirst: true,
-        isSearch: false,
-        firstPage: 0,
-        page: 1,
-        listLoading: false,
-        exportKey: 'warning:get:listFaceToday',
+        count: 0, list: [], list10: [], isShow: false, isFirst: true, isSearch: false,
+        firstPage: 0, page: 1, listLoading: false, exportKey: 'warning:get:listFaceToday',
         places: [], placesCopy: [], cases: [], controlList: [],
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
-        imgUrl: '',
-        showTip: false,
-        sels: [],
-        time1: ['00:00:00', '23:59:59'],
+        imgUrl: '', showTip: false, sels: [], time1: ['00:00:00', '23:59:59'],
         pickerBeginDate: {
           shortcuts: [{
             text: '最近6小时',
@@ -290,12 +276,15 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      pinyinChange() {
+        this.places = this.placesCopy;
+      },
       //首字母搜索
       pinyinMatch(val) {
         if (val) {
-          var result = [];
+          let result = [];
           this.placesCopy.forEach((item) => {
-            var m = PinyinMatch.match(item.placeName, val);
+            let m = PinyinMatch.match(item.placeName, val);
             if (m) {
               result.push(item);
             }

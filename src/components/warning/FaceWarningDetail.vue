@@ -196,7 +196,7 @@
               <!--</el-form-item>-->
               <el-form-item style="margin-bottom: 10px">
                 <el-select v-model="query.placeId" placeholder="告警场所" size="medium" filterable clearable
-                           :filter-method="pinyinMatch">
+                           :filter-method="pinyinMatch" @focus="pinyinChange">
                   <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                   </el-option>
                 </el-select>
@@ -238,7 +238,7 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="采集场所" prop="placeName" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-                           :formatter="formatterAddress"></el-table-column>
+          :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" min-width="120" max-width="180" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoDetail(scope.row)">查看大图</el-button>
@@ -296,34 +296,16 @@
   export default {
     data() {
       return {
-        runDealDetail: false,
-        dealDetail: {},
-        activeItem: 'person',
+        runDealDetail: false, dealDetail: {}, activeItem: 'person',
         imgPath: require('../../assets/img/icon_people.png'),
         imgPath2: require('../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         img2404: "this.onerror='';this.src='" + require('../../assets/img/icon_img.svg') + "'",
-        id: this.$route.query.id || '',
-        faceId: this.$route.query.faceId || '',
-        taskId: this.$route.query.taskId || '',
-        qTime: '',
-        faceDetail: {},
-        taskDetail: {},
-        faceList: [],
-        imsiList: [],
-        persons: [],
-        places: [], placesCopy: [],
-        query: {size: 100},
-        count: 0,
-        list: [],
-        list10: [],
-        isShow: false,
-        isFirst: true,
-        isSearch: false,
-        firstPage: 0,
-        page: 1,
-        listLoading: false,
-        timeStamp: new Date().getTime(),
+        id: this.$route.query.id || '', faceId: this.$route.query.faceId || '', taskId: this.$route.query.taskId || '',
+        qTime: '', faceDetail: {}, taskDetail: {}, faceList: [], imsiList: [], persons: [],
+        places: [], placesCopy: [], query: {size: 100}, count: 0, list: [], list10: [],
+        isShow: false, isFirst: true, isSearch: false, firstPage: 0, page: 1,
+        listLoading: false, timeStamp: new Date().getTime(),
         pickerBeginDate: {
           shortcuts: [{
             text: '最近6小时',
@@ -379,12 +361,15 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      pinyinChange() {
+        this.places = this.placesCopy;
+      },
       //首字母搜索
       pinyinMatch(val) {
         if (val) {
-          var result = [];
+          let result = [];
           this.placesCopy.forEach((item) => {
-            var m = PinyinMatch.match(item.placeName, val);
+            let m = PinyinMatch.match(item.placeName, val);
             if (m) {
               result.push(item);
             }

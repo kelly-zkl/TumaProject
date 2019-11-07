@@ -73,7 +73,7 @@
           <el-form :inline="true" :model="queryPath" align="left" style="text-align: left">
             <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
               <el-select v-model="queryPath.placeId" placeholder="场所" size="medium" filterable clearable
-                         :filter-method="pinyinMatch">
+                         :filter-method="pinyinMatch" @focus="pinyinChange">
                 <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                 </el-option>
               </el-select>
@@ -130,19 +130,10 @@
   export default {
     data() {
       return {
-        taskNo: this.$route.query.no || '',
-        results: [],
-        queryResult: {page: 1, size: 10},
-        queryPath: {page: 1, size: 10},
-        listLoading: false,
-        pathLoading: false,
-        runPathLine: false,
-        count: 0, count1: 0,
-        imsi: '',
-        records: [],
-        pathLines: [],
-        places: [], placesCopy: [],
-        sels: [],
+        taskNo: this.$route.query.no || '', results: [],
+        queryResult: {page: 1, size: 10}, queryPath: {page: 1, size: 10},
+        listLoading: false, pathLoading: false, runPathLine: false, count: 0, count1: 0,
+        imsi: '', records: [], pathLines: [], places: [], placesCopy: [], sels: [],
         uLogin: localStorage.getItem('login'),
         imgPath: require('../../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_img.svg') + "'",
@@ -153,12 +144,15 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      pinyinChange() {
+        this.places = this.placesCopy;
+      },
       //首字母搜索
       pinyinMatch(val) {
         if (val) {
-          var result = [];
+          let result = [];
           this.placesCopy.forEach((item) => {
-            var m = PinyinMatch.match(item.placeName, val);
+            let m = PinyinMatch.match(item.placeName, val);
             if (m) {
               result.push(item);
             }

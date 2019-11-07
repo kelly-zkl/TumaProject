@@ -22,7 +22,7 @@
           </el-form-item>
           <el-form-item label="分析场所" align="left" style="text-align: left">
             <el-select v-model="followTask.placeList" placeholder="分析场所" filterable multiple clearable
-                       collapse-tags style="width: 350px" :filter-method="pinyinMatch">
+                       collapse-tags style="width: 350px" :filter-method="pinyinMatch" @focus="pinyinChange">
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
@@ -180,6 +180,9 @@
       }
     },
     methods: {
+      pinyinChange() {
+        this.places = this.placesCopy;
+      },
       //首字母搜索
       pinyinMatch(val) {
         if (val) {

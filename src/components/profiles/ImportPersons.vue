@@ -31,7 +31,7 @@
             </el-form-item>
             <el-form-item style="margin-bottom: 10px" v-if="isShow">
               <el-input placeholder="人员编号" v-model="query.faceId" :maxlength="32"
-                        style="width: 170px" size="medium"></el-input>
+                        style="width: 160px" size="medium"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-input placeholder="IMSI" v-model="query.imsi" :maxlength="15"
@@ -45,7 +45,7 @@
                                :max="200" style="width: 90px" size="medium" :precision="0"></el-input-number>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 70px" clearable>
+              <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 80px" clearable>
                 <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
             </el-form-item>

@@ -41,7 +41,7 @@
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
           <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable
-                     style="width: 160px" :filter-method="pinyinMatch">
+                     style="width: 160px" :filter-method="pinyinMatch" @focus="pinyinChange">
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
           </el-select>
@@ -101,7 +101,7 @@
   import {formatDate, encryData, decryData, buttonValidator} from "../../assets/js/util";
   import PinyinMatch from 'pinyin-match';
 
-  var fileDownload = require('js-file-download');
+  let fileDownload = require('js-file-download');
   let md5 = require("crypto-js/md5");
 
   export default {
@@ -172,12 +172,15 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      pinyinChange() {
+        this.places = this.placesCopy;
+      },
       //首字母搜索
       pinyinMatch(val) {
         if (val) {
-          var result = [];
+          let result = [];
           this.placesCopy.forEach((item) => {
-            var m = PinyinMatch.match(item.placeName, val);
+            let m = PinyinMatch.match(item.placeName, val);
             if (m) {
               result.push(item);
             }
@@ -189,7 +192,7 @@
       },
       //导出数据
       confirmExport() {
-        var param = Object.assign({}, this.query);
+        let param = Object.assign({}, this.query);
         if (!!param.imsi) {
           if (!numValid(param.imsi) || param.imsi.length != 15) {
             this.$message.error('请输入15位正确的IMSI');

@@ -82,8 +82,10 @@
                     </el-col>
                     <el-form :model="item" align="left" label-width="140px" label-position="right">
                       <el-col :lg="19" :xl="21" align="left" style="text-align: left">
-                        <el-form-item label="IMSI伴随次数" style="margin:0;" align="left">{{item.fnIn?item.fnIn:'--'}}
+                        <el-form-item label="IMSI" style="margin:0;" align="left">{{item.imsi?item.imsi:'--'}}
                         </el-form-item>
+                        <!--<el-form-item label="IMSI伴随次数" style="margin:0;" align="left">{{item.fnIn?item.fnIn:'&#45;&#45;'}}-->
+                        <!--</el-form-item>-->
                         <el-form-item label="IMSI置信度" style="margin:0" align="left">
                           {{item.weight?(item.weight/10).toFixed(1)+'%':'--'}}
                         </el-form-item>
@@ -138,7 +140,7 @@
                      v-show="getButtonVial('common:imsi:listImsiRecordBySpecialImsi')">
               <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
                 <el-select v-model="query.placeId" placeholder="场所" size="medium" filterable clearable
-                           :filter-method="pinyinMatch">
+                           :filter-method="pinyinMatch" @focus="pinyinChange">
                   <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                   </el-option>
                 </el-select>
@@ -268,12 +270,15 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      pinyinChange() {
+        this.places = this.placesCopy;
+      },
       //首字母搜索
       pinyinMatch(val) {
         if (val) {
-          var result = [];
+          let result = [];
           this.placesCopy.forEach((item) => {
-            var m = PinyinMatch.match(item.placeName, val);
+            let m = PinyinMatch.match(item.placeName, val);
             if (m) {
               result.push(item);
             }

@@ -215,7 +215,8 @@
                         :label="item.type=='places'?'IMSI采集场所':item.type=='imsi'?'指定IMSI':'IMSI归属地'"
                         v-if="item.type!=='qTime'&&item.type!=='isps'">
             <el-select v-model="item.places" size="medium" filterable multiple collapse-tags style="width:430px"
-                       clearable v-if="item.type=='places'" placeholder="选择场所" :filter-method="pinyinMatch">
+                       clearable v-if="item.type=='places'" placeholder="选择场所" :filter-method="pinyinMatch"
+                       @focus="pinyinChange">
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
@@ -374,6 +375,9 @@
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      pinyinChange() {
+        this.places = this.placesCopy;
       },
       //首字母搜索
       pinyinMatch(val) {

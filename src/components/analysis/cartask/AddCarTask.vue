@@ -40,7 +40,7 @@
           </el-form-item>
           <el-form-item label="分析场所" align="left">
             <el-select v-model="carTask.placeList" placeholder="分析场所" filterable multiple clearable
-                       collapse-tags style="width: 350px" :filter-method="pinyinMatch">
+                       collapse-tags style="width: 350px" :filter-method="pinyinMatch" @focus="pinyinChange">
               <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
               </el-option>
             </el-select>
@@ -159,8 +159,7 @@
         listLoading: false, mapVisible: false, dialogPlace: false,
         query: {page: 1, size: 10}, count: 0, cases: [],
         carTask: {atype: 'imsi', interval: 120, placeList: []},
-        qTime: '', time2: ['00:00:00', '23:59:59'],
-        taskNo: this.$route.query.no || '',
+        qTime: '', time2: ['00:00:00', '23:59:59'], taskNo: this.$route.query.no || '',
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
         provinceList: JSON.parse(localStorage.getItem("areas")),
         areaList: [], places: [], placesCopy: [], placeList: [], placeList1: [], sels: [],
@@ -190,6 +189,9 @@
       }
     },
     methods: {
+      pinyinChange() {
+        this.places = this.placesCopy;
+      },
       //首字母搜索
       pinyinMatch(val) {
         if (val) {

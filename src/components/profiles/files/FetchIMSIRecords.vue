@@ -19,7 +19,7 @@
         </el-form-item>
         <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
           <el-select v-model="queryImsi.placeId" placeholder="场所" size="medium" filterable clearable
-                     :filter-method="pinyinMatch">
+                     :filter-method="pinyinMatch" @focus="pinyinChange">
             <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
             </el-option>
           </el-select>
@@ -68,19 +68,12 @@
   export default {
     data() {
       return {
-        isMore: false,
-        faceId: this.$route.query.faceId || '',
-        queryImsi: {size: 100},
+        isMore: false, faceId: this.$route.query.faceId || '', queryImsi: {size: 100},
         qTime: [new Date((formatDate(new Date((new Date().getTime() - 30 * 24 * 3600 * 1000)), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
           new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
-        sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
-        places: [], placesCopy: [], imsis: [], count: 0,
-        listLoading: false, list: [], list10: [],
-        isShow: false,
-        isFirst: true,
-        isSearch: false,
-        firstPage: 0,
-        page: 1,
+        sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}], places: [], placesCopy: [], imsis: [], count: 0,
+        listLoading: false, list: [], list10: [], isShow: false, isFirst: true,
+        isSearch: false, firstPage: 0, page: 1,
         pickerBeginDate: {
           shortcuts: [{
             text: '最近6小时',
@@ -136,12 +129,15 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      pinyinChange() {
+        this.places = this.placesCopy;
+      },
       //首字母搜索
       pinyinMatch(val) {
         if (val) {
-          var result = [];
+          let result = [];
           this.placesCopy.forEach((item) => {
-            var m = PinyinMatch.match(item.placeName, val);
+            let m = PinyinMatch.match(item.placeName, val);
             if (m) {
               result.push(item);
             }

@@ -15,7 +15,7 @@
             </el-form-item>
             <el-form-item style="margin-bottom: 10px" v-show="getButtonVial('place:query')">
               <el-select v-model="query.placeId" placeholder="安装场所" size="medium" filterable clearable
-                         :filter-method="pinyinMatch">
+                         :filter-method="pinyinMatch" @focus="pinyinChange">
                 <el-option v-for="item in places" :key="item.id" :label="item.placeName" :value="item.id">
                 </el-option>
               </el-select>
@@ -109,34 +109,30 @@
   export default {
     data() {
       return {
-        dialogWidth: isPC() ? '40%' : '90%',
-        labelWidth: isPC() ? '100px' : '80px',
+        dialogWidth: isPC() ? '40%' : '90%', labelWidth: isPC() ? '100px' : '80px',
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
-        labelPosition: 'right',
-        runningSetPlace: false,
-        activeItem: 'EXECUTION',
-        addPlace: {},
+        labelPosition: 'right', runningSetPlace: false, activeItem: 'EXECUTION', addPlace: {},
         query: {page: 1, size: 10},
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
         cameraTypes: [{value: 0, label: '人脸相机'}, {value: 1, label: '车牌相机'}],
         cameraStatus: [{value: 0, label: '在线'}, {value: 1, label: '故障'}, {value: 2, label: '离线'}],
         provinceList: JSON.parse(localStorage.getItem("areas")),
-        areaList: [],
-        count: 0,
-        listLoading: false,
-        deviceList: [], places: [], placesCopy: [],
+        areaList: [], count: 0, listLoading: false, deviceList: [], places: [], placesCopy: [],
       }
     },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
+      pinyinChange() {
+        this.places = this.placesCopy;
+      },
       //首字母搜索
       pinyinMatch(val) {
         if (val) {
-          var result = [];
+          let result = [];
           this.placesCopy.forEach((item) => {
-            var m = PinyinMatch.match(item.placeName, val);
+            let m = PinyinMatch.match(item.placeName, val);
             if (m) {
               result.push(item);
             }
