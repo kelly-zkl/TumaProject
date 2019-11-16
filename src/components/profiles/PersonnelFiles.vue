@@ -65,7 +65,7 @@
             <el-tab-pane label="IMSI记录" name="second" style="padding-top: 10px">
               <FetchIMSIRecords ref="imsi"></FetchIMSIRecords>
             </el-tab-pane>
-            <el-tab-pane label="人脸记录" name="three" style="padding-top: 10px" v-if="isShow">
+            <el-tab-pane label="人脸记录" name="three" style="padding-top: 10px" v-if="getButtonVial('person:showImg')">
               <FetchImgRecords ref="img"></FetchImgRecords>
             </el-tab-pane>
           </el-tabs>
@@ -73,58 +73,58 @@
       </el-row>
       <div v-show="activeItem=='first'">
         <el-row :gutter="10">
-          <el-col :span="12">
+          <el-col :span="24">
             <el-table :data="imsiList" class="center-block" :height="424" :row-style="tableImsiClass">
               <el-table-column label="当前关联的IMSI信息">
-                <el-table-column align="left" prop="imsi" label="IMSI" min-width="120" max-width="150"
+                <el-table-column align="left" prop="imsi" label="IMSI" min-width="120" max-width="160"
                                  :formatter="formatterAddress"></el-table-column>
                 <el-table-column align="left" prop="ispDes" label="运营商" min-width="60" max-width="100"
                                  :formatter="formatterAddress"></el-table-column>
-                <el-table-column align="left" prop="regional" label="IMSI归属地" min-width="100"
-                                 max-width="150" :formatter="formatterAddress"></el-table-column>
+                <el-table-column align="left" prop="regional" label="IMSI归属地" min-width="120"
+                                 max-width="160" :formatter="formatterAddress"></el-table-column>
                 <el-table-column align="left" prop="weightDes" label="置信度" min-width="80"
                                  max-width="100" :formatter="formatterAddress"></el-table-column>
                 <el-table-column align="left" label="操作" min-width="100" max-width="120">
                   <template slot-scope="scope">
                     <el-button type="text" @click="gotoPathLine(scope,0)" v-show="getButtonVial('route:query')">轨迹
                     </el-button>
-                    <el-button type="text" @click="gotoCarList(scope.$index)">关联车牌
-                      <i class="el-icon-caret-right" v-show="scope.$index==clickIndx"></i>
-                    </el-button>
+                    <!--<el-button type="text" @click="gotoCarList(scope.$index)">关联车牌-->
+                    <!--<i class="el-icon-caret-right" v-show="scope.$index==clickIndx"></i>-->
+                    <!--</el-button>-->
                   </template>
                 </el-table-column>
               </el-table-column>
             </el-table>
           </el-col>
-          <el-col :span="12">
-            <el-table :data="carList" class="center-block" :height="424" v-loading="listLoading">
-              <el-table-column label="IMSI关联的车牌信息">
-                <el-table-column align="left" prop="sceneUrl" label="车辆图" min-width="120" max-width="150">
-                  <template slot-scope="scope">
-                    <div style="height: 84px;line-height:84px">
-                      <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath" :onerror="img404"
-                           @click="bigUrl=scope.row.sceneUrl?scope.row.sceneUrl:imgPath;runBigPic=true"
-                           style="max-height:70px;border-radius: 4px;vertical-align:middle"/>
-                    </div>
-                  </template>
-                </el-table-column>
-                <el-table-column align="left" prop="carLicense" label="车牌号" min-width="100"
-                                 max-width="150" :formatter="formatterAddress"></el-table-column>
-                <el-table-column align="left" prop="carLicenseKind" label="牌号种类" min-width="80"
-                                 max-width="120" :formatter="formatterAddress"></el-table-column>
-                <el-table-column align="left" prop="carLicenseColor" label="牌号颜色" min-width="80"
-                                 max-width="120" :formatter="formatterAddress"></el-table-column>
-                <el-table-column align="left" prop="relevancy" label="置信度" min-width="80"
-                                 max-width="120" :formatter="formatterAddress"></el-table-column>
-                <el-table-column align="left" label="操作" min-width="80" max-width="100">
-                  <template slot-scope="scope">
-                    <el-button type="text" @click="gotoPathLine(scope,1)" v-show="getButtonVial('route:query')">车辆轨迹
-                    </el-button>
-                  </template>
-                </el-table-column>
-              </el-table-column>
-            </el-table>
-          </el-col>
+          <!--<el-col :span="12">-->
+          <!--<el-table :data="carList" class="center-block" :height="424" v-loading="listLoading">-->
+          <!--<el-table-column label="IMSI关联的车牌信息">-->
+          <!--<el-table-column align="left" prop="sceneUrl" label="车辆图" min-width="120" max-width="150">-->
+          <!--<template slot-scope="scope">-->
+          <!--<div style="height: 84px;line-height:84px">-->
+          <!--<img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath" :onerror="img404"-->
+          <!--@click="bigUrl=scope.row.sceneUrl?scope.row.sceneUrl:imgPath;runBigPic=true"-->
+          <!--style="max-height:70px;border-radius: 4px;vertical-align:middle"/>-->
+          <!--</div>-->
+          <!--</template>-->
+          <!--</el-table-column>-->
+          <!--<el-table-column align="left" prop="carLicense" label="车牌号" min-width="100"-->
+          <!--max-width="150" :formatter="formatterAddress"></el-table-column>-->
+          <!--<el-table-column align="left" prop="carLicenseKind" label="牌号种类" min-width="80"-->
+          <!--max-width="120" :formatter="formatterAddress"></el-table-column>-->
+          <!--<el-table-column align="left" prop="carLicenseColor" label="牌号颜色" min-width="80"-->
+          <!--max-width="120" :formatter="formatterAddress"></el-table-column>-->
+          <!--<el-table-column align="left" prop="relevancy" label="置信度" min-width="80"-->
+          <!--max-width="120" :formatter="formatterAddress"></el-table-column>-->
+          <!--<el-table-column align="left" label="操作" min-width="80" max-width="100">-->
+          <!--<template slot-scope="scope">-->
+          <!--<el-button type="text" @click="gotoPathLine(scope,1)" v-show="getButtonVial('route:query')">车辆轨迹-->
+          <!--</el-button>-->
+          <!--</template>-->
+          <!--</el-table-column>-->
+          <!--</el-table-column>-->
+          <!--</el-table>-->
+          <!--</el-col>-->
         </el-row>
         <div class="add-label" style="margin: 15px 0;color: #000;font-weight: bold" @click="getPersons()">疑似重点人员</div>
         <div class="person-main" v-if="persons.length>0">
@@ -210,7 +210,7 @@
         runModifyPerson: false, runBigPic: false, person: {},
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
         provinceList: JSON.parse(localStorage.getItem("areas")),
-        selectedOptions2: [], clickIndx: 0, isShow: false,
+        selectedOptions2: [], clickIndx: -1,
         faceId: this.$route.query.faceId || '',
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
@@ -322,7 +322,7 @@
               });
             }
             localStorage.setItem("pathImsi", JSON.stringify(imsis));
-            this.getCarList();
+            // this.getCarList();
           }
         }).catch((err) => {
           this.imsiList = [];
@@ -438,8 +438,6 @@
       }
     },
     mounted() {
-      let acc = JSON.parse(decryData(sessionStorage.getItem("user"))).account;
-      this.isShow = (acc == 'superAdmin' ? true : false);
       this.getUserData();
       this.handleType();
     }

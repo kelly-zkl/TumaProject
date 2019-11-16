@@ -89,15 +89,27 @@
         activeItem: 'EXECUTION',
         query: {page: 1, size: 10},
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 280,
-        count: 0,
+        count: 0, intervalid: null,
         listLoading: false,
         controlList: [],
         sels: []
       }
     },
+    //页面关闭时停止更新
+    beforeDestroy() {
+      clearInterval(this.intervalid);
+      this.intervalid = null;
+    },
     methods: {
       getButtonVial(msg) {
         return buttonValidator(msg);
+      },
+      statusTask() {
+        if (!this.intervalid) {
+          this.intervalid = setInterval(() => {
+            this.getData('task');
+          }, 10 * 1000);
+        }
       },
       checkboxInit(row, index) {
         if (row.threeFlag == 'QING_ZHI')
@@ -218,6 +230,7 @@
         this.pageChange(page);
       } else {
         this.getData();
+        this.statusTask();
       }
     }
   }

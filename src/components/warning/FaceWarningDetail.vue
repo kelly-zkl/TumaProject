@@ -138,9 +138,9 @@
                         <el-form-item label="置信度" style="margin:0" align="left">
                           {{item.imsiList&&item.imsiList.length>0?(item.imsiList[0].weight/10)+'%':'--'}}
                         </el-form-item>
-                        <el-form-item label="关联次数" style="margin:0" align="left">
-                          {{item.imsiList&&item.imsiList.length>0?item.imsiList[0].fnIn:'--'}}
-                        </el-form-item>
+                        <!--<el-form-item label="关联次数" style="margin:0" align="left">-->
+                        <!--{{item.imsiList&&item.imsiList.length>0?item.imsiList[0].fnIn:'&#45;&#45;'}}-->
+                        <!--</el-form-item>-->
                         <el-form-item label="相似度" style="margin:0" align="left">
                           {{item.similarThreshold?item.similarThreshold.toFixed(1)+'%':'--%'}}
                         </el-form-item>
@@ -238,7 +238,6 @@
                            :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="采集场所" prop="placeName" min-width="150" max-width="200"
                            :formatter="formatterAddress"></el-table-column>
-          :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="操作" min-width="120" max-width="180" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" @click="gotoDetail(scope.row)">查看大图</el-button>

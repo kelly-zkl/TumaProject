@@ -40,8 +40,8 @@ axios.get("serverconfig.json").then((result) => {
 axios.defaults.baseURL = localStorage.getItem("ApiUrl");
 Vue.prototype.$User_Url = localStorage.getItem("UserUrl");
 
-axios.defaults.baseURL = "http://192.168.31.241:8090/meerkat-web/";
-Vue.prototype.$User_Url = "http://192.168.31.241:8090/manager-api";
+axios.defaults.baseURL = "http://192.168.31.228:8090/meerkat-web/";
+Vue.prototype.$User_Url = "http://192.168.31.228:8090/manager-api";
 
 //isLogin:"login"--登录弹框时长缩短  "multi"--图片查询中多次请求  "hide"--隐藏错误提示
 Vue.prototype.$post = function (path, param, successMsg, failMsg, isLogin) {
