@@ -49,8 +49,8 @@
           <el-button type="primary" @click="uLogin()" :loading="logining" style="width:100%">PKI登录</el-button>
         </div>
       </div>
-      <el-col :span="24" class="main-footer">
-        Copyright © {{dataStr}} 深圳前海中电慧安科技有限公司 系统版本{{version}}
+      <el-col :span="24" class="main-footer" v-if="showName=='1'">
+        Copyright © {{dataStr}} {{companyName}} 系统版本{{version}}
       </el-col>
     </section>
   </div>
@@ -64,8 +64,8 @@
     data() {
       return {
         activeItem: 'u', logining: false, savePsw: false, isShow: true,
-        account: {loginId: '', password: '', checkcode: ''},
-        imgUrl: '', version: 'v3.0.6', dataStr: '',
+        account: {loginId: '', password: '', checkcode: ''}, companyName: '深圳前海中电慧安科技有限公司',
+        imgUrl: '', version: 'v3.0.6', dataStr: '', showName: '1',
         systemParam: {sysLogo: '../assets/img/icon_logo.svg'},
         options: []
       }
@@ -299,6 +299,9 @@
       setTimeout(() => {
         this.getUrl();
         this.getSystemDetail();
+        let srtArr = this.LoginStr.split(',');
+        this.showName = srtArr[0];
+        this.companyName = srtArr[1];
       }, 500);
     }
   }

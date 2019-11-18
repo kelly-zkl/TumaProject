@@ -17,8 +17,9 @@ const env = require('../config/prod.env')
 var GenerateAssetPlugin = require('generate-asset-webpack-plugin');
 var createServerConfig = function (compilation) {
   let cfgJson = {
-    ApiUrl: "http://192.168.31.235:8090/meerkat-web/",
-    UserUrl: "http://192.168.31.235:8090/manager-api"
+    ApiUrl: "http://192.168.31.241:8090/meerkat-web/",
+    UserUrl: "http://192.168.31.241:8090/manager-api",
+    LoginStr: "1,深圳前海中电慧安科技有限公司"
   };
   return JSON.stringify(cfgJson);
 }
