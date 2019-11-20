@@ -30,10 +30,10 @@ Vue.config.productionTip = true;
 axios.get("serverconfig.json").then((result) => {
   localStorage.setItem("ApiUrl", result.data.ApiUrl);
   localStorage.setItem("UserUrl", result.data.UserUrl);
-  localStorage.setItem("LoginStr", result.data.LoginStr);
+  // localStorage.setItem("LoginStr", result.data.LoginStr);
 
   Vue.prototype.$User_Url = result.data.UserUrl;
-  Vue.prototype.LoginStr = result.data.LoginStr;
+  // Vue.prototype.LoginStr = result.data.LoginStr;
   axios.defaults.baseURL = result.data.ApiUrl;
 }).catch((error) => {
   window.console.log(error)
@@ -41,7 +41,9 @@ axios.get("serverconfig.json").then((result) => {
 
 axios.defaults.baseURL = localStorage.getItem("ApiUrl");
 Vue.prototype.$User_Url = localStorage.getItem("UserUrl");
-Vue.prototype.LoginStr = localStorage.getItem("LoginStr");
+// Vue.prototype.LoginStr = localStorage.getItem("LoginStr");
+
+Vue.prototype.LoginStr = "1,深圳前海中电慧安科技有限公司";
 
 axios.defaults.baseURL = "http://192.168.31.228:8090/meerkat-web/";
 Vue.prototype.$User_Url = "http://192.168.31.228:8090/manager-api";

@@ -559,7 +559,6 @@
         if (this.isSearch) {
           this.list = [];
           this.list10 = [];
-          delete this.query['pageTime'];
           delete this.query['pageFaceId'];
           this.isSearch = false;
         }
@@ -567,7 +566,7 @@
         this.$post('person/queryWithCommonPerson', this.query, undefined, undefined, "multi").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
-            if (this.query.pageTime && this.query.pageFaceId && !this.isSearch) {
+            if (this.query.pageFaceId && !this.isSearch) {
               this.list = this.list.concat(data.data);
             } else {
               this.list = data.data;
@@ -606,7 +605,6 @@
         }
         if ((Math.ceil(this.list.length / 10) - index) <= 5 && this.isFirst && (this.list.length % 100 === 0)) {
           this.firstPage = this.list.length;
-          this.query.pageTime = this.list[this.list.length - 1].createTime;
           this.query.pageFaceId = this.list[this.list.length - 1].faceId;
           this.getData();
         }

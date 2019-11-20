@@ -13,13 +13,12 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const env = require('../config/prod.env')
 
-//让打包的时候输出可配置的文件
+//让打包的时候输出可配置的文件// LoginStr: "1,深圳前海中电慧安科技有限公司"
 var GenerateAssetPlugin = require('generate-asset-webpack-plugin');
 var createServerConfig = function (compilation) {
   let cfgJson = {
     ApiUrl: "http://192.168.31.241:8090/meerkat-web/",
-    UserUrl: "http://192.168.31.241:8090/manager-api",
-    LoginStr: "1,深圳前海中电慧安科技有限公司"
+    UserUrl: "http://192.168.31.241:8090/manager-api"
   };
   return JSON.stringify(cfgJson);
 }

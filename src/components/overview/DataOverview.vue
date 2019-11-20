@@ -168,8 +168,7 @@
         icon: require('../../assets/img/icon.png'),
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
-        markerClusterer: null,
-        multLat: [], num: 0
+        markerClusterer: null, multLat: []
       }
     },
     //页面关闭时停止更新设备在线状态
@@ -463,7 +462,6 @@
         this.mapZoom = this.deviceMap.getZoom();
       },
       getDeviceMap() {
-        this.num = this.num + 1;
         let chart = echarts.getInstanceByDom(document.getElementById('devicemap'));
         if (!chart) {
           chart = echarts.init(document.getElementById('devicemap'));
@@ -569,25 +567,25 @@
           this.deviceMap.addEventListener("dragend", this.map);
         }
         this.deviceMap.centerAndZoom(this.mapPoint, this.mapZoom);
-        if (this.num == 2) {//1：初始化，2：第一次请求数据
-          this.getMarkNumber();
-        }
+        this.getMarkNumber();
       },
       //点聚合功能
       getMarkNumber() {
+        let markers = [];
+        for (let i = 0; i < this.mapData.length; i++) {
+          let pt = new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]);
+          let myIcon = new BMap.Icon(this.icon, new BMap.Size(1, 1));
+          markers.push(new BMap.Marker(pt, {icon: myIcon}));
+        }
         if (!this.markerClusterer) {
-          let markers = [];
-          for (let i = 0; i < this.mapData.length; i++) {
-            let pt = new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]);
-            let myIcon = new BMap.Icon(this.icon, new BMap.Size(1, 1));
-            markers.push(new BMap.Marker(pt, {icon: myIcon}));
-          }
-          // var _styles = [{url: this.imgPath, size: new BMap.Size(40, 40)}];, styles: _styles
           this.markerClusterer = new BMapLib.MarkerClusterer(this.deviceMap, {
             markers: markers,
             gridSize: 40,
             maxZoom: 17
           });
+        } else {
+          this.markerClusterer.clearMarkers();
+          this.markerClusterer.addMarkers(markers);
         }
       },
       //相机--饼状图

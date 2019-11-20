@@ -47,15 +47,9 @@
     data() {
       return {
         query: {code: [true, false], camera: [true, false]},
-        deviceImsi: {},
-        icon: require('../../assets/img/icon.png'),
-        camera: {},
-        systemParam: {},
-        drawingManager: null,
-        deviceMap: null,
-        mapPoint: null,
-        mapZoom: 12, num: 0,
-        ply: null,//多边形
+        deviceImsi: {}, icon: require('../../assets/img/icon.png'),
+        camera: {}, systemParam: {}, drawingManager: null, deviceMap: null,
+        mapPoint: null, mapZoom: 12, ply: null,//多边形
         styleOptions: {
           strokeColor: "#FF6600",    //边线颜色。
           fillColor: "#FF6600",      //填充颜色。当参数为空时，圆形将没有填充效果。
@@ -74,9 +68,12 @@
       this.deviceMap.removeEventListener("zoomend", this.map);
       this.deviceMap.removeEventListener("dragend", this.map);
       this.drawingManager.removeEventListener('overlaycomplete', this.overlaycomplete);
+      this.deviceMap.clearOverlays();
+      this.markerClusterer.clearMarkers();
       this.intervalid = null;
       this.ply = null;
       this.drawingManager = null;
+      this.markerClusterer = null;
       this.deviceMap = null;
       this.mapPoint = null;
       let chart = echarts.getInstanceByDom(document.getElementById('view-map'));
@@ -249,7 +246,6 @@
         return a;
       },
       deviceMapData() {
-        this.num = this.num + 1;
         let _this = this;
         let chart = echarts.getInstanceByDom(document.getElementById('view-map'));
         if (!chart) {
@@ -402,24 +398,25 @@
         }
         this.deviceMap.centerAndZoom(this.mapPoint, this.mapZoom);
 
-        if (this.num == 2) {//1：初始化，2：第一次请求数据
-          this.getMarkNumber();
-        }
+        this.getMarkNumber();
       },
       //点聚合功能
       getMarkNumber() {
+        let markers = [];
+        for (let i = 0; i < this.mapData.length; i++) {
+          let pt = new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]);
+          let myIcon = new BMap.Icon(this.icon, new BMap.Size(1, 1));
+          markers.push(new BMap.Marker(pt, {icon: myIcon}));
+        }
         if (!this.markerClusterer) {
-          let markers = [];
-          for (var i = 0; i < this.mapData.length; i++) {
-            let pt = new BMap.Point(this.mapData[i].value[0], this.mapData[i].value[1]);
-            let myIcon = new BMap.Icon(this.icon, new BMap.Size(1, 1));
-            markers.push(new BMap.Marker(pt, {icon: myIcon}));
-          }
           this.markerClusterer = new BMapLib.MarkerClusterer(this.deviceMap, {
             markers: markers,
             gridSize: 40,
             maxZoom: 17
           });
+        } else {
+          this.markerClusterer.clearMarkers();
+          this.markerClusterer.addMarkers(markers);
         }
       },
       map() {//缩放、移动
