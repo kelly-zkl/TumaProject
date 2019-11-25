@@ -45,7 +45,7 @@
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="场所类型" prop="placeType" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="所属组织" prop="groupName" min-width="130"
+        <el-table-column align="left" label="所属公安机关" prop="groupName" min-width="130"
                          max-width="180" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="地区" prop="areaCode" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
@@ -97,8 +97,8 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="所属组织" align="left" prop="groupId">
-              <el-select v-model="addPlace.groupId" placeholder="请选择组织" filterable style="width: 100%">
+            <el-form-item label="所属公安机关" align="left" prop="groupId">
+              <el-select v-model="addPlace.groupId" placeholder="请选择公安机关" filterable style="width: 100%">
                 <el-option v-for="item in organizations" :key="item.groupId" :label="item.groupName"
                            :value="item.groupId">
                 </el-option>
@@ -207,7 +207,7 @@
             {validator: idValidator, trigger: "change,blur"}
           ],
           groupId: [
-            {required: true, message: '请选择所属组织', trigger: 'blur'}
+            {required: true, message: '请选择所属公安机关', trigger: 'blur'}
           ],
           placeType: [
             {required: true, message: '请选择场所类型', trigger: 'blur'}
@@ -512,7 +512,7 @@
         });
         return arr;
       },
-      //获取组织列表
+      //获取公安机关列表
       getOrganizations() {
         if (this.getButtonVial('manager:group:query')) {
           this.$post('/manager/group/query', {

@@ -26,7 +26,7 @@
                 <span
                   style="font-size: 15px;color:#000">{{'[经]'+placeDetail.longitude+',[纬]' +placeDetail.latitude}}</span>
               </el-form-item>
-              <el-form-item label="所属组织" align="left" style="margin: 0">
+              <el-form-item label="所属公安机关" align="left" style="margin: 0">
                 <span style="font-size: 15px;color:#000">{{placeDetail.groupName ? placeDetail.groupName : '--'}}</span>
               </el-form-item>
             </el-form>

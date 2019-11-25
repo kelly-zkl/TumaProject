@@ -30,6 +30,11 @@
                   <el-checkbox :label="4" :disabled="selResults.length+selResources.length<4">4个数据源相交</el-checkbox>
                   <el-checkbox :label="3" :disabled="selResults.length+selResources.length<3">3个数据源相交</el-checkbox>
                 </el-checkbox-group>
+                <!--<el-radio-group v-model="insertRg">-->
+                <!--<el-radio :label="5" :disabled="selResults.length+selResources.length<5">5个数据源相交</el-radio>-->
+                <!--<el-radio :label="4" :disabled="selResults.length+selResources.length<4">4个数据源相交</el-radio>-->
+                <!--<el-radio :label="3" :disabled="selResults.length+selResources.length<3">3个数据源相交</el-radio>-->
+                <!--</el-radio-group>-->
                 <el-col align="center" style="text-align: center;padding: 10px 0">
                   <el-button type="primary" size="mini" :disabled="checkList.length==0" @click="multIntersect()">开始分析
                   </el-button>
@@ -204,7 +209,7 @@
                                 placeholder="结束时间" size="medium">
                 </el-time-picker>
               </el-tooltip>
-              <el-button type="text" size="medium" @click="deleteItem(idx)" v-if="idx>5">删除</el-button>
+              <el-button type="text" size="medium" @click="deleteItem(idx)" v-if="idx>4">删除</el-button>
             </div>
           </el-form-item>
           <el-form-item align="left" style="margin: 0 0 10px 0">
@@ -339,12 +344,12 @@
     data() {
       return {
         dialogWidth: isPC() ? '35%' : '90%', isPover: false,
-        taskId: this.$route.query.taskId || '', checkList: [],
+        taskId: this.$route.query.taskId || '', checkList: [], insertRg: 0,
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 235,
         collision: {
           name: '数据源1', dscList: [{
             type: 'qTime', time: ['00:00:00', '23:59:59'],
-            qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
+            qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
               new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()],
           }, {type: 'places', places: []}, {type: 'isps', isps: []}, {type: 'regional', regional: ''},
             {type: 'imsi', imsi: ''}]
@@ -445,14 +450,14 @@
             name: '数据源' + (this.records.length + 1),
             dscList: [{
               type: 'qTime', time: ['00:00:00', '23:59:59'],
-              qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
+              qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
                 new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()]
             }, {type: 'places', places: []}, {type: 'isps', isps: []}, {type: 'regional', regional: ''},
               {type: 'imsi', imsi: ''}]
           };
         } else {//数据源列表里的条件展示
-          var param = {name: data.name, id: data.id, hiveView: data.hiveView};
-          var arr = [];
+          let param = {name: data.name, id: data.id, hiveView: data.hiveView};
+          let arr = [];
           data.dscList.forEach((item) => {
             if (item.type == 'qTime') {
               arr.push({
@@ -460,7 +465,7 @@
                 time: [item.startTime, item.endTime]
               });
             } else {
-              var par = {type: item.type};
+              let par = {type: item.type};
               par[item.type] = item[item.type];
               arr.push(par);
             }
@@ -507,7 +512,7 @@
       addParam() {
         let param = {
           type: 'qTime', time: ['00:00:00', '23:59:59'],
-          qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() - 30 * 60 * 60 * 24 * 1000,
+          qTime: [new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime(),
             new Date((formatDate(new Date(), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime()]
         };
         this.collision.dscList.push(param);
@@ -664,7 +669,7 @@
       //保存、修改数据源的条件
       saveParam() {
         //判断条件是否为空
-        var isBol = true;
+        let isBol = true;
         if (this.collision.name.length == 0) {
           this.$message.error('输入数据源名称');
           isBol = false;
@@ -701,16 +706,15 @@
           }
         });
         if (isBol) {//条件全部符合
-          var param = {taskId: this.taskId, name: this.collision.name};
-          var arr = [];
+          let param = {taskId: this.taskId, name: this.collision.name};
+          let arr = [];
           this.collision.dscList.forEach((item) => {
             if (item.type == 'qTime') {
-              arr.push({
-                type: item.type, startTime: item.time[0], endTime: item.time[1],
-                startDate: item.qTime[0] / 1000, endDate: item.qTime[1] / 1000
-              });
+              let q1 = new Date((formatDate(new Date(item.qTime[0]), 'yyyy-MM-dd') + " 00:00:00").replace(/-/g, '/')).getTime() / 1000;
+              let q2 = new Date((formatDate(new Date(item.qTime[1]), 'yyyy-MM-dd') + " 23:59:59").replace(/-/g, '/')).getTime() / 1000;
+              arr.push({type: item.type, startTime: item.time[0], endTime: item.time[1], startDate: q1, endDate: q2});
             } else {
-              var child = {type: item.type};
+              let child = {type: item.type};
               child[item.type] = item[item.type];
               arr.push(child);
             }
@@ -877,16 +881,16 @@
         this.$post('/collision/getDataSourceList/' + this.taskId, {}).then((data) => {
           if ("000000" === data.code) {
             data.data.forEach((item) => {
-              var dateStr = [], placeStr = [], ispStr = [], reginStr = [], imsiStr = [];
-              var contentStr = '';
+              let dateStr = [], placeStr = [], ispStr = [], reginStr = [], imsiStr = [];
+              let contentStr = '';
               item.dscList.forEach((child) => {
                 if (child.type == 'qTime') {
-                  var qStr = formatDate(new Date(child.startDate * 1000), 'yyyy-MM-dd') + '至' + formatDate(new Date(child.endDate * 1000), 'yyyy-MM-dd') +
+                  let qStr = formatDate(new Date(child.startDate * 1000), 'yyyy-MM-dd') + '至' + formatDate(new Date(child.endDate * 1000), 'yyyy-MM-dd') +
                     ' 时间:' + child.startTime + '至' + child.endTime;
                   dateStr.push(qStr);
                 } else if (child.type == 'places') {
                   if (child.places.length > 0) {
-                    var pArr = [];
+                    let pArr = [];
                     this.places.forEach((p1) => {
                       child.places.forEach((p2) => {
                         if (p1.id == p2) {
@@ -894,12 +898,12 @@
                         }
                       })
                     });
-                    var pStr = pArr.join(',');
+                    let pStr = pArr.join(',');
                     placeStr.push(pStr);
                   }
                 } else if (child.type == 'isps') {
                   if (child.isps.length > 0) {
-                    var ispArr = [];
+                    let ispArr = [];
                     child.isps.forEach((isp) => {
                       ispArr.push(isp == 0 ? '移动' : isp == 1 ? '联通' : isp == 2 ? '电信' : '未知');
                     });

@@ -5,7 +5,7 @@
         <el-row>
           <el-col :span="20" align="left" style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="角色名称" v-model="query.roleName" :maxlength="30" size="medium"
+              <el-input placeholder="岗位名称" v-model="query.roleName" :maxlength="30" size="medium"
                         style="width: 200px"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
@@ -25,7 +25,7 @@
           <el-col :span="4" align="right" style="text-align: right">
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" @click="addrole()" size="medium"
-                         v-show="getButtonVial('manager:role:create')">创建角色
+                         v-show="getButtonVial('manager:role:create')">创建岗位
               </el-button>
             </el-form-item>
           </el-col>
@@ -33,7 +33,7 @@
       </el-form>
       <el-table :data="roles" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
-        <el-table-column align="left" prop="roleName" label="角色名称" min-width="150"
+        <el-table-column align="left" prop="roleName" label="岗位名称" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="remark" label="备注" min-width="150"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
@@ -66,11 +66,11 @@
                        :page-sizes="[10, 15, 20, 30]" :page-size="query.size" :total="count" background
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
-      <!--添加/修改角色-->
+      <!--添加/修改岗位-->
       <el-dialog :title="addroleTitle" :visible.sync="addroleVisible" :width="dialogWidth">
         <el-form ref="role" :model="role" :label-width="labelWidth" :rules="rules" labelPosition="right">
-          <el-form-item label="角色名称" prop="roleName" align="left" style="text-align: left">
-            <el-input v-model="role.roleName" placeholder="请输入角色名称" v-if="isShow" :maxlength="16"></el-input>
+          <el-form-item label="岗位名称" prop="roleName" align="left" style="text-align: left">
+            <el-input v-model="role.roleName" placeholder="请输入岗位名称" v-if="isShow" :maxlength="16"></el-input>
             <span v-else>{{role.roleName}}</span>
           </el-form-item>
           <el-form-item label="备注" align="left" style="text-align: left">
@@ -98,7 +98,7 @@
     data() {
       let nickValidator = (rule, value, callback) => {
         if (!/[A-Za-z0-9\u4e00-\u9fa5]{2,16}$/.test(value)) {
-          callback(new Error("请输入正确的角色名称，由2-16位汉字、数字、英文字母组成"));
+          callback(new Error("请输入正确的岗位名称，由2-16位汉字、数字、英文字母组成"));
         } else {
           callback();
         }
@@ -118,11 +118,11 @@
         count: 0,
         roleTypes: [{value: '', label: '全部类型'}, {value: 0, label: '通用'}, {value: 1, label: '自定义'}],
         roles: [],
-        addroleTitle: '创建角色',
+        addroleTitle: '创建岗位',
         role: {},
         rules: {
           roleName: [
-            {required: true, message: '请输入角色名称', trigger: 'blur'}, {validator: nickValidator, trigger: "change,blur"}
+            {required: true, message: '请输入岗位名称', trigger: 'blur'}, {validator: nickValidator, trigger: "change,blur"}
           ]
         },
         permissions: [],
@@ -133,10 +133,10 @@
       getButtonVial(msg) {
         return buttonValidator(msg);
       },
-      //创建角色
+      //创建岗位
       addrole() {
         this.role = {};
-        this.addroleTitle = '创建角色';
+        this.addroleTitle = '创建岗位';
         this.isShow = true;
         this.listLoading = false;
         this.addroleVisible = true;
@@ -144,12 +144,12 @@
           this.$refs.tree.setCheckedKeys([]);
         });
       },
-      //修改角色
+      //修改岗位
       modifyrole(row) {
         this.role = Object.assign({}, row);
         this.role.permissions = Object.assign([], this.role.permissions);
         this.getRolePermissions();
-        this.addroleTitle = '修改角色';
+        this.addroleTitle = '修改岗位';
         this.isShow = true;
         this.listLoading = false;
         this.addroleVisible = true;
@@ -157,12 +157,12 @@
           this.$refs.tree.setCheckedKeys(this.role.permissions);
         });
       },
-      //查看角色
+      //查看岗位
       roleInfo(row) {
         this.role = Object.assign({}, row);
         this.role.permissions = Object.assign([], this.role.permissions);
         this.getRolePermissions();
-        this.addroleTitle = '角色信息';
+        this.addroleTitle = '岗位信息';
         this.isShow = false;
         this.addroleVisible = true;
         this.$nextTick(() => {
@@ -184,7 +184,7 @@
             }
             let url = '/manager/role/create';
             let msg = '创建成功';
-            if (title === '修改角色') {
+            if (title === '修改岗位') {
               url = '/manager/role/update';
               msg = '修改成功';
             } else {
@@ -210,7 +210,7 @@
           }
         });
       },
-      //子菜单选中时，要把父菜单选上（在角色权限中遍历有没有包含某个权限）
+      //子菜单选中时，要把父菜单选上（在岗位权限中遍历有没有包含某个权限）
       getSavePermissions() {
         for (var i = 0; i < this.permissions.length; i++) {//目录
           var tree = this.permissions[i];
@@ -220,7 +220,7 @@
               if (menu.childs) {//菜单有按钮
                 for (var z = 0; z < menu.childs.length; z++) {//按钮
                   var button = menu.childs[z];
-                  for (var m = 0; m < this.role.permissions.length; m++) {//遍历角色权限
+                  for (var m = 0; m < this.role.permissions.length; m++) {//遍历岗位权限
                     var id = this.role.permissions[m];
                     if (button.permissionId == id) {//含有按钮权限,则加上父菜单id
                       if (this.mulitData(menu.permissionId)) {//去重加上菜单id
@@ -234,7 +234,7 @@
                   }
                 }
               } else {//菜单下没有按钮
-                for (var n = 0; n < this.role.permissions.length; n++) {//遍历角色权限
+                for (var n = 0; n < this.role.permissions.length; n++) {//遍历岗位权限
                   var sid = this.role.permissions[n];
                   if (menu.permissionId == sid) {//含有菜单权限,则加上父菜单id
                     if (this.mulitData(tree.permissionId)) {//去重加上目录id
@@ -248,7 +248,7 @@
           }
         }
       },
-      //子菜单没有选中时，把父菜单的id删掉（在角色权限中遍历有没有包含某个权限）
+      //子菜单没有选中时，把父菜单的id删掉（在岗位权限中遍历有没有包含某个权限）
       getRolePermissions() {
         for (var i = 0; i < this.permissions.length; i++) {//目录
           var tree = this.permissions[i];
@@ -259,14 +259,14 @@
                 for (var z = 0; z < menu.childs.length; z++) {//按钮
                   var button = menu.childs[z];
                   var isSelect = false;
-                  for (var m = 0; m < this.role.permissions.length; m++) {//遍历角色权限
+                  for (var m = 0; m < this.role.permissions.length; m++) {//遍历岗位权限
                     var id = this.role.permissions[m];
-                    if (button.permissionId == id) {//角色包含该权限
+                    if (button.permissionId == id) {//岗位包含该权限
                       isSelect = true;
                       break;
                     }
                   }
-                  if (!isSelect) {//角色不包含该权限，则删除父节点id
+                  if (!isSelect) {//岗位不包含该权限，则删除父节点id
                     var mIdx = this.role.permissions.indexOf(menu.permissionId);
                     if (mIdx >= 0) {//删除菜单id
                       this.role.permissions.splice(mIdx, 1);
@@ -280,14 +280,14 @@
                 }
               } else {//菜单下没有按钮
                 var isSelect2 = false;
-                for (var n = 0; n < this.role.permissions.length; n++) {//遍历角色权限
+                for (var n = 0; n < this.role.permissions.length; n++) {//遍历岗位权限
                   var sid = this.role.permissions[n];
-                  if (menu.permissionId == sid) {//角色包含该权限
+                  if (menu.permissionId == sid) {//岗位包含该权限
                     isSelect2 = true;
                     break;
                   }
                 }
-                if (!isSelect2) {//角色不包含该权限，则删除父节点id
+                if (!isSelect2) {//岗位不包含该权限，则删除父节点id
                   var tIdx = this.role.permissions.indexOf(tree.permissionId);
                   if (tIdx >= 0) {
                     this.role.permissions.splice(tIdx, 1);
@@ -309,9 +309,9 @@
         });
         return isMulti;
       },
-      //删除角色
+      //删除岗位
       deleterole(id) {
-        this.$confirm('确定要删除该角色？', '提示', {
+        this.$confirm('确定要删除该岗位？', '提示', {
           type: 'warning'
         }).then(() => {
           this.$post('/manager/role/delete/' + id, {}, '删除成功').then((data) => {
@@ -320,13 +320,13 @@
         }).catch((err) => {
         });
       },
-      //启用/停用角色
+      //启用/停用岗位
       userole(role) {
         let param = {roleId: role.roleId};
-        let msg = '确定要启用该角色？';
+        let msg = '确定要启用该岗位？';
         if (role.state == 0) {
           param.state = 1;
-          msg = '确定要停用该角色？'
+          msg = '确定要停用该岗位？'
         } else {
           param.state = 0;
         }
@@ -339,7 +339,7 @@
         }).catch((err) => {
         });
       },
-      //获取角色列表
+      //获取岗位列表
       getRoles() {
         this.listLoading = true;
         this.$post('/manager/role/query', this.query).then((data) => {

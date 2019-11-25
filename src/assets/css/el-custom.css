@@ -273,6 +273,15 @@
   margin-bottom: 8px;
 }
 
+/*垂直排列的单选框*/
+.intersect .el-radio + .el-radio {
+  margin-left: 0;
+}
+
+.intersect .el-radio {
+  margin-bottom: 8px;
+}
+
 /*系统参数配置*/
 .sys .el-input-group__append, .sys .el-input-group__prepend {
   background-color: #fff;
@@ -792,6 +801,16 @@
 .div-delete:active, .div-delete:hover, .div-delete:focus {
   color: #fff;
   background-color: #2074B0;
+}
+
+.div-ruler {
+  width: 50px;
+  border: 1px solid #666;
+  color: #2074B0;
+  background: url("../img/ruler.svg") no-repeat #fff center;
+  border-radius: 5px;
+  height: 30px;
+  line-height: 30px;
 }
 
 /*翻码申请的输入框*/

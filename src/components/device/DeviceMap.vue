@@ -153,8 +153,8 @@
                 if (item.lineStatus === "OFF") {
                   onLine = false;
                 }
-                var lat = [item.devicePos.longitude, item.devicePos.latitude, 1];
-                var num = this.setLatLonap(item.devicePos.longitude, item.devicePos.latitude);
+                let lat = [item.devicePos.longitude, item.devicePos.latitude, 1];
+                let num = this.setLatLonap(item.devicePos.longitude, item.devicePos.latitude);
                 if (num == 1) {
                   lat = [item.devicePos.longitude + 0.00015, item.devicePos.latitude, 1];
                 } else if (num == 2) {
@@ -192,8 +192,8 @@
                 if (item.status !== 0) {
                   onLine = false;
                 }
-                var lat = [item.longitude, item.latitude, 1];
-                var num = this.setLatLonap(item.longitude, item.latitude);
+                let lat = [item.longitude, item.latitude, 1];
+                let num = this.setLatLonap(item.longitude, item.latitude);
                 if (num == 1) {
                   lat = [item.longitude + 0.00015, item.latitude, 1];
                 } else if (num == 2) {
@@ -235,7 +235,7 @@
         });
       },
       setLatLonap(x, y) {
-        var a = 0;
+        let a = 0;
         if (this.multLat.length > 0) {
           this.multLat.forEach((item) => {
             if (item.value[0] == x && item.value[1] == y) {
@@ -347,8 +347,45 @@
           this.deviceMap.setMinZoom(5);
           this.deviceMap.setMaxZoom(19);
 
+          let bottom_right_control = new BMap.ScaleControl({
+            anchor: BMAP_ANCHOR_BOTTOM_RIGHT,
+            offset: new BMap.Size(20, 10),
+          });// 右下角，添加比例尺
+          this.deviceMap.addControl(bottom_right_control);
+
           this.deviceMap.addEventListener("zoomend", this.map);
           this.deviceMap.addEventListener("dragend", this.map);
+
+          let myDis = new BMapLib.DistanceTool(this.deviceMap);
+
+          //测距工具
+          function RulerControl() {
+            // 默认停靠位置和偏移量
+            this.defaultAnchor = BMAP_ANCHOR_BOTTOM_RIGHT;
+            this.defaultOffset = new BMap.Size(120, 10);
+          }
+
+          // 通过JavaScript的prototype属性继承于BMap.Control
+          RulerControl.prototype = new BMap.Control();
+          RulerControl.prototype.initialize = function (map) {
+            // 创建一个DOM元素
+            let div = document.createElement("div");
+            // 设置样式
+            div.className = "div-delete div-ruler";
+            // 绑定事件,点击之后开始测距
+            div.onclick = function (e) {
+              myDis.open();
+            };
+            // 添加DOM元素到地图中
+            _this.deviceMap.getContainer().appendChild(div);
+            // 将DOM元素返回
+            return div;
+          };
+          // 创建控件
+          let myRulerControl = new RulerControl();
+          // 添加到地图当中
+          this.deviceMap.addControl(myRulerControl);
+
           //实例化鼠标绘制工具
           this.drawingManager = new BMapLib.DrawingManager(_this.deviceMap, {
             isOpen: false, //是否开启绘制模式
@@ -379,7 +416,7 @@
           // 在本方法中创建个div元素作为控件的容器,并将其添加到地图容器中
           DeleteControl.prototype.initialize = function (map) {
             // 创建一个DOM元素
-            var div = document.createElement("div");
+            let div = document.createElement("div");
             // 设置样式
             div.className = "div-delete el-icon-delete";
             // 绑定事件,点击一次放大两级
@@ -392,7 +429,7 @@
             return div;
           };
           // 创建控件
-          var myZoomCtrl = new DeleteControl();
+          let myZoomCtrl = new DeleteControl();
           // 添加到地图当中
           this.deviceMap.addControl(myZoomCtrl);
         }
@@ -426,9 +463,9 @@
       },
       //生成多边形
       polygon(path) {
-        var pts = [];
-        var pt;
-        for (var j = 0; j < path.length; j++) {
+        let pts = [];
+        let pt;
+        for (let j = 0; j < path.length; j++) {
           pt = new BMap.Point(path[j].lng, path[j].lat);
           pts.push(pt);
         }
@@ -441,8 +478,8 @@
        */
       InOrOutPolygon(lng, lat) {
         let bol = false;
-        var pt = new BMap.Point(lng, lat);
-        var result = BMapLib.GeoUtils.isPointInPolygon(pt, this.ply);
+        let pt = new BMap.Point(lng, lat);
+        let result = BMapLib.GeoUtils.isPointInPolygon(pt, this.ply);
         if (result) {//在内部，把该点显示在地图上
           bol = true;
         }
@@ -451,10 +488,11 @@
       //删除多边形
       removePoly() {
         if (this.deviceMap) {
-          var allOverlay = this.deviceMap.getOverlays();
-          for (var i = 0; i < allOverlay.length; i++) {
+          let allOverlay = this.deviceMap.getOverlays();
+          for (let i = 0; i < allOverlay.length; i++) {
             if (allOverlay[i].toString().indexOf("Polygon") > 0 || allOverlay[i].toString().indexOf("Label") > 0
-              || allOverlay[i].toString().indexOf("Circle") > 0) {//删除折线
+              || allOverlay[i].toString().indexOf("Circle") > 0 || allOverlay[i].toString().indexOf("Marker") > 0
+              || allOverlay[i].toString().indexOf("Polyline") > 0) {//删除折线
               this.deviceMap.removeOverlay(allOverlay[i]);
             }
           }
@@ -464,11 +502,11 @@
       overlaycomplete(e) {
         this.drawingManager.close();
         // this.removePoly();
-        var path = e.overlay.getPath();//Array<Point> 返回多边型的点数组
+        let path = e.overlay.getPath();//Array<Point> 返回多边型的点数组
         //生成多边形
         this.polygon(path);
-        var num1 = 0, num2 = 0, num3 = 0, num4 = 0;
-        for (var k = 0; k < this.mapData.length; k++) {
+        let num1 = 0, num2 = 0, num3 = 0, num4 = 0;
+        for (let k = 0; k < this.mapData.length; k++) {
           let device = this.mapData[k];
           let isBol = this.InOrOutPolygon(device.value[0], device.value[1]);
           if (device.type == '侦码设备') {//侦码
@@ -486,14 +524,14 @@
             }
           }
         }
-        var opts = {
+        let opts = {
           position: this.ply.getBounds().getCenter(),    // 指定文本标注所在的地理位置
           offset: new BMap.Size(0, 0)    //设置文本偏移量
         };
         let str = "<span style='color: #fff;font-size: 12px;word-break:normal;white-space:pre-warp;word-wrap:break-word'>" +
           "侦码(" + (num1 + num2) + "):在线" + num1 + "、离线" + num2 + "<br/>相机(" + (num3 + num4) + "):在线" + num3 + "、离线" + num4 + "</span>";
         // let str = "侦码(" + (num1 + num2) + "):在线" + num1 + "、离线" + num2 + "，相机(" + (num3 + num4) + "):在线" + num3 + "、离线" + num4;
-        var label = new BMap.Label(str, opts);  // 创建文本标注对象
+        let label = new BMap.Label(str, opts);  // 创建文本标注对象
         label.setStyle({
           color: "#fff", backgroundColor: "black", border: 'none', fontSize: "12px", borderRadius: '3px',
           opacity: 0.8, lineHeight: "20px", fontFamily: "微软雅黑", padding: '0 5px'

@@ -319,17 +319,12 @@
         });
       },
       getDataHeat() {
-        this.hotPoint = this.heatMap.getCenter();
-        this.hotZoom = this.heatMap.getZoom();
-
-        this.heatMap.centerAndZoom(this.hotPoint, this.hotZoom);
-
         this.heatMap.clearHotspots();//清空地图所有热区,添加新数据
         let colorRange = {};
         let total = this.systemParam.heatRanges[this.systemParam.heatRanges.length - 1].start;
         this.systemParam.heatRanges.forEach((item) => {
           if (item.end) {
-            var ketStr = item.end / total;
+            let ketStr = item.end / total;
             colorRange[ketStr] = item.color;
           }
         });
@@ -795,6 +790,7 @@
       initHeatMap() {
         this.$nextTick(() => {
           this.heatMap = new BMap.Map("dataheat", {minZoom: 5, maxZoom: 19});// 创建地图实例
+          this.heatMap.setMapStyle({style: 'midnight'});
           this.heatMap.centerAndZoom(this.hotPoint, this.hotZoom);
           this.heatMap.enableScrollWheelZoom(true); // 允许滚轮缩放
           this.heatMap.enableDragging();
@@ -802,11 +798,11 @@
           this.heatMap.addEventListener("zoomend", this.heatZoom);
           this.heatMap.addEventListener("dragend", this.heatZoom);
 
-          var colorRange = {};
-          var total = this.systemParam.heatRanges[this.systemParam.heatRanges.length - 1].start;
+          let colorRange = {};
+          let total = this.systemParam.heatRanges[this.systemParam.heatRanges.length - 1].start;
           this.systemParam.heatRanges.forEach((item) => {
             if (item.end) {
-              var ketStr = item.end / total;
+              let ketStr = item.end / total;
               colorRange[ketStr] = item.color;
             }
           });
@@ -822,7 +818,7 @@
       }
     },
     mounted() {
-      var conPara = JSON.parse(decryData(sessionStorage.getItem("system")));
+      let conPara = JSON.parse(decryData(sessionStorage.getItem("system")));
       if (conPara) {
         this.systemParam = conPara;
       }

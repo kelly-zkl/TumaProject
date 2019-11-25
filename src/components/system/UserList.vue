@@ -30,11 +30,11 @@
             <el-col :span="20" align="left" style="text-align: left">
               <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left;width: 900px">
                 <el-form-item style="margin-bottom: 10px">
-                  <el-input placeholder="账号/用户名" v-model="query.keyword" :maxlength="30"
+                  <el-input placeholder="账号/姓名" v-model="query.keyword" :maxlength="30"
                             style="width: 200px" size="medium"></el-input>
                 </el-form-item>
                 <el-form-item style="margin-bottom: 10px">
-                  <el-select v-model="query.myGroupId" placeholder="全部组织" size="medium" filterable
+                  <el-select v-model="query.myGroupId" placeholder="全部公安机关" size="medium" filterable
                              @change="groupChange">
                     <el-option v-for="item in organizations" :key="item.groupId" :label="item.groupName"
                                :value="item.groupId">
@@ -42,7 +42,7 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item style="margin-bottom: 10px">
-                  <el-select v-model="query.roleId" placeholder="全部角色" size="medium" filterable clearable>
+                  <el-select v-model="query.roleId" placeholder="全部岗位" size="medium" filterable clearable>
                     <el-option v-for="item in roles" :key="item.roleId" :label="item.roleName" :value="item.roleId">
                     </el-option>
                   </el-select>
@@ -66,15 +66,15 @@
             <el-table-column align="center" type="index" label="序号" width="80"></el-table-column>
             <el-table-column align="left" prop="account" label="账号" width="150"
                              :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" prop="realName" label="用户名" width="150"
+            <el-table-column align="left" prop="realName" label="姓名" width="150"
                              :formatter="formatterAddress"></el-table-column>
             <el-table-column align="left" prop="policeNum" label="身份证号"
                              width="170" :formatter="formatterAddress"></el-table-column>
             <el-table-column align="left" prop="deptName" label="所属部门" width="150"
                              :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" prop="groupName" label="所属组织" width="150"
+            <el-table-column align="left" prop="groupName" label="所属公安机关" width="150"
                              :formatter="formatterAddress"></el-table-column>
-            <el-table-column align="left" prop="roleNameList" label="角色" width="150"
+            <el-table-column align="left" prop="roleNameList" label="岗位" width="150"
                              :formatter="formatterAddress"></el-table-column>
             <el-table-column align="left" prop="loginTime" label="过期时间" width="170"
                              :formatter="formatterAddress"></el-table-column>
@@ -110,8 +110,8 @@
       <!--创建用户-->
       <el-dialog :title="addUserTitle" :visible.sync="addUserVisible" :width="dialogWidth">
         <el-form ref="admin" :model="admin" label-width="100px" :rules="rules" labelPosition="right">
-          <el-form-item label="用户名" prop="realName" style="text-align: left">
-            <el-input v-model="admin.realName" placeholder="请输入用户名" :maxlength="16" :minlength="2"></el-input>
+          <el-form-item label="姓名" prop="realName" style="text-align: left">
+            <el-input v-model="admin.realName" placeholder="请输入姓名" :maxlength="16" :minlength="2"></el-input>
           </el-form-item>
           <el-form-item label="账号" prop="account" style="text-align: left">
             <el-input v-model="admin.account" placeholder="请输入账号" :maxlength="16" :minlength="6"></el-input>
@@ -135,8 +135,8 @@
           <el-form-item label="身份证号" v-show="admin.uLogin==true" align="left" style="text-align: left">
             <el-input v-model="admin.policeNum" placeholder="登记身份证号，即可使用警员PKI登录" :maxlength="18"></el-input>
           </el-form-item>
-          <!--<el-form-item label="所属组织" align="left" prop="groupId">-->
-          <!--<el-select v-model="admin.groupId" placeholder="请选择组织" filterable>-->
+          <!--<el-form-item label="所属公安机关" align="left" prop="groupId">-->
+          <!--<el-select v-model="admin.groupId" placeholder="请选择公安机关" filterable>-->
           <!--<el-option v-for="item in organizations" :key="item.groupId" :label="item.groupName"-->
           <!--:value="item.groupId">-->
           <!--</el-option>-->
@@ -149,8 +149,8 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="设置角色" align="left" required style="text-align: left">
-            <el-select v-model="role" placeholder="请选择角色" filterable>
+          <el-form-item label="设置岗位" align="left" required style="text-align: left">
+            <el-select v-model="role" placeholder="请选择岗位" filterable>
               <el-option v-for="item in roles" :key="item.roleId" :label="item.roleName" :value="item.roleId"
                          v-show="item.roleId.length != 1">
               </el-option>
@@ -167,8 +167,8 @@
       <!--修改账号-->
       <el-dialog :title="addUserTitle" :visible.sync="modifyUserVisible" :width="dialogWidth">
         <el-form ref="admin" :model="admin" label-width="100px" :rules="rules" labelPosition="right">
-          <el-form-item label="用户名" prop="realName" style="text-align: left">
-            <el-input v-model="admin.realName" placeholder="请输入用户名" :maxlength="10" :minlength="2"></el-input>
+          <el-form-item label="姓名" prop="realName" style="text-align: left">
+            <el-input v-model="admin.realName" placeholder="请输入姓名" :maxlength="10" :minlength="2"></el-input>
           </el-form-item>
           <el-form-item label="账号" prop="loginId" align="left" style="text-align: left">
             <span>{{admin.account}}</span>
@@ -197,8 +197,8 @@
           <el-form-item label="身份证号" v-show="admin.uLogin==true" align="left" style="text-align: left">
             <el-input v-model="admin.policeNum" placeholder="登记身份证号，即可使用警员PKI登录" :maxlength="18"></el-input>
           </el-form-item>
-          <!--<el-form-item label="所属组织" align="left" prop="groupId">-->
-          <!--<el-select v-model="admin.groupId" placeholder="请选择组织" v-if="admin.groupAdmin != true" filterable>-->
+          <!--<el-form-item label="所属公安机关" align="left" prop="groupId">-->
+          <!--<el-select v-model="admin.groupId" placeholder="请选择公安机关" v-if="admin.groupAdmin != true" filterable>-->
           <!--<el-option v-for="item in organizations" :key="item.groupId" :label="item.groupName"-->
           <!--:value="item.groupId">-->
           <!--</el-option>-->
@@ -213,8 +213,8 @@
             </el-select>
             <span v-else>{{admin.deptName}}</span>
           </el-form-item>
-          <el-form-item label="设置角色" align="left" required style="text-align: left">
-            <el-select v-model="role" placeholder="请选择角色" v-if="admin.groupAdmin != true" filterable>
+          <el-form-item label="设置岗位" align="left" required style="text-align: left">
+            <el-select v-model="role" placeholder="请选择岗位" v-if="admin.groupAdmin != true" filterable>
               <el-option v-for="item in roles" :key="item.roleId" :label="item.roleName" :value="item.roleId"
                          v-show="item.roleId.length != 1">
               </el-option>
@@ -299,11 +299,11 @@
       };
       let nickValidate = (rule, value, callback) => {
         if (value.length < 2) {
-          callback(new Error('用户名不能小于2位'));
+          callback(new Error('姓名不能小于2位'));
         } else if (value.length > 16) {
-          callback(new Error('用户名不能大于16位'));
+          callback(new Error('姓名不能大于16位'));
         } else if (!nameValidator(value)) {
-          callback(new Error("用户名由汉字、英文字母组成"));
+          callback(new Error("姓名由汉字、英文字母组成"));
         } else {
           callback();
         }
@@ -338,14 +338,14 @@
           account: [
             {required: true, message: '请输入账号', trigger: 'blur'}, {validator: nameValidate, trigger: "blur"}],
           realName: [
-            {required: true, message: '请输入用户名', trigger: 'blur'},
+            {required: true, message: '请输入姓名', trigger: 'blur'},
             {validator: nickValidate, trigger: "change,blur"},
           ],
           password: [
             {required: true, message: '请输入密码', trigger: 'blur'},
             {validator: pswValidate, trigger: "change,blur"},
           ],
-          // groupId: [{required: true, message: '请选择组织', trigger: 'blur'}],
+          // groupId: [{required: true, message: '请选择公安机关', trigger: 'blur'}],
           deptId: [{required: true, message: '请选择部门', trigger: 'blur'}]
         },
         rules1: {
@@ -410,7 +410,7 @@
         this.listLoading = false;
         this.addDepartVisible = true
       },
-      //组织变化=》部门变化、用户变化
+      //公安机关变化=》部门变化、用户变化
       groupChange(val) {
         this.currentIdx = -1;
         delete this.query['deptId'];
@@ -635,7 +635,7 @@
               return;
             }
             if (!this.role) {
-              this.$message.error('请选择角色');
+              this.$message.error('请选择岗位');
               return;
             }
             let url = '/manager/user/create';
@@ -671,7 +671,7 @@
         });
         return str;
       },
-      //获取角色列表
+      //获取岗位列表
       getRoles() {
         if (this.getButtonVial('manager:role:query')) {
           this.$post('/manager/role/query', {
@@ -681,7 +681,7 @@
           })
         }
       },
-      //获取组织列表
+      //获取公安机关列表
       getOrganizations() {
         if (this.getButtonVial('manager:group:query')) {
           this.$post('/manager/group/query', {page: 1, size: 9999, userId: this.user.userId}).then((data) => {

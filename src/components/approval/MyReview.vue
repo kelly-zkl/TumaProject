@@ -59,7 +59,7 @@
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="申请人" prop="creatorName" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="申请人所属组织" prop="creatorGroupName" min-width="150"
+        <el-table-column align="left" label="申请人所属公安机关" prop="creatorGroupName" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="申请时间" prop="createTime" min-width="170"
                          max-width="200" :formatter="formatterAddress"></el-table-column>

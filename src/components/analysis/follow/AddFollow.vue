@@ -110,7 +110,7 @@
                            max-width="250" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="场所类型" prop="placeType" min-width="150"
                            max-width="200" :formatter="formatterAddress"></el-table-column>
-          <el-table-column align="left" label="所属组织" prop="groupName" min-width="150"
+          <el-table-column align="left" label="所属公安机关" prop="groupName" min-width="150"
                            max-width="200" :formatter="formatterAddress"></el-table-column>
           <el-table-column align="left" label="地区" prop="areaCode" min-width="180"
                            max-width="250" :formatter="formatterAddress"></el-table-column>

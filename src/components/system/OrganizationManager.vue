@@ -5,7 +5,7 @@
         <el-col :span="20" align="left" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left">
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="组织名称" v-model="query.groupName" :maxlength="20"
+              <el-input placeholder="公安机关名称" v-model="query.groupName" :maxlength="20"
                         size="medium" style="width: 160px"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
@@ -16,13 +16,13 @@
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.pgroupId" placeholder="所属组织" size="medium" filterable style="width: 170px">
+              <el-select v-model="query.pgroupId" placeholder="所属公安机关" size="medium" filterable style="width: 170px">
                 <el-option v-for="item in groups" :key="item.groupId" :label="item.groupName" :value="item.groupId">
                 </el-option>
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.type" placeholder="组织类型" size="medium" filterable style="width: 160px">
+              <el-select v-model="query.type" placeholder="公安机关类型" size="medium" filterable style="width: 160px">
                 <el-option label="公安机关" :value="0"></el-option>
                 <el-option label="派出所" :value="1"></el-option>
               </el-select>
@@ -47,19 +47,19 @@
       </el-row>
       <el-table :data="organizations" v-loading="listLoading" class="center-block" stripe :height="tableHeight">
         <el-table-column align="center" type="index" label="序号" width="70"></el-table-column>
-        <el-table-column align="left" prop="groupName" label="组织名称" min-width="130"
+        <el-table-column align="left" prop="groupName" label="公安机关名称" min-width="130"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="type" label="组织类型" min-width="100"
+        <el-table-column align="left" prop="type" label="公安机关类型" min-width="100"
                          max-width="150" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="areaCodes" label="管辖区域" min-width="180"
                          max-width="300" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="pgroupName" label="上级组织" min-width="130"
+        <el-table-column align="left" prop="pgroupName" label="上级公安机关" min-width="130"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <!--<el-table-column align="left" prop="remark" label="备注" min-width="150"-->
         <!--max-width="300" :formatter="formatterAddress"></el-table-column>-->
         <el-table-column align="left" prop="createTime" label="创建时间" min-width="160"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" prop="account" label="组织管理员" min-width="130"
+        <el-table-column align="left" prop="account" label="公安机关管理员" min-width="130"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="120" max-width="150" fixed="right">
           <template slot-scope="scope">
@@ -92,7 +92,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="组织管理员" align="left" required style="text-align: left">
+          <el-form-item label="公安机关管理员" align="left" required style="text-align: left">
             <el-radio-group v-model="group.isCreateAdmin" v-show="isShow">
               <el-radio :label="1">注册新用户</el-radio>
               <el-radio :label="0">选择已注册的用户</el-radio>
@@ -128,10 +128,10 @@
           <el-form-item label="派出所名称" prop="groupName" align="left" style="text-align: left">
             <el-input v-model="police.groupName" placeholder="请输入派出所名称" :maxlength="20" :minlength="2"></el-input>
           </el-form-item>
-          <el-form-item label="所属组织" align="left" style="text-align: left">
+          <el-form-item label="所属公安机关" align="left" style="text-align: left">
             <span>{{police.pgroupName?police.pgroupName:groupName}}</span>
           </el-form-item>
-          <el-form-item label="组织管理员" align="left" required style="text-align: left">
+          <el-form-item label="公安机关管理员" align="left" required style="text-align: left">
             <el-radio-group v-model="police.isCreateAdmin" v-show="isShow">
               <el-radio :label="1">注册新用户</el-radio>
               <el-radio :label="0">选择已注册的用户</el-radio>
@@ -171,11 +171,11 @@
     data() {
       let nickValidate = (rule, value, callback) => {
         if (value.length < 2) {
-          callback(new Error('组织名称不能小于2位'));
+          callback(new Error('公安机关名称不能小于2位'));
         } else if (value.length > 20) {
-          callback(new Error('组织名称不能大于20位'));
+          callback(new Error('公安机关名称不能大于20位'));
         } else if (!nameValidator(value)) {
-          callback(new Error("请输入正确的用户名，由汉字、英文字母组成"));
+          callback(new Error("请输入正确的姓名，由汉字、英文字母组成"));
         } else {
           callback();
         }
@@ -242,7 +242,7 @@
             } else {
               if (this.police.isCreateAdmin == 0) {//选择已有
                 if (!this.police.adminId) {
-                  this.$message.error('请选择组织管理员');
+                  this.$message.error('请选择公安机关管理员');
                   return;
                 }
               } else {//新建管理员
@@ -286,7 +286,7 @@
             } else {
               if (this.group.isCreateAdmin == 0) {//选择已有
                 if (!this.group.adminId) {
-                  this.$message.error('请选择组织管理员');
+                  this.$message.error('请选择公安机关管理员');
                   return;
                 }
               } else {//新建管理员
@@ -326,7 +326,7 @@
           }
         });
       },
-      //创建组织
+      //创建公安机关
       addOrganization() {
         this.group = {areaCodes: [], isCreateAdmin: 0};
         this.addOrganizationTitle = '创建公安机关';
@@ -334,7 +334,7 @@
         this.listLoading = false;
         this.addOrganizationVisible = true;
       },
-      //修改组织
+      //修改公安机关
       modifyOrganization(row) {
         this.listLoading = false;
         this.isShow = false;
@@ -348,9 +348,9 @@
           this.addPoliceVisible = true;
         }
       },
-      //删除组织
+      //删除公安机关
       deleteOrganization(id) {
-        this.$confirm('删除组织将会清空该组织相关的用户、角色及其子组织的所有数据，请谨慎操作！', '提示', {
+        this.$confirm('删除公安机关将会清空该公安机关相关的用户、岗位及其子公安机关的所有数据，请谨慎操作！', '提示', {
           type: 'warning'
         }).then(() => {
           this.$post('/manager/group/delete/' + id, {}, '删除成功').then((data) => {
@@ -361,11 +361,11 @@
         }).catch((err) => {
         });
       },
-      //获取组织列表
+      //获取公安机关列表
       getOrganizations() {
         if (this.query.groupName) {
           if (!nameValidator(this.query.groupName)) {
-            this.$message.error('请输入正确的组织名称，由汉字、英文组成');
+            this.$message.error('请输入正确的公安机关名称，由汉字、英文组成');
             return;
           }
         }
@@ -433,7 +433,7 @@
         });
         return str;
       },
-      //获取全部组织列表
+      //获取全部公安机关列表
       getAllGroups() {
         this.$post('/manager/group/query', {page: 1, size: 9999, userId: this.user.userId}).then((data) => {
           this.groups = data.data.content;

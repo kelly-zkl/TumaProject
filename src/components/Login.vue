@@ -65,7 +65,7 @@
       return {
         activeItem: 'u', logining: false, savePsw: false, isShow: true,
         account: {loginId: '', password: '', checkcode: ''}, companyName: '深圳前海中电慧安科技有限公司',
-        imgUrl: '', version: 'v3.0.6', dataStr: '', showName: '1',
+        imgUrl: '', version: 'v3.0.7', dataStr: '', showName: '1',
         systemParam: {sysLogo: '../assets/img/icon_logo.svg'},
         options: []
       }

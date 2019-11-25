@@ -32,8 +32,11 @@ export default new Router({
       name: '档案',
       children: [
         {
-          path: '/importPersons', name: '特征档案',
+          path: '/importPersons', name: '人员档案',
           component: resolve => require(['../components/profiles/ImportPersons'], resolve)
+        }, {
+          path: '/cf', name: '车辆档案',
+          component: resolve => require(['../components/carfiles/CarFiles'], resolve)
         }, {
           path: '/imsiRecords', name: 'IMSI记录',
           component: resolve => require(['../components/profiles/ImsiRecords'], resolve)
@@ -44,7 +47,7 @@ export default new Router({
           path: '/carRecords', name: '车牌记录',
           component: resolve => require(['../components/profiles/CarRecords'], resolve)
         }, {
-          path: '/importPersons', component: Home, name: '特征档案',
+          path: '/importPersons', component: Home, name: '人员档案',
           children: [
             {
               path: '/personnelFiles', name: '档案信息',
@@ -52,6 +55,14 @@ export default new Router({
             }, {
               path: '/pathLine', name: '轨迹跟踪',
               component: resolve => require(['../components/profiles/PathLine'], resolve)
+            }
+          ]
+        }, {
+          path: '/cf', component: Home, name: '车辆档案',
+          children: [
+            {
+              path: '/cfd', name: '车辆档案详情',
+              component: resolve => require(['../components/carfiles/CarFileDetail'], resolve)
             }
           ]
         }, {
@@ -278,10 +289,10 @@ export default new Router({
           path: '/userList', name: '用户管理',
           component: resolve => require(['../components/system/UserList'], resolve)
         }, {
-          path: '/organizationManager', name: '组织管理',
+          path: '/organizationManager', name: '公安机关管理',
           component: resolve => require(['../components/system/OrganizationManager'], resolve)
         }, {
-          path: '/roleList', name: '角色管理',
+          path: '/roleList', name: '岗位管理',
           component: resolve => require(['../components/system/RoleList'], resolve)
         }, {
           path: '/userList', component: Home, name: '',

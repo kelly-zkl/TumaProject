@@ -3,7 +3,7 @@
     <section>
       <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left">
         <el-form-item style="margin-bottom: 10px">
-          <el-input placeholder="账号/用户名" v-model="query.keyword" :maxlength="20" size="medium"></el-input>
+          <el-input placeholder="账号/姓名" v-model="query.keyword" :maxlength="20" size="medium"></el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 10px">
           <el-date-picker v-model="qTime" type="datetimerange" range-separator="至"
@@ -23,7 +23,7 @@
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="账号" prop="account" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="用户名" prop="userName" min-width="150"
+        <el-table-column align="left" label="姓名" prop="userName" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="相关功能" prop="operateDesc" min-width="150"
                          max-width="200" :formatter="formatterAddress"></el-table-column>
