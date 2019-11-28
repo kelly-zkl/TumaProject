@@ -4781,7 +4781,7 @@
             /*guoguo 使用本地卫星的瓦片 */
             return tdir;
           } else {
-            l = "customimage/tile?&x=" + e + "&y=" + k + "&z=" + d + "&udt=20181204&scale=" + l;
+            l = "customimage/tile?&x=" + e + "&y=" + k + "&z=" + d + "&udt=20191119&scale=" + l;
             l = a.styleStr ? l + ("&styles=" + encodeURIComponent(a.styleStr)) : l + ("&customid=" + a.style);
             return c[Math.abs(e + k) % c.length] + l
           }
@@ -5213,7 +5213,7 @@
       c = Uc[c];
       this.map.dE() && (e = 2);
       d = this.map.bb.xw(d, b).Fw;
-      return (Tc[Math.abs(d + a) % Tc.length] + "?qt=tile&x=" + (d + "").replace(/-/gi, "M") + "&y=" + (a + "").replace(/-/gi, "M") + "&z=" + b + "&styles=" + c + "&scaler=" + e + (6 == x.ea.la ? "&color_dep=32&colors=50" : "") + "&udt=20181204").replace(/-(\d+)/gi, "M$1")
+      return (Tc[Math.abs(d + a) % Tc.length] + "?qt=vtile&x=" + (d + "").replace(/-/gi, "M") + "&y=" + (a + "").replace(/-/gi, "M") + "&z=" + b + "&styles=" + c + "&scaler=" + e + (6 == x.ea.la ? "&color_dep=32&colors=50" : "") + "&udt=20191119").replace(/-(\d+)/gi, "M$1")
     }
   };
   var La = new Rc("\u5730\u56fe", Vc, {

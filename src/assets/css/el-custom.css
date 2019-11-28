@@ -846,3 +846,33 @@
   color: #6699ff;
   background-color: rgba(0, 0, 0, 0);;
 }
+
+/*设置文字提示框最大为60%*/
+.el-tooltip__popper {
+  max-width: 60%;
+}
+
+/*关联案件的按钮*/
+.btn-case {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+  color: #69f;
+  cursor: pointer
+}
+
+/*文本超出展示*/
+.text-overflow-s {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-overflow-m {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical
+}

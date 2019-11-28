@@ -41,12 +41,14 @@
             </el-col>
             <el-col :span="12" align="right" style="text-align: right">
               <el-form-item label="关联案件" align="left" style="margin: 0">
-                <el-button type="text" @click="gotoCaseDetail()">{{approval.caseName?approval.caseName:'--'}}
-                </el-button>
+                <div class="btn-case" @click="gotoCaseDetail()" :title="approval.caseName?approval.caseName:'--'">
+                  {{approval.caseName?approval.caseName:'--'}}
+                </div>
               </el-form-item>
               <el-form-item label="侦查任务" align="left" style="margin: 0">
-                <el-button type="text" @click="gotoTaskDetail()">{{approval.spyTaskName?approval.spyTaskName:'--'}}
-                </el-button>
+                <div class="btn-case" @click="gotoTaskDetail()" :title="approval.spyTaskName?approval.spyTaskName:'--'">
+                  {{approval.spyTaskName?approval.spyTaskName:'--'}}
+                </div>
               </el-form-item>
             </el-col>
           </el-row>

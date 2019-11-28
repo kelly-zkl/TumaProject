@@ -5,7 +5,7 @@
         <h5 class="add-label" style="margin:10px 0">任务基本信息</h5>
         <div class="add-appdiv" style="padding: 20px 0">
           <el-form-item label="任务名称" align="left" prop="taskName" style="text-align: left">
-            <el-input v-model="followTask.taskName" placeholder="请输入任务名称" style="width: 400px" :maxlength=30></el-input>
+            <el-input v-model="followTask.taskName" placeholder="请输入任务名称" style="width: 400px" :maxlength=20></el-input>
           </el-form-item>
           <el-form-item label="关联案件" align="left" style="margin:0;text-align: left" prop="caseId">
             <el-select v-model="followTask.caseId" placeholder="选择案件" filterable clearable>
@@ -105,17 +105,17 @@
           <el-table-column type="selection" width="45" align="left"></el-table-column>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="场所编码" prop="placeCode" min-width="150"
-                           max-width="200" :formatter="formatterAddress"></el-table-column>
+                           max-width="200" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" label="场所名称" prop="placeName" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="250" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" label="场所类型" prop="placeType" min-width="150"
-                           max-width="200" :formatter="formatterAddress"></el-table-column>
+                           max-width="200" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" label="所属公安机关" prop="groupName" min-width="150"
-                           max-width="200" :formatter="formatterAddress"></el-table-column>
+                           max-width="200" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" label="地区" prop="areaCode" min-width="180"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="250" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" label="详细地址" prop="detailAddress" min-width="180"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="250" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
@@ -227,7 +227,9 @@
       },
       showMap() {
         this.mapVisible = true;
-        // this.$refs.map.clearArea();
+        this.$nextTick(() => {
+          this.$refs.map.clearArea();
+        });
       },
       //地图选择场所
       setPlaceList() {
@@ -313,26 +315,28 @@
 
             this.followTask.caseName = this.getCaseName();
 
-            if (!!this.followTask.placeList) {
+            let param = Object.assign({}, this.followTask);
+            param.placeList = Object.assign([], this.followTask.placeList);
+            if (param.placeList != null && param.placeList.length > 0) {
               let places = [];
-              this.followTask.placeList.forEach((item) => {
+              param.placeList.forEach((item) => {
                 this.places.forEach((list) => {
                   if (item == list.id) {
                     places.push({placeId: list.id, placeName: list.placeName});
                   }
                 });
               });
-              this.followTask.placeList = places;
+              param.placeList = places;
             }
             if (this.taskId.length > 0) {
-              this.$post("/follow/update", this.followTask, "修改成功").then((data) => {
+              this.$post("/follow/update", param, "修改成功").then((data) => {
                 if ("000000" === data.code)
                   this.$router.go(-1);
               }).catch((err) => {
               });
             } else {
-              this.followTask.createBy = JSON.parse(decryData(sessionStorage.getItem("user"))).realName;
-              this.$post("follow/add", this.followTask, "创建成功").then((data) => {
+              param.createBy = JSON.parse(decryData(sessionStorage.getItem("user"))).realName;
+              this.$post("follow/add", param, "创建成功").then((data) => {
                 if ("000000" === data.code)
                   this.$router.go(-1);
               }).catch((err) => {

@@ -66,15 +66,15 @@
         <el-table :data="cameraList" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="相机编码" prop="cameraCode" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="250" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" label="安装地区" prop="areaCode" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="250" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" label="详细地址" prop="detailAddress" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="250" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" label="安装场所" prop="placeName" min-width="150"
-                           max-width="200" :formatter="formatterAddress"></el-table-column>
+                           max-width="200" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" label="设备标识" prop="name" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="250" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" label="相机状态" prop="status" min-width="120" max-width="150">
             <template slot-scope="scope">
               <span style="color:#00C755" v-show="scope.row.status == 0">在线</span>
@@ -123,19 +123,19 @@
         <el-table :data="deviceList" v-loading="listLoading" class="center-block" stripe>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" prop="deviceId" label="设备ID" min-width="150" max-width="250"
-                           :formatter="formatterAddress"></el-table-column>
+                           :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" prop="deviceTypeVal" label="类型" min-width="150" max-width="250"
-                           :formatter="formatterAddress"></el-table-column>
+                           :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" prop="deviceFormVal" label="形态" min-width="150" max-width="250"
-                           :formatter="formatterAddress"></el-table-column>
+                           :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" label="安装地区" prop="areaCode" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="250" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" prop="detailAddress" label="详细地址" min-width="180" max-width="300"
-                           :formatter="formatterAddress"></el-table-column>
+                           :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" prop="placeName" label="安装场所" min-width="150" max-width="200"
-                           :formatter="formatterAddress"></el-table-column>
+                           :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" prop="deviceName" label="设备标识" min-width="150" max-width="250"
-                           :formatter="formatterAddress"></el-table-column>
+                           :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" prop="lineStatus" label="在线状态" min-width="100" max-width="120">
             <template slot-scope="scope">
               <span style="color:#00C755" v-show="scope.row.lineStatus == '在线'">在线</span>

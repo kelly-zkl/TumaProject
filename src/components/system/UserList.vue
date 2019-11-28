@@ -3,8 +3,8 @@
     <section class="content">
       <el-row>
         <el-col :span="4" style="padding-right: 10px;border-right: 1px solid #e5e5e5">
-          <div v-bind:class="currentIdx==-1?'group-name active':'group-name'"
-               @click="handleClick(-1)" :title="groupName+'（'+groupMem+'人）'">
+          <div v-bind:class="currentIdx==-1?'group-name active':'group-name'" @click="handleClick(-1)"
+               :title="groupName+'（'+groupMem+'人）'">
             {{groupName+'（'+groupMem+'人）'}}
           </div>
           <div v-bind:style="'overflow-y:auto;height:'+leftHeight+'px'">

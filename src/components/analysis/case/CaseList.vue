@@ -70,7 +70,8 @@
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" v-for="item in defaultProps" :key="item.value" :formatter="formatterAddress"
-                         :prop="item.value" :label="item.name" :min-width="item.min" :max-width="item.max">
+                         :prop="item.value" :label="item.name" :min-width="item.min" :max-width="item.max"
+                         show-overflow-tooltip>
         </el-table-column>
         <el-table-column align="left" label="操作" width="160" fixed="right">
           <template slot-scope="scope">
@@ -95,7 +96,7 @@
           <el-form ref="createCase" :rules="rules" :model="createCase" label-position="right"
                    :label-width="labelWidth">
             <el-form-item label="案件编号" prop="caseNo">
-              <el-input v-model="createCase.caseNo" auto-complete="off" :maxlength="30" placeholder="案件编号"></el-input>
+              <el-input v-model="createCase.caseNo" auto-complete="off" :maxlength="20" placeholder="案件编号"></el-input>
             </el-form-item>
             <el-form-item label="案件名称" prop="caseName">
               <el-input v-model="createCase.caseName" auto-complete="off" :maxlength="20" placeholder="案件名称"></el-input>
@@ -292,6 +293,7 @@
         }
       },
       addCaseType() {
+        this.caseTypeAdd = this.caseTypeAdd.trim();
         if (this.caseTypeAdd.length == 0) {
           this.$message.error('请输入案件属性');
           return;

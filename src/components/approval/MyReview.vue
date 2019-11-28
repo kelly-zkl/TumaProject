@@ -94,14 +94,11 @@
   export default {
     data() {
       return {
-        listLoading: false,
-        activeItem: 'UNREAD',
-        imsiList: [],
+        listLoading: false, activeItem: 'UNREAD', imsiList: [],
+        uLogin: localStorage.getItem('login'),
         query: {page: 1, size: 10, ccReadStatus: 1},
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 280,
-        qTime: '',
-        count: 0,
-        sels: [],
+        qTime: '', count: 0, sels: [],
         levs: [{value: '一级', label: '一级'}, {value: '二级', label: '二级'}, {value: '三级', label: '三级'}],
         pickerBeginDate: {
           shortcuts: [{

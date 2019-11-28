@@ -86,7 +86,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="菜单名称" prop="name" style="text-align: left">
-            <el-input v-model="menu.name" placeholder="请输入菜单名称" :maxlength="20"></el-input>
+            <el-input v-model="menu.name" placeholder="请输入菜单名称" :maxlength="15"></el-input>
           </el-form-item>
           <el-form-item label="父级菜单" v-show="menu.type != '1'" required align="left" style="text-align: left">
             <el-cascader :options="menuTree" change-on-select :props="defaultProps" :show-all-levels="false" clearable

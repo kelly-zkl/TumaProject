@@ -74,12 +74,14 @@
             </el-col>
             <el-col :span="8">
               <el-form-item label="模型名称" align="left" style="margin: 0;text-align: left">
-                <el-button type="text" @click="gotoControl()">{{taskDetail.taskName ? taskDetail.taskName : '--'}}
-                </el-button>
+                <div class="btn-case" @click="gotoControl()" :title="taskDetail.taskName?taskDetail.taskName:'--'">
+                  {{taskDetail.taskName?taskDetail.taskName:'--'}}
+                </div>
               </el-form-item>
               <el-form-item label="关联案件" align="left" style="margin: 0;text-align: left">
-                <el-button type="text" @click="gotoCase()">{{taskDetail.caseName ? taskDetail.caseName : '--'}}
-                </el-button>
+                <div class="btn-case" @click="gotoCase()" :title="taskDetail.caseName?taskDetail.caseName:'--'">
+                  {{taskDetail.caseName?taskDetail.caseName:'--'}}
+                </div>
               </el-form-item>
               <el-form-item label="模型编号" align="left" style="margin: 0;text-align: left">
                 {{taskDetail.taskNo ? taskDetail.taskNo : '--'}}

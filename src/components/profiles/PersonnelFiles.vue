@@ -74,7 +74,7 @@
       <div v-show="activeItem=='first'">
         <el-row :gutter="10">
           <el-col :span="24">
-            <el-table :data="imsiList" class="center-block" :height="424" :row-style="tableImsiClass">
+            <el-table :data="imsiList" class="center-block" :row-style="tableImsiClass">
               <el-table-column label="当前关联的IMSI信息">
                 <el-table-column align="left" prop="imsi" label="IMSI" min-width="120" max-width="160"
                                  :formatter="formatterAddress"></el-table-column>

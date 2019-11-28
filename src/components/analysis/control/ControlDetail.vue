@@ -40,7 +40,9 @@
             <el-row style="margin: 0;padding: 0">
               <el-col :span="8">
                 <el-form-item label="关联案件" align="left" style="margin: 0;text-align: left">
-                  <el-button type="text" @click="gotoCaseDetail()">{{task.caseName?task.caseName:'--'}}</el-button>
+                  <div class="btn-case" @click="gotoCaseDetail()" :title="task.caseName?task.caseName:'--'">
+                    {{task.caseName?task.caseName:'--'}}
+                  </div>
                 </el-form-item>
                 <el-form-item label="模型名称" align="left" style="margin: 0;text-align: left">
                   {{task.taskName?task.taskName:'--'}}

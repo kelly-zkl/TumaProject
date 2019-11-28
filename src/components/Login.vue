@@ -180,7 +180,8 @@
                 user.psw = encryData(this.account.password);
               }
               localStorage.setItem("user", JSON.stringify(user));//是否保存账号/密码
-              localStorage.setItem("login", 'true');
+              // localStorage.setItem("login", 'true');
+              localStorage.setItem("login", 'uLogin');
               sessionStorage.setItem("user", encryData(JSON.stringify(data.data)));//用户信息
               sessionStorage.setItem("face", JSON.stringify({id: ''}));
               sessionStorage.setItem("imsi", JSON.stringify({id: ''}));

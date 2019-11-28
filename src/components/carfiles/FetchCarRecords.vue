@@ -38,9 +38,9 @@
                          :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="过车场所" prop="placeName" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备标识" prop="checkpointName" min-width="150" max-width="200"
+        <el-table-column align="left" label="设备标识" prop="cameraName" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="设备ID" prop="checkpointId" min-width="150" max-width="200"
+        <el-table-column align="left" label="设备ID" prop="cameraId" min-width="150" max-width="200"
                          :formatter="formatterAddress"></el-table-column>
       </el-table>
       <div class="block" style="margin: 20px 0" align="right">

@@ -83,14 +83,11 @@
   export default {
     data() {
       return {
-        listLoading: false,
-        activeItem: 'HANDLED',
-        imsiList: [],
+        listLoading: false, activeItem: 'HANDLED', imsiList: [],
         query: {page: 1, size: 10, finishStatus: 1},
+        uLogin: localStorage.getItem('login'),
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 280,
-        qTime: '',
-        count: 0,
-        timeColumn: [],
+        qTime: '', count: 0, timeColumn: [],
         levs: [{value: '一级', label: '一级'}, {value: '二级', label: '二级'}, {value: '三级', label: '三级'}],
         pickerBeginDate: {
           shortcuts: [{

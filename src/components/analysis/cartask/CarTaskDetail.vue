@@ -43,7 +43,9 @@
             </el-col>
             <el-col :span="6" align="left">
               <el-form-item label="分析场所" align="left" style="margin: 0;text-align: left">
-                {{task.place?task.place:'--'}}
+                <div class="text-overflow-s" title="task.place?task.place:'--'" :title="task.place?task.place:'--'">
+                  {{task.place?task.place:'--'}}
+                </div>
               </el-form-item>
               <el-form-item label="日期范围" align="left" style="margin: 0;text-align: left">
                 {{(task.startStr?task.startStr:'--')+' 至 '+ (task.endStr?task.endStr:'--')}}
@@ -63,7 +65,9 @@
                 {{task.creatorName?task.creatorName:'--'}}
               </el-form-item>
               <el-form-item label="关联案件" align="left" style="margin: 0;text-align: left">
-                <el-button @click="gotoCaseDetail" type="text">{{task.caseName?task.caseName:'--'}}</el-button>
+                <div class="btn-case" @click="gotoCaseDetail()" :title="task.caseName?task.caseName:'--'">
+                  {{task.caseName?task.caseName:'--'}}
+                </div>
               </el-form-item>
             </el-col>
           </el-form>

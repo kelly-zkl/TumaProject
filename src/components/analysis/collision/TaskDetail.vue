@@ -98,12 +98,13 @@
               <el-table-column align="left" label="数据源">
                 <template slot-scope="scope">
                   <el-row>
-                    <el-col :span="12" align="left" style="text-align: left">
-                      <div style="font-size: 15px;color: #333;font-weight: bold">
+                    <el-col :span="18" align="left" style="text-align: left">
+                      <div style="font-size: 15px;color: #333;font-weight: bold" class="text-overflow-s"
+                           :title="scope.row.name?scope.row.name:'--'">
                         {{scope.row.name?scope.row.name:'--'}}
                       </div>
                     </el-col>
-                    <el-col :span="12" align="right" style="text-align: right">
+                    <el-col :span="6" align="right" style="text-align: right">
                       <el-tooltip class="item" effect="dark" content="设立条件" placement="bottom">
                         <el-button type="text" class="fa fa-filter" @click="showSetParam(1,scope.row)"
                                    style="margin: 0;padding: 0;font-size: 20px"></el-button>
@@ -121,20 +122,22 @@
                       </el-tooltip>
                     </el-col>
                   </el-row>
-                  <div class="data-content">{{scope.row.contentStr?scope.row.contentStr:'--'}}</div>
+                  <div class="data-content" :title="scope.row.contentStr?scope.row.contentStr:'--'">
+                    {{scope.row.contentStr?scope.row.contentStr:'--'}}
+                  </div>
                 </template>
               </el-table-column>
             </el-table>
           </el-col>
           <el-col :span="13">
             <div class="title-head">交并分析结果</div>
-            <el-table :data="results" class="center-block" @selection-change="selResultChange" stripe
+            <el-table :data="results" class="center-block" @selection-change="selResultChange"
                       :height="tableHeight" :row-key="getRowKey" ref="resultTable">
               <el-table-column type="selection" width="45" align="left" :reserve-selection="true"></el-table-column>
               <el-table-column align="left" prop="name" label="名称" :formatter="formatterAddress" max-width="120"
-                               min-width="80"></el-table-column>
+                               min-width="80" show-overflow-tooltip></el-table-column>
               <el-table-column align="left" prop="dataSource" label="数据源" :formatter="formatterAddress"
-                               max-width="220" min-width="180"></el-table-column>
+                               max-width="220" min-width="180" show-overflow-tooltip></el-table-column>
               <el-table-column align="left" prop="operator" label="分析方式" min-width="120" max-width="150">
                 <template slot-scope="scope">
                   <el-select v-model="scope.row.operator" style="width:80px" size="medium"
@@ -978,9 +981,10 @@
 
   .data-content {
     color: #888;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
     overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical
   }
 </style>

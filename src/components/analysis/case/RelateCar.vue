@@ -57,11 +57,11 @@
                 @selection-change="selsChange">
         <el-table-column type="selection" width="45" align="left"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="任务名称" prop="taskName"
-                         min-width="150" max-width="200" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="分析对象" prop="followTarget"
+        <el-table-column align="left" label="任务名称" prop="taskName" show-overflow-tooltip
                          min-width="180" max-width="250" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="分析目标" prop="followType"
+        <el-table-column align="left" label="分析对象" prop="followTarget" show-overflow-tooltip
+                         min-width="180" max-width="250" :formatter="formatterAddress"></el-table-column>
+        <el-table-column align="left" label="分析目标" prop="followType" show-overflow-tooltip
                          min-width="120" max-width="160" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="任务状态" prop="status" min-width="120" max-width="160">
           <template slot-scope="scope">
@@ -72,11 +72,11 @@
             <span style="color:#999" v-show="scope.row.status == 'killed'">终止</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="分析结果" prop="resultNumber"
+        <el-table-column align="left" label="分析结果" prop="resultNumber" show-overflow-tooltip
                          min-width="120" max-width="160" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="创建日期" prop="createTime"
+        <el-table-column align="left" label="创建日期" prop="createTime" show-overflow-tooltip
                          min-width="180" max-width="220" :formatter="formatterAddress"></el-table-column>
-        <el-table-column align="left" label="创建用户" prop="creatorName"
+        <el-table-column align="left" label="创建用户" prop="creatorName" show-overflow-tooltip
                          min-width="150" max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="120" max-width="180" fixed="right">
           <template slot-scope="scope">

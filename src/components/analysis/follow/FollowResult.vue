@@ -44,7 +44,9 @@
             </el-col>
             <el-col :span="6" align="left">
               <el-form-item label="分析场所" align="left" style="margin: 0;text-align: left">
-                {{task.place?task.place:'--'}}
+                <div class="text-overflow-m" style="-webkit-line-clamp:4" :title="task.place?task.place:'--'">
+                  {{task.place?task.place:'--'}}
+                </div>
               </el-form-item>
             </el-col>
             <el-col :span="6" align="right">
@@ -55,7 +57,9 @@
                 {{task.createBy?task.createBy: '--'}}
               </el-form-item>
               <el-form-item label="关联案件" align="left" style="margin: 0;text-align: left">
-                <el-button @click="gotoCaseDetail" type="text">{{task.caseName?task.caseName:'--'}}</el-button>
+                <div class="btn-case" @click="gotoCaseDetail()" :title="task.caseName?task.caseName:'--'">
+                  {{task.caseName?task.caseName:'--'}}
+                </div>
               </el-form-item>
             </el-col>
           </el-form>

@@ -42,11 +42,11 @@
         <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="预警模型名称" prop="taskName" min-width="150"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
+                         max-width="200" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
         <el-table-column align="left" label="管控对象类型" prop="dispositionType" min-width="120"
-                         max-width="160" :formatter="formatterAddress"></el-table-column>
+                         max-width="160" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
         <el-table-column align="left" label="有效期" prop="startTime" min-width="180"
-                         max-width="250" :formatter="formatterAddress"></el-table-column>
+                         max-width="250" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
         <el-table-column align="left" label="预警状态" prop="taskStatus" min-width="100" max-width="150">
           <template slot-scope="scope">
             <span style="color:#00C755" v-show="scope.row.taskStatus == 'FINISH'">已关闭</span>
@@ -55,9 +55,9 @@
           </template>
         </el-table-column>
         <el-table-column align="left" label="告警次数" prop="warningCounts" min-width="100"
-                         max-width="150" :formatter="formatterAddress"></el-table-column>
+                         max-width="150" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
         <el-table-column align="left" label="关联案件" prop="caseName" min-width="150"
-                         max-width="200" :formatter="formatterAddress"></el-table-column>
+                         max-width="200" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
         <el-table-column align="left" label="操作" min-width="150" max-width="200" fixed="right">
           <template slot-scope="scope">
             <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('disposition:get')">查看
@@ -173,8 +173,10 @@
         // this.$router.push({path: '/controlDetail', query: {taskId: task.id}});
       },
       //获取布控列表
-      getData() {
-        this.listLoading = true;
+      getData(val) {
+        if (!val) {
+          this.listLoading = true;
+        }
         this.query.taskStatus = this.activeItem;
         this.$post('disposition/query', this.query).then((data) => {
           this.controlList = data.data.list;

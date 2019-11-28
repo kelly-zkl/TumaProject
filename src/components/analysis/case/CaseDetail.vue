@@ -25,18 +25,22 @@
                 {{caseDetail.caseType?caseDetail.caseType:'--'}}
               </el-form-item>
             </el-col>
-            <el-col :span="8" align="left" style="text-align: left">
+            <el-col :span="9" align="left" style="text-align: left">
               <el-form-item label="案发地点" align="left" style="margin: 0;text-align: left">
-                {{caseDetail.address?caseDetail.address:'--'}}
+                <div class="text-overflow-s" :title="caseDetail.address?caseDetail.address:'--'">
+                  {{caseDetail.address?caseDetail.address:'--'}}
+                </div>
               </el-form-item>
               <el-form-item label="案发时间" align="left" style="margin: 0;text-align: left">
                 {{(caseDetail.startStr?caseDetail.startStr:'--') + " 至 " + (caseDetail.endStr?caseDetail.endStr:'--')}}
               </el-form-item>
               <el-form-item label="备注" align="left" style="margin: 0;text-align: left">
-                {{caseDetail.remark?caseDetail.remark:'--'}}
+                <div class="text-overflow-s" :title="caseDetail.remark?caseDetail.remark:'--'">
+                  {{caseDetail.remark?caseDetail.remark:'--'}}
+                </div>
               </el-form-item>
             </el-col>
-            <el-col :span="8" align="left" style="text-align: left">
+            <el-col :span="7" align="left" style="text-align: left">
               <el-form-item label="案件状态" align="left" style="margin: 0;text-align: left">
                 <span
                   v-bind:style="{fontSize:'15px',color:caseDetail.status=='EXECUTION'?'#6799FD':caseDetail.status =='HANDLED'?'#00C755':'#333'}">

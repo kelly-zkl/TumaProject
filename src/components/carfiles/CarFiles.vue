@@ -62,7 +62,8 @@
                          max-width="200" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" label="操作" min-width="130" max-width="180" fixed="right">
           <template slot-scope="scope">
-            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('car:detail')">查看车辆档案
+            <el-button type="text" @click="gotoDetail(scope.row)" v-show="getButtonVial('car:detail')&&scope.row.id">
+              查看车辆档案
             </el-button>
           </template>
         </el-table-column>

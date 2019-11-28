@@ -36,7 +36,7 @@
         <el-table-column align="left" prop="roleName" label="岗位名称" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="remark" label="备注" min-width="150"
-                         max-width="300" :formatter="formatterAddress"></el-table-column>
+                         max-width="300" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
         <el-table-column align="left" prop="roleType" label="类型" min-width="150"
                          max-width="250" :formatter="formatterAddress"></el-table-column>
         <el-table-column align="left" prop="state" label="状态" min-width="150" max-width="250">

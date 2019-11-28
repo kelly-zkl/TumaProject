@@ -555,7 +555,7 @@
           this.deviceMap.enableScrollWheelZoom(true);
           this.deviceMap.enableDragging();
           this.deviceMap.setMinZoom(5);
-          this.deviceMap.setMaxZoom(19);
+          this.deviceMap.setMaxZoom(20);
           this.deviceMap.setMapStyle({style: 'midnight'});
 
           this.deviceMap.addEventListener("zoomend", this.map);
@@ -789,7 +789,7 @@
       //初始化热力地图
       initHeatMap() {
         this.$nextTick(() => {
-          this.heatMap = new BMap.Map("dataheat", {minZoom: 5, maxZoom: 19});// 创建地图实例
+          this.heatMap = new BMap.Map("dataheat", {minZoom: 5, maxZoom: 20});// 创建地图实例
           this.heatMap.setMapStyle({style: 'midnight'});
           this.heatMap.centerAndZoom(this.hotPoint, this.hotZoom);
           this.heatMap.enableScrollWheelZoom(true); // 允许滚轮缩放

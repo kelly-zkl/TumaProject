@@ -345,7 +345,7 @@
           this.deviceMap.enableScrollWheelZoom(true);
           this.deviceMap.enableDragging();
           this.deviceMap.setMinZoom(5);
-          this.deviceMap.setMaxZoom(19);
+          this.deviceMap.setMaxZoom(20);
 
           let bottom_right_control = new BMap.ScaleControl({
             anchor: BMAP_ANCHOR_BOTTOM_RIGHT,

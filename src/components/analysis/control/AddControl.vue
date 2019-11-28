@@ -137,17 +137,17 @@
           <el-table-column type="selection" width="45" align="left"></el-table-column>
           <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
           <el-table-column align="left" label="场所编码" prop="placeCode" min-width="150"
-                           max-width="200" :formatter="formatterAddress"></el-table-column>
+                           max-width="200" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" label="场所名称" prop="placeName" min-width="150"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="250" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" label="场所类型" prop="placeType" min-width="150"
-                           max-width="200" :formatter="formatterAddress"></el-table-column>
+                           max-width="200" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" label="所属公安机关" prop="groupName" min-width="150"
-                           max-width="200" :formatter="formatterAddress"></el-table-column>
+                           max-width="200" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" label="地区" prop="areaCode" min-width="180"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="250" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
           <el-table-column align="left" label="详细地址" prop="detailAddress" min-width="180"
-                           max-width="250" :formatter="formatterAddress"></el-table-column>
+                           max-width="250" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
         </el-table>
         <div class="block" style="margin-top: 20px" align="right">
           <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page.sync="query.page"
@@ -260,7 +260,9 @@
     methods: {
       showMap() {
         this.mapVisible = true;
-        // this.$refs.map.clearArea();
+        this.$nextTick(() => {
+          this.$refs.map.clearArea();
+        });
       },
       pinyinChange() {
         this.places = this.placesCopy;
