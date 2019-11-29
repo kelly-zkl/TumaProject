@@ -60,8 +60,8 @@
         </el-col>
       </el-row>
       <el-table :data="tasks" v-loading="listLoading" class="center-block" stripe
-                @selection-change="selsChange" :height="tableHeight">
-        <el-table-column type="selection" width="45" align="left"></el-table-column>
+                @selection-change="selsChange" :height="tableHeight" :row-key="getRowKey">
+        <el-table-column type="selection" width="45" align="left" :reserve-selection="true"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="任务名称" prop="taskName" min-width="130"
                          max-width="180" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
@@ -197,6 +197,9 @@
             this.getData('task');
           }, 10 * 1000);
         }
+      },
+      getRowKey(row) {
+        return row.taskNo
       },
       //终止分析
       stopAnalysis(taskNo) {

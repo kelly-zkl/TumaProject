@@ -64,7 +64,9 @@
           </el-form-item>
         </div>
         <el-form-item align="left" style="text-align: left">
-          <el-button type="primary" @click="createFollowTask()">{{taskId.length>0?'确认修改':'确认创建'}}</el-button>
+          <el-button type="primary" @click="createFollowTask()" :loading="listLoading">
+            {{taskId.length>0?'确认修改':'确认创建'}}
+          </el-button>
         </el-form-item>
       </el-form>
       <!--在地图上选择场所-->
@@ -145,8 +147,7 @@
       };
       return {
         dialogPlace: false, listLoading: false, mapVisible: false,
-        query: {page: 1, size: 10},
-        taskId: this.$route.query.id || '',
+        query: {page: 1, size: 10}, taskId: this.$route.query.id || '',
         followTask: {followType: "IMSI", interval: 120, placeList: []},
         imgPath: require('../../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_people.png') + "'",
@@ -329,17 +330,25 @@
               param.placeList = places;
             }
             if (this.taskId.length > 0) {
+              this.listLoading = true;
               this.$post("/follow/update", param, "修改成功").then((data) => {
-                if ("000000" === data.code)
+                if ("000000" === data.code) {
+                  this.listLoading = false;
                   this.$router.go(-1);
+                }
               }).catch((err) => {
+                this.listLoading = false;
               });
             } else {
               param.createBy = JSON.parse(decryData(sessionStorage.getItem("user"))).realName;
+              this.listLoading = true;
               this.$post("follow/add", param, "创建成功").then((data) => {
-                if ("000000" === data.code)
+                if ("000000" === data.code) {
+                  this.listLoading = false;
                   this.$router.go(-1);
+                }
               }).catch((err) => {
+                this.listLoading = false;
               });
             }
           }

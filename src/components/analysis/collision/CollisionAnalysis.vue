@@ -189,29 +189,33 @@
         if (this.addTask.id) {
           this.listLoading = true;
           this.$post('/collision/update', this.addTask, "修改成功").then((data) => {
+            this.listLoading = false;
+            this.runAddTask = false;
             if ("000000" === data.code) {
-              this.listLoading = false;
-              this.runAddTask = false;
               this.getData();
               setTimeout(() => {
                 this.gotoDetail(this.addTask.id);
-              }, 2000);
+              }, 1000);
             }
           }).catch((err) => {
+            this.listLoading = false;
+            this.runAddTask = false;
           });
         } else {
           this.addTask.createBy = JSON.parse(decryData(sessionStorage.getItem("user"))).realName;
           this.listLoading = true;
           this.$post('/collision/add', this.addTask, "创建成功").then((data) => {
+            this.listLoading = false;
+            this.runAddTask = false;
             if ("000000" === data.code) {
-              this.listLoading = false;
-              this.runAddTask = false;
               this.getData();
               setTimeout(() => {
                 this.gotoDetail(data.data);
-              }, 2000);
+              }, 1000);
             }
           }).catch((err) => {
+            this.listLoading = false;
+            this.runAddTask = false;
           });
         }
       },

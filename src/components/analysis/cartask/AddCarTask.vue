@@ -82,7 +82,8 @@
           </el-form-item>
         </div>
         <el-form-item align="left" style="text-align: left">
-          <el-button type="primary" @click="createCarTask()">{{taskNo.length>0?'确认修改':'确认创建'}}</el-button>
+          <el-button type="primary" @click="createCarTask()" :loading="listLoading">{{taskNo.length>0?'确认修改':'确认创建'}}
+          </el-button>
         </el-form-item>
       </el-form>
       <!--在地图上选择场所-->
@@ -310,19 +311,27 @@
             }
 
             if (this.taskNo.length > 0) {
+              this.listLoading = true;
               this.$post("car/task/create", param, "修改成功").then((data) => {
-                if ("000000" === data.code)
+                if ("000000" === data.code) {
+                  this.listLoading = false;
                   this.$router.go(-1);
+                }
               }).catch((err) => {
+                this.listLoading = false;
               });
             } else {
               param.groupId = JSON.parse(decryData(sessionStorage.getItem("user"))).groupId;
               param.creatorId = JSON.parse(decryData(sessionStorage.getItem("user"))).userId;
               param.creatorName = JSON.parse(decryData(sessionStorage.getItem("user"))).realName;
+              this.listLoading = true;
               this.$post("car/task/create", param, "创建成功").then((data) => {
-                if ("000000" === data.code)
+                if ("000000" === data.code) {
+                  this.listLoading = false;
                   this.$router.go(-1);
+                }
               }).catch((err) => {
+                this.listLoading = false;
               });
             }
           }

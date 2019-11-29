@@ -38,8 +38,8 @@
         </el-form-item>
       </el-form>
       <el-table :data="controlList" v-loading="listLoading" class="center-block" stripe
-                @selection-change="selsChange" :height="tableHeight">
-        <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
+                @selection-change="selsChange" :height="tableHeight" :row-key="getRowKey">
+        <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit" :reserve-selection="true"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
         <el-table-column align="left" label="预警模型名称" prop="taskName" min-width="150"
                          max-width="200" :formatter="formatterAddress" show-overflow-tooltip></el-table-column>
@@ -110,6 +110,9 @@
             this.getData('task');
           }, 10 * 1000);
         }
+      },
+      getRowKey(row) {
+        return row.id
       },
       checkboxInit(row, index) {
         if (row.threeFlag == 'QING_ZHI')

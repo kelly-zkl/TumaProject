@@ -867,9 +867,15 @@
         this.$post("place/query", {page: 1, size: 999999}).then((data) => {
           this.places = data.data.list;
           this.placesCopy = Object.assign([], this.places);
+          this.getData();
+          this.getParams();
+          this.statusTask();
         }).catch((err) => {
           this.places = [];
           this.placesCopy = [];
+          this.getData();
+          this.getParams();
+          this.statusTask();
         });
       },
       //任务详情
@@ -961,9 +967,6 @@
       this.getCases();
       this.getPlaces();
       this.taskDetail();
-      this.getData();
-      this.getParams();
-      this.statusTask();
     },
     components: {
       imsiCount, imsiList, imsiResultList, PlaceMap, helpDoc

@@ -167,7 +167,7 @@
         this.$post('home/allSearch', paramData, undefined, undefined, "multi").then((data) => {
           if ("000000" === data.code) {
             this.listLoading = false;
-            this.searchResults = data.data ? data.data : [];
+            this.searchResults = data.data.person ? data.data.person : [];
           } else if ("100000" === data.code) {//执行中
             setTimeout(() => {
               this.getData();

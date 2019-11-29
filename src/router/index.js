@@ -4,11 +4,23 @@ import Router from 'vue-router'
 import Index from '@/components/Index'
 import Home from '@/components/Home'
 import DataHome from '@/components/overview/DataHome'
+import TvHome from '@/components/overview/TvHome'
 
 Vue.use(Router);
 
 export default new Router({
   routes: [
+    {
+      path: '/tv',
+      component: TvHome,
+      name: '大屏首页',
+      children: [
+        {
+          path: '/tv', name: '大屏',
+          component: resolve => require(['../components/overview/DataOverview'], resolve)
+        }
+      ]
+    },
     {
       path: '/dataOverview',
       name: '',

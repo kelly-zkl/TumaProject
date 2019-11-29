@@ -45,18 +45,23 @@
                                :max="200" style="width: 90px" size="medium" :precision="0"></el-input-number>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
-              <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 80px" clearable>
-                <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value"></el-option>
-              </el-select>
+              <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
             </el-form-item>
-            <!--<el-form-item style="margin-bottom: 10px">-->
-            <!--<el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>-->
-            <!--</el-form-item>-->
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button size="medium" @click="clearData()">重置</el-button>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 80px" clearable>
+                <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px" v-show="isMore">
+              <el-select v-model="query.sort" placeholder="排序" size="medium" style="width:130px">
+                <el-option v-for="item in sorts" :key="item.value" :label="item.label" :value="item.value"></el-option>
+              </el-select>
             </el-form-item>
           </el-form>
         </el-col>
@@ -140,11 +145,12 @@
   export default {
     data() {
       return {
-        isMore: false, query: {size: 100},
+        isMore: false, query: {size: 100, sort: 'time'},
         tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 232,
         imgPath: require('../../assets/img/icon_people.png'),
         img404: "this.onerror='';this.src='" + require('../../assets/img/icon_people.png') + "'",
         sexs: [{value: 0, label: '男'}, {value: 1, label: '女'}],
+        sorts: [{value: 'time', label: '按时间排序'}, {value: 'similar', label: '按置信度排序'}],
         count: 0, personCount: 0, list: [], list10: [], isFirst: true,
         isSearch: false, firstPage: 0, page: 1, listLoading: false,
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
@@ -266,7 +272,7 @@
       //清除查询条件
       clearData() {
         this.list10 = [];
-        this.query = {size: 100};
+        this.query = {size: 100, sort: 'time'};
         this.isSearch = true;
         delete this.query['faceUrl'];
         let param = JSON.parse(decryData(sessionStorage.getItem("system"))).similarThreshold;

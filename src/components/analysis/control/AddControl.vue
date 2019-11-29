@@ -96,7 +96,9 @@
           </el-form-item>
         </div>
         <el-form-item align="left" style="text-align: left">
-          <el-button type="primary" @click="createControlTask()">{{taskId.length>0?'确认修改':'确认创建'}}</el-button>
+          <el-button type="primary" @click="createControlTask()" :loading="listLoading">
+            {{taskId.length>0?'确认修改':'确认创建'}}
+          </el-button>
         </el-form-item>
       </el-form>
       <!--在地图上选择场所-->
@@ -170,19 +172,13 @@
   export default {
     data() {
       return {
-        mapVisible: false,
-        dialogPlace: false,
+        mapVisible: false, dialogPlace: false, inputValue: '',
         controlTask: {
           cycleType: 'EVERYDAY', intervalType: 'ALLDAY', week: [], imsiList: [],
           featureList: [], blackClassList: [], dispositionType: 0, timerange: []
         },
-        cases: [],
-        places: [], placesCopy: [],
-        placeList: [],
-        imgList: [],
-        inputVisible: false,
-        taskId: this.$route.query.id || '',
-        inputValue: '',
+        cases: [], places: [], placesCopy: [], placeList: [], imgList: [],
+        inputVisible: false, taskId: this.$route.query.id || '',
         uploadUrl: this.axios.defaults.baseURL + 'file/upload',
         weeks: [{label: '周一', value: 0}, {label: '周二', value: 1}, {label: '周三', value: 2}, {label: '周四', value: 3},
           {label: '周五', value: 4}, {label: '周六', value: 5}, {label: '周日', value: 6}],
@@ -200,12 +196,7 @@
           {value: '5', label: '交通枢纽'}, {value: '6', label: '公共交通工具'}, {value: '7', label: '餐饮服务场所'},
           {value: '8', label: '金融服务场所'}, {value: 'A', label: '购物场所'}, {value: 'B', label: '公共服务场所'},
           {value: 'C', label: '文化服务场所'}, {value: 'D', label: '公共休闲场所'}, {value: '9', label: '其他'}],
-        areaList: [],
-        listTypes: [],
-        count: 0,
-        listLoading: false,
-        sels: [],
-        placeList1: [],
+        areaList: [], listTypes: [], count: 0, listLoading: false, sels: [], placeList1: [],
         pickerBeginDate: {
           shortcuts: [{
             text: '最近6小时',
@@ -458,17 +449,25 @@
             delete param['timerange'];
             delete param['week'];
             if (this.taskId.length > 0) {
+              this.listLoading = true;
               this.$post("disposition/add", param, "修改成功").then((data) => {
-                if ("000000" === data.code)
+                if ("000000" === data.code) {
+                  this.listLoading = false;
                   this.$router.go(-1);
+                }
               }).catch((err) => {
+                this.listLoading = false;
               });
             } else {
               param.createBy = JSON.parse(decryData(sessionStorage.getItem("user"))).realName;
+              this.listLoading = true;
               this.$post("disposition/add", param, "创建成功").then((data) => {
-                if ("000000" === data.code)
+                if ("000000" === data.code) {
+                  this.listLoading = false;
                   this.$router.go(-1);
+                }
               }).catch((err) => {
+                this.listLoading = false;
               });
             }
           }
