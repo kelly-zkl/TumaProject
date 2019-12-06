@@ -93,7 +93,7 @@
                 <el-button slot="append" icon="el-icon-search" @click.stop="searchImsi()"></el-button>
               </el-input>
             </div>
-            <el-button class="item" style="text-align:center;width:auto;margin-right:26px" type="text"
+            <el-button class="item" style="text-align:center;width:auto;margin-right:15px" type="text"
                        @click="gotoTv()" v-show="getButtonVial('home:screen')">
               <i class="fa fa-television" style="display: inline-block;padding-top: 0;font-size: 1.9em"></i>
             </el-button>

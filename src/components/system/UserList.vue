@@ -111,7 +111,7 @@
       <el-dialog :title="addUserTitle" :visible.sync="addUserVisible" :width="dialogWidth">
         <el-form ref="admin" :model="admin" label-width="100px" :rules="rules" labelPosition="right">
           <el-form-item label="姓名" prop="realName" style="text-align: left">
-            <el-input v-model="admin.realName" placeholder="请输入姓名" :maxlength="16" :minlength="2"></el-input>
+            <el-input v-model="admin.realName" placeholder="请输入姓名" :maxlength="10" :minlength="2"></el-input>
           </el-form-item>
           <el-form-item label="账号" prop="account" style="text-align: left">
             <el-input v-model="admin.account" placeholder="请输入账号" :maxlength="16" :minlength="6"></el-input>
@@ -282,7 +282,7 @@
 <script>
   import md5 from 'js-md5';
   import {pswValidator, nameValidator, userCardValid} from '../../assets/js/api';
-  import {isPC, buttonValidator, formatDate, decryData} from "../../assets/js/util";
+  import {buttonValidator, formatDate, decryData} from "../../assets/js/util";
 
   export default {
     data() {
@@ -300,8 +300,8 @@
       let nickValidate = (rule, value, callback) => {
         if (value.length < 2) {
           callback(new Error('姓名不能小于2位'));
-        } else if (value.length > 16) {
-          callback(new Error('姓名不能大于16位'));
+        } else if (value.length > 10) {
+          callback(new Error('姓名不能大于10位'));
         } else if (!nameValidator(value)) {
           callback(new Error("姓名由汉字、英文字母组成"));
         } else {

@@ -5,7 +5,7 @@
         <el-col :span="20" align="left" style="text-align: left">
           <el-form :inline="true" :model="query" align="left" style="margin-top: 0;text-align: left">
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="公安机关名称" v-model="query.groupName" :maxlength="20"
+              <el-input placeholder="公安机关名称" v-model="query.groupName" :maxlength="12"
                         size="medium" style="width: 160px"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
@@ -83,7 +83,7 @@
       <el-dialog :title="addOrganizationTitle" :visible.sync="addOrganizationVisible" :width="dialogWidth">
         <el-form ref="group" :model="group" label-width="120px" labelPosition="right" :rules="rules">
           <el-form-item label="公安机关名称" prop="groupName" align="left" style="text-align: left">
-            <el-input v-model="group.groupName" placeholder="请输入公安机关名称" :maxlength="20" :minlength="2"></el-input>
+            <el-input v-model="group.groupName" placeholder="请输入公安机关名称" :maxlength="12" :minlength="2"></el-input>
           </el-form-item>
           <el-form-item label="管辖区域" align="left" prop="areaCodes" style="text-align: left">
             <el-select v-model="group.areaCodes" multiple placeholder="请选择" collapse-tags filterable>
@@ -126,7 +126,7 @@
       <el-dialog :title="addPoliceTitle" :visible.sync="addPoliceVisible" :width="dialogWidth">
         <el-form ref="police" :model="police" label-width="100px" labelPosition="right" :rules="rules1">
           <el-form-item label="派出所名称" prop="groupName" align="left" style="text-align: left">
-            <el-input v-model="police.groupName" placeholder="请输入派出所名称" :maxlength="20" :minlength="2"></el-input>
+            <el-input v-model="police.groupName" placeholder="请输入派出所名称" :maxlength="12" :minlength="2"></el-input>
           </el-form-item>
           <el-form-item label="所属公安机关" align="left" style="text-align: left">
             <span>{{police.pgroupName?police.pgroupName:groupName}}</span>
@@ -165,15 +165,15 @@
 <script>
   import md5 from 'js-md5';
   import {pswValidator, nameValidator, noValidator} from '../../assets/js/api';
-  import {isPC, buttonValidator, getAreaLable, encryData, decryData} from "../../assets/js/util";
+  import {isPC, buttonValidator, getAreaLable, decryData} from "../../assets/js/util";
 
   export default {
     data() {
       let nickValidate = (rule, value, callback) => {
         if (value.length < 2) {
           callback(new Error('公安机关名称不能小于2位'));
-        } else if (value.length > 20) {
-          callback(new Error('公安机关名称不能大于20位'));
+        } else if (value.length > 12) {
+          callback(new Error('公安机关名称不能大于12位'));
         } else if (!nameValidator(value)) {
           callback(new Error("请输入正确的姓名，由汉字、英文字母组成"));
         } else {

@@ -5,7 +5,7 @@
         <el-row>
           <el-col :span="20" align="left" style="text-align: left">
             <el-form-item style="margin-bottom: 10px">
-              <el-input placeholder="菜单名称" v-model="query.name" :maxlength="30" size="medium"
+              <el-input placeholder="菜单名称" v-model="query.name" :maxlength="10" size="medium"
                         style="width: 200px"></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
@@ -86,7 +86,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="菜单名称" prop="name" style="text-align: left">
-            <el-input v-model="menu.name" placeholder="请输入菜单名称" :maxlength="15"></el-input>
+            <el-input v-model="menu.name" placeholder="请输入菜单名称" :maxlength="10"></el-input>
           </el-form-item>
           <el-form-item label="父级菜单" v-show="menu.type != '1'" required align="left" style="text-align: left">
             <el-cascader :options="menuTree" change-on-select :props="defaultProps" :show-all-levels="false" clearable
@@ -114,14 +114,13 @@
   </div>
 </template>
 <script>
-  import {pswValidator, nameValidator, noValidator} from '../../assets/js/api';
-  import {formatDate, isPC, buttonValidator, encryData, decryData} from "../../assets/js/util";
+  import {isPC, buttonValidator, decryData} from "../../assets/js/util";
 
   export default {
     data() {
       let nickValidator = (rule, value, callback) => {
-        if (!/[A-Za-z0-9\u4e00-\u9fa5]{1,10}$/.test(value)) {
-          callback(new Error("请输入正确的名称，由1-10位汉字、字母、数字组成"));
+        if (!/[A-Za-z0-9\u4e00-\u9fa5]{2,10}$/.test(value)) {
+          callback(new Error("请输入正确的名称，由2-10位汉字、字母、数字组成"));
         } else {
           callback();
         }

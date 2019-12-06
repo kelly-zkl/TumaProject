@@ -34,7 +34,7 @@
           <el-form-item label="牌号种类" align="left" style="text-align: left" required
                         v-show="carTask.atype=='car'">
             <el-select v-model="carTask.carLicenseKind" placeholder="牌号种类" filterable clearable>
-              <el-option v-for="item in carTypes" :key="item.label" :label="item.label" :value="item.label">
+              <el-option v-for="item in carTypes" :key="item.code" :label="item.codeName" :value="item.codeName">
               </el-option>
             </el-select>
           </el-form-item>
@@ -150,7 +150,7 @@
 </template>
 <script>
   import PlaceMap from '../PlaceMap';
-  import {formatDate, getAreaLable, compareTime, encryData, decryData} from "../../../assets/js/util";
+  import {formatDate, getAreaLable, compareTime, buttonValidator, decryData} from "../../../assets/js/util";
   import {numValid, carValid} from "../../../assets/js/api";
   import PinyinMatch from 'pinyin-match';
 
@@ -163,10 +163,7 @@
         qTime: '', time2: ['00:00:00', '23:59:59'], taskNo: this.$route.query.no || '',
         props: {value: 'areaCode', label: 'areaName', children: 'subAreas'},
         provinceList: JSON.parse(localStorage.getItem("areas")),
-        areaList: [], places: [], placesCopy: [], placeList: [], placeList1: [], sels: [],
-        carTypes: [{value: 'small', label: '小型汽车'}, {value: 'veh', label: '大型汽车'},
-          {value: 'fe', label: '使馆汽车'}, {value: 'police', label: '境外汽车'}, {value: 'sol', label: '外籍摩托车'},
-          {value: 'soach', label: '外籍汽车'}, {value: 'other', label: '其他'}],
+        areaList: [], places: [], placesCopy: [], placeList: [], placeList1: [], sels: [], carTypes: [],
         serviceTypes: [{value: '0', label: '网吧'}, {value: '1', label: '旅店宾馆类（住宿服务场所）'},
           {value: '2', label: '图书馆阅览室'}, {value: '3', label: '电脑培训中心类'}, {value: '4', label: '娱乐场所类'},
           {value: '5', label: '交通枢纽'}, {value: '6', label: '公共交通工具'}, {value: '7', label: '餐饮服务场所'},
@@ -190,6 +187,9 @@
       }
     },
     methods: {
+      getButtonVial(msg) {
+        return buttonValidator(msg);
+      },
       pinyinChange() {
         this.places = this.placesCopy;
       },
@@ -434,12 +434,19 @@
         }
       },
       getPlaces() {
-        this.$post("place/query", {page: 1, size: 999999}).then((data) => {
-          this.places = data.data.list;
-          this.placesCopy = Object.assign([], this.places);
+        if (this.getButtonVial('place:query')) {
+          this.$post("place/query", {page: 1, size: 999999}).then((data) => {
+            this.places = data.data.list;
+            this.placesCopy = Object.assign([], this.places);
+          }).catch((err) => {
+            this.places = [];
+            this.placesCopy = [];
+          });
+        }
+        this.$post("car/task/carLicenseType", {}).then((data) => {
+          this.carTypes = data.data ? data.data : [];
         }).catch((err) => {
-          this.places = [];
-          this.placesCopy = [];
+          this.carTypes = [];
         });
       }
     },

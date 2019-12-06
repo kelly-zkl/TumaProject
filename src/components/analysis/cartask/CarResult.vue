@@ -11,7 +11,7 @@
             </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-select v-model="queryResult.carLicenseKind" placeholder="牌号种类" size="medium" clearable filterable>
-                <el-option v-for="item in carTypes" :key="item.label" :label="item.label" :value="item.label">
+                <el-option v-for="item in carTypes" :key="item.code" :label="item.codeName" :value="item.codeName">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -130,12 +130,9 @@
         queryResult: {page: 1, size: 10}, queryPath: {page: 1, size: 10},
         listLoading: false, pathLoading: false, runPathLine: false,
         count: 0, count1: 0, carLicense: '', records: [], pathLines: [],
-        places: [], placesCopy: [],
+        places: [], placesCopy: [], carTypes: [],
         imgPath: require('../../../assets/img/icon_img.svg'),
         img404: "this.onerror='';this.src='" + require('../../../assets/img/icon_img.svg') + "'",
-        carTypes: [{value: 'small', label: '小型汽车'}, {value: 'veh', label: '大型汽车'},
-          {value: 'fe', label: '使馆汽车'}, {value: 'police', label: '境外汽车'}, {value: 'sol', label: '外籍摩托车'},
-          {value: 'soach', label: '外籍汽车'}, {value: 'other', label: '其他'}],
         carColors: [{value: 'blue', label: '蓝色'}, {value: 'yellow', label: '黄色'}, {value: 'green', label: '绿色'},
           {value: 'black', label: '黑色'}, {value: 'white', label: '白色'}]
       }
@@ -259,6 +256,11 @@
             this.placesCopy = [];
           });
         }
+        this.$post("car/task/carLicenseType", {}).then((data) => {
+          this.carTypes = data.data ? data.data : [];
+        }).catch((err) => {
+          this.carTypes = [];
+        });
       },
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {

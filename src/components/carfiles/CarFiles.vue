@@ -89,8 +89,7 @@
   </div>
 </template>
 <script>
-  import {globalValidImg} from "../../assets/js/api";
-  import {formatDate, decryData, buttonValidator} from "../../assets/js/util";
+  import {formatDate, buttonValidator} from "../../assets/js/util";
 
   export default {
     data() {
@@ -213,7 +212,7 @@
       },
       getCarType() {
         if (this.getButtonVial('car:book:liuzhou')) {
-          this.$post('/car/book/liuzhou', {}).then((data) => {
+          this.$post('/car/book/liuzhou', {typeCode: 'CLLX'}).then((data) => {
             this.carTypes = data.data ? data.data : [];
           });
         }

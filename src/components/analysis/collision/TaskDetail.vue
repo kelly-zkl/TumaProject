@@ -135,9 +135,13 @@
                       :height="tableHeight" :row-key="getRowKey" ref="resultTable">
               <el-table-column type="selection" width="45" align="left" :reserve-selection="true"></el-table-column>
               <el-table-column align="left" prop="name" label="名称" :formatter="formatterAddress" max-width="120"
-                               min-width="80" show-overflow-tooltip></el-table-column>
+                               min-width="80"></el-table-column>
               <el-table-column align="left" prop="dataSource" label="数据源" :formatter="formatterAddress"
-                               max-width="220" min-width="180" show-overflow-tooltip></el-table-column>
+                               max-width="220" min-width="180">
+                <template slot-scope="scope">
+                  <div class="text-overflow-m" :title="scope.row.dataSource">{{scope.row.dataSource}}</div>
+                </template>
+              </el-table-column>
               <el-table-column align="left" prop="operator" label="分析方式" min-width="120" max-width="150">
                 <template slot-scope="scope">
                   <el-select v-model="scope.row.operator" style="width:80px" size="medium"
