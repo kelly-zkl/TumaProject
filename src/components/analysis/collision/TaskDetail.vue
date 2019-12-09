@@ -757,7 +757,7 @@
       //格式化内容   有数据就展示，没有数据就显示--
       formatterAddress(row, column) {
         if (column.property === 'analysesCount') {
-          return row.analysesCount == undefined ? '--' : row.analysesCount;
+          return row.status !== 'FINISH' || row.analysesCount == undefined ? '--' : row.analysesCount;
         } else {
           return row[column.property] && row[column.property] !== "null" ? row[column.property] : '--';
         }

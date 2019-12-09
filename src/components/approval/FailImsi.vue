@@ -201,6 +201,7 @@
       }
     },
     mounted() {
+      this.getData();
     }
   }
 </script>

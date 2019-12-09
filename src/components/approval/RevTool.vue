@@ -1,28 +1,30 @@
 <template>
   <div>
-    <section>
-      <el-form class="rev-form">
-        <el-form-item style="margin-bottom: 10px">
-          <el-input size="medium" placeholder="IMSI" :maxlength="15" style="width: 300px"
-                    v-model="input_imsi" @change="imsiChange"></el-input>
-          <el-button type="primary" size="medium" class="input-btn" :loading="imsiLoading"
-                     @click="revImsi()">IMSI翻手机号
-          </el-button>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="rev_phone">
-          <pre>{{rev_phone}}</pre>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px">
-          <el-input size="medium" placeholder="手机号码" :maxlength="11" style="width: 300px"
-                    v-model="input_phone" @change="phoneChange"></el-input>
-          <el-button type="primary" size="medium" class="input-btn" :loading="phoneLoading"
-                     @click="revPhone()">手机号翻IMSI
-          </el-button>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 10px" v-show="rev_imsi">
-          <pre>{{rev_imsi}}</pre>
-        </el-form-item>
-      </el-form>
+    <section class="content">
+      <div v-bind:style="'height:'+tableHeight+'px'">
+        <el-form>
+          <el-form-item style="margin-bottom: 10px">
+            <el-input size="medium" placeholder="IMSI" :maxlength="15" style="width: 300px"
+                      v-model="input_imsi" @change="imsiChange"></el-input>
+            <el-button type="primary" size="medium" class="input-btn" :loading="imsiLoading"
+                       @click="revImsi()">IMSI翻手机号
+            </el-button>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px" v-show="rev_phone">
+            <pre>{{rev_phone}}</pre>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px">
+            <el-input size="medium" placeholder="手机号码" :maxlength="11" style="width: 300px"
+                      v-model="input_phone" @change="phoneChange"></el-input>
+            <el-button type="primary" size="medium" class="input-btn" :loading="phoneLoading"
+                       @click="revPhone()">手机号翻IMSI
+            </el-button>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 10px" v-show="rev_imsi">
+            <pre>{{rev_imsi}}</pre>
+          </el-form-item>
+        </el-form>
+      </div>
     </section>
   </div>
 </template>
@@ -31,6 +33,7 @@
   export default {
     data() {
       return {
+        tableHeight: (window.innerHeight < 600 ? 600 : window.innerHeight) - 142,
         input_imsi: '', input_phone: '',
         rev_imsi: '', rev_phone: '',
         imsiLoading: false, phoneLoading: false
@@ -80,12 +83,6 @@
 </script>
 
 <style scoped>
-  .rev-form {
-    text-align: left;
-    margin-left: calc(50% - 210px);
-    margin-top: 10%
-  }
-
   .input-btn {
     padding: 8px 12px;
     margin-left: 10px

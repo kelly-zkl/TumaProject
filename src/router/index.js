@@ -248,7 +248,10 @@ export default new Router({
           path: '/imsiConver', name: 'IMSI翻码（翻码返回）',
           component: resolve => require(['../components/approval/ImsiConver'], resolve)
         }, {
-          path: '/codeResult', name: '翻码结果',
+          path: '/revTool', name: "翻码工具",
+          component: resolve => require(['../components/approval/RevTool'], resolve)
+        }, {
+          path: '/codeResult', name: '威慑日报',
           component: resolve => require(['../components/approval/FailImsi'], resolve)
         }, {
           path: '/myApply', component: Home, name: 'IMSI翻码',
@@ -331,12 +334,6 @@ export default new Router({
       name: "登录",
       hidden: true,
       component: resolve => require(['../components/Login'], resolve)
-    },
-    {
-      path: '/revTool',
-      name: "翻码工具",
-      hidden: true,
-      component: resolve => require(['../components/RevTool'], resolve)
     },
     {
       path: '/404',
