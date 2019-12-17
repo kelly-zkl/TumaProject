@@ -3,7 +3,7 @@
     <section class="content">
       <el-tabs v-model="activeItem" @tab-click="handleType" type="card">
         <el-tab-pane label="归属地" name="regional"></el-tab-pane>
-        <el-tab-pane label="采集辖区" name="areaCode"></el-tab-pane>
+        <!--<el-tab-pane label="采集辖区" name="areaCode"></el-tab-pane>-->
         <el-tab-pane label="采集场所" name="place"></el-tab-pane>
       </el-tabs>
       <el-row>

@@ -162,8 +162,7 @@
                 </template>
               </el-table-column>
               <el-table-column align="left" prop="analysesCount" label="分析结果" min-width="80"
-                               :formatter="formatterAddress" max-width="120"
-                               v-if="getButtonVial('collision:analyses:batch')"></el-table-column>
+                               :formatter="formatterAddress" max-width="120"></el-table-column>
               <el-table-column align="left" label="操作" min-width="100" max-width="150">
                 <template slot-scope="scope">
                   <el-tooltip class="item" effect="dark" content="查看分析结果" placement="bottom">

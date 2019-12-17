@@ -44,14 +44,14 @@
               <el-input-number v-model="query.endAge" controls-position="right" :min="query.startAge+1"
                                :max="200" style="width: 90px" size="medium" :precision="0"></el-input-number>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px">
+            <el-form-item style="margin-bottom: 10px" v-if="!getButtonVial('show:sort')">
               <el-select v-model="query.sex" placeholder="性别" size="medium" style="width: 80px" clearable>
                 <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
             </el-form-item>
-            <!--<el-form-item style="margin-bottom: 10px">-->
-            <!--<el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>-->
-            <!--</el-form-item>-->
+            <el-form-item style="margin-bottom: 10px" v-if="getButtonVial('show:sort')">
+              <el-button type="text" size="medium" @click="showMore()">{{isMore?'收起条件':'更多条件'}}</el-button>
+            </el-form-item>
             <el-form-item style="margin-bottom: 10px">
               <el-button type="primary" size="medium" @click="isSearch = true;getData()">搜索</el-button>
             </el-form-item>
