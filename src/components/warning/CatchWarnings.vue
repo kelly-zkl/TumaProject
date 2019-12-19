@@ -126,11 +126,11 @@
                 @selection-change="selsChange" :height="tableHeight">
         <el-table-column type="selection" width="45" align="left" :selectable="checkboxInit"></el-table-column>
         <el-table-column align="center" type="index" label="序号" width="65"></el-table-column>
-        <el-table-column align="left" label="现场人脸图像" prop="sceneUrl" min-width="120" max-width="180">
+        <el-table-column align="left" label="现场人脸图像" prop="sceneUrl" min-width="150" max-width="200">
           <template slot-scope="scope">
             <div style="height: 90px;line-height:90px">
               <img v-bind:src="scope.row.sceneUrl?scope.row.sceneUrl:imgPath2"
-                   @click="bigUrl=scope.row.sceneUrl;runBigPic=true" :onerror="img2404"
+                   @click="gotoBigImg(scope.row)" :onerror="img2404"
                    style="max-height:70px;border-radius: 4px;vertical-align:middle"/>
             </div>
           </template>
@@ -415,6 +415,10 @@
         } else {
           this.$message.error(res.msg);
         }
+      },
+      //查看大图
+      gotoBigImg(row) {
+        window.open(row.sceneUrl ? row.sceneUrl : row.faceUrl ? row.faceUrl : this.imgPath, '_blank');
       },
       gotoDetail(row) {
         let routeData = this.$router.resolve({
